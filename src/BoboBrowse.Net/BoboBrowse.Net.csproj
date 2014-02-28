@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8EEFF620-0996-4B6A-B23C-7D73BECCF73C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BoboBrowse.Net</RootNamespace>
+    <AssemblyName>BoboBrowse.Net</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>BoboBrowse.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="C5, Version=2.2.5073.27396, Culture=neutral, PublicKeyToken=282361b99ded7e8e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\C5.2.2.5073.27396\lib\portable-net40+sl50+wp80+win\C5.dll</HintPath>
+    </Reference>
+    <Reference Include="Common.Logging">
+      <HintPath>..\packages\Common.Logging.2.1.2\lib\net40\Common.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Lucene.Net, Version=3.0.3.0, Culture=neutral, PublicKeyToken=85089178b9ac3181, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Lucene.Net.3.0.3\lib\NET40\Lucene.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BoboIndexReader.cs" />
+    <Compile Include="BrowseException.cs" />
+    <Compile Include="BrowseFacet.cs" />
+    <Compile Include="BrowseRequest.cs" />
+    <Compile Include="BrowseSelection.cs" />
+    <Compile Include="EmptyDocIdSet.cs" />
+    <Compile Include="FacetSpec.cs" />
+    <Compile Include="Facets\FacetDataCache.cs" />
+    <Compile Include="Facets\FacetHandler.cs" />
+    <Compile Include="Facets\FacetHitcountComparatorFactory.cs" />
+    <Compile Include="Facets\Filters\AndFilter.cs" />
+    <Compile Include="Facets\Filters\CompactMultiValueFacetFilter.cs" />
+    <Compile Include="Facets\Filters\EmptyFilter.cs" />
+    <Compile Include="Facets\Filters\FacetFilter.cs" />
+    <Compile Include="Facets\Filters\FacetOrFilter.cs" />
+    <Compile Include="Facets\Filters\FacetRangeFilter.cs" />
+    <Compile Include="Facets\Filters\FilterMapFacetHandler.cs" />
+    <Compile Include="Facets\Filters\MultiValueFacetFilter.cs" />
+    <Compile Include="Facets\Filters\MultiValueORFacetFilter.cs" />
+    <Compile Include="Facets\Filters\RandomAccessAndFilter.cs" />
+    <Compile Include="Facets\Filters\RandomAccessFilter.cs" />
+    <Compile Include="Facets\Filters\RandomAccessNotFilter.cs" />
+    <Compile Include="Facets\Filters\RandomAccessOrFilter.cs" />
+    <Compile Include="Facets\IFacetCountCollector.cs" />
+    <Compile Include="Facets\Impl\DefaultFacetCountCollector.cs" />
+    <Compile Include="Facets\Impl\SimpleFacetHandler.cs" />
+    <Compile Include="Facets\ITermValueList.cs" />
+    <Compile Include="Facets\Impl\MultiValueFacetHandler.cs" />
+    <Compile Include="Facets\MultiValueFacetDataCache.cs" />
+    <Compile Include="Facets\PathFacetHandler.cs" />
+    <Compile Include="Facets\TermListFactory.cs" />
+    <Compile Include="Facets\TermStringList.cs" />
+    <Compile Include="Interface\IFacetAccessible.cs" />
+    <Compile Include="Interface\IComparatorFactory.cs" />
+    <Compile Include="Facets\IFacetHandlerFactory.cs" />
+    <Compile Include="Interface\IFieldValueAccessor.cs" />
+    <Compile Include="MappedFacetAccessible.cs" />
+    <Compile Include="MethodExtensions.cs" />
+    <Compile Include="Search\BoboBrowser.cs" />
+    <Compile Include="Search\BoboSearcher.cs" />
+    <Compile Include="Search\BoboSearcher2.cs" />
+    <Compile Include="Search\BrowseHit.cs" />
+    <Compile Include="Search\BrowseResult.cs" />
+    <Compile Include="Search\FacetHitCollector.cs" />
+    <Compile Include="Search\FastMatchAllDocsQuery.cs" />
+    <Compile Include="Search\FieldDocEntry.cs" />
+    <Compile Include="Search\FilteredDocSetIterator.cs" />
+    <Compile Include="Search\IBrowsable.cs" />
+    <Compile Include="Facets\IFacetScoreable.cs" />
+    <Compile Include="Search\InternalBrowseHitCollector.cs" />
+    <Compile Include="Search\LuceneSortDocComparatorFactory.cs" />
+    <Compile Include="Search\MultiBoboBrowser.cs" />
+    <Compile Include="Properties.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RandomAccessDocIdSet.cs" />
+    <Compile Include="RuntimeException.cs" />
+    <Compile Include="Search\IFacetTermScoringFunction.cs" />
+    <Compile Include="Search\MultiTopDocsSortedHitCollector.cs" />
+    <Compile Include="Search\Query\BoboDocScorer.cs" />
+    <Compile Include="Search\Query\IFacetTermScoringFunctionFactory.cs" />
+    <Compile Include="Search\SortedFieldBrowseHitComparator.cs" />
+    <Compile Include="Search\SortedHitQueue.cs" />
+    <Compile Include="Search\SortFieldEntry.cs" />
+    <Compile Include="Search\TopDocsSortedHitCollector.cs" />
+    <Compile Include="Utils\Arrays.cs" />
+    <Compile Include="Utils\BigByteArray.cs" />
+    <Compile Include="Utils\BigFloatArray.cs" />
+    <Compile Include="Utils\BigIntArray.cs" />
+    <Compile Include="Utils\BigIntBuffer.cs" />
+    <Compile Include="Utils\BigNestedIntArray.cs" />
+    <Compile Include="Utils\BigSegmentedArray.cs" />
+    <Compile Include="Utils\BigShortArray.cs" />
+    <Compile Include="Utils\BoundedPriorityQueue.cs" />
+    <Compile Include="Utils\ListMerger.cs" />
+    <Compile Include="Utils\QueryUtils.cs" />
+    <Compile Include="Utils\StringArrayComparator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="BoboBrowse.snk" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LuceneExt.Net\LuceneExt.Net.csproj">
+      <Project>{58bd9712-0338-4dd7-9f03-1808a9287421}</Project>
+      <Name>LuceneExt.Net</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Query\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
