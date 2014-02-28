@@ -9,7 +9,7 @@ see an example can see this: http://www.yamool.com/catalog/2585
 
 ###Performance###
 
-we recommend use a  **singleton pattern** to create one instance of BoboBrowser in the application and interval update  object in the background-thread.that can avoid frequency reload entity index file and reduce a memory usage.
+we recommend use a  **singleton pattern** to create one instance of BoboBrowser in the application and interval update  object in the background-thread.that can avoid frequency reload entity index file and reduce a memory usage.see more at http://www.yamool.org/post/2014/02/28/bobobrowse-net-lucene-net-303
 
 usage:
 
