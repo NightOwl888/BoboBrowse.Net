@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!-- BoboBrowse.NET shared Nuget specification file; all packages share this -->
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata>
+		<id>BoboBrowse.Net</id>
+		<title>BoboBrowse.Net</title>
+		<version>$version$</version>
+		<authors>Shcherbachev, zhengchun, NightOwl888</authors>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<summary>BoboBrowse.Net is a faceted browse engine implemented on a top of Lucene.Net.</summary>
+		<description>BoboBrowse.Net is a faceted browse engine implemented on a top of Lucene.Net. Originally ported from wonderful Java library developed by John Wang (http://javasoze.github.com/bobo/ ). While Lucene.Net is good with unstructured data, BoboBrowse.Net fills in the missing piece to handle semi-structured and structured data.</description>
+		<language>en-US</language>
+		<tags>faceted search engine lucene lucene.net nosql text information retrieval apache</tags>
+		<projectUrl>https://bobo.codeplex.com/</projectUrl>
+		<iconUrl>https://download-codeplex.sec.s-msft.com/Download?ProjectName=bobo&amp;DownloadId=230239&amp;Build=20885</iconUrl>
+		<dependencies>
+			<group>
+				<dependency id="Lucene.Net" version="[3.0.3]" />
+				<dependency id="C5" version="2.2.5073.27396" />
+				<dependency id="Common.Logging" version="2.1.2" />
+				<dependency id="SharpZipLib" version="0.86.0" />
+			</group>
+		</dependencies>
+	</metadata>
+</package>

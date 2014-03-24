@@ -66,7 +66,7 @@ namespace BoboBrowse.Tests
         [TestFixtureSetUp]
         public void Init()
         {
-            IndexPath = @"..\BoboBrowse.Tests\Index";
+            IndexPath = @"..\..\..\BoboBrowse.Tests\Index";
         }
 
         [Test]
