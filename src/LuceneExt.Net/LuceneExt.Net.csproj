@@ -61,7 +61,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>BoboBrowse.key.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\Common\BoboBrowse.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup Condition=" $(Configuration.Contains('NET35')) ">
     <Reference Include="Lucene.Net, Version=3.0.3.0, Culture=neutral, PublicKeyToken=85089178b9ac3181, processorArchitecture=MSIL">
@@ -85,6 +85,9 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Common\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="API\DocSet.cs" />
     <Compile Include="API\StatefulDSIterator.cs" />
     <Compile Include="Compression\ICompressedSortedIntegerSegment.cs" />
@@ -107,7 +110,9 @@
     <Compile Include="Utils\PrimitiveArray.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="BoboBrowse.key.snk" />
+    <None Include="..\Common\BoboBrowse.snk">
+      <Link>BoboBrowse.snk</Link>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -9,6 +9,7 @@ properties {
 	[string]$packageVersion   = "$version-pre"
 	[string]$configuration    = "Release"
 	[string[]]$target_frameworks = @("net35", "net40", "net45")
+	[string]$common_assembly_info = "$source_directory\Common\CommonAssemblyInfo.cs"
 }
 
 task default -depends Finalize
@@ -37,18 +38,18 @@ task Init -description "This tasks makes sure the build environment is correctly
 	}
 	
 	#Backup the original CommonAssemblyInfo.cs file
-	#Ensure-Directory-Exists "$release_directory"
-	#Copy-Item "$source_directory\Shared\CommonAssemblyInfo.cs" "$release_directory\CommonAssemblyInfo.cs"
+	Ensure-Directory-Exists "$release_directory"
+	Move-Item $common_assembly_info "$common_assembly_info.bak" -Force
 
 	#Get the current year from the system
-	#$year = [DateTime]::Today.Year
+	$year = [DateTime]::Today.Year
 
-	#Generate-Assembly-Info `
-	#	-file "$source_directory\Shared\CommonAssemblyInfo.cs" `
-	#	-company "BoboBrowse.Net" `
-	#	-version $version `
-	#	-packageVersion $packageVersion `
-	#	-copyright "Copyright © BoboBrowse.Net 2009 - $year"
+	Generate-Assembly-Info `
+		-file $common_assembly_info `
+		-company "BoboBrowse.Net" `
+		-version $version `
+		-packageVersion $packageVersion `
+		-copyright "Copyright © BoboBrowse.Net 2011 - $year"
 }
 
 task Restore -depends Clean -description "This task runs NuGet package restore" {
@@ -74,7 +75,8 @@ task Package -depends Compile -description "This tasks makes creates the NuGet p
 
 task Finalize -depends Package -description "This tasks finalizes the build" {  
 	#Restore the original CommonAssemblyInfo.cs file from backup
-	#Move-Item "$release_directory\CommonAssemblyInfo.cs" "$source_directory\Shared\CommonAssemblyInfo.cs" -Force
+	Remove-Item $common_assembly_info -Force -ErrorAction SilentlyContinue
+	Move-Item "$common_assembly_info.bak" $common_assembly_info -Force
 }
 
 function Create-BoboBrowse-Package {
@@ -160,13 +162,13 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersionAttribute(""$version"")]
 [assembly: AssemblyDelaySignAttribute(false)]
 "
-
 	$dir = [System.IO.Path]::GetDirectoryName($file)
 	if ([System.IO.Directory]::Exists($dir) -eq $false)
 	{
 		Write-Host "Creating directory $dir"
 		[System.IO.Directory]::CreateDirectory($dir)
 	}
+
 	Write-Host "Generating assembly info file: $file"
 	out-file -filePath $file -encoding UTF8 -inputObject $asmInfo
 }
