@@ -5,11 +5,9 @@ __NOTES__:This version of Bobo-Browse.Net is build for Lucene.Net 3.0 that based
 
 If you want re-build,you will need a some of third party library that can by Nuget tool get it.
 
-see an example can see this: http://www.yamool.com/catalog/2585
-
 ###Performance###
 
-we recommend use a  **singleton pattern** to create one instance of BoboBrowser in the application and interval update  object in the background-thread.that can avoid frequency reload entity index file and reduce a memory usage.see more at http://www.yamool.org/post/2014/02/28/bobobrowse-net-lucene-net-303
+we recommend use a  **singleton pattern** to create one instance of BoboBrowser in the application and interval update  object in the background-thread.that can avoid frequency reload entity index file and reduce a memory usage.
 
 usage:
 
