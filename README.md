@@ -1,7 +1,7 @@
 Bobo-Browse.Net
 ===============
 
-__NOTES__:This version of Bobo-Browse.Net is build for Lucene.Net 3.0 that based on BoboBrowse.Net(https://bobo.codeplex.com/) source code.
+__NOTES__:This Bobo-Browse.Net is build for Lucene.Net 3.x that based on the BoboBrowse.Net(https://bobo.codeplex.com/) project.
 
 If you want re-build,you will need a some of third party library that can by Nuget tool get it.
 
