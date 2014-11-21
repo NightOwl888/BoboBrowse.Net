@@ -30,7 +30,7 @@ namespace BoboBrowse.Net.Search
     using BoboBrowse.Net.Facets.Filters;
 
     ///<summary>This class implements the browsing functionality. </summary>
-    public class BoboBrowser : BoboSearcher2, IBrowsable, IDisposable
+    public class BoboBrowser : BoboSearcher2, IBrowsable
     {
         private readonly BoboIndexReader reader;
         private Dictionary<string, FacetHandler> runtimeFacetHandlerMap;
@@ -400,15 +400,10 @@ namespace BoboBrowse.Net.Search
         {
             return new InternalBrowseHitCollector(this, sort, offset, count, fetchStoredFields);
         }
-
-        public void Dispose()
+                
+        protected override void Dispose(bool disposing)
         {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        private void Dispose(bool disposing)
-        {
+            base.Dispose(disposing);
             if (disposing)
             {
                 this.runtimeFacetHandlerMap = null;

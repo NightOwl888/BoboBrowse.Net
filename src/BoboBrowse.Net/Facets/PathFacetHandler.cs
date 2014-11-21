@@ -70,7 +70,7 @@ namespace BoboBrowse.Net.Facets
             {
                 return Convert.ToBoolean(selectionProp.GetProperty(PathFacetHandler.SEL_PROP_NAME_STRICT));
             }
-            catch (Exception e)
+            catch
             {
                 return false;
             }
@@ -84,7 +84,7 @@ namespace BoboBrowse.Net.Facets
             {
                 return Convert.ToInt32(selectionProp.GetProperty(PathFacetHandler.SEL_PROP_NAME_DEPTH));
             }
-            catch (Exception e)
+            catch
             {
                 return 1;
             }

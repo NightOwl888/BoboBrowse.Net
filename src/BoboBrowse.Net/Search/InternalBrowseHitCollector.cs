@@ -33,7 +33,6 @@ namespace BoboBrowse.Net.Search
     {
        
         private readonly SortedHitQueue hitQueue;
-        private readonly BrowseHit[] sortedDocs;
         private readonly SortField[] sortFields;
         private int totalHits;        
         private readonly BoboIndexReader reader;

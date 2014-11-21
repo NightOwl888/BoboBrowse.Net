@@ -61,7 +61,7 @@ namespace BoboBrowse.Net.Facets.Filters
                     target = doc + 1;
                 }
                 doc = orderArray.FindValue(index, target, maxID);
-                return doc;
+                return doc > maxID ? DocIdSetIterator.NO_MORE_DOCS : doc;
             }
 
             public override int DocID()
@@ -72,7 +72,7 @@ namespace BoboBrowse.Net.Facets.Filters
             public override int NextDoc()
             {
                 doc = orderArray.FindValue(index, doc + 1, maxID);
-                return doc;
+                return doc > maxID ? DocIdSetIterator.NO_MORE_DOCS : doc;
             }
         }
 
