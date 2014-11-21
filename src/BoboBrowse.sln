@@ -7,13 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LuceneExt.Net", "LuceneExt.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoboBrowse.Tests", "BoboBrowse.Tests\BoboBrowse.Tests.csproj", "{F016F5E0-E8C3-4ECE-B677-AAA8DDF9A1D8}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{D9434D9D-A9B9-4060-BC66-6FFD4C436E5F}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{74606D3E-1C8F-401F-95E1-F4F78C5CBD18}"
 	ProjectSection(SolutionItems) = preProject
 		..\Build.bat = ..\Build.bat
