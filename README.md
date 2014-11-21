@@ -3,7 +3,30 @@ Bobo-Browse.Net
 
 __NOTES__:This Bobo-Browse.Net is build for Lucene.Net 3.x that based on the BoboBrowse.Net(https://bobo.codeplex.com/) project.
 
-If you want re-build,you will need a some of third party library that can by Nuget tool get it.
+###Building the Source###
+
+Prerequisites:
+
+- [.NET Framework 3.5 SP1](http://www.microsoft.com/en-us/download/details.aspx?id=25150)
+- [.NET Framework 4.0.x](http://www.microsoft.com/en-us/download/details.aspx?id=17851)
+- [.NET Framework 4.5.x](http://www.microsoft.com/en-us/download/details.aspx?id=42643)
+- [Windows PowerShell](http://technet.microsoft.com/en-us/library/hh847837.aspx)
+
+> NOTE: If you have not yet run Windows Powershell on your computer, you will need to run the following command from an elevated command prompt before you can build the source.
+
+```
+Set-ExecutionPolicy RemoteSigned
+```
+
+To build the source, run the following command from the root directory of the Git project (the same directory that contains the .git folder):
+
+```
+build.bat -v:1.1.1 -pv:1.1.1-alpha00006
+```
+
+The -v parameter is the file version number, and the -pv parameter is the NuGet package version number. The package version number can contain a pre-release tag as shown in the example, but is not required.
+
+Once the source has been built, you can install Bobo-Browse.Net into your project using NuGet. In Visual Studio, open the Options dialog from the Tools menu. In the left pane, choose NuGet Package Manager > Package Sources. Click the "+" button. Name the package source "Local Bobo-Browse.Net Feed", and add a Windows file path to `[Bobo-Browse Project Directory]\packages\packagesource\`. You can then use either the UI or Package Manager Console to install Bobo-Browse.Net into your project by selecting the "Local Bobo-Browse.Net Feed" as the package source.
 
 ###Performance###
 
