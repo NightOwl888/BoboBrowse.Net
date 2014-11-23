@@ -2,7 +2,7 @@ properties {
 	[string]$base_directory   = resolve-path "..\."
 	[string]$release_directory  = "$base_directory\release" #was build_directory
 	[string]$source_directory = "$base_directory\src"
-	[string]$nuget_directory  = "$source_directory\.nuget"
+	[string]$tools_directory  = "$base_directory\tools"
 	[string]$output_directory = "$release_directory\packagesource"
 	[string]$template_directory = "$base_directory\build\templates"
 	[string]$version          = "1.0.0"
@@ -20,7 +20,7 @@ task Clean -description "This task cleans up the build directory" {
 	Write-Host "Base Directory: $base_directory"
 	Write-Host "Release Directory: $release_directory"
 	Write-Host "Source Directory: $source_directory"
-	Write-Host "NuGet Directory: $nuget_directory"
+	Write-Host "Tools Directory: $tools_directory"
 	Write-Host "Output Directory: $output_directory"
 	Write-Host "Template Directory: $template_directory"
 	Write-Host "Version: $version"
@@ -54,11 +54,32 @@ task Init -description "This tasks makes sure the build environment is correctly
 
 task Restore -depends Clean -description "This task runs NuGet package restore" {
 	exec { 
-		&"$nuget_directory\NuGet.exe" restore "$source_directory\BoboBrowse.sln"
+		&"$tools_directory\nuget\NuGet.exe" restore "$source_directory\BoboBrowse.sln"
 	}
 }
 
-task Compile -depends Clean, Init, Restore -description "This task compiles the solution" {
+task Test -depends Clean, Init, Restore -description "This tasks runs the unit tests" {
+	Write-Host "Running Unit Tests..." -ForegroundColor Magenta
+
+	$msbuild_configuration = "NET40-$configuration"
+	$target_project = "$source_directory\BoboBrowse.Tests\BoboBrowse.Tests.csproj"
+
+	exec { 
+		msbuild $target_project `
+			/verbosity:quiet `
+			/property:Configuration=$msbuild_configuration `
+			"/t:Clean;Rebuild" `
+			/property:WarningLevel=3 `
+			/property:EnableNuGetPackageRestore=true `
+			/property:TargetFrameworkVersion=v4.0 `
+	}
+
+	exec {
+		&"$tools_directory\nunit\nunit-console.exe" $target_project /config:$configuration /noshadow /noresult /framework:net-4.0
+	}
+}
+
+task Compile -depends Test -description "This task compiles the solution" {
 
 	Write-Host "Compiling..." -ForegroundColor Green
 
@@ -87,7 +108,7 @@ function Create-BoboBrowse-Package {
 	Copy-Item -Recurse -Filter *.cs -Force "$source_directory\BoboBrowse.Net" "$release_directory\BoboBrowse.Net\src"
 	
 	exec { 
-		&"$nuget_directory\NuGet.exe" pack $output_nuspec_file -Symbols -Version $packageVersion -OutputDirectory $output_directory
+		&"$tools_directory\nuget\NuGet.exe" pack $output_nuspec_file -Symbols -Version $packageVersion -OutputDirectory $output_directory
 	}
 }
 
