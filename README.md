@@ -1,7 +1,9 @@
 Bobo-Browse.Net
 ===============
 
-__NOTES__:This Bobo-Browse.Net is build for Lucene.Net 3.x that based on the BoboBrowse.Net(https://bobo.codeplex.com/) project.
+This Bobo-Browse.Net is build for Lucene.Net 3.x.
+
+if you still use Lucene.Net 2.x,you can see this project BoboBrowse.Net(https://bobo.codeplex.com/).
 
 ###Building the Source###
 
