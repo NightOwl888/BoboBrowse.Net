@@ -34,63 +34,75 @@ Once the source has been built, you can install Bobo-Browse.Net into your projec
 
 we recommend use a  **singleton pattern** to create one instance of BoboBrowser in the application and interval update  object in the background-thread.that can avoid frequency reload entity index file and reduce a memory usage.
 
-usage:
+```c#
+[Test]
+public void BrowseTest()
+{
+	FacetHandler facetHandler = new MultiValueFacetHandler(fieldName);
 
-        [Test]
-        public void SimpleYamoolDemo()
-        {
-            //open a lucene index file.                 
-            var idx = FSDirectory.Open(new System.IO.DirectoryInfo(IndexPath));
-            var reader = IndexReader.Open(idx, true);
-            //declare a Body field by faceted handler.
-            var facetHandler = new MultiValueFacetHandler("Body");
-            var boboReader = BoboIndexReader.GetInstance(reader, new FacetHandler[] { facetHandler });
-            //create a new search request of browse that similare to lucene search(etc.skip,count,sort)
-            var browseRequest = new BrowseRequest()
-            {
-                Count = 10,
-                Offset = 0,
-                Sort = new SortField[] { new SortField("LeafName",SortField.STRING) },
-                FetchStoredFields = true
-            };
-            //create a new query for search
-            var parser = new QueryParser(Lucene.Net.Util.Version.LUCENE_CURRENT, "Entity", new KeywordAnalyzer());
-            var q = parser.Parse("SPListItem");
-            //TODO:setting query for browse request.
-            browseRequest.Query = q;
+	ICollection<FacetHandler> handlerList = new FacetHandler[] { facetHandler };
 
-            // declare a facete option for by handler by bobo-browse
-            var facetOption = new FacetSpec();
-            //declare a filter for facet result that only return facet with 'al' begin.            
-            facetOption.Prefix = "al";//if we not filter for facet we can remove it.
-            facetOption.OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc;            
-            browseRequest.SetFacetSpec("Body", facetOption);
+	// opening a lucene index
+	IndexReader reader = IndexReader.Open(_indexDir, true);
 
-            // perform browse
-            var browser = new BoboBrowser(boboReader);
-            var result = browser.Browse(browseRequest);
+	// decorate it with a bobo index reader
+	BoboIndexReader boboReader = BoboIndexReader.GetInstance(reader, handlerList);
 
-            // Showing results of now          
-            //get a specified facet field
-            var facetResult = result.FacetMap["Body"];
-            var facetVals = facetResult.GetFacets();
+	// creating a browse request
+	BrowseRequest browseRequest = new BrowseRequest();
+	browseRequest.Count = 10;
+	browseRequest.Offset = 0;
+	browseRequest.Sort = new SortField[] { new SortField("LeafName", SortField.STRING) };
+	browseRequest.FetchStoredFields = true;
 
-            Console.WriteLine("Facets:");
-            int count = 0;
-            foreach (BrowseFacet facet in facetVals)
-            {
-                count++;
-                Console.WriteLine(facet.ToString());
-            }
-            Console.WriteLine("Total = " + count);
+	// add a selection
+	BrowseSelection sel = new BrowseSelection(fieldName);
+	//sel.addValue("21");
+	browseRequest.AddSelection(sel);
 
-            //show items
-            Console.WriteLine(string.Empty);
-            Console.WriteLine("Actual items:");
-            BrowseHit[] hits = result.Hits;
-            for (int i = 0; i < hits.Length; i++)
-            {
-                BrowseHit browseHit = hits[i];
-                Console.WriteLine(browseHit.StoredFields.Get("LeafName"));
-            }
-        }    
+	// parse a query
+	QueryParser parser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, "Entity", new KeywordAnalyzer());
+	Query q = parser.Parse("SPListItem");
+	browseRequest.Query = q;
+
+	// add the facet output specs
+	FacetSpec colorSpec = new FacetSpec();
+	colorSpec.OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc;
+
+	FacetSpec categorySpec = new FacetSpec();
+	categorySpec.MinHitCount = 2;
+	categorySpec.OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc;
+
+	browseRequest.SetFacetSpec(fieldName, colorSpec);
+
+	// perform browse
+	IBrowsable browser = new BoboBrowser(boboReader);
+
+	BrowseResult result = browser.Browse(browseRequest);
+
+	// Showing results now
+	int totalHits = result.NumHits;
+	BrowseHit[] hits = result.Hits;
+
+	Dictionary<String, IFacetAccessible> facetMap = result.FacetMap;
+
+	IFacetAccessible colorFacets = facetMap[fieldName];
+
+	IEnumerable<BrowseFacet> facetVals = colorFacets.GetFacets();
+
+	Debug.WriteLine("Facets:");
+
+	foreach (BrowseFacet facet in facetVals)
+	{
+		Debug.WriteLine(facet.ToString());
+	}
+
+	Debug.WriteLine("Actual items:");
+
+	for (int i = 0; i < hits.Length; ++i)
+	{
+		BrowseHit browseHit = hits[i];
+		Debug.WriteLine(browseHit.StoredFields.Get("LeafName"));
+	}
+}
+```
