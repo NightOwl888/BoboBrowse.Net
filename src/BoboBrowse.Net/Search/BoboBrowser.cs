@@ -288,9 +288,9 @@ namespace BoboBrowse.Net.Search
             int offset = req.Offset;
             int count = req.Count;
 
-            if (offset < 0 || count < 0)
+            if (offset < 0 || count <= 0)
             {
-                throw new System.ArgumentException("both offset and count must be > 0: " + offset + "/" + count);
+                throw new ArgumentException("the offset must be >= 0 and count must be > 0: " + offset + "/" + count);
             }
             TopDocsSortedHitCollector myHC = GetSortedHitCollector(req.Sort, offset, count, req.FetchStoredFields);
             Dictionary<string, IFacetAccessible> facetCollectors = new Dictionary<string, IFacetAccessible>();
