@@ -18,12 +18,13 @@
     public class BasicTests
     {
         private const string fieldName = "File Type";
-        private string IndexPath = "";
+        private Directory _indexDir;
 
         [TestFixtureSetUp]
         public void Init()
         {
-            IndexPath = @"..\..\..\BoboBrowse.Tests\Index";
+            var indexPath = @"..\..\..\BoboBrowse.Tests\Index";
+            _indexDir = FSDirectory.Open(indexPath);
         }
 
         [Test]
@@ -37,15 +38,14 @@
 
             // opening a lucene index
 
-            Directory idx = FSDirectory.Open(new System.IO.DirectoryInfo(this.IndexPath));
-            IndexReader reader = IndexReader.Open(idx, true);
+            IndexReader reader = IndexReader.Open(_indexDir, true);
 
             // decorate it with a bobo index reader
             BoboIndexReader boboReader = BoboIndexReader.GetInstance(reader, handlerList);
 
             // creating a browse request
             BrowseRequest browseRequest = new BrowseRequest();
-            browseRequest.Count = 0;
+            browseRequest.Count = 10;
             browseRequest.Offset = 0;
             browseRequest.FetchStoredFields = false;
 
@@ -85,14 +85,13 @@
         {
             FacetHandler handler = new MultiValueFacetHandler("Body");
 
-            Directory idx = FSDirectory.Open(new System.IO.DirectoryInfo(this.IndexPath));
-            IndexReader reader = IndexReader.Open(idx, true);
+            IndexReader reader = IndexReader.Open(_indexDir, true);
 
             // decorate it with a bobo index reader
             BoboIndexReader boboReader = BoboIndexReader.GetInstance(reader, new FacetHandler[] { handler });
 
             BrowseRequest browseRequest = new BrowseRequest();
-            browseRequest.Count = 0;
+            browseRequest.Count = 10;
             browseRequest.Offset = 0;
             browseRequest.FetchStoredFields = true;
 
@@ -145,9 +144,7 @@
             ICollection<FacetHandler> handlerList = new FacetHandler[] { facetHandler };
 
             // opening a lucene index
-
-            Directory idx = FSDirectory.Open(new System.IO.DirectoryInfo(this.IndexPath));
-            IndexReader reader = IndexReader.Open(idx, true);
+            IndexReader reader = IndexReader.Open(_indexDir, true);
 
             // decorate it with a bobo index reader
             BoboIndexReader boboReader = BoboIndexReader.GetInstance(reader, handlerList);
