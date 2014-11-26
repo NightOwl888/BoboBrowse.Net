@@ -75,7 +75,7 @@ task Test -depends Clean, Init, Restore -description "This tasks runs the unit t
 	}
 
 	exec {
-		&"$tools_directory\nunit\nunit-console.exe" $target_project /config:$configuration /noshadow /noresult /framework:net-4.0
+		&"$tools_directory\nunit\nunit-console.exe" $target_project /config:$msbuild_configuration /noshadow /noresult /framework:net-4.0
 	}
 }
 
