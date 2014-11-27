@@ -34,7 +34,7 @@ Once the source has been built, you can install Bobo-Browse.Net into your projec
 
 we recommend use a  **singleton pattern** to create one instance of BoboBrowser in the application and interval update  object in the background-thread.that can avoid frequency reload entity index file and reduce a memory usage.
 
-```c#
+```cs
 [Test]
 public void BrowseTest()
 {

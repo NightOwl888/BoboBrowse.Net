@@ -125,9 +125,6 @@
     <Content Include="NLog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="Index\segments.gen" />
-    <None Include="Index\segments_j" />
-    <None Include="Index\_h.cfs" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
