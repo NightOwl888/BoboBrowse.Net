@@ -35,74 +35,53 @@ Once the source has been built, you can install Bobo-Browse.Net into your projec
 we recommend use a  **singleton pattern** to create one instance of BoboBrowser in the application and interval update  object in the background-thread.that can avoid frequency reload entity index file and reduce a memory usage.
 
 ```cs
-[Test]
-public void BrowseTest()
+public void TestSimpleBrowser()
 {
-	FacetHandler facetHandler = new MultiValueFacetHandler(fieldName);
-
-	ICollection<FacetHandler> handlerList = new FacetHandler[] { facetHandler };
-
-	// opening a lucene index
-	IndexReader reader = IndexReader.Open(_indexDir, true);
-
-	// decorate it with a bobo index reader
-	BoboIndexReader boboReader = BoboIndexReader.GetInstance(reader, handlerList);
-
-	// creating a browse request
-	BrowseRequest browseRequest = new BrowseRequest();
-	browseRequest.Count = 10;
-	browseRequest.Offset = 0;
-	browseRequest.Sort = new SortField[] { new SortField("LeafName", SortField.STRING) };
-	browseRequest.FetchStoredFields = true;
-
-	// add a selection
-	BrowseSelection sel = new BrowseSelection(fieldName);
-	//sel.addValue("21");
-	browseRequest.AddSelection(sel);
-
-	// parse a query
-	QueryParser parser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, "Entity", new KeywordAnalyzer());
-	Query q = parser.Parse("SPListItem");
-	browseRequest.Query = q;
-
-	// add the facet output specs
-	FacetSpec colorSpec = new FacetSpec();
-	colorSpec.OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc;
-
-	FacetSpec categorySpec = new FacetSpec();
-	categorySpec.MinHitCount = 2;
-	categorySpec.OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc;
-
-	browseRequest.SetFacetSpec(fieldName, colorSpec);
-
-	// perform browse
-	IBrowsable browser = new BoboBrowser(boboReader);
-
-	BrowseResult result = browser.Browse(browseRequest);
-
-	// Showing results now
-	int totalHits = result.NumHits;
-	BrowseHit[] hits = result.Hits;
-
-	Dictionary<String, IFacetAccessible> facetMap = result.FacetMap;
-
-	IFacetAccessible colorFacets = facetMap[fieldName];
-
-	IEnumerable<BrowseFacet> facetVals = colorFacets.GetFacets();
-
-	Debug.WriteLine("Facets:");
-
-	foreach (BrowseFacet facet in facetVals)
+	var query = new TermQuery(new Term("name", "asp.net"));
+	Console.WriteLine(string.Format("query: <{0}>", query.ToString()));
+	var request = new BrowseRequest()
 	{
-		Debug.WriteLine(facet.ToString());
+		Count = 10,
+		Offset = 0,
+		Query = query,
+		Sort = new Sort(new SortField("price", SortField.DOUBLE,false)).GetSort()
+	};
+
+	var faceHandlers = new FacetHandler[] { new SimpleFacetHandler("category") };
+	var browser = new BoboBrowser(BoboIndexReader.GetInstance(IndexReader.Open(_indexDir, true), faceHandlers));
+	var factSpec = new FacetSpec() { OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc, MinHitCount = 1 };
+	request.SetFacetSpec("category", factSpec);
+
+	var result = browser.Browse(request);
+	Console.WriteLine(string.Format("total hits:{0}", result.NumHits));
+	Console.WriteLine("===========================");
+	foreach (var facet in result.FacetMap["category"].GetFacets())
+	{
+		var category = _categories.First(k => k.Value == int.Parse(facet.Value.ToString()));
+		Console.WriteLine("{0}:({1})", category.Key, facet.HitCount);
 	}
-
-	Debug.WriteLine("Actual items:");
-
-	for (int i = 0; i < hits.Length; ++i)
+	Console.WriteLine("===========================");
+	for (var i = 0; i < result.Hits.Length; i++)
 	{
-		BrowseHit browseHit = hits[i];
-		Debug.WriteLine(browseHit.StoredFields.Get("LeafName"));
+		var doc = browser.Doc(result.Hits[i].DocId);
+		var category = _categories.First(k => k.Value == int.Parse(doc.GetField("category").StringValue)).Key;
+		Console.WriteLine(string.Format("{2} - {0} ${1} by {3}", doc.GetField("name").StringValue, doc.GetField("price").StringValue, category, doc.GetField("author").StringValue));
 	}
 }
+```
+
+output:
+```
+total hits:6
+===========================
+C#:(3)
+WEB:(2)
+AJAX:(1)
+===========================
+WEB - Bootstrap for ASP.NET MVC $11.49 by Pieter van der Westhuizen
+WEB - Mobile ASP.NET MVC 5 $19.79 by Eric Sowell
+C# - ASP.NET Web API 2: Building a REST Service from Start to Finish $23.45 by Jamie Kurtz , Brian Wortman
+C# - Pro ASP.NET MVC 5 $27.49 by Adam Freeman
+AJAX - Professional ASP.NET 3.5 AJAX $33.29 by Bill Evjen
+C# - Designing Evolvable Web APIs with ASP.NET $33.34 by Pablo Cibraro
 ```
