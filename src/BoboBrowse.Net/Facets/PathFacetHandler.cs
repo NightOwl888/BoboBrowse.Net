@@ -90,9 +90,9 @@ namespace BoboBrowse.Net.Facets
             }
         }
 
-        public override FieldComparator GetScoreDocComparator()
+        public override FieldComparator GetComparator(int numDocs, SortField field)
         {
-            return dataCache.GetScoreDocComparator();
+            return dataCache.GeFieldComparator(numDocs, field.Type);
         }
 
         public override string[] GetFieldValues(int id)

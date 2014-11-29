@@ -34,16 +34,7 @@ namespace BoboBrowse.Net.Utils
                         string fieldname = sortSpec[i].Field;
                         if (fieldname != null)
                         {
-                            SortField sf = null;
-                            FacetHandler facetHandler = idxReader.GetFacetHandler(fieldname);
-                            if (facetHandler != null)
-                            {
-                                sf = new SortField(fieldname.ToLower(), new QuerySortComparatorSource(facetHandler), sortSpec[i].Reverse);
-                            }
-                            else
-                            {
-                                sf = sortSpec[i];
-                            }
+                            SortField sf = sortSpec[i];
                             sortList.Add(sf);
                         }
                     }
@@ -55,21 +46,6 @@ namespace BoboBrowse.Net.Utils
                 retVal = sortList.ToArray();
             }
             return retVal;
-        }
-
-        private class QuerySortComparatorSource : FieldComparatorSource
-        {
-            private FacetHandler facetHandler;
-
-            public QuerySortComparatorSource(FacetHandler facetHandler)
-            {
-                this.facetHandler = facetHandler;
-            }
-
-            public override FieldComparator NewComparator(string fieldname, int numHits, int sortPos, bool reversed)
-            {
-                return facetHandler.GetScoreDocComparator();
-            }
-        }
+        }        
     }
 }

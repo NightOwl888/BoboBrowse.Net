@@ -176,60 +176,93 @@ namespace BoboBrowse.Net.Facets
             return list.ToArray();
         }
 
-        public virtual FieldComparator GetScoreDocComparator()
+        public virtual FieldComparator GeFieldComparator(int numDocs,int type)
         {
-            return new FacetScoreDocComparator(this);
+            return new FacetFieldComparator(numDocs, type, this);
         }
 
-        public class FacetScoreDocComparator : FieldComparator
+        private class FacetFieldComparator : FieldComparator
         {
+            private int[] _docs;
+            private int _fieldType;
             private FacetDataCache _dataCache;
             private BigSegmentedArray orderArray;
-            public FacetScoreDocComparator(FacetDataCache dataCache)
+            private int _bottom;
+
+            public FacetFieldComparator(int numHits,int type, FacetDataCache dataCache)
             {
+                _docs = new int[numHits];
+                _fieldType = type;
                 _dataCache = dataCache;
                 orderArray = _dataCache.orderArray;
             }
 
             public override int Compare(int slot1, int slot2)
             {
-                return orderArray.Get(slot1) - orderArray.Get(slot2);
+                var doc1 = _docs[slot1];
+                var doc2 = _docs[slot2];
+                var value1 = _dataCache.valArray.Get(orderArray.Get(doc1));
+                var value2 = _dataCache.valArray.Get(orderArray.Get(doc2));
+                return this.CompareValue(value1, value2);               
             }
 
             public override int CompareBottom(int doc)
             {
-                throw new NotImplementedException();
+                var value1 = _dataCache.valArray.Get(_bottom);
+                var value2 = _dataCache.valArray.Get(orderArray.Get(doc));
+                return this.CompareValue(value1, value2);
             }
 
             public override void Copy(int slot, int doc)
             {
-                throw new NotImplementedException();
+                _docs[slot] = doc;
             }
 
             public override void SetBottom(int slot)
             {
-                throw new NotImplementedException();
+                _bottom = orderArray.Get(slot);
             }
 
             public override void SetNextReader(IndexReader reader, int docBase)
-            {
-                throw new NotImplementedException();
+            {               
             }
 
             public override IComparable this[int slot]
             {
                 get {
-                    int index = orderArray.Get(slot);
+                    var index = orderArray.Get(_docs[slot]);
                     return _dataCache.valArray.Get(index);
                 }
             }
-        }
 
-        static void Main3(string[] args)
-        {
-            Console.WriteLine("byte: " + sbyte.MaxValue);
-            Console.WriteLine("short: " + short.MaxValue);
-            Console.WriteLine("int: " + int.MaxValue);
+            private int CompareValue(string value1, string value2)
+            {
+                switch (_fieldType)
+                {
+                    case SortField.BYTE:
+                    case SortField.INT:
+                        {
+                            return int.Parse(value1).CompareTo(int.Parse(value2));
+                        }
+                    case SortField.DOUBLE:
+                        {
+                            return double.Parse(value1).CompareTo(double.Parse(value2));
+                        }
+                    case SortField.FLOAT:
+                        {
+                            return float.Parse(value1).CompareTo(float.Parse(value2));
+                        }
+                    case SortField.LONG:
+                        {
+                            return long.Parse(value1).CompareTo(long.Parse(value2));
+                        }
+                    case SortField.SHORT:
+                        {
+                            return short.Parse(value1).CompareTo(short.Parse(value2));
+                        }                    
+                }
+                return string.Compare(value1, value2, true);
+            }
         }
     }
 }

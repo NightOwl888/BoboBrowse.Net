@@ -76,7 +76,7 @@ namespace BoboBrowse.Net.Facets
         /// builds a comparator to determine how sorting is done
         /// </summary>
         /// <returns></returns>
-        public abstract FieldComparator GetScoreDocComparator();
+        public abstract FieldComparator GetComparator(int numDocs, SortField field);
 
         /// <summary>
         /// Gets a single field value 

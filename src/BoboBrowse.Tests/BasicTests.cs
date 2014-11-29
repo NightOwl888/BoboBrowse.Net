@@ -122,10 +122,10 @@
             Console.WriteLine(string.Format("query: <{0}>", query.ToString()));
             var request = new BrowseRequest()
             {
-                Count = 10,
+                Count = 2,
                 Offset = 0,
                 Query = query,
-                Sort = new Sort(new SortField("price", SortField.DOUBLE, false)).GetSort()
+                Sort = new Sort(new SortField("category", SortField.INT,true)).GetSort()
             };
 
             var faceHandlers = new FacetHandler[] { new SimpleFacetHandler("category") };
@@ -185,10 +185,10 @@
             Console.WriteLine(string.Format("query: <{0}>", query.ToString()));
             var request = new BrowseRequest()
             {
-                Count = 10,
+                Count = 100,
                 Offset = 0,
                 Query = query,
-                Sort = new Sort(new SortField("price", SortField.DOUBLE, false)).GetSort()
+                Sort = new Sort(new SortField("path", SortField.STRING, false)).GetSort()
             };
 
             var faceHandlers = new FacetHandler[] { new MultiValueFacetHandler("path") };
@@ -202,7 +202,14 @@
             foreach (var facet in result.FacetMap["path"].GetFacets())
             {
                 Console.WriteLine(facet.ToString());               
-            }           
+            }
+            Console.WriteLine("===========================");
+            for (var i = 0; i < result.Hits.Length; i++)
+            {
+                var doc = browser.Doc(result.Hits[i].DocId);
+                var category = _categories.First(k => k.Value == int.Parse(doc.GetField("category").StringValue)).Key;
+                Console.WriteLine(string.Format("{2} - {0} ${1} by {3}", doc.GetField("name").StringValue, doc.GetField("price").StringValue, category, doc.GetField("author").StringValue));
+            }
         }
     }
 }

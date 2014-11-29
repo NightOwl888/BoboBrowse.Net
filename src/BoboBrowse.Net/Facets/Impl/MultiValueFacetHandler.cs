@@ -35,12 +35,7 @@ namespace BoboBrowse.Net.Facets
 
     public class MultiValueFacetHandler : FacetHandler, IFacetHandlerFactory, IFacetScoreable
     {
-        private static ILog logger = LogManager.GetLogger(typeof(MultiValueFacetHandler));
-
-        public override FieldComparator GetScoreDocComparator()
-        {
-            return new MultiValueFacetDataCache.MultiFacetScoreDocComparator(_dataCache);
-        }
+        private static ILog logger = LogManager.GetLogger(typeof(MultiValueFacetHandler));       
 
         private readonly TermListFactory _termListFactory;
         private readonly string _indexFieldName;
@@ -100,7 +95,7 @@ namespace BoboBrowse.Net.Facets
             return new MultiValueFacetHandler(Name, _indexFieldName, _termListFactory, _sizePayloadTerm, _depends);
         }
 
-        public MultiValueFacetDataCache getDataCache()
+        public MultiValueFacetDataCache GetDataCache()
         {
             return _dataCache;
         }
@@ -212,6 +207,11 @@ namespace BoboBrowse.Net.Facets
             return new MultiValueDocScorer(_dataCache, scoringFunctionFactory, boostList);
         }
 
+        public override FieldComparator GetComparator(int numDocs, SortField field)
+        {
+            return _dataCache.GeFieldComparator(numDocs, field.Type);
+        }
+
         private sealed class MultiValueDocScorer : BoboDocScorer
         {
             private readonly MultiValueFacetDataCache _dataCache;
@@ -251,7 +251,6 @@ namespace BoboBrowse.Net.Facets
             {
                 return _array.getScores(docid, _dataCache.freqs, BoostList, Function);
             }
-
         }
 
         private sealed class MultiValueFacetCountCollector : DefaultFacetCountCollector
@@ -273,5 +272,7 @@ namespace BoboBrowse.Net.Facets
                 _count = _dataCache.freqs;
             }
         }
+
+        
     }
 }

@@ -23,6 +23,7 @@ namespace BoboBrowse.Net.Facets
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Common.Logging;
     using BoboBrowse.Net.Utils;
     using Lucene.Net.Index;
@@ -379,56 +380,110 @@ namespace BoboBrowse.Net.Facets
             }
         }
 
-        public virtual FieldComparator getScoreDocComparator()
+        public override FieldComparator GeFieldComparator(int numDocs, int type)
         {
-            return new MultiFacetScoreDocComparator(this);
-        }
+            return new FacetMultiValueComparator(numDocs, type, this);
+        }       
 
-        public sealed class MultiFacetScoreDocComparator : FieldComparator
+        private class FacetMultiValueComparator : FieldComparator
         {
+            private int[] _docs;
+            private int _fieldType;
             private MultiValueFacetDataCache _dataCache;
-            public MultiFacetScoreDocComparator(MultiValueFacetDataCache dataCache)
+            private string[] _bottom;
+            
+            public FacetMultiValueComparator(int numHits,int type, MultiValueFacetDataCache dataCache)
             {
+                _docs = new int[numHits];
+                _fieldType = type;                             
                 _dataCache = dataCache;
-            }
-
-            public int SortType()
-            {
-                return SortField.CUSTOM;
+                              
             }
 
             public override int Compare(int slot1, int slot2)
             {
-                return _dataCache._nestedArray.compare(slot1, slot2);
+                var doc1 = _docs[slot1];
+                var doc2 = _docs[slot2];
+                return this.CompareValue(_dataCache._nestedArray.getTranslatedData(doc1, _dataCache.valArray),
+                    _dataCache._nestedArray.getTranslatedData(doc2, _dataCache.valArray));
             }
 
             public override int CompareBottom(int doc)
             {
-                throw new NotImplementedException();
+                return this.CompareValue(_bottom, _dataCache._nestedArray.getTranslatedData(doc, _dataCache.valArray));
             }
 
             public override void Copy(int slot, int doc)
             {
-                throw new NotImplementedException();
+                _docs[slot] = doc;
             }
 
             public override void SetBottom(int slot)
             {
-                throw new NotImplementedException();
+                _bottom = _dataCache._nestedArray.getTranslatedData(slot, _dataCache.valArray);
             }
 
             public override void SetNextReader(IndexReader reader, int docBase)
             {
-                throw new NotImplementedException();
             }
 
             public override IComparable this[int slot]
             {
                 get
                 {
-                    string[] vals = _dataCache._nestedArray.getTranslatedData(slot, _dataCache.valArray);
+                    var doc = _docs[slot];
+                    var vals = _dataCache._nestedArray.getTranslatedData(doc, _dataCache.valArray);
                     return new StringArrayComparator(vals);
                 }
+            }
+
+            private int CompareValue<T>(string[] value1, string[] value2, Func<string, T> parser) where T : IComparable
+            {
+                //(T)Convert.ChangeType(value, typeof(T))
+                var v1 = value1.Select(k => parser(k)).OrderByDescending(k => k).ToArray();
+                var v2 = value2.Select(k => parser(k)).OrderByDescending(k => k).ToArray();
+                for (var i = 0; i < Math.Min(v1.Length, v2.Length); i++)
+                {
+                    var compare = v1[i].CompareTo(v2[i]);
+                    if (compare != 0)
+                    {
+                        return compare;
+                    }
+                }
+                return value1.Length.CompareTo(value2.Length);
+            }
+
+            private int CompareValue(string[] value1, string[] value2)
+            {
+                switch (_fieldType)
+                {
+                    case SortField.BYTE:
+                    case SortField.INT:
+                        {
+                            return this.CompareValue(value1, value2, (k => int.Parse(k)));
+                        }
+                    case SortField.DOUBLE:
+                        {
+                            return this.CompareValue(value1, value2, (k => double.Parse(k)));
+                        }
+                    case SortField.FLOAT:
+                        {
+                            return this.CompareValue(value1, value2, (k => float.Parse(k)));
+                        }
+                    case SortField.LONG:
+                        {
+                            return this.CompareValue(value1, value2, (k => long.Parse(k)));
+                        }
+                    case SortField.SHORT:
+                        {
+                            return this.CompareValue(value1, value2, (k => short.Parse(k)));
+                        }
+                    case SortField.STRING:
+                        {
+                            return this.CompareValue(value1, value2, (k => k));
+                        }                        
+                }
+                return 0;
             }
         }
     }

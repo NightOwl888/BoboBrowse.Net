@@ -71,7 +71,7 @@ namespace BoboBrowse.Net.Facets.Filters
             return values.Count > 0 ? values.ToArray() : null;
         }
 
-        public override FieldComparator GetScoreDocComparator()
+        public override FieldComparator GetComparator(int numDocs, SortField field)
         {
             return null;
         }

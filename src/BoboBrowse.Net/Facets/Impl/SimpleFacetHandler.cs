@@ -63,9 +63,9 @@ namespace BoboBrowse.Net.Facets
             return new SimpleFacetHandler(Name, _indexFieldName, _termListFactory);
         }
 
-        public override FieldComparator GetScoreDocComparator()
+        public override FieldComparator GetComparator(int numDocs,SortField field)
         {
-            return _dataCache.GetScoreDocComparator();
+            return _dataCache.GeFieldComparator(numDocs, field.Type);
         }
 
         public override string[] GetFieldValues(int id)

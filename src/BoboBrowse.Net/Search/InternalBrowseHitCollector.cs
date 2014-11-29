@@ -23,6 +23,7 @@ namespace BoboBrowse.Net.Search
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Lucene.Net.Search;
     using Lucene.Net.Index;
     using Lucene.Net.QueryParsers;
@@ -58,7 +59,8 @@ namespace BoboBrowse.Net.Search
             hitQueue = new SortedHitQueue(this.boboBrowser, sortFields, offset + count);
             totalHits = 0;
             this.fetchStoredFields = fetchStoredFields;
-            this.reverseMul = new int[sortFields.Length];
+            this.reverseMul = (from s in sortFields select s.Reverse ? -1 : 1).ToArray();
+
         }
 
         public override void SetScorer(Scorer _scorer)
@@ -77,7 +79,7 @@ namespace BoboBrowse.Net.Search
             if (queueFull)
             {
                 // Fastmatch: return if this hit is not competitive
-                for (int i = 0; ; i++)
+                for (int i = 0; i < reverseMul.Length; i++)
                 {
                     int c = reverseMul[i] * hitQueue.comparators[i].CompareBottom(doc);
                     if (c < 0)
@@ -95,7 +97,7 @@ namespace BoboBrowse.Net.Search
                         // Here c=0. If we're at the last comparator, this doc is not
                         // competitive, since docs are visited in doc Id order, which means
                         // this doc cannot compete with any other document in the queue.
-                        return;
+                    //    return;
                     }
                 }
                 for (int i = 0; i < hitQueue.comparators.Length; i++)

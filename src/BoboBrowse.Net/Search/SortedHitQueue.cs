@@ -140,7 +140,7 @@ namespace BoboBrowse.Net.Search
             FieldComparator comparator = null;
             if (facetHandler != null)
             {
-                comparator = facetHandler.GetScoreDocComparator();
+                comparator = facetHandler.GetComparator(numDocs, field);
             }
             if (comparator == null) // resort to lucene
             {
