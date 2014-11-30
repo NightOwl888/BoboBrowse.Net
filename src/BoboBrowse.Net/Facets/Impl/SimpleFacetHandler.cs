@@ -128,11 +128,6 @@ namespace BoboBrowse.Net.Facets
             return new SimpleFacetCountCollector(sel, _dataCache, this.Name, ospec);
         }
 
-        public FacetDataCache getDataCache()
-        {
-            return _dataCache;
-        }
-
         public override void Load(BoboIndexReader reader)
         {
             if (_dataCache == null)
@@ -148,7 +143,7 @@ namespace BoboBrowse.Net.Facets
             return new SimpleBoboDocScorer(_dataCache, scoringFunctionFactory, boostList);
         }
 
-        public sealed class SimpleFacetCountCollector : DefaultFacetCountCollector
+        private sealed class SimpleFacetCountCollector : DefaultFacetCountCollector
         {
             public SimpleFacetCountCollector(BrowseSelection sel, FacetDataCache dataCache, string name, FacetSpec ospec)
                 : base(sel, dataCache, name, ospec)
@@ -166,7 +161,7 @@ namespace BoboBrowse.Net.Facets
             }
         }
 
-        public sealed class SimpleBoboDocScorer : BoboDocScorer
+        private sealed class SimpleBoboDocScorer : BoboDocScorer
         {
             private readonly FacetDataCache _dataCache;
 

@@ -128,6 +128,8 @@
     <Compile Include="Facets\Filters\RandomAccessOrFilter.cs" />
     <Compile Include="Facets\IFacetCountCollector.cs" />
     <Compile Include="Facets\Impl\DefaultFacetCountCollector.cs" />
+    <Compile Include="Facets\Impl\RangeFacetCountCollector.cs" />
+    <Compile Include="Facets\Impl\RangeFacetHandler.cs" />
     <Compile Include="Facets\Impl\SimpleFacetHandler.cs" />
     <Compile Include="Facets\ITermValueList.cs" />
     <Compile Include="Facets\Impl\MultiValueFacetHandler.cs" />
@@ -141,6 +143,7 @@
     <Compile Include="Interface\IFieldValueAccessor.cs" />
     <Compile Include="MappedFacetAccessible.cs" />
     <Compile Include="MethodExtensions.cs" />
+    <Compile Include="RangeFacet.cs" />
     <Compile Include="Search\BoboBrowser.cs" />
     <Compile Include="Search\BoboSearcher.cs" />
     <Compile Include="Search\BoboSearcher2.cs" />
