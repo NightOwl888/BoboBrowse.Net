@@ -128,6 +128,10 @@ namespace BoboBrowse.Net.Facets
             int index2 = rangeString.IndexOf(" TO ", StringComparison.InvariantCultureIgnoreCase);
             int index3 = rangeString.LastIndexOf(']');
 
+            if (index == -1 || index2 == -1 || index3 == -3)
+            {
+                throw new ArgumentException("RangeString format invalid,must be is [* TO *]", rangeString);
+            }
             string lower, upper;
 
             lower = rangeString.Substring(index + 1, index2 - index - 1).Trim();

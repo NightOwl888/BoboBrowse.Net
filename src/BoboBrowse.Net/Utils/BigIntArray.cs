@@ -3,6 +3,7 @@ namespace BoboBrowse.Net.Utils
 {
     using System;
     using Lucene.Net.Util;
+    using Lucene.Net.Search;
 
     /// <summary> * 
     /// * @author femekci
@@ -44,7 +45,8 @@ namespace BoboBrowse.Net.Utils
             {
                 docId++;
             }
-            return docId;
+
+            return docId > maxId ? DocIdSetIterator.NO_MORE_DOCS : docId;
         }
 
         public override int FindValues(OpenBitSet bitset, int docId, int maxId)
@@ -53,7 +55,7 @@ namespace BoboBrowse.Net.Utils
             {
                 docId++;
             }
-            return docId;
+            return docId > maxId ? DocIdSetIterator.NO_MORE_DOCS : docId;
         }
 
         public override int FindValueRange(int minVal, int maxVal, int docId, int maxId)
@@ -65,7 +67,7 @@ namespace BoboBrowse.Net.Utils
                     break;
                 docId++;
             }
-            return docId;
+            return docId > maxId ? DocIdSetIterator.NO_MORE_DOCS : docId;
         }
 
         public override int FindBits(int bits, int docId, int maxId)
@@ -74,7 +76,7 @@ namespace BoboBrowse.Net.Utils
             {
                 docId++;
             }
-            return docId;
+            return docId > maxId ? DocIdSetIterator.NO_MORE_DOCS : docId;
         }
 
         public override void Fill(int val)
