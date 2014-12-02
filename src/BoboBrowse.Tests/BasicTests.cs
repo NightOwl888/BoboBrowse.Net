@@ -234,8 +234,14 @@
                     Query = query,
                     Sort = new Sort(new SortField("price", SortField.DOUBLE, false)).GetSort()
                 };
+
+                var sectionFilter = new BrowseSelection("category");
+                sectionFilter.NotValues = new string[] { "5" };
+                sectionFilter.SelectionOperation = BrowseSelection.ValueOperation.ValueOperationAnd;
+                request.AddSelection(sectionFilter);
+
                 var faceHandler = testRangeFacetHandlers[i];
-                var faceHandlers = new FacetHandler[] { faceHandler };
+                var faceHandlers = new FacetHandler[] { faceHandler,new SimpleFacetHandler("category") };
                 var browser = new BoboBrowser(BoboIndexReader.GetInstance(IndexReader.Open(_indexDir, true), faceHandlers));
                 var factSpec = new FacetSpec() { OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc };
                 request.SetFacetSpec(faceHandler.Name, factSpec);
