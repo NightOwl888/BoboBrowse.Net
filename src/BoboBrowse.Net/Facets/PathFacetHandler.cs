@@ -15,7 +15,7 @@ namespace BoboBrowse.Net.Facets
     using System.Text;
     using Lucene.Net.Search;
     using BoboBrowse.Net.Facets.Filters;
-    using BoboBrowse.Net.Utils;
+    using BoboBrowse.Net.Util;
 
     public class PathFacetHandler : FacetHandler, IFacetHandlerFactory
     {

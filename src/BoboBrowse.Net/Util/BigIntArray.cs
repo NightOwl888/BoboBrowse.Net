@@ -1,5 +1,5 @@
 ﻿
-namespace BoboBrowse.Net.Utils
+namespace BoboBrowse.Net.Util
 {
     using System;
     using Lucene.Net.Util;

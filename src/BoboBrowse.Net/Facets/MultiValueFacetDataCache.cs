@@ -25,7 +25,7 @@ namespace BoboBrowse.Net.Facets
     using System.Collections.Generic;
     using System.Linq;
     using Common.Logging;
-    using BoboBrowse.Net.Utils;
+    using BoboBrowse.Net.Util;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
 

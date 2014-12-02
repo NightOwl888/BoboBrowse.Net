@@ -3,7 +3,7 @@
     using System;
     using System.Collections.Generic;
     using C5;
-    using BoboBrowse.Net.Utils;
+    using BoboBrowse.Net.Util;
 
     public class RangeFacetCountCollector : IFacetCountCollector
     {

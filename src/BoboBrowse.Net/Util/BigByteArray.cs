@@ -8,7 +8,7 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
-namespace BoboBrowse.Net.Utils
+namespace BoboBrowse.Net.Util
 {
     using System;    
     using Lucene.Net.Util;

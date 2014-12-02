@@ -30,7 +30,7 @@ namespace BoboBrowse.Net.Search
     using Common.Logging;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
-    using BoboBrowse.Net.Utils;
+    using BoboBrowse.Net.Util;
 
     public class MultiTopDocsSortedHitCollector : TopDocsSortedHitCollector
     {

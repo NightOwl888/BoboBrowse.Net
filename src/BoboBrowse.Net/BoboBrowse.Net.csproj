@@ -170,18 +170,18 @@
     <Compile Include="Search\SortedHitQueue.cs" />
     <Compile Include="Search\SortFieldEntry.cs" />
     <Compile Include="Search\TopDocsSortedHitCollector.cs" />
-    <Compile Include="Utils\Arrays.cs" />
-    <Compile Include="Utils\BigByteArray.cs" />
-    <Compile Include="Utils\BigFloatArray.cs" />
-    <Compile Include="Utils\BigIntArray.cs" />
-    <Compile Include="Utils\BigIntBuffer.cs" />
-    <Compile Include="Utils\BigNestedIntArray.cs" />
-    <Compile Include="Utils\BigSegmentedArray.cs" />
-    <Compile Include="Utils\BigShortArray.cs" />
-    <Compile Include="Utils\BoundedPriorityQueue.cs" />
-    <Compile Include="Utils\ListMerger.cs" />
-    <Compile Include="Utils\QueryUtils.cs" />
-    <Compile Include="Utils\StringArrayComparator.cs" />
+    <Compile Include="Util\Arrays.cs" />
+    <Compile Include="Util\BigByteArray.cs" />
+    <Compile Include="Util\BigFloatArray.cs" />
+    <Compile Include="Util\BigIntArray.cs" />
+    <Compile Include="Util\BigIntBuffer.cs" />
+    <Compile Include="Util\BigNestedIntArray.cs" />
+    <Compile Include="Util\BigSegmentedArray.cs" />
+    <Compile Include="Util\BigShortArray.cs" />
+    <Compile Include="Util\BoundedPriorityQueue.cs" />
+    <Compile Include="Util\ListMerger.cs" />
+    <Compile Include="Util\QueryUtils.cs" />
+    <Compile Include="Util\StringArrayComparator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Common\BoboBrowse.snk">

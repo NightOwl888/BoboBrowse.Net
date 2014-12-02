@@ -1,6 +1,6 @@
 ﻿// Copyright (c) COMPANY. All rights reserved. 
 
-namespace BoboBrowse.Net.Utils
+namespace BoboBrowse.Net.Util
 {
     using System;
     using System.Linq;

@@ -27,7 +27,7 @@ namespace BoboBrowse.Net.Search
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
-    using BoboBrowse.Net.Utils;
+    using BoboBrowse.Net.Util;
 
     [Serializable]
     public class BrowseResult

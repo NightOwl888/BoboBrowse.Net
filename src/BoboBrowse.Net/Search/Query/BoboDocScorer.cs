@@ -24,7 +24,7 @@ namespace BoboBrowse.Net.Search
     using System;
     using System.Collections.Generic;    
     using Lucene.Net.Search;
-    using BoboBrowse.Net.Utils;
+    using BoboBrowse.Net.Util;
 
     public abstract class BoboDocScorer
     {

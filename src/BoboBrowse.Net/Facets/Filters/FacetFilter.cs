@@ -24,7 +24,7 @@ namespace BoboBrowse.Net.Facets.Filters
     using System;
     using Lucene.Net.Search;
     using Lucene.Net.Index;
-    using BoboBrowse.Net.Utils;
+    using BoboBrowse.Net.Util;
 
     public class FacetFilter : RandomAccessFilter
     {

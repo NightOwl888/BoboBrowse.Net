@@ -27,7 +27,7 @@ namespace BoboBrowse.Net.Search
     using Lucene.Net.Search;
     using Lucene.Net.Index;
     using Lucene.Net.QueryParsers;
-    using BoboBrowse.Net.Utils;
+    using BoboBrowse.Net.Util;
     using BoboBrowse.Net.Facets;
 
     internal class InternalBrowseHitCollector : TopDocsSortedHitCollector

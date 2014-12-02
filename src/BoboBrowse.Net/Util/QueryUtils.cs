@@ -1,6 +1,6 @@
 ﻿
 
-namespace BoboBrowse.Net.Utils
+namespace BoboBrowse.Net.Util
 {
     using System;
     using System.Collections.Generic;
