@@ -72,7 +72,11 @@ namespace BoboBrowse.Net.Search
                 while (iter.MoveNext())
                 {
                     string fn = iter.Current;
-                    FacetHandler f = runtimeFacetHandlerMap[fn];
+                    FacetHandler f = null;
+                    if (runtimeFacetHandlerMap.ContainsKey(fn))
+                    {
+                        f = runtimeFacetHandlerMap[fn];
+                    }
                     if (f == null)
                     {
                         f = indexReader.GetFacetHandler(fn);
