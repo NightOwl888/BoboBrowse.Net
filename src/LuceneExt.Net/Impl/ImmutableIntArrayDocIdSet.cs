@@ -25,7 +25,7 @@ namespace LuceneExt
 {
     using System;
     using Lucene.Net.Search;
-    using LuceneExt.Utils;
+    using LuceneExt.Util;
 
     public class ImmutableIntArrayDocIdSet : DocIdSet
     {

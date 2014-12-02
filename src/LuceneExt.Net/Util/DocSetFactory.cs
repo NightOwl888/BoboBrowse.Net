@@ -1,5 +1,5 @@
 ﻿
-namespace LuceneExt.Utils
+namespace LuceneExt.Util
 {
     using System;
 

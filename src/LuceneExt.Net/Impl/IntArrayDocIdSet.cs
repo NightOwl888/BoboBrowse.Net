@@ -27,7 +27,7 @@ namespace LuceneExt
     using System;
     using System.IO;
     using Lucene.Net.Search;
-    using LuceneExt.Utils;
+    using LuceneExt.Util;
 
     [Serializable]
     public class IntArrayDocIdSet : DocSet

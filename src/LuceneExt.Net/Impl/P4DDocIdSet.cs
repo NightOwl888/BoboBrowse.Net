@@ -26,7 +26,7 @@ namespace LuceneExt
     using System;
     using Lucene.Net.Util;
     using Lucene.Net.Search;
-    using LuceneExt.Utils;
+    using LuceneExt.Util;
 
     ///<summary>Doc id set wrapper around P4DSet  
     ///@author abhasin
