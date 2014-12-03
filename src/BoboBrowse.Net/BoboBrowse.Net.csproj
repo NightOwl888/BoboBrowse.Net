@@ -112,6 +112,14 @@
     <Compile Include="DocIdSet\EmptyDocIdSet.cs" />
     <Compile Include="FacetSpec.cs" />
     <Compile Include="Facets\Data\FacetDataCache.cs" />
+    <Compile Include="Facets\Data\TermCharList.cs" />
+    <Compile Include="Facets\Data\TermDateList.cs" />
+    <Compile Include="Facets\Data\TermDoubleList.cs" />
+    <Compile Include="Facets\Data\TermFloatList.cs" />
+    <Compile Include="Facets\Data\TermIntList.cs" />
+    <Compile Include="Facets\Data\TermLongList.cs" />
+    <Compile Include="Facets\Data\TermNumberList.cs" />
+    <Compile Include="Facets\Data\TermShortList.cs" />
     <Compile Include="Facets\FacetHandler.cs" />
     <Compile Include="Facets\Impl\FacetHitcountComparatorFactory.cs" />
     <Compile Include="Facets\Filter\AndFilter.cs" />
@@ -132,7 +140,7 @@
     <Compile Include="Facets\Impl\RangeFacetCountCollector.cs" />
     <Compile Include="Facets\Impl\RangeFacetHandler.cs" />
     <Compile Include="Facets\Impl\SimpleFacetHandler.cs" />
-    <Compile Include="Facets\Data\ITermValueList.cs" />
+    <Compile Include="Facets\Data\TermValueList.cs" />
     <Compile Include="Facets\Impl\MultiValueFacetHandler.cs" />
     <Compile Include="Facets\Data\MultiValueFacetDataCache.cs" />
     <Compile Include="Facets\Impl\PathFacetHandler.cs" />
