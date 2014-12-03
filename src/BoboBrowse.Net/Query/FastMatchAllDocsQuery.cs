@@ -23,6 +23,7 @@
 
 namespace BoboBrowse.Net.Query
 {
+    using BoboBrowse.Net.DocIdSet;
     using BoboBrowse.Net.Query.Scoring;
     using BoboBrowse.Net.Search;
     using Lucene.Net.Index;

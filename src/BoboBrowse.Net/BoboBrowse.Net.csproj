@@ -152,7 +152,7 @@
     <Compile Include="Search\FacetHitCollector.cs" />
     <Compile Include="Query\FastMatchAllDocsQuery.cs" />
     <Compile Include="Search\FieldDocEntry.cs" />
-    <Compile Include="Search\FilteredDocSetIterator.cs" />
+    <Compile Include="DocIdSet\FilteredDocSetIterator.cs" />
     <Compile Include="IBrowsable.cs" />
     <Compile Include="Query\Scoring\IFacetScoreable.cs" />
     <Compile Include="Search\InternalBrowseHitCollector.cs" />

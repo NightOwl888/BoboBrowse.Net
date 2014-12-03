@@ -1,6 +1,6 @@
 ﻿namespace BoboBrowse.Net.Util
 {
-    using BoboBrowse.Net.Search;
+    using BoboBrowse.Net.DocIdSet;
     using BoboBrowse.Tests;
     using Lucene.Net.Search;
     using LuceneExt;
