@@ -78,14 +78,14 @@
                     var doc = new Document();
                     doc.Add(new Field("name", book.Name, Field.Store.YES, Field.Index.ANALYZED));
                     doc.Add(new Field("category", book.Category.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-                    doc.Add(new NumericField("price", Field.Store.YES, true).SetDoubleValue(book.Price));
+                    doc.Add(new NumericField("price", int.MaxValue - 1, Field.Store.YES, true).SetDoubleValue(book.Price));
                     doc.Add(new Field("author", book.Author, Field.Store.YES, Field.Index.ANALYZED));
                     doc.Add(new Field("path", book.Path, Field.Store.YES, Field.Index.ANALYZED));                  
                     doc.Add(new Field("year", book.Year.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
                     indexWriter.AddDocument(doc);
                 }
                 indexWriter.Optimize();
-            }
+            }            
         }
 
         [Test]
@@ -216,15 +216,14 @@
 
         [Test]
         public void TestRangeFacetHandler()
-        {
+        {            
             var query = new MatchAllDocsQuery();
             Console.WriteLine(string.Format("query: <{0}>", query.ToString()));                       
 
             var testRangeFacetHandlers = new List<FacetHandler>();
             testRangeFacetHandlers.Add(new RangeFacetHandler("year", true));//auto range
             testRangeFacetHandlers.Add(new RangeFacetHandler("year", new List<string>(new string[] { "[* TO 2000]", "[2000 TO 2005]", "[2006 TO 2010]", "[2011 TO *]" })));
-            //WARNING : RangeFacetHandler not support a NumberField type because NumericField uses a spezial encoding.
-            //testRangeFacetHandlers.Add(new RangeFacetHandler("price", true));this will throw exception.
+            testRangeFacetHandlers.Add(new RangeFacetHandler("price","price", new NumberFieldFactory(), true));
 
             for (var i = 0; i < testRangeFacetHandlers.Count; i++)
             {
@@ -253,6 +252,31 @@
                     Console.WriteLine(facet.ToString());
                 }
                 Console.WriteLine("");
+            }
+        }
+    }
+
+    public class NumberFieldFactory : TermListFactory
+    {
+
+        public override ITermValueList CreateTermList()
+        {
+            return new PriceValueList();
+        }
+
+        private class PriceValueList : TermStringList
+        {
+            public override void Add(string o)
+            {
+                if (o == null)
+                {
+                    base.Add(o);
+
+                }
+                else
+                {
+                    base.Add(Lucene.Net.Util.NumericUtils.PrefixCodedToDouble(o).ToString());
+                }
             }
         }
     }
