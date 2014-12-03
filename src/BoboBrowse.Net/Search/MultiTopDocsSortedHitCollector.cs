@@ -23,14 +23,15 @@
 
 namespace BoboBrowse.Net.Search
 {
+    using BoboBrowse.Net.Impl;
+    using BoboBrowse.Net.Util;
+    using Common.Logging;
+    using Lucene.Net.Index;
+    using Lucene.Net.Search;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
-    using Common.Logging;
-    using Lucene.Net.Index;
-    using Lucene.Net.Search;
-    using BoboBrowse.Net.Util;
 
     public class MultiTopDocsSortedHitCollector : TopDocsSortedHitCollector
     {

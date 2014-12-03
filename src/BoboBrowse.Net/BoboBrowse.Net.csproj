@@ -166,7 +166,7 @@
     <Compile Include="Search\MultiTopDocsSortedHitCollector.cs" />
     <Compile Include="Query\Scoring\BoboDocScorer.cs" />
     <Compile Include="Query\Scoring\IFacetTermScoringFunctionFactory.cs" />
-    <Compile Include="Search\SortedFieldBrowseHitComparator.cs" />
+    <Compile Include="Impl\SortedFieldBrowseHitComparator.cs" />
     <Compile Include="Search\SortedHitQueue.cs" />
     <Compile Include="Search\SortFieldEntry.cs" />
     <Compile Include="TopDocsSortedHitCollector.cs" />
