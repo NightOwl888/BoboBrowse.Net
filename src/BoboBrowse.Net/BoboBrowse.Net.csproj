@@ -155,6 +155,7 @@
     <Compile Include="Facets\Statistics\ChiSquaredFacetCountStatisticsGenerator.cs" />
     <Compile Include="Facets\Statistics\FacetCountStatisicsGenerator.cs" />
     <Compile Include="Facets\Statistics\FacetCountStatistics.cs" />
+    <Compile Include="Fields\FieldRegistry.cs" />
     <Compile Include="IFacetAccessible.cs" />
     <Compile Include="IComparatorFactory.cs" />
     <Compile Include="Facets\IFacetHandlerFactory.cs" />
