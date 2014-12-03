@@ -121,6 +121,8 @@
     <Compile Include="Facets\Data\TermNumberList.cs" />
     <Compile Include="Facets\Data\TermShortList.cs" />
     <Compile Include="Facets\FacetHandler.cs" />
+    <Compile Include="Facets\Filter\NotFilter.cs" />
+    <Compile Include="Facets\Filter\OrFilter.cs" />
     <Compile Include="Facets\Impl\FacetHitcountComparatorFactory.cs" />
     <Compile Include="Facets\Filter\AndFilter.cs" />
     <Compile Include="Facets\Filter\CompactMultiValueFacetFilter.cs" />
