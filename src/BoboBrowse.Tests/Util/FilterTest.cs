@@ -22,7 +22,7 @@
 
             var filteredIter = new MyFilteredDocSetIterator(set1.Iterator());
 
-            var bs = new BitArray(200);
+            var bs = new BitSet(200);
             for (int i = 0; i < 100; ++i)
             {
                 int n = 10 * i;
@@ -47,7 +47,7 @@
                         bs.Set(doc, false);
                     }
                 }
-                var cardinality = bs.GetCardinality();
+                var cardinality = bs.Cardinality();
                 if (cardinality > 0)
                 {
                     Assert.Fail("failed: leftover cardinality: " + cardinality);

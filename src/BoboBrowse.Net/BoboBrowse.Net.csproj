@@ -178,9 +178,13 @@
     <Compile Include="Util\BigNestedIntArray.cs" />
     <Compile Include="Util\BigSegmentedArray.cs" />
     <Compile Include="Util\BigShortArray.cs" />
+    <Compile Include="Util\BitSet.cs" />
     <Compile Include="Util\BoundedPriorityQueue.cs" />
     <Compile Include="Util\ListMerger.cs" />
+    <Compile Include="Util\MutableSparseFloatArray.cs" />
+    <Compile Include="Util\ObjectCopier.cs" />
     <Compile Include="Util\QueryUtils.cs" />
+    <Compile Include="Util\SparseFloatArray.cs" />
     <Compile Include="Util\StringArrayComparator.cs" />
   </ItemGroup>
   <ItemGroup>
