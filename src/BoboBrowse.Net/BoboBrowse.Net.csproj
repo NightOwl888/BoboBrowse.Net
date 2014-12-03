@@ -204,6 +204,7 @@
     <Compile Include="Util\BigShortArray.cs" />
     <Compile Include="Util\BitSet.cs" />
     <Compile Include="Util\BoundedPriorityQueue.cs" />
+    <Compile Include="Util\DocIdSetUtil.cs" />
     <Compile Include="Util\ListMerger.cs" />
     <Compile Include="Util\MutableSparseFloatArray.cs" />
     <Compile Include="Util\ObjectCopier.cs" />
