@@ -123,6 +123,8 @@
     <Compile Include="Facets\FacetHandler.cs" />
     <Compile Include="Facets\Filter\NotFilter.cs" />
     <Compile Include="Facets\Filter\OrFilter.cs" />
+    <Compile Include="Facets\Impl\CompactMultiValueFacetHandler.cs" />
+    <Compile Include="Facets\Impl\DynamicRangeFacetHandler.cs" />
     <Compile Include="Facets\Impl\FacetHitcountComparatorFactory.cs" />
     <Compile Include="Facets\Filter\AndFilter.cs" />
     <Compile Include="Facets\Filter\CompactMultiValueFacetFilter.cs" />
@@ -139,6 +141,7 @@
     <Compile Include="Facets\Filter\RandomAccessOrFilter.cs" />
     <Compile Include="Facets\IFacetCountCollector.cs" />
     <Compile Include="Facets\Impl\DefaultFacetCountCollector.cs" />
+    <Compile Include="Facets\Impl\FilteredRangeFacetHandler.cs" />
     <Compile Include="Facets\Impl\RangeFacetCountCollector.cs" />
     <Compile Include="Facets\Impl\RangeFacetHandler.cs" />
     <Compile Include="Facets\Impl\SimpleFacetHandler.cs" />
@@ -148,6 +151,7 @@
     <Compile Include="Facets\Impl\PathFacetHandler.cs" />
     <Compile Include="Facets\Data\TermListFactory.cs" />
     <Compile Include="Facets\Data\TermStringList.cs" />
+    <Compile Include="Facets\Impl\SimpleGroupbyFacetHandler.cs" />
     <Compile Include="IFacetAccessible.cs" />
     <Compile Include="IComparatorFactory.cs" />
     <Compile Include="Facets\IFacetHandlerFactory.cs" />

@@ -26,7 +26,7 @@ namespace BoboBrowse.Net
     using System;
     using System.Collections.Generic;
     using System.Text;
-    using BoboBrowse.Net.Facets;
+    using BoboBrowse.Net.Facets.Impl;
 
     [Serializable]
     public class BrowseSelection

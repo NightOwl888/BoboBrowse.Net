@@ -22,7 +22,7 @@
 //* send mail to owner@browseengine.com. 
 
 
-namespace BoboBrowse.Net.Facets
+namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Facets.Filter;

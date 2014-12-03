@@ -27,7 +27,7 @@ namespace BoboBrowse.Net.Util
     using System.Collections.Generic;
     using System.Linq;
     using Lucene.Net.Util;
-    using BoboBrowse.Net.Facets;
+    using BoboBrowse.Net.Facets.Impl;
     using BoboBrowse.Net.Search;
 
     public class ListMerger
