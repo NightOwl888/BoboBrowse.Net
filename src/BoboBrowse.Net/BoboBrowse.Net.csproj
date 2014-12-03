@@ -108,7 +108,7 @@
     <Compile Include="BrowseFacet.cs" />
     <Compile Include="BrowseRequest.cs" />
     <Compile Include="BrowseSelection.cs" />
-    <Compile Include="EmptyDocIdSet.cs" />
+    <Compile Include="DocIdSet\EmptyDocIdSet.cs" />
     <Compile Include="FacetSpec.cs" />
     <Compile Include="Facets\Data\FacetDataCache.cs" />
     <Compile Include="Facets\FacetHandler.cs" />
@@ -160,7 +160,7 @@
     <Compile Include="Search\MultiBoboBrowser.cs" />
     <Compile Include="Properties.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RandomAccessDocIdSet.cs" />
+    <Compile Include="DocIdSet\RandomAccessDocIdSet.cs" />
     <Compile Include="RuntimeException.cs" />
     <Compile Include="Search\IFacetTermScoringFunction.cs" />
     <Compile Include="Search\MultiTopDocsSortedHitCollector.cs" />

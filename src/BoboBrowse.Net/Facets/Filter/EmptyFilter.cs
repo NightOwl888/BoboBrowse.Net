@@ -23,9 +23,10 @@
 
 namespace BoboBrowse.Net.Facets.Filter
 {
-    using System;
+    using BoboBrowse.Net.DocIdSet;
     using Lucene.Net.Index;
-
+    using System;
+    
     public class EmptyFilter : RandomAccessFilter
     {
         private readonly static EmptyFilter instance = new EmptyFilter();

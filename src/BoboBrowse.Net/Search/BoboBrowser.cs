@@ -21,13 +21,14 @@
 
 namespace BoboBrowse.Net.Search
 {
-    using System;
-    using System.Collections.Generic;    
+    using BoboBrowse.Net.DocIdSet;
+    using BoboBrowse.Net.Facets;
+    using BoboBrowse.Net.Facets.Filter;
     using Common.Logging;
     using Lucene.Net.Search;
     using Lucene.Net.Documents;
-    using BoboBrowse.Net.Facets;
-    using BoboBrowse.Net.Facets.Filter;
+    using System;
+    using System.Collections.Generic;    
 
     ///<summary>This class implements the browsing functionality. </summary>
     public class BoboBrowser : BoboSearcher2, IBrowsable

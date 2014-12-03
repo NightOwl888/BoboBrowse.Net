@@ -23,9 +23,10 @@
 
 namespace BoboBrowse.Net.Facets.Filter
 {
+    using BoboBrowse.Net.DocIdSet;
+    using Lucene.Net.Search;
     using System;
     using System.Collections.Generic;
-    using Lucene.Net.Search;
 
     public class FilterMapFacetHandler : FacetHandler
     {

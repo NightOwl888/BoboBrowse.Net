@@ -23,11 +23,12 @@
 
 namespace BoboBrowse.Net.Facets.Filter
 {
-    using System;
-    using System.Collections.Generic;
+    using BoboBrowse.Net.DocIdSet;
     using Lucene.Net.Search;
     using Lucene.Net.Index;
     using LuceneExt;
+    using System;
+    using System.Collections.Generic;
 
     public class RandomAccessNotFilter : RandomAccessFilter
     {

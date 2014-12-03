@@ -21,13 +21,52 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
-namespace BoboBrowse.Net
+namespace BoboBrowse.Net.DocIdSet
 {
     using System;
     using Lucene.Net.Search;
 
-    public abstract class RandomAccessDocIdSet:DocIdSet
+    public class EmptyDocIdSet : RandomAccessDocIdSet
     {
-        public abstract bool Get(int docId);
+        private static EmptyDocIdSet SINGLETON = new EmptyDocIdSet();
+
+        private class EmptyDocIdSetIterator : DocIdSetIterator
+        {
+            public override int Advance(int target)
+            {
+                return DocIdSetIterator.NO_MORE_DOCS;
+            }
+
+            public override int DocID()
+            {
+                return -1;
+            }
+
+            public override int NextDoc()
+            {
+                return DocIdSetIterator.NO_MORE_DOCS;
+            }
+        }
+
+        private static EmptyDocIdSetIterator SINGLETON_ITERATOR = new EmptyDocIdSetIterator();
+
+        private EmptyDocIdSet()
+        {
+        }
+
+        public static EmptyDocIdSet GetInstance()
+        {
+            return SINGLETON;
+        }
+
+        public override DocIdSetIterator Iterator()
+        {
+            return SINGLETON_ITERATOR;
+        }
+
+        public override bool Get(int docId)
+        {
+            return false;
+        }
     }
 }

@@ -21,10 +21,11 @@
 
 namespace BoboBrowse.Net.Search
 {
-    using System;
+    using BoboBrowse.Net.DocIdSet;
+    using BoboBrowse.Net.Facets;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
-    using BoboBrowse.Net.Facets;
+    using System;
 
     public class BoboSearcher2 : BoboSearcher
     {

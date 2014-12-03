@@ -1,6 +1,7 @@
 ﻿namespace BoboBrowse.Search
 {
     using BoboBrowse.Net;
+    using BoboBrowse.Net.DocIdSet;
     using BoboBrowse.Net.Facets;
     using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Facets.Filter;

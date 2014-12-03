@@ -21,11 +21,12 @@
 
 namespace BoboBrowse.Net.Facets.Filter
 {
-    using System;
-    using Lucene.Net.Index;
-    using Lucene.Net.Search;
+    using BoboBrowse.Net.DocIdSet;
     using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Util;
+    using Lucene.Net.Index;
+    using Lucene.Net.Search;
+    using System;
 
     public class MultiValueFacetFilter : RandomAccessFilter
     {

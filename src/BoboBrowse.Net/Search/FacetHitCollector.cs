@@ -23,6 +23,7 @@ namespace BoboBrowse.Net.Search
 {
     using System;
     using Lucene.Net.Search;
+    using BoboBrowse.Net.DocIdSet;
     using BoboBrowse.Net.Facets;
 
     public sealed class FacetHitCollector

@@ -10,10 +10,11 @@
 
 namespace BoboBrowse.Net.Facets.Filter
 {
-    using System;
+    using BoboBrowse.Net.DocIdSet;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
-
+    using System;
+    
     public abstract class RandomAccessFilter : Filter
     {
         public override DocIdSet GetDocIdSet(IndexReader reader)
