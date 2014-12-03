@@ -21,7 +21,7 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
-namespace BoboBrowse.Net.Facets.Filters
+namespace BoboBrowse.Net.Facets.Filter
 {
     using System;
     using Lucene.Net.Index;

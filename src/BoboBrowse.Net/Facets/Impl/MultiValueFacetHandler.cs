@@ -31,7 +31,7 @@ namespace BoboBrowse.Net.Facets
     using Lucene.Net.Index;
     using BoboBrowse.Net.Search;
     using BoboBrowse.Net.Util;
-    using BoboBrowse.Net.Facets.Filters;
+    using BoboBrowse.Net.Facets.Filter;
 
     public class MultiValueFacetHandler : FacetHandler, IFacetHandlerFactory, IFacetScoreable
     {

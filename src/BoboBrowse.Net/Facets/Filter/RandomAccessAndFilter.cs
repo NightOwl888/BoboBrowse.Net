@@ -21,7 +21,7 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
-namespace BoboBrowse.Net.Facets.Filters
+namespace BoboBrowse.Net.Facets.Filter
 {
     using System;
     using System.Collections.Generic;
@@ -29,42 +29,39 @@ namespace BoboBrowse.Net.Facets.Filters
     using Lucene.Net.Search;
     using LuceneExt;
 
-    public class RandomAccessOrFilter:RandomAccessFilter
+    public class RandomAccessAndFilter : RandomAccessFilter
     {
-        protected internal readonly List<RandomAccessFilter> _filters;
+        protected internal List<RandomAccessFilter> _filters;
 
-        public RandomAccessOrFilter(List<RandomAccessFilter> filters)
+        public RandomAccessAndFilter(List<RandomAccessFilter> filters)
         {
-            if (filters == null)
-            {
-                throw new ArgumentNullException("filters");
-            }
             _filters = filters;
         }
 
-        private class RandomOrFilterDocIdSet : RandomAccessDocIdSet
+        private class RandomAccessAndFilterSet : RandomAccessDocIdSet
         {
             private RandomAccessDocIdSet[] randomAccessDocIdSets;
-            private DocIdSet orDocIdSet;
+            private DocIdSet andDocIdSet;
 
-            public RandomOrFilterDocIdSet(RandomAccessDocIdSet[] randomAccessDocIdSets, DocIdSet orDocIdSet)
+            public RandomAccessAndFilterSet(RandomAccessDocIdSet[] randomAccessDocIdSets, DocIdSet andDocIdSet)
             {
-                this.orDocIdSet = orDocIdSet;
                 this.randomAccessDocIdSets = randomAccessDocIdSets;
+                this.andDocIdSet = andDocIdSet;
             }
+
             public override bool Get(int docId)
             {
                 foreach (RandomAccessDocIdSet s in randomAccessDocIdSets)
                 {
-                    if (s.Get(docId))
-                        return true;
+                    if (!s.Get(docId))
+                        return false;
                 }
-                return false;
+                return true;
             }
 
             public override DocIdSetIterator Iterator()
             {
-                return orDocIdSet.Iterator();
+                return andDocIdSet.Iterator();
             }
         }
 
@@ -85,8 +82,8 @@ namespace BoboBrowse.Net.Facets.Filters
                     randomAccessList.Add(s);
                 }
                 RandomAccessDocIdSet[] randomAccessDocIdSets = randomAccessList.ToArray();
-                DocIdSet orDocIdSet = new OrDocIdSet(list);
-                return new RandomOrFilterDocIdSet(randomAccessDocIdSets, orDocIdSet);
+                DocIdSet andDocIdSet = new AndDocIdSet(list);
+                return new RandomAccessAndFilterSet(randomAccessDocIdSets, andDocIdSet);
             }
         }
     }

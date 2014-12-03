@@ -1,6 +1,6 @@
 ﻿
 
-namespace BoboBrowse.Net.Facets.Filters
+namespace BoboBrowse.Net.Facets.Filter
 {
     using System;
     using Lucene.Net.Index;

@@ -25,7 +25,7 @@ namespace BoboBrowse.Net.Facets
     using System.Collections.Generic;
     using Common.Logging;
     using Lucene.Net.Search;
-    using BoboBrowse.Net.Facets.Filters;
+    using BoboBrowse.Net.Facets.Filter;
     using BoboBrowse.Net.Search;
 
     public class SimpleFacetHandler : FacetHandler, IFacetHandlerFactory, IFacetScoreable

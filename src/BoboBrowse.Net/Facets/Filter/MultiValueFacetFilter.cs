@@ -19,49 +19,43 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
-namespace BoboBrowse.Net.Facets.Filters
+namespace BoboBrowse.Net.Facets.Filter
 {
     using System;
-    using Lucene.Net.Search;
     using Lucene.Net.Index;
-    using Lucene.Net.Util;
+    using Lucene.Net.Search;
     using BoboBrowse.Net.Util;
-    
-    public class MultiValueORFacetFilter : RandomAccessFilter
+
+    public class MultiValueFacetFilter : RandomAccessFilter
     {
         private readonly MultiValueFacetDataCache _dataCache;
         private readonly BigNestedIntArray _nestedArray;
-        private readonly OpenBitSet _bitset;
-        private readonly int[] _index;
+        private readonly int _index;
 
-        public MultiValueORFacetFilter(MultiValueFacetDataCache dataCache, int[] index)
+        public MultiValueFacetFilter(MultiValueFacetDataCache dataCache, int index)
         {
             _dataCache = dataCache;
             _nestedArray = dataCache._nestedArray;
             _index = index;
-            _bitset = new OpenBitSet(_dataCache.valArray.Count);
-            foreach (int i in _index)
-            {
-                _bitset.FastSet(i);
-            }
         }
 
-        private sealed class MultiValueFacetDocIdSetIterator : FacetOrFilter.FacetOrDocIdSetIterator
+        private sealed class MultiValueFacetDocIdSetIterator : FacetFilter.FacetDocIdSetIterator
         {
             private readonly BigNestedIntArray _nestedArray;
-            public MultiValueFacetDocIdSetIterator(MultiValueFacetDataCache dataCache, int[] index, OpenBitSet bs)
-                : base(dataCache, index, bs)
+
+            public MultiValueFacetDocIdSetIterator(MultiValueFacetDataCache dataCache, int index)
+                : base(dataCache, index)
             {
                 _nestedArray = dataCache._nestedArray;
             }           
 
             public override int NextDoc()
             {
-                while (_doc < _maxID) // not yet reached end
+                while (doc < maxID) // not yet reached end
                 {
-                    if (_nestedArray.Contains(++_doc, _bitset))
+                    if (_nestedArray.Contains(++doc, index))
                     {
-                        return _doc;
+                        return doc;
                     }
                 }
                 return DocIdSetIterator.NO_MORE_DOCS;
@@ -69,66 +63,43 @@ namespace BoboBrowse.Net.Facets.Filters
 
             public override int Advance(int target)
             {
-                if (_doc < target)
+                if (target > doc)
                 {
-                    _doc = target - 1;
+                    doc = target - 1;
+                    return NextDoc();
                 }
-
-                while (_doc < _maxID) // not yet reached end
-                {
-                    if (_nestedArray.Contains(++_doc, _bitset))
-                    {
-                        return _doc;
-                    }
-                }
-                return DocIdSetIterator.NO_MORE_DOCS;
+                return NextDoc();
             }            
         }
 
-        private class EmptyRandomAccessDocIdSet : RandomAccessDocIdSet
+        private class RandomRandomAccessDocIdSet : RandomAccessDocIdSet
         {
-            private DocIdSet empty = EmptyDocIdSet.GetInstance();
+            private MultiValueFacetFilter parent;
 
-            public override bool Get(int docId)
-            {
-                return false;
-            }
-
-            public override DocIdSetIterator Iterator()
-            {
-                return empty.Iterator();
-            }
-        }
-
-        private class MultiRandomAccessDocIdSet : RandomAccessDocIdSet
-        {
-            private MultiValueORFacetFilter parent;
-
-            public MultiRandomAccessDocIdSet(MultiValueORFacetFilter parent)
+            public RandomRandomAccessDocIdSet(MultiValueFacetFilter parent)
             {
                 this.parent = parent;
             }
 
             public override DocIdSetIterator Iterator()
             {
-                return new MultiValueFacetDocIdSetIterator(parent._dataCache, parent._index, parent._bitset);
+                return new MultiValueFacetDocIdSetIterator(parent._dataCache, parent._index);
             }
-
             public override bool Get(int docId)
             {
-                return parent._nestedArray.Contains(docId, parent._bitset);
+                return parent._nestedArray.Contains(docId, parent._index);
             }
         }
 
         public override RandomAccessDocIdSet GetRandomAccessDocIdSet(IndexReader reader)
         {
-            if (_index.Length == 0)
+            if (_index < 0)
             {
-                return new EmptyRandomAccessDocIdSet();
+                return EmptyDocIdSet.GetInstance();
             }
             else
             {
-                return new MultiRandomAccessDocIdSet(this);
+                return new RandomRandomAccessDocIdSet(this);
             }
         }
     }

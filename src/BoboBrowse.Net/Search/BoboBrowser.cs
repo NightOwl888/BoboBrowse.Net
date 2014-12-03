@@ -27,7 +27,7 @@ namespace BoboBrowse.Net.Search
     using Lucene.Net.Search;
     using Lucene.Net.Documents;
     using BoboBrowse.Net.Facets;
-    using BoboBrowse.Net.Facets.Filters;
+    using BoboBrowse.Net.Facets.Filter;
 
     ///<summary>This class implements the browsing functionality. </summary>
     public class BoboBrowser : BoboSearcher2, IBrowsable

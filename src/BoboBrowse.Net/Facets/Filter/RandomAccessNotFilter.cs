@@ -21,39 +21,49 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
-namespace BoboBrowse.Net.Facets.Filters
+namespace BoboBrowse.Net.Facets.Filter
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using Lucene.Net.Index;
     using Lucene.Net.Search;
+    using Lucene.Net.Index;
     using LuceneExt;
 
-    public class AndFilter : Filter
+    public class RandomAccessNotFilter : RandomAccessFilter
     {
-        private readonly ICollection<Filter> filters;
+        protected internal readonly RandomAccessFilter _innerFilter;
 
-        public AndFilter(ICollection<Filter> filters)
+        public RandomAccessNotFilter(RandomAccessFilter innerFilter)
         {
-            this.filters = filters;
+            _innerFilter = innerFilter;
         }
 
-        public override DocIdSet GetDocIdSet(IndexReader reader)
+        private class NotRandomAccessDocIdSet : RandomAccessDocIdSet
         {
-            if (filters.Count == 1)
+            private readonly RandomAccessDocIdSet innerDocIdSet;
+            private readonly DocIdSet notInnerDocIdSet;
+
+            public NotRandomAccessDocIdSet(RandomAccessDocIdSet innerDocIdSet, DocIdSet notInnerDocIdSet)
             {
-                return filters.First().GetDocIdSet(reader);
+                this.innerDocIdSet = innerDocIdSet;
+                this.notInnerDocIdSet = notInnerDocIdSet;
             }
-            else
+
+            public override bool Get(int docId)
             {
-                List<DocIdSet> list = new List<DocIdSet>(filters.Count);
-                foreach (Filter f in filters)
-                {
-                    list.Add(f.GetDocIdSet(reader));
-                }
-                return new AndDocIdSet(list);
+                return !innerDocIdSet.Get(docId);
             }
+            public override DocIdSetIterator Iterator()
+            {
+                return notInnerDocIdSet.Iterator();
+            }
+        }
+
+        public override RandomAccessDocIdSet GetRandomAccessDocIdSet(IndexReader reader)
+        {
+            RandomAccessDocIdSet innerDocIdSet = _innerFilter.GetRandomAccessDocIdSet(reader);
+            DocIdSet notInnerDocIdSet = new NotDocIdSet(innerDocIdSet, reader.MaxDoc);
+            return new NotRandomAccessDocIdSet(innerDocIdSet, notInnerDocIdSet);
         }
     }
 }
