@@ -160,6 +160,8 @@
     <Compile Include="IComparatorFactory.cs" />
     <Compile Include="Facets\IFacetHandlerFactory.cs" />
     <Compile Include="IFieldValueAccessor.cs" />
+    <Compile Include="Impl\BrowseServiceImpl.cs" />
+    <Compile Include="Impl\DefaultBrowseServiceImpl.cs" />
     <Compile Include="MappedFacetAccessible.cs" />
     <Compile Include="MethodExtensions.cs" />
     <Compile Include="Query\DocsetQuery.cs" />
@@ -193,6 +195,12 @@
     <Compile Include="Impl\SortedFieldBrowseHitComparator.cs" />
     <Compile Include="Search\SortedHitQueue.cs" />
     <Compile Include="Search\SortFieldEntry.cs" />
+    <Compile Include="Service\BoboService.cs" />
+    <Compile Include="Service\IBrowseService.cs" />
+    <Compile Include="Service\BrowseServiceFactory.cs" />
+    <Compile Include="Service\DefaultBrowseQueryParser.cs" />
+    <Compile Include="Service\HitCompareMulti.cs" />
+    <Compile Include="Service\IBrowseQueryParser.cs" />
     <Compile Include="TopDocsSortedHitCollector.cs" />
     <Compile Include="Util\Arrays.cs" />
     <Compile Include="Util\BigByteArray.cs" />

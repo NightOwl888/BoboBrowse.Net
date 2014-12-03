@@ -64,6 +64,16 @@ namespace BoboBrowse.Net
         }
         #endregion
 
+        public static BoboIndexReader GetInstance(IndexReader reader)
+        {
+            return BoboIndexReader.GetInstance(reader, null, new WorkArea());
+        }
+
+        public static BoboIndexReader GetInstance(IndexReader reader, WorkArea workArea)
+        {
+            return BoboIndexReader.GetInstance(reader, null, workArea);
+        }
+
         public static BoboIndexReader GetInstance(IndexReader reader, ICollection<FacetHandler> facetHandlers)
         {
             return BoboIndexReader.GetInstance(reader, facetHandlers, new WorkArea());
