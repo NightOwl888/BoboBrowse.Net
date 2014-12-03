@@ -112,7 +112,7 @@
     <Compile Include="FacetSpec.cs" />
     <Compile Include="Facets\Data\FacetDataCache.cs" />
     <Compile Include="Facets\FacetHandler.cs" />
-    <Compile Include="Facets\FacetHitcountComparatorFactory.cs" />
+    <Compile Include="Facets\Impl\FacetHitcountComparatorFactory.cs" />
     <Compile Include="Facets\Filter\AndFilter.cs" />
     <Compile Include="Facets\Filter\CompactMultiValueFacetFilter.cs" />
     <Compile Include="Facets\Filter\EmptyFilter.cs" />
@@ -134,7 +134,7 @@
     <Compile Include="Facets\ITermValueList.cs" />
     <Compile Include="Facets\Impl\MultiValueFacetHandler.cs" />
     <Compile Include="Facets\Data\MultiValueFacetDataCache.cs" />
-    <Compile Include="Facets\PathFacetHandler.cs" />
+    <Compile Include="Facets\Impl\PathFacetHandler.cs" />
     <Compile Include="Facets\Data\TermListFactory.cs" />
     <Compile Include="Facets\Data\TermStringList.cs" />
     <Compile Include="Interface\IFacetAccessible.cs" />
