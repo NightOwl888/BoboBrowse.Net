@@ -21,7 +21,7 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com.  
 
-namespace LuceneExt
+namespace LuceneExt.Impl
 {
     using System;
     using Lucene.Net.Util;

@@ -1,6 +1,7 @@
 ﻿
 namespace LuceneExt.Util
 {
+    using LuceneExt.Impl;
     using System;
 
     /// <summary> * Utility class to make appropriate measurement calls to recognize optimal

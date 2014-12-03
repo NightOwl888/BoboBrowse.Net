@@ -2,7 +2,7 @@ namespace BoboBrowse.Net.Facets.Filter
 {
     using Lucene.Net.Index;
     using Lucene.Net.Search;
-    using LuceneExt;
+    using LuceneExt.Impl;
 
     public class NotFilter : Filter
     {

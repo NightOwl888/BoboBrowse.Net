@@ -3,7 +3,7 @@ namespace BoboBrowse.Net.Facets.Filter
     using System.Collections.Generic;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
-    using LuceneExt;
+    using LuceneExt.Impl;
 
     public class OrFilter : Filter
     {

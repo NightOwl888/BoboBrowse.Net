@@ -3,7 +3,7 @@
     using BoboBrowse.Net.DocIdSet;
     using BoboBrowse.Tests;
     using Lucene.Net.Search;
-    using LuceneExt;
+    using LuceneExt.Impl;
     using NUnit.Framework;
     using System;
     using System.Collections;
