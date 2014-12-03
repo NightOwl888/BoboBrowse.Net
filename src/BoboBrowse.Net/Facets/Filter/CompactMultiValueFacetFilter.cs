@@ -6,6 +6,7 @@ namespace BoboBrowse.Net.Facets.Filter
     using Lucene.Net.Index;
     using Lucene.Net.Search;
     using BoboBrowse.Net.Util;
+    using BoboBrowse.Net.Facets.Data;
 
     public class CompactMultiValueFacetFilter : RandomAccessFilter
     {

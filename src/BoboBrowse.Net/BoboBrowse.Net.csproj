@@ -110,7 +110,7 @@
     <Compile Include="BrowseSelection.cs" />
     <Compile Include="EmptyDocIdSet.cs" />
     <Compile Include="FacetSpec.cs" />
-    <Compile Include="Facets\FacetDataCache.cs" />
+    <Compile Include="Facets\Data\FacetDataCache.cs" />
     <Compile Include="Facets\FacetHandler.cs" />
     <Compile Include="Facets\FacetHitcountComparatorFactory.cs" />
     <Compile Include="Facets\Filter\AndFilter.cs" />
@@ -133,10 +133,10 @@
     <Compile Include="Facets\Impl\SimpleFacetHandler.cs" />
     <Compile Include="Facets\ITermValueList.cs" />
     <Compile Include="Facets\Impl\MultiValueFacetHandler.cs" />
-    <Compile Include="Facets\MultiValueFacetDataCache.cs" />
+    <Compile Include="Facets\Data\MultiValueFacetDataCache.cs" />
     <Compile Include="Facets\PathFacetHandler.cs" />
-    <Compile Include="Facets\TermListFactory.cs" />
-    <Compile Include="Facets\TermStringList.cs" />
+    <Compile Include="Facets\Data\TermListFactory.cs" />
+    <Compile Include="Facets\Data\TermStringList.cs" />
     <Compile Include="Interface\IFacetAccessible.cs" />
     <Compile Include="Interface\IComparatorFactory.cs" />
     <Compile Include="Facets\IFacetHandlerFactory.cs" />

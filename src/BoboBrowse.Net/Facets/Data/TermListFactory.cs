@@ -1,6 +1,6 @@
 ﻿
 
-namespace BoboBrowse.Net.Facets
+namespace BoboBrowse.Net.Facets.Data
 {
     using System;
 

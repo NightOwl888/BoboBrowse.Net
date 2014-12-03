@@ -27,6 +27,7 @@ namespace BoboBrowse.Net.Facets
     using System.Text.RegularExpressions;
     using Common.Logging;
     using Lucene.Net.Search;
+    using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Facets.Filter;
     using BoboBrowse.Net.Search;
 

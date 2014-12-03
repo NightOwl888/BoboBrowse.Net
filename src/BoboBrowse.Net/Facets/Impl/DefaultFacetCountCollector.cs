@@ -23,6 +23,7 @@ namespace BoboBrowse.Net.Facets
 {
     using System;
     using System.Collections.Generic;
+    using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Util;
 
     public abstract class DefaultFacetCountCollector : IFacetCountCollector

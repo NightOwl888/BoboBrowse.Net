@@ -2,6 +2,7 @@
 {
     using BoboBrowse.Net;
     using BoboBrowse.Net.Facets;
+    using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Facets.Filter;
     using BoboBrowse.Net.Search;
     using Lucene.Net.Analysis.Standard;
