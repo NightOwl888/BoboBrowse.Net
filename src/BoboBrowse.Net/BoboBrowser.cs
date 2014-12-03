@@ -19,11 +19,12 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
-namespace BoboBrowse.Net.Search
+namespace BoboBrowse.Net
 {
     using BoboBrowse.Net.DocIdSet;
     using BoboBrowse.Net.Facets;
     using BoboBrowse.Net.Facets.Filter;
+    using BoboBrowse.Net.Search;
     using Common.Logging;
     using Lucene.Net.Search;
     using Lucene.Net.Documents;

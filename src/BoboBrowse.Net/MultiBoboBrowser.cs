@@ -21,15 +21,16 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
-namespace BoboBrowse.Net.Search
+namespace BoboBrowse.Net
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
+    using BoboBrowse.Net.Facets;
+    using BoboBrowse.Net.Search;
     using Common.Logging;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
-    using BoboBrowse.Net.Facets;
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
 
     ///<summary> * Provides implementation of Browser for multiple Browser instances </summary>
     public class MultiBoboBrowser : MultiSearcher, IBrowsable

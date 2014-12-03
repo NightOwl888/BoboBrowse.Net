@@ -1,10 +1,10 @@
 ﻿namespace BoboBrowse.Net.Facets
 {
-    using System;
-    using System.Collections.Generic;
-    using C5;
     using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Util;
+    using C5;
+    using System;
+    using System.Collections.Generic;
 
     public class RangeFacetCountCollector : IFacetCountCollector
     {
@@ -164,7 +164,7 @@
             return FoldChoices(result, max);
         }
 
-        private class RangeComparator : BoboBrowse.Net.Search.MultiBoboBrowser.BrowseFacetValueComparator
+        private class RangeComparator : MultiBoboBrowser.BrowseFacetValueComparator
         {
         }
 

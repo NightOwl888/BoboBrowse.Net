@@ -21,7 +21,7 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
-namespace BoboBrowse.Net.Search
+namespace BoboBrowse.Net
 {
     using System;
     using Lucene.Net.Search;
