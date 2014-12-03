@@ -24,16 +24,16 @@
 
 namespace BoboBrowse.Net.Facets
 {
-    using System;
-    using System.Collections.Generic;
-    using Common.Logging;
-    using Lucene.Net.Search;
-    using Lucene.Net.Index;
     using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Facets.Filter;
-    using BoboBrowse.Net.Search;
+    using BoboBrowse.Net.Query.Scoring;
     using BoboBrowse.Net.Util;
-    
+    using Common.Logging;
+    using Lucene.Net.Index;
+    using Lucene.Net.Search;
+    using System;
+    using System.Collections.Generic;
+
     public class MultiValueFacetHandler : FacetHandler, IFacetHandlerFactory, IFacetScoreable
     {
         private static ILog logger = LogManager.GetLogger(typeof(MultiValueFacetHandler));       

@@ -24,6 +24,7 @@ namespace BoboBrowse.Net
     using BoboBrowse.Net.DocIdSet;
     using BoboBrowse.Net.Facets;
     using BoboBrowse.Net.Facets.Filter;
+    using BoboBrowse.Net.Query;
     using BoboBrowse.Net.Search;
     using Common.Logging;
     using Lucene.Net.Search;
@@ -51,7 +52,7 @@ namespace BoboBrowse.Net
 
         private static bool IsNoQueryNoFilter(BrowseRequest req)
         {
-            Query q = req.Query;
+            Lucene.Net.Search.Query q = req.Query;
             Filter filter = req.Filter;
             return ((q == null || q is MatchAllDocsQuery || q is FastMatchAllDocsQuery) && filter == null);
         }
@@ -247,7 +248,7 @@ namespace BoboBrowse.Net
 
                 SetFacetHitCollectorList(facetHitCollectorList);
 
-                Query q = req.Query;
+                Lucene.Net.Search.Query q = req.Query;
                 if (q == null || q is MatchAllDocsQuery)
                 {
                     q = reader.GetFastMatchAllDocsQuery();

@@ -2,10 +2,10 @@
 
 namespace BoboBrowse.Net.Util
 {
-    using System;
+    using BoboBrowse.Net.Facets.Data;
+    using BoboBrowse.Net.Query.Scoring;
     using Lucene.Net.Util;
-    using BoboBrowse.Net.Facets;
-    using BoboBrowse.Net.Search;
+    using System;
 
     /// <summary> * write-once big nested int array
     /// * @author ymatsuda

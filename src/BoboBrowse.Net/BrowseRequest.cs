@@ -35,7 +35,7 @@ namespace BoboBrowse.Net
         private readonly Dictionary<string, BrowseSelection> selections;
         private readonly List<SortField> sortFields;
 
-        public Query Query { get; set; }
+        public Lucene.Net.Search.Query Query { get; set; }
 
         public int Offset { get; set; }
 

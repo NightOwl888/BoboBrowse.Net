@@ -21,15 +21,17 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
-namespace BoboBrowse.Net.Search
+namespace BoboBrowse.Net.Query
 {
+    using BoboBrowse.Net.Query.Scoring;
+    using BoboBrowse.Net.Search;
+    using Lucene.Net.Index;
+    using Lucene.Net.Util;
+    using Lucene.Net.Search;
     using System;
     using System.Collections.Generic;
     using System.Collections.Specialized;
     using System.Text;
-    using Lucene.Net.Index;
-    using Lucene.Net.Util;
-    using Lucene.Net.Search;
 
     ///<summary>A query that matches all documents.</summary>
     public sealed class FastMatchAllDocsQuery : Query

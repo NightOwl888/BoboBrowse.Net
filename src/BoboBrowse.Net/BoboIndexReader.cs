@@ -23,16 +23,17 @@
 
 namespace BoboBrowse.Net
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
+    using BoboBrowse.Net.Facets;
+    using BoboBrowse.Net.Query;
+    using BoboBrowse.Net.Search; 
     using Common.Logging;
     using Lucene.Net.Documents;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
-    using BoboBrowse.Net.Facets;
-    using BoboBrowse.Net.Search;  
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
 
     /// <summary>
     /// bobo browse index reader
@@ -163,7 +164,7 @@ namespace BoboBrowse.Net
             }
         }
 
-        public virtual Query GetFastMatchAllDocsQuery()
+        public virtual Lucene.Net.Search.Query GetFastMatchAllDocsQuery()
         {
             this.InitDeletedDocumentsIndex();
             int[] deldocs = deletedDocsArray;

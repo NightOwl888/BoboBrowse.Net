@@ -131,7 +131,7 @@
     <Compile Include="Facets\Impl\RangeFacetCountCollector.cs" />
     <Compile Include="Facets\Impl\RangeFacetHandler.cs" />
     <Compile Include="Facets\Impl\SimpleFacetHandler.cs" />
-    <Compile Include="Facets\ITermValueList.cs" />
+    <Compile Include="Facets\Data\ITermValueList.cs" />
     <Compile Include="Facets\Impl\MultiValueFacetHandler.cs" />
     <Compile Include="Facets\Data\MultiValueFacetDataCache.cs" />
     <Compile Include="Facets\Impl\PathFacetHandler.cs" />
@@ -150,11 +150,11 @@
     <Compile Include="BrowseHit.cs" />
     <Compile Include="BrowseResult.cs" />
     <Compile Include="Search\FacetHitCollector.cs" />
-    <Compile Include="Search\FastMatchAllDocsQuery.cs" />
+    <Compile Include="Query\FastMatchAllDocsQuery.cs" />
     <Compile Include="Search\FieldDocEntry.cs" />
     <Compile Include="Search\FilteredDocSetIterator.cs" />
     <Compile Include="IBrowsable.cs" />
-    <Compile Include="Facets\IFacetScoreable.cs" />
+    <Compile Include="Query\Scoring\IFacetScoreable.cs" />
     <Compile Include="Search\InternalBrowseHitCollector.cs" />
     <Compile Include="Search\LuceneSortDocComparatorFactory.cs" />
     <Compile Include="MultiBoboBrowser.cs" />
@@ -162,10 +162,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DocIdSet\RandomAccessDocIdSet.cs" />
     <Compile Include="RuntimeException.cs" />
-    <Compile Include="Search\IFacetTermScoringFunction.cs" />
+    <Compile Include="Query\Scoring\IFacetTermScoringFunction.cs" />
     <Compile Include="Search\MultiTopDocsSortedHitCollector.cs" />
-    <Compile Include="Search\Query\BoboDocScorer.cs" />
-    <Compile Include="Search\Query\IFacetTermScoringFunctionFactory.cs" />
+    <Compile Include="Query\Scoring\BoboDocScorer.cs" />
+    <Compile Include="Query\Scoring\IFacetTermScoringFunctionFactory.cs" />
     <Compile Include="Search\SortedFieldBrowseHitComparator.cs" />
     <Compile Include="Search\SortedHitQueue.cs" />
     <Compile Include="Search\SortFieldEntry.cs" />
@@ -199,9 +199,7 @@
       <Name>LuceneExt.Net</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Query\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

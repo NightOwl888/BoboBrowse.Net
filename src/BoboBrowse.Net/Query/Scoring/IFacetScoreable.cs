@@ -19,12 +19,14 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
-namespace BoboBrowse.Net.Search
+namespace BoboBrowse.Net.Query.Scoring
 {
     using System;
+    using System.Collections.Generic;
+    
 
-    public interface IFacetTermScoringFunctionFactory
+    public interface IFacetScoreable
     {
-        IFacetTermScoringFunction GetFacetTermScoringFunction(int termCount, int docCount);
+        BoboDocScorer GetDocScorer(IFacetTermScoringFunctionFactory scoringFunctionFactory, Dictionary<string, float> boostMap);
     }
 }

@@ -23,11 +23,10 @@
 
 namespace BoboBrowse.Net
 {
+    using BoboBrowse.Net.Facets;
+    using Lucene.Net.Search;
     using System;
     using System.Collections.Generic;
-    using Lucene.Net.Search;
-    using BoboBrowse.Net.Facets;
-    
 
     public interface IBrowsable : Searchable
     {
@@ -49,7 +48,7 @@ namespace BoboBrowse.Net
 
         int NumDocs();
 
-        Explanation Explain(Query q, int docid); // throws IOException;
+        Explanation Explain(Lucene.Net.Search.Query q, int docid); // throws IOException;
 
         TopDocsSortedHitCollector GetSortedHitCollector(SortField[] sort, int offset, int count, bool fetchStoredFields);
     }
