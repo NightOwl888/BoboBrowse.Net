@@ -162,6 +162,11 @@
     <Compile Include="IFieldValueAccessor.cs" />
     <Compile Include="MappedFacetAccessible.cs" />
     <Compile Include="MethodExtensions.cs" />
+    <Compile Include="Query\DocsetQuery.cs" />
+    <Compile Include="Query\Scoring\DefaultFacetTermScoringFunction.cs" />
+    <Compile Include="Query\Scoring\DefaultFacetTermScoringFunctionFactory.cs" />
+    <Compile Include="Query\Scoring\FacetTermQuery.cs" />
+    <Compile Include="Query\Scoring\IBoboFacetTermQueryBuilder.cs" />
     <Compile Include="RangeFacet.cs" />
     <Compile Include="BoboBrowser.cs" />
     <Compile Include="Search\BoboSearcher.cs" />
