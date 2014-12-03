@@ -105,7 +105,8 @@ function Create-BoboBrowse-Package {
 	Copy-Item "$template_directory\BoboBrowse.Net\BoboBrowse.Net.nuspec" "$output_nuspec_file"
 	
 	#copy sources for symbols package
-	Copy-Item -Recurse -Filter *.cs -Force "$source_directory\BoboBrowse.Net" "$release_directory\BoboBrowse.Net\src"
+	Copy-Item -Recurse -Filter *.cs -Force "$source_directory\BoboBrowse.Net" "$release_directory\BoboBrowse.Net\src\BoboBrowse.Net"
+	Copy-Item -Recurse -Filter *.cs -Force "$source_directory\LuceneExt.Net" "$release_directory\BoboBrowse.Net\src\LuceneExt.Net"
 	
 	exec { 
 		&"$tools_directory\nuget\NuGet.exe" pack $output_nuspec_file -Symbols -Version $packageVersion -OutputDirectory $output_directory
