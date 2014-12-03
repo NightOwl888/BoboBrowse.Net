@@ -108,6 +108,7 @@
     <Compile Include="BrowseFacet.cs" />
     <Compile Include="BrowseRequest.cs" />
     <Compile Include="BrowseSelection.cs" />
+    <Compile Include="DocIdSet\BitsetDocSet.cs" />
     <Compile Include="DocIdSet\EmptyDocIdSet.cs" />
     <Compile Include="FacetSpec.cs" />
     <Compile Include="Facets\Data\FacetDataCache.cs" />
