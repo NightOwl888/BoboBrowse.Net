@@ -1,4 +1,4 @@
-﻿namespace BoboBrowse.Search
+﻿namespace BoboBrowse.Tests
 {
     using BoboBrowse.Net;
     using BoboBrowse.Net.DocIdSet;
