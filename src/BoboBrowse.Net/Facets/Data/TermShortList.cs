@@ -8,18 +8,23 @@ namespace BoboBrowse.Net.Facets.Data
 	{
 		public TermShortList() 
             : base()
-		{
-		}
+		{}
 
 		public TermShortList(string formatString) 
             : base(formatString)
-		{
-		}
+		{}
+
+        public TermShortList(string formatString, IFormatProvider formatProvider)
+            : base(formatString, formatProvider)
+        {}
 
 		public TermShortList(int capacity, string formatString) 
             : base(capacity, formatString)
-		{
-		}
+		{}
+
+        public TermShortList(int capacity, string formatString, IFormatProvider formatProvider)
+            : base(capacity, formatString, formatProvider)
+        { }
 
         private short Parse(string s)
 		{

@@ -45,7 +45,7 @@ namespace BoboBrowse.Net
 
         private static readonly ILog logger = LogManager.GetLogger<BoboIndexReader>();
 
-        private readonly ICollection<FacetHandler> facetHandlers;
+        private readonly IEnumerable<FacetHandler> facetHandlers;
         private readonly WorkArea workArea;
         private C5.TreeSet<int> deletedDocs;
         private volatile int[] deletedDocsArray;
@@ -55,7 +55,7 @@ namespace BoboBrowse.Net
         private bool _deleted;        
 
         #region ctors
-        protected BoboIndexReader(IndexReader reader, ICollection<FacetHandler> facetHandlers, WorkArea workArea)
+        protected BoboIndexReader(IndexReader reader, IEnumerable<FacetHandler> facetHandlers, WorkArea workArea)
             : base(reader)
         {
             this.facetHandlers = facetHandlers ?? new List<FacetHandler>();
@@ -74,12 +74,12 @@ namespace BoboBrowse.Net
             return BoboIndexReader.GetInstance(reader, null, workArea);
         }
 
-        public static BoboIndexReader GetInstance(IndexReader reader, ICollection<FacetHandler> facetHandlers)
+        public static BoboIndexReader GetInstance(IndexReader reader, IEnumerable<FacetHandler> facetHandlers)
         {
             return BoboIndexReader.GetInstance(reader, facetHandlers, new WorkArea());
         }
 
-        public static BoboIndexReader GetInstance(IndexReader reader,ICollection<FacetHandler> facetHandlers, WorkArea workArea)
+        public static BoboIndexReader GetInstance(IndexReader reader, IEnumerable<FacetHandler> facetHandlers, WorkArea workArea)
         {
             BoboIndexReader boboReader = new BoboIndexReader(reader, facetHandlers, workArea);
             boboReader.FacetInit();
@@ -91,7 +91,7 @@ namespace BoboBrowse.Net
             Initialize(facetHandlers, workArea);
         }
 
-        private void Initialize(ICollection<FacetHandler> facetHandlers, WorkArea workArea)
+        private void Initialize(IEnumerable<FacetHandler> facetHandlers, WorkArea workArea)
         {
             this.facetHandlerMap = new Dictionary<string, FacetHandler>();
             foreach (FacetHandler facetHandler in facetHandlers)

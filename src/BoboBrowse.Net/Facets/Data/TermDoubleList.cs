@@ -15,9 +15,17 @@ namespace BoboBrowse.Net.Facets.Data
             : base(formatString)
         {}
 
+        public TermDoubleList(string formatString, IFormatProvider formatProvider)
+            : base(formatString, formatProvider)
+        {}
+
         public TermDoubleList(int capacity, string formatString)
             : base(capacity, formatString)
         {}
+
+        public TermDoubleList(int capacity, string formatString, IFormatProvider formatProvider)
+            : base(capacity, formatString, formatProvider)
+        { }
 
         private double Parse(string s)
         {

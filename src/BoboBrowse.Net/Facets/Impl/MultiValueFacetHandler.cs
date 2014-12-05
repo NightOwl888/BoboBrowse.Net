@@ -44,9 +44,9 @@ namespace BoboBrowse.Net.Facets.Impl
         private int _maxItems = BigNestedIntArray.MAX_ITEMS;
         protected internal MultiValueFacetDataCache _dataCache;
         private Term _sizePayloadTerm;
-        protected internal List<string> _depends;
+        protected internal IEnumerable<string> _depends;
 
-        public MultiValueFacetHandler(string name, string indexFieldName, TermListFactory termListFactory, Term sizePayloadTerm, List<string> depends)
+        public MultiValueFacetHandler(string name, string indexFieldName, TermListFactory termListFactory, Term sizePayloadTerm, IEnumerable<string> depends)
             : base(name, depends)
         {
             _depends = depends;
@@ -86,7 +86,7 @@ namespace BoboBrowse.Net.Facets.Impl
         {
         }
 
-        public MultiValueFacetHandler(string name, List<string> depends)
+        public MultiValueFacetHandler(string name, IEnumerable<string> depends)
             : this(name, name, null, null, depends)
         {
         }

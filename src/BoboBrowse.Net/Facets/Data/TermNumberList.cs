@@ -8,19 +8,35 @@ namespace BoboBrowse.Net.Facets.Data
 		{
 		}
 
-		protected TermNumberList(string formatString) : base()
+		protected TermNumberList(string formatString) 
+            : base()
 		{
             this.FormatString = formatString;
 		}
 
-		protected TermNumberList(int capacity, string formatString) : base(capacity)
+        protected TermNumberList(string formatString, IFormatProvider formatProvider)
+            : base()
+        {
+            this.FormatString = formatString;
+            this.FormatProvider = formatProvider;
+        }
+
+		protected TermNumberList(int capacity, string formatString) 
+            : base(capacity)
 		{
             this.FormatString = formatString;
 		}
+
+        protected TermNumberList(int capacity, string formatString, IFormatProvider formatProvider)
+            : base(capacity)
+        {
+            this.FormatString = formatString;
+            this.FormatProvider = formatProvider;
+        }
 
         public virtual string FormatString { get; protected set; }
 
-        public virtual IFormatProvider FormatProvider { get; set; }
+        public virtual IFormatProvider FormatProvider { get; protected set; }
 
 		protected abstract object ParseString(string o);
 

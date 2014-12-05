@@ -108,10 +108,12 @@
     <Compile Include="BrowseFacet.cs" />
     <Compile Include="BrowseRequest.cs" />
     <Compile Include="BrowseSelection.cs" />
+    <Compile Include="Config\FieldConfiguration.cs" />
     <Compile Include="DocIdSet\BitsetDocSet.cs" />
     <Compile Include="DocIdSet\EmptyDocIdSet.cs" />
     <Compile Include="FacetSpec.cs" />
     <Compile Include="Facets\Data\FacetDataCache.cs" />
+    <Compile Include="Facets\Data\PredefinedTermListFactory.cs" />
     <Compile Include="Facets\Data\TermCharList.cs" />
     <Compile Include="Facets\Data\TermDateList.cs" />
     <Compile Include="Facets\Data\TermDoubleList.cs" />
@@ -162,6 +164,8 @@
     <Compile Include="IFieldValueAccessor.cs" />
     <Compile Include="Impl\BrowseServiceImpl.cs" />
     <Compile Include="Impl\DefaultBrowseServiceImpl.cs" />
+    <Compile Include="Index\BoboIndexer.cs" />
+    <Compile Include="Index\Digest\DataDigester.cs" />
     <Compile Include="MappedFacetAccessible.cs" />
     <Compile Include="MethodExtensions.cs" />
     <Compile Include="Query\DocsetQuery.cs" />

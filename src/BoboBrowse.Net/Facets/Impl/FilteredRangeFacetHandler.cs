@@ -8,11 +8,11 @@ namespace BoboBrowse.Net.Facets.Impl
 
     public class FilteredRangeFacetHandler : FacetHandler, IFacetHandlerFactory
 	{
-		private readonly List<string> _predefinedRanges;
+        private readonly IEnumerable<string> _predefinedRanges;
 		private readonly string _inner;
 		private RangeFacetHandler _innerHandler;
 
-        public FilteredRangeFacetHandler(string name, string underlyingHandler, List<string> predefinedRanges)
+        public FilteredRangeFacetHandler(string name, string underlyingHandler, IEnumerable<string> predefinedRanges)
             : base(name, new string[] { underlyingHandler })
         {
             _predefinedRanges = predefinedRanges;

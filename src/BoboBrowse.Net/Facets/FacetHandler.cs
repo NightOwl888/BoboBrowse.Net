@@ -107,7 +107,7 @@ namespace BoboBrowse.Net.Facets
             return null;
         }
 
-        public virtual IFacetAccessible Merge(FacetSpec fspec, List<IFacetAccessible> facetList)
+        public virtual IFacetAccessible Merge(FacetSpec fspec, IEnumerable<IFacetAccessible> facetList)
         {
             return new CombinedFacetAccessible(fspec, facetList);
         }
@@ -250,10 +250,10 @@ namespace BoboBrowse.Net.Facets
 
         private class CombinedFacetAccessible : IFacetAccessible
         {
-            private readonly List<IFacetAccessible> list;
+            private readonly IEnumerable<IFacetAccessible> list;
             private readonly FacetSpec fspec;
 
-            internal CombinedFacetAccessible(FacetSpec fspec, List<IFacetAccessible> list)
+            internal CombinedFacetAccessible(FacetSpec fspec, IEnumerable<IFacetAccessible> list)
             {
                 this.list = list;
                 this.fspec = fspec;

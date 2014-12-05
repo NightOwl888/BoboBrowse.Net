@@ -9,21 +9,36 @@ namespace BoboBrowse.Net.Facets.Data
     ///<summary>Internal data are stored in a long[] with values generated from <seealso cref="Date#getTime()"/> </summary>
 	public class TermDateList : TermValueList<object>
 	{
-        public string FormatString { get; protected set; }
-
         public TermDateList()
         {
         }
 
         public TermDateList(string formatString)
 		{
-            FormatString = formatString;
+            this.FormatString = formatString;
 		}
 
-		public TermDateList(int capacity, string formatString) : base(capacity)
-		{
-            FormatString = formatString;
+        public TermDateList(string formatString, IFormatProvider formatProvider)
+        {
+            this.FormatString = formatString;
+            this.FormatProvider = formatProvider;
         }
+
+		public TermDateList(int capacity, string formatString) 
+            : base(capacity)
+		{
+            this.FormatString = formatString;
+        }
+
+        public TermDateList(int capacity, string formatString, IFormatProvider formatProvider)
+            : base(capacity)
+        {
+            this.FormatString = formatString;
+            this.FormatProvider = formatProvider;
+        }
+
+        public string FormatString { get; protected set; }
+        public IFormatProvider FormatProvider { get; protected set; }
 
 		private DateTime? Parse(string s)
 		{
@@ -44,9 +59,18 @@ namespace BoboBrowse.Net.Facets.Data
 
 		public override string Format(object o)
 		{
-            return (null == o)
-                ? null
-                : DateTools.DateToString((DateTime)o, DateTools.Resolution.MINUTE);
+            if (o != null)
+            {
+                if (!string.IsNullOrEmpty(this.FormatString))
+                {
+                    return ((DateTime)o).ToString(this.FormatString, this.FormatProvider);
+                }
+                else
+                {
+                    return DateTools.DateToString((DateTime)o, DateTools.Resolution.MINUTE);
+                }
+            }
+            return null;
 		}
 
 		public override int IndexOf(object o)

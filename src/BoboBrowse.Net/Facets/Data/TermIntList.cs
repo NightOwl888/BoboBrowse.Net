@@ -15,8 +15,16 @@ namespace BoboBrowse.Net.Facets.Data
             : base(formatString)
         { }
 
+        public TermIntList(string formatString, IFormatProvider formatProvider)
+            : base(formatString, formatProvider)
+        {}
+
         public TermIntList(int capacity, string formatString)
             : base(capacity, formatString)
+        { }
+
+        public TermIntList(int capacity, string formatString, IFormatProvider formatProvider)
+            : base(capacity, formatString, formatProvider)
         { }
 
         private int Parse(string s)

@@ -29,12 +29,13 @@ namespace BoboBrowse.Net.Facets.Filter
     using LuceneExt.Impl;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class RandomAccessAndFilter : RandomAccessFilter
     {
-        protected internal List<RandomAccessFilter> _filters;
+        protected internal IEnumerable<RandomAccessFilter> _filters;
 
-        public RandomAccessAndFilter(List<RandomAccessFilter> filters)
+        public RandomAccessAndFilter(IEnumerable<RandomAccessFilter> filters)
         {
             _filters = filters;
         }
@@ -68,14 +69,15 @@ namespace BoboBrowse.Net.Facets.Filter
 
         public override RandomAccessDocIdSet GetRandomAccessDocIdSet(IndexReader reader)
         {
-            if (_filters.Count == 1)
+            var count = _filters.Count();
+            if (count == 1)
             {
-                return _filters[0].GetRandomAccessDocIdSet(reader);
+                return _filters.ElementAt(0).GetRandomAccessDocIdSet(reader);
             }
             else
             {
-                List<DocIdSet> list = new List<DocIdSet>(_filters.Count);
-                List<RandomAccessDocIdSet> randomAccessList = new List<RandomAccessDocIdSet>(_filters.Count);
+                List<DocIdSet> list = new List<DocIdSet>(count);
+                List<RandomAccessDocIdSet> randomAccessList = new List<RandomAccessDocIdSet>(count);
                 foreach (RandomAccessFilter f in _filters)
                 {
                     RandomAccessDocIdSet s = f.GetRandomAccessDocIdSet(reader);

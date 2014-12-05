@@ -5,6 +5,7 @@
     using C5;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class RangeFacetCountCollector : IFacetCountCollector
     {
@@ -14,15 +15,15 @@
         private readonly FacetDataCache dataCache;
         private readonly string name;
         private readonly bool autoRange;
-        private readonly List<string> predefinedRanges;
+        private readonly IEnumerable<string> predefinedRanges;
         private readonly int[][] predefinedRangeIndexes;
 
-        public RangeFacetCountCollector(string name, RangeFacetHandler rangeFacetHandler, FacetSpec ospec, List<string> predefinedRanges, bool autoRange)
+        public RangeFacetCountCollector(string name, RangeFacetHandler rangeFacetHandler, FacetSpec ospec, IEnumerable<string> predefinedRanges, bool autoRange)
             : this(name, rangeFacetHandler.GetDataCache(), ospec, predefinedRanges, autoRange)
         {
         }
 
-        protected internal RangeFacetCountCollector(string name, FacetDataCache dataCache, FacetSpec ospec, List<string> predefinedRanges, bool autoRange)
+        protected internal RangeFacetCountCollector(string name, FacetDataCache dataCache, FacetSpec ospec, IEnumerable<string> predefinedRanges, bool autoRange)
         {
             this.name = name;
             this.dataCache = dataCache;
@@ -34,7 +35,7 @@
 
             if (this.predefinedRanges != null)
             {
-                predefinedRangeIndexes = new int[this.predefinedRanges.Count][];
+                predefinedRangeIndexes = new int[this.predefinedRanges.Count()][];
                 int i = 0;
                 foreach (string range in this.predefinedRanges)
                 {
@@ -237,7 +238,7 @@
                             {
                                 BrowseFacet choice = new BrowseFacet();
                                 choice.HitCount = rangeCounts[i];
-                                choice.Value = predefinedRanges[i];
+                                choice.Value = predefinedRanges.ElementAt(i);
                                 list.Add(choice);
                             }
                         }

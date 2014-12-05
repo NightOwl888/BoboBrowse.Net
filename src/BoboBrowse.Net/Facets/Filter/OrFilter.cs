@@ -1,28 +1,30 @@
 namespace BoboBrowse.Net.Facets.Filter
 {
     using System.Collections.Generic;
+    using System.Linq;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
     using LuceneExt.Impl;
 
     public class OrFilter : Filter
     {
-        private readonly List<Filter> _filters;
+        private readonly IEnumerable<Filter> _filters;
 
-        public OrFilter(List<Filter> filters)
+        public OrFilter(IEnumerable<Filter> filters)
         {
             _filters = filters;
         }
 
         public override DocIdSet GetDocIdSet(IndexReader reader)
         {
-            if (_filters.Count == 1)
+            var count = _filters.Count();
+            if (count == 1)
             {
-                return _filters[0].GetDocIdSet(reader);
+                return _filters.ElementAt(0).GetDocIdSet(reader);
             }
             else
             {
-                List<DocIdSet> list = new List<DocIdSet>(_filters.Count);
+                List<DocIdSet> list = new List<DocIdSet>(count);
                 foreach (Filter f in _filters)
                 {
                     list.Add(f.GetDocIdSet(reader));

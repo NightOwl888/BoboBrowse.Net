@@ -15,8 +15,16 @@ namespace BoboBrowse.Net.Facets.Data
             : base(formatString)
         { }
 
+        public TermLongList(string formatString, IFormatProvider formatProvider)
+            : base(formatString, formatProvider)
+        {}
+
         public TermLongList(int capacity, string formatString)
             : base(capacity, formatString)
+        { }
+
+        public TermLongList(int capacity, string formatString, IFormatProvider formatProvider)
+            : base(capacity, formatString, formatProvider)
         { }
 
         private long Parse(string s)

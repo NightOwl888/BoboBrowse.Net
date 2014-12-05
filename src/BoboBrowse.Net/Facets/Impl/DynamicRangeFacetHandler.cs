@@ -19,7 +19,7 @@ namespace BoboBrowse.Net.Facets.Impl
         }
 
         protected internal abstract string BuildRangeString(string val);
-        protected internal abstract List<string> BuildAllRangeStrings();
+        protected internal abstract IEnumerable<string> BuildAllRangeStrings();
         protected internal abstract string GetValueFromRangeString(object rangeString);
         public abstract FacetHandler NewInstance();
 
@@ -51,7 +51,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override IFacetCountCollector GetFacetCountCollector(BrowseSelection sel, FacetSpec fspec)
         {
-            List<string> list = BuildAllRangeStrings();
+            var list = BuildAllRangeStrings();
             return new DynamicRangeFacetCountCollector(this, Name, dataFacetHandler, fspec, list);
         }
 
@@ -74,7 +74,7 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             private DynamicRangeFacetHandler parent;
 
-            internal DynamicRangeFacetCountCollector(DynamicRangeFacetHandler parent, string name, RangeFacetHandler handler, FacetSpec fspec, List<string> predefinedList)
+            internal DynamicRangeFacetCountCollector(DynamicRangeFacetHandler parent, string name, RangeFacetHandler handler, FacetSpec fspec, IEnumerable<string> predefinedList)
                 : base(name, handler, fspec, predefinedList, false)
             {
                 this.parent = parent;
