@@ -59,23 +59,27 @@ task Restore -depends Clean -description "This task runs NuGet package restore" 
 }
 
 task Test -depends Clean, Init, Restore -description "This tasks runs the unit tests" {
-	Write-Host "Running Unit Tests..." -ForegroundColor Magenta
+	$IsPrerelease = Is-Prerelease
 
-	$msbuild_configuration = "NET40-$configuration"
-	$target_project = "$source_directory\BoboBrowse.Tests\BoboBrowse.Tests.csproj"
+	if ($IsPrerelease -eq $false) {
+		Write-Host "Running Unit Tests..." -ForegroundColor Magenta
 
-	exec { 
-		msbuild $target_project `
-			/verbosity:quiet `
-			/property:Configuration=$msbuild_configuration `
-			"/t:Clean;Rebuild" `
-			/property:WarningLevel=3 `
-			/property:EnableNuGetPackageRestore=true `
-			/property:TargetFrameworkVersion=v4.0 `
-	}
+		$msbuild_configuration = "NET40-$configuration"
+		$target_project = "$source_directory\BoboBrowse.Tests\BoboBrowse.Tests.csproj"
 
-	exec {
-		&"$tools_directory\nunit\nunit-console.exe" $target_project /config:$msbuild_configuration /noshadow /noresult /framework:net-4.0
+		exec { 
+			msbuild $target_project `
+				/verbosity:quiet `
+				/property:Configuration=$msbuild_configuration `
+				"/t:Clean;Rebuild" `
+				/property:WarningLevel=3 `
+				/property:EnableNuGetPackageRestore=true `
+				/property:TargetFrameworkVersion=v4.0 `
+		}
+
+		exec {
+			&"$tools_directory\nunit\nunit-console.exe" $target_project /config:$msbuild_configuration /noshadow /noresult /framework:net-4.0
+		}
 	}
 }
 
@@ -193,4 +197,11 @@ using System.Runtime.InteropServices;
 
 	Write-Host "Generating assembly info file: $file"
 	out-file -filePath $file -encoding UTF8 -inputObject $asmInfo
+}
+
+function Is-Prerelease {
+	if ($packageVersion.Contains("-")) {
+		return $true
+	}
+	return $false
 }
