@@ -126,6 +126,7 @@
     <Compile Include="BasicTests.cs" />
     <Compile Include="BoboTestCase.cs" />
     <Compile Include="Facets\FacetHandlerTest.cs" />
+    <Compile Include="IndexReaderTestCase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Search\BoboSearcher2Test.cs" />
     <Compile Include="Util\BigIntArrayTest.cs" />
