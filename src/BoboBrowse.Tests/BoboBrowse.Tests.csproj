@@ -125,6 +125,7 @@
     </Compile>
     <Compile Include="BasicTests.cs" />
     <Compile Include="BoboTestCase.cs" />
+    <Compile Include="FacetNameTest.cs" />
     <Compile Include="Facets\FacetHandlerTest.cs" />
     <Compile Include="FacetTest.cs" />
     <Compile Include="IndexReaderTestCase.cs" />
