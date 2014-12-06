@@ -112,6 +112,7 @@
     <Compile Include="Client\BrowseRequestBuilder.cs" />
     <Compile Include="Client\BrowseResultFormatter.cs" />
     <Compile Include="Config\FieldConfiguration.cs" />
+    <Compile Include="Config\IFieldConfigurationBuilder.cs" />
     <Compile Include="DocIdSet\BitsetDocSet.cs" />
     <Compile Include="DocIdSet\EmptyDocIdSet.cs" />
     <Compile Include="FacetSpec.cs" />
