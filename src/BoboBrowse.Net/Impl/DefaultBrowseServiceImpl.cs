@@ -62,7 +62,7 @@ namespace BoboBrowse.Net.Impl
             return result;
         }
 
-        public virtual void close() // throws BrowseException
+        public virtual void Close() // throws BrowseException
         {
             if (_closeReader)
             {

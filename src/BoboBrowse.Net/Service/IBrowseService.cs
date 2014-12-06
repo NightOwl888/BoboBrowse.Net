@@ -28,7 +28,7 @@ namespace BoboBrowse.Net.Service
     public interface IBrowseService
     {
         BrowseResult Browse(BrowseRequest req); // throws BrowseException;
-        void close();// throws BrowseException;
+        void Close();// throws BrowseException;
     }
 
     public static class BrowseService_Fields

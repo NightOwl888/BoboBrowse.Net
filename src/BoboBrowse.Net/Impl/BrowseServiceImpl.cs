@@ -102,7 +102,7 @@ namespace BoboBrowse.Net.Impl
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public virtual void close() // throws BrowseException
+        public virtual void Close() // throws BrowseException
         {
             try
             {
