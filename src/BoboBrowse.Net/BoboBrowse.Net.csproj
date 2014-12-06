@@ -171,6 +171,7 @@
     <Compile Include="Impl\QueryProducer.cs" />
     <Compile Include="Index\BoboIndexer.cs" />
     <Compile Include="Index\Digest\DataDigester.cs" />
+    <Compile Include="Index\Digest\FileDigester.cs" />
     <Compile Include="MappedFacetAccessible.cs" />
     <Compile Include="MethodExtensions.cs" />
     <Compile Include="Query\DocsetQuery.cs" />
