@@ -108,6 +108,9 @@
     <Compile Include="BrowseFacet.cs" />
     <Compile Include="BrowseRequest.cs" />
     <Compile Include="BrowseSelection.cs" />
+    <Compile Include="Client\BoboCmdlineApp.cs" />
+    <Compile Include="Client\BrowseRequestBuilder.cs" />
+    <Compile Include="Client\BrowseResultFormatter.cs" />
     <Compile Include="Config\FieldConfiguration.cs" />
     <Compile Include="DocIdSet\BitsetDocSet.cs" />
     <Compile Include="DocIdSet\EmptyDocIdSet.cs" />
