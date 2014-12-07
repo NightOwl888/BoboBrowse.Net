@@ -19,6 +19,7 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.DocIdSet
 {
     using System;
@@ -26,62 +27,57 @@ namespace BoboBrowse.Net.DocIdSet
 
     public abstract class FilteredDocSetIterator : DocIdSetIterator
     {
-        protected internal DocIdSetIterator innerIter;
-        private int currentDoc;
+        protected DocIdSetIterator _innerIter;
+        private int _currentDoc;
 
         protected FilteredDocSetIterator(DocIdSetIterator innerIter)
         {
             if (innerIter == null)
             {
-                throw new System.ArgumentException("null iterator");
+                throw new ArgumentNullException("null iterator");
             }
-            this.innerIter = innerIter;
-            currentDoc = -1;
+            this._innerIter = innerIter;
+            _currentDoc = -1;
         }
 
-        protected internal abstract bool Match(int doc);
+        protected abstract bool Match(int doc);
 
-        public override int Advance(int target)
+        public sealed override int DocID()
         {
-            bool flag = innerIter.Advance(target) != DocIdSetIterator.NO_MORE_DOCS;
-            if (flag)
+            return _currentDoc;
+        }
+
+        public sealed override int NextDoc()
+        {
+            int docid = _innerIter.NextDoc();
+            while (docid != DocIdSetIterator.NO_MORE_DOCS)
             {
-                int doc = innerIter.DocID();
-                if (Match(doc))
+                if (Match(docid))
                 {
-                    currentDoc = doc;
-                    return currentDoc;
+                    _currentDoc = docid;
+                    return docid;
                 }
                 else
                 {
-                    while (innerIter.NextDoc()!=DocIdSetIterator.NO_MORE_DOCS)
-                    {
-                        int docid = innerIter.DocID();
-                        if (Match(docid))
-                        {
-                            currentDoc = docid;
-                            return currentDoc;
-                        }
-                    }                   
+                    docid = _innerIter.NextDoc();
                 }
             }
             return DocIdSetIterator.NO_MORE_DOCS;
         }
 
-        public override int DocID()
+        public sealed override int Advance(int target)
         {
-            return currentDoc;
-        }
-
-        public override int NextDoc()
-        {
-            while (innerIter.NextDoc()!=DocIdSetIterator.NO_MORE_DOCS)
+            int docid = _innerIter.Advance(target);
+            while (docid != DocIdSetIterator.NO_MORE_DOCS)
             {
-                int doc = innerIter.DocID();
-                if (Match(doc))
+                if (Match(docid))
                 {
-                    currentDoc = doc;
-                    return currentDoc;
+                    _currentDoc = docid;
+                    return docid;
+                }
+                else
+                {
+                    docid = _innerIter.NextDoc();
                 }
             }
             return DocIdSetIterator.NO_MORE_DOCS;

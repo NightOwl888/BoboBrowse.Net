@@ -21,12 +21,13 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.DocIdSet
 {
     using System;
     using Lucene.Net.Search;
 
-    public abstract class RandomAccessDocIdSet:DocIdSet
+    public abstract class RandomAccessDocIdSet : DocIdSet
     {
         public abstract bool Get(int docId);
     }

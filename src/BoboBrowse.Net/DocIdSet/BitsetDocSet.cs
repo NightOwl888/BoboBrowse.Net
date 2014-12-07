@@ -1,5 +1,4 @@
-﻿
-
+﻿// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.DocIdSet
 {
     using BoboBrowse.Net.Util;
@@ -51,24 +50,12 @@ namespace BoboBrowse.Net.DocIdSet
 
             public override int NextDoc()
             {
-                _current = _bs.NextSetBit(_current + 1);
-                if (_current != -1)
-                {
-                    return _current;
-                }
-
-                return DocIdSetIterator.NO_MORE_DOCS;
+                return _bs.NextSetBit(_current + 1);
             }
 
             public override int Advance(int target)
             {
-                _current = _bs.NextSetBit(target);
-                if (_current != -1)
-                {
-                    return _current;
-                }
-
-                return DocIdSetIterator.NO_MORE_DOCS;
+                return _bs.NextSetBit(target);
             }
         }
     }

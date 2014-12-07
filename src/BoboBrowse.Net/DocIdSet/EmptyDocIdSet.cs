@@ -21,28 +21,29 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.DocIdSet
 {
     using System;
     using Lucene.Net.Search;
 
-    public class EmptyDocIdSet : RandomAccessDocIdSet
+    public sealed class EmptyDocIdSet : RandomAccessDocIdSet
     {
         private static EmptyDocIdSet SINGLETON = new EmptyDocIdSet();
 
         private class EmptyDocIdSetIterator : DocIdSetIterator
         {
-            public override int Advance(int target)
-            {
-                return DocIdSetIterator.NO_MORE_DOCS;
-            }
-
             public override int DocID()
             {
                 return -1;
             }
 
             public override int NextDoc()
+            {
+                return DocIdSetIterator.NO_MORE_DOCS;
+            }
+
+            public override int Advance(int target)
             {
                 return DocIdSetIterator.NO_MORE_DOCS;
             }
