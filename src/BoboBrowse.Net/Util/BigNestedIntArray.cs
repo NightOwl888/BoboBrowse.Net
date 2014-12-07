@@ -243,7 +243,7 @@ namespace BoboBrowse.Net.Util
             ///     <summary> * allocates storage for future calls of setData. </summary>
             ///     * <param name="id"> </param>
             ///     * <param name="len"> </param>
-            protected void allocate(int id, int len, bool nonNegativeIntOnly)
+            protected void Allocate(int id, int len, bool nonNegativeIntOnly)
             {
                 reserve(id, len);
                 if (len == 0)
@@ -275,25 +275,20 @@ namespace BoboBrowse.Net.Util
         {
         }
 
-        ///   <summary> * set maximum number of items per doc. </summary>
-        ///   * <param name="maxItems"> </param>
-        public void setMaxItems(int maxItems)
+        /// <summary>
+        /// Gets or sets maximum number of items per doc.
+        /// </summary>
+        public int MaxItems 
         {
-            _maxItems = Math.Min(maxItems, MAX_ITEMS);
-        }
-
-        ///   <summary> * get maximum number of items per doc. </summary>
-        ///   * <returns> maxItems </returns>
-        public int getMaxItems()
-        {
-            return _maxItems;
+            get { return _maxItems; }
+            set { _maxItems = value; }
         }
 
         ///   <summary> * loads data using the loader </summary>
         ///   * <param name="size"> </param>
         ///   * <param name="loader"> </param>
         ///   * <exception cref="Exception"> </exception>
-        public void load(int size, Loader loader) //throws Exception
+        public void Load(int size, Loader loader) //throws Exception
         {
             _size = size;
             loader.initialize(size, _list);
@@ -304,7 +299,7 @@ namespace BoboBrowse.Net.Util
             _list = loader.finish();
         }
 
-        public int size()
+        public int Size()
         {
             return _size;
         }
@@ -314,7 +309,7 @@ namespace BoboBrowse.Net.Util
         ///   * <param name="idx"> </param>
         ///   * <param name="defaultValue">
         ///   * @return </param>
-        public int getData(int id, int idx, int defaultValue)
+        public int GetData(int id, int idx, int defaultValue)
         {
             int[] page = _list[id >> PAGEID_SHIFT];
             if (page == null)
@@ -341,7 +336,7 @@ namespace BoboBrowse.Net.Util
         ///   * <param name="buf"> </param>
         ///   * <param name="defaultValue"> </param>
         ///   * <returns> length </returns>
-        public int getData(int id, int[] buf)
+        public int GetData(int id, int[] buf)
         {
             int[] page = _list[id >> PAGEID_SHIFT];
             if (page == null)
@@ -372,7 +367,7 @@ namespace BoboBrowse.Net.Util
         ///   * <param name="id"> </param>
         ///   * <param name="valarray">
         ///   * @return </param>
-        public string[] getTranslatedData(int id, ITermValueList valarray)
+        public string[] GetTranslatedData(int id, ITermValueList valarray)
         {
             int[] page = _list[id >> PAGEID_SHIFT];
 
@@ -413,7 +408,7 @@ namespace BoboBrowse.Net.Util
         ///   * <param name="id"> </param>
         ///   * <param name="valarray">
         ///   * @return </param>
-        public object[] getRawData(int id, ITermValueList valarray)
+        public object[] GetRawData(int id, ITermValueList valarray)
         {
             int[] page = _list[id >> PAGEID_SHIFT];
 
@@ -448,7 +443,7 @@ namespace BoboBrowse.Net.Util
             }
         }
 
-        public float getScores(int id, int[] freqs, float[] boosts, IFacetTermScoringFunction function)
+        public float GetScores(int id, int[] freqs, float[] boosts, IFacetTermScoringFunction function)
         {
             function.ClearScores();
             int[] page = _list[id >> PAGEID_SHIFT];
@@ -472,7 +467,7 @@ namespace BoboBrowse.Net.Util
             }
         }
 
-        public int compare(int i, int j)
+        public int Compare(int i, int j)
         {
             int[] page1 = _list[i >> PAGEID_SHIFT];
             int[] page2 = _list[j >> PAGEID_SHIFT];
@@ -614,7 +609,7 @@ namespace BoboBrowse.Net.Util
             return false;
         }
 
-        public int count(int id, int[] count)
+        public int Count(int id, int[] count)
         {
             int[] page = _list[id >> PAGEID_SHIFT];
             if (page == null)
@@ -647,7 +642,7 @@ namespace BoboBrowse.Net.Util
         ///   <summary> * returns the number data items for id </summary>
         ///   * <param name="id">
         ///   * @return </param>
-        public int getNumItems(int id)
+        public int GetNumItems(int id)
         {
             int[] page = _list[id >> PAGEID_SHIFT];
             if (page == null)
@@ -665,7 +660,7 @@ namespace BoboBrowse.Net.Util
         }
 
         ///   <summary> * adds Data to id </summary>
-        public bool addData(int id, int data)
+        public bool AddData(int id, int data)
         {
             int[] page = _list[id >> PAGEID_SHIFT];
             if (page == null)
@@ -725,9 +720,9 @@ namespace BoboBrowse.Net.Util
             }
 
             ///     <summary> * resets loader. This also resets underlying BigIntBuffer. </summary>
-            public void reset(int size, int maxItems, BigIntBuffer buffer)
+            public void Reset(int size, int maxItems, BigIntBuffer buffer)
             {
-                if (size >= capacity())
+                if (size >= Capacity)
                     throw new System.ArgumentException("unable to change size");
                 _size = size;
                 _maxItems = maxItems;
@@ -791,7 +786,7 @@ namespace BoboBrowse.Net.Util
                 return true;
             }
 
-            private int readToBuf(int id, int[] buf)
+            private int ReadToBuf(int id, int[] buf)
             {
                 int ptr = _info.Get(id << 1);
                 int cnt = _info.Get((id << 1) + 1);
@@ -833,7 +828,7 @@ namespace BoboBrowse.Net.Util
                 int size = _size;
                 for (int i = 0; i < size; i++)
                 {
-                    int count = readToBuf(i, buf);
+                    int count = ReadToBuf(i, buf);
                     if (count > 0)
                     {
                         Add(i, buf, 0, count);
@@ -841,9 +836,9 @@ namespace BoboBrowse.Net.Util
                 }
             }
 
-            public int capacity()
+            public int Capacity
             {
-                return _info.Capacity() >> 1;
+                get { return _info.Capacity() >> 1; }
             }
         }
     }

@@ -23,12 +23,12 @@
                 }
             }
             var nestedArray = new BigNestedIntArray();
-            nestedArray.load(maxId, loader);
+            nestedArray.Load(maxId, loader);
 
             int[] buf = new int[1024];
             for (int id = 0; id < maxId; id++)
             {
-                int cnt = nestedArray.getData(id, buf);
+                int cnt = nestedArray.GetData(id, buf);
                 Assert.AreEqual(count[id], cnt, "item count");
 
                 if (cnt > 0)
@@ -57,12 +57,12 @@
                 }
             }
             var nestedArray = new BigNestedIntArray();
-            nestedArray.load(maxId, loader);
+            nestedArray.Load(maxId, loader);
 
             int[] buf = new int[1024];
             for (int id = 0; id < maxId; id++)
             {
-                int cnt = nestedArray.getData(id, buf);
+                int cnt = nestedArray.GetData(id, buf);
                 Assert.AreEqual(count[id], cnt, "item count");
 
                 if (cnt > 0)
@@ -98,9 +98,9 @@
                     }
                 }
                 nestedArray[i] = new BigNestedIntArray();
-                nestedArray[i].load(maxId, loader);
+                nestedArray[i].Load(maxId, loader);
       
-                loader.reset(maxId, BigNestedIntArray.MAX_ITEMS, buffer);
+                loader.Reset(maxId, BigNestedIntArray.MAX_ITEMS, buffer);
             }
 
             for (int i = 0; i < maxNumItems.Length; i++)
@@ -108,7 +108,7 @@
                 int[] buf = new int[1024];
                 for(int id = 0; id < maxId; id++)
                 {
-                    int cnt = nestedArray[i].getData(id, buf);
+                    int cnt = nestedArray[i].GetData(id, buf);
                     Assert.AreEqual(count[i, id], cnt, "count[" + i + "," + id + "]");
       
                     if(cnt > 0)
@@ -147,12 +147,12 @@
                     }
                 }
 
-                nestedArray.load(maxId, loader);
+                nestedArray.Load(maxId, loader);
 
                 int[] buf = new int[1024];
                 for (int id = 0; id < maxId; id++)
                 {
-                    int cnt = nestedArray.getData(id, buf);
+                    int cnt = nestedArray.GetData(id, buf);
                     Assert.AreEqual(count[id], cnt, "count[" + i + "," + id + "]");
 
                     if (cnt > 0)
@@ -190,14 +190,14 @@
                     count[i, id] = cnt;
                 }
                 nestedArray[i] = new BigNestedIntArray();
-                nestedArray[i].load(maxId, loader);
+                nestedArray[i].Load(maxId, loader);
                 loader.reset();
 
                 for(int id = 0; id < maxId; id++)
                 {
                     for(int data = 0; data < count[i, id]; data++)
                     {
-                        nestedArray[i].addData(id, data);
+                        nestedArray[i].AddData(id, data);
                     }
                 }
             }
@@ -207,7 +207,7 @@
                 int[] buf = new int[1024];
                 for(int id = 0; id < maxId; id++)
                 {
-                    int cnt = nestedArray[i].getData(id, buf);
+                    int cnt = nestedArray[i].GetData(id, buf);
                     Assert.AreEqual(count[i, id], cnt, "count[" + i + "," + id + "]");
 
                     if(cnt > 0)
@@ -250,7 +250,7 @@
                 {
                     if (_maxNumItems[i] > 0)
                     {
-                        allocate(i, _maxNumItems[i], true);
+                        Allocate(i, _maxNumItems[i], true);
                     }
                 }
             }
@@ -275,7 +275,7 @@
                 }
                 nestedArray[i] = new BigNestedIntArray();
                 nestedArray[i].setMaxItems(maxNumItems[i]);
-                nestedArray[i].load(maxId, loader);
+                nestedArray[i].Load(maxId, loader);
                 loader.reset();
 
                 for(int id = 0; id < maxId; id++)
@@ -283,7 +283,7 @@
                     bool failed = false;
                     for(int data = 0; data < count[i, id]; data++)
                     {
-                        if(nestedArray[i].addData(id, data))
+                        if(nestedArray[i].AddData(id, data))
                         {
                             if(!failed && (data + 1 > maxNumItems[i]))
                             {

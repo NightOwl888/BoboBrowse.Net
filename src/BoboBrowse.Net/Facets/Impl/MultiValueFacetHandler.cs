@@ -227,7 +227,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override Explanation Explain(int doc)
             {
-                string[] vals = _array.getTranslatedData(doc, _dataCache.valArray);
+                string[] vals = _array.GetTranslatedData(doc, _dataCache.valArray);
 
                 C5.ArrayList<float> scoreList = new C5.ArrayList<float>(_dataCache.valArray.Count);
                 List<Explanation> explList = new List<Explanation>(scoreList.Count);
@@ -250,7 +250,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override sealed float Score(int docid)
             {
-                return _array.getScores(docid, _dataCache.freqs, BoostList, Function);
+                return _array.GetScores(docid, _dataCache.freqs, BoostList, Function);
             }
         }
 
@@ -265,7 +265,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override sealed void Collect(int docid)
             {
-                _array.count(docid, _count);
+                _array.Count(docid, _count);
             }
 
             public override sealed void CollectAll()
