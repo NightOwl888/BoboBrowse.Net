@@ -21,34 +21,37 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Facets.Filter
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
     using LuceneExt.Impl;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
 
     public class AndFilter : Filter
     {
-        private readonly ICollection<Filter> filters;
+        private static long SerialVersionUID = 1L;
 
-        public AndFilter(ICollection<Filter> filters)
+        private readonly IEnumerable<Filter> _filters;
+
+        public AndFilter(IEnumerable<Filter> filters)
         {
-            this.filters = filters;
+            _filters = filters;
         }
 
         public override DocIdSet GetDocIdSet(IndexReader reader)
         {
-            if (filters.Count == 1)
+            if (_filters.Count() == 1)
             {
-                return filters.First().GetDocIdSet(reader);
+                return _filters.First().GetDocIdSet(reader);
             }
             else
             {
-                List<DocIdSet> list = new List<DocIdSet>(filters.Count);
-                foreach (Filter f in filters)
+                List<DocIdSet> list = new List<DocIdSet>(_filters.Count());
+                foreach (Filter f in _filters)
                 {
                     list.Add(f.GetDocIdSet(reader));
                 }

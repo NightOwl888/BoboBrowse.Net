@@ -21,6 +21,7 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Facets.Filter
 {
     using BoboBrowse.Net.DocIdSet;
@@ -29,13 +30,19 @@ namespace BoboBrowse.Net.Facets.Filter
     
     public class EmptyFilter : RandomAccessFilter
     {
+        private static long serialVersionUID = 1L;
         private readonly static EmptyFilter instance = new EmptyFilter();
 
         private EmptyFilter()
         {
         }
 
-        public override RandomAccessDocIdSet GetRandomAccessDocIdSet(IndexReader reader)
+        public override double GetFacetSelectivity(BoboIndexReader reader)
+        {
+            return 0.0;
+        }
+
+        public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboIndexReader reader)
         {
             return EmptyDocIdSet.GetInstance();
         }

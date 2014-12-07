@@ -8,6 +8,7 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Facets.Filter
 {
     using BoboBrowse.Net.DocIdSet;
@@ -17,11 +18,21 @@ namespace BoboBrowse.Net.Facets.Filter
     
     public abstract class RandomAccessFilter : Filter
     {
+        private static long serialVersionUID = 1L;
+
         public override DocIdSet GetDocIdSet(IndexReader reader)
         {
-            return GetRandomAccessDocIdSet(reader);
+            if (reader is BoboIndexReader)
+            {
+                return GetRandomAccessDocIdSet((BoboIndexReader)reader);
+            }
+            else
+            {
+                throw new ArgumentException("reader not instance of BoboIndexReader");
+            }
         }
 
-        public abstract RandomAccessDocIdSet GetRandomAccessDocIdSet(IndexReader reader);
+        public abstract RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboIndexReader reader);
+        public virtual double GetFacetSelectivity(BoboIndexReader reader) { return 0.50; }
     }
 }

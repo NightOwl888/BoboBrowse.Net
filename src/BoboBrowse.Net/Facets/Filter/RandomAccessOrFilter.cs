@@ -21,6 +21,7 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Facets.Filter
 {
     using BoboBrowse.Net.DocIdSet;
@@ -31,9 +32,11 @@ namespace BoboBrowse.Net.Facets.Filter
     using System.Collections.Generic;
     using System.Linq;
 
-    public class RandomAccessOrFilter:RandomAccessFilter
+    public class RandomAccessOrFilter : RandomAccessFilter
     {
-        protected internal readonly IEnumerable<RandomAccessFilter> _filters;
+        private static long serialVersionUID = 1L;
+
+        protected readonly IEnumerable<RandomAccessFilter> _filters;
 
         public RandomAccessOrFilter(IEnumerable<RandomAccessFilter> filters)
         {
@@ -42,6 +45,44 @@ namespace BoboBrowse.Net.Facets.Filter
                 throw new ArgumentNullException("filters");
             }
             _filters = filters;
+        }
+
+        public override double GetFacetSelectivity(BoboIndexReader reader)
+        {
+            double selectivity = 0;
+            foreach (RandomAccessFilter filter in _filters)
+            {
+                selectivity += filter.GetFacetSelectivity(reader);
+            }
+    
+            if(selectivity > 0.999)
+            {
+                selectivity = 1.0;
+            }
+            return selectivity;
+        }
+
+        public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboIndexReader reader)
+        {
+            var count = _filters.Count();
+            if (count == 1)
+            {
+                return _filters.ElementAt(0).GetRandomAccessDocIdSet(reader);
+            }
+            else
+            {
+                List<DocIdSet> list = new List<DocIdSet>(count);
+                List<RandomAccessDocIdSet> randomAccessList = new List<RandomAccessDocIdSet>(count);
+                foreach (RandomAccessFilter f in _filters)
+                {
+                    RandomAccessDocIdSet s = f.GetRandomAccessDocIdSet(reader);
+                    list.Add(s);
+                    randomAccessList.Add(s);
+                }
+                RandomAccessDocIdSet[] randomAccessDocIdSets = randomAccessList.ToArray();
+                DocIdSet orDocIdSet = new OrDocIdSet(list);
+                return new RandomOrFilterDocIdSet(randomAccessDocIdSets, orDocIdSet);
+            }
         }
 
         private class RandomOrFilterDocIdSet : RandomAccessDocIdSet
@@ -68,29 +109,6 @@ namespace BoboBrowse.Net.Facets.Filter
             {
                 return orDocIdSet.Iterator();
             }
-        }
-
-        public override RandomAccessDocIdSet GetRandomAccessDocIdSet(IndexReader reader)
-        {
-            var count = _filters.Count();
-            if (count == 1)
-            {
-                return _filters.ElementAt(0).GetRandomAccessDocIdSet(reader);
-            }
-            else
-            {
-                List<DocIdSet> list = new List<DocIdSet>(count);
-                List<RandomAccessDocIdSet> randomAccessList = new List<RandomAccessDocIdSet>(count);
-                foreach (RandomAccessFilter f in _filters)
-                {
-                    RandomAccessDocIdSet s = f.GetRandomAccessDocIdSet(reader);
-                    list.Add(s);
-                    randomAccessList.Add(s);
-                }
-                RandomAccessDocIdSet[] randomAccessDocIdSets = randomAccessList.ToArray();
-                DocIdSet orDocIdSet = new OrDocIdSet(list);
-                return new RandomOrFilterDocIdSet(randomAccessDocIdSets, orDocIdSet);
-            }
-        }
+        }  
     }
 }

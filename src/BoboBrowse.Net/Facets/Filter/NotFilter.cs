@@ -1,3 +1,4 @@
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Facets.Filter
 {
     using Lucene.Net.Index;
@@ -6,6 +7,8 @@ namespace BoboBrowse.Net.Facets.Filter
 
     public class NotFilter : Filter
     {
+        private static long serialVersionUID = 1L;
+
         private readonly Filter _innerFilter;
 
         public NotFilter(Filter innerFilter)

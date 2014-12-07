@@ -1,3 +1,4 @@
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Facets.Filter
 {
     using System.Collections.Generic;
@@ -8,6 +9,8 @@ namespace BoboBrowse.Net.Facets.Filter
 
     public class OrFilter : Filter
     {
+        private static long serialVersionUID = 1L;
+
         private readonly IEnumerable<Filter> _filters;
 
         public OrFilter(IEnumerable<Filter> filters)

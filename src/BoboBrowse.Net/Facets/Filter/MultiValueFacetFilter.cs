@@ -30,15 +30,15 @@ namespace BoboBrowse.Net.Facets.Filter
 
     public class MultiValueFacetFilter : RandomAccessFilter
     {
-        private readonly MultiValueFacetDataCache _dataCache;
-        private readonly BigNestedIntArray _nestedArray;
-        private readonly int _index;
+        private static long serialVersionUID = 1L;
 
-        public MultiValueFacetFilter(MultiValueFacetDataCache dataCache, int index)
+        private readonly string _val;
+        private readonly MultiDataCacheBuilder multiDataCacheBuilder;
+
+        public MultiValueFacetFilter(MultiDataCacheBuilder multiDataCacheBuilder, string val)
         {
-            _dataCache = dataCache;
-            _nestedArray = dataCache._nestedArray;
-            _index = index;
+            this.multiDataCacheBuilder = multiDataCacheBuilder;
+            _val = val;
         }
 
         private sealed class MultiValueFacetDocIdSetIterator : FacetFilter.FacetDocIdSetIterator

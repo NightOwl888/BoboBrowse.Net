@@ -19,6 +19,7 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Facets.Filter
 {
     using BoboBrowse.Net.DocIdSet;
@@ -28,100 +29,107 @@ namespace BoboBrowse.Net.Facets.Filter
     using Lucene.Net.Index;
     using System;
 
-    public class FacetFilter : RandomAccessFilter
+    public class FacetFilter<T> : RandomAccessFilter
     {
-        protected internal readonly FacetDataCache dataCache;
-        protected internal readonly BigSegmentedArray orderArray;
-        protected internal readonly int index;
+        private static long serialVersionUID = 1L;
 
-        public FacetFilter(FacetDataCache dataCache, int index)
+        protected readonly FacetHandler<FacetDataCache<T>> _facetHandler;
+        protected readonly string _value;
+
+
+        public FacetFilter(FacetHandler<FacetDataCache<T>> facetHandler, string value)
         {
-            this.dataCache = dataCache;
-            orderArray = dataCache.orderArray;
-            this.index = index;
+            _facetHandler = facetHandler;
+            _value = value;
+        }
+
+        public override double GetFacetSelectivity(BoboIndexReader reader)
+        {
+            double selectivity = 0;
+            FacetDataCache<T> dataCache = _facetHandler.GetFacetData(reader);
+            int idx = dataCache.valArray.IndexOf(_value);
+            if (idx < 0)
+            {
+                return 0.0;
+            }
+            int freq = dataCache.freqs[idx];
+            int total = reader.MaxDoc;
+            selectivity = (double)freq / (double)total;
+            return selectivity;
         }
 
         public class FacetDocIdSetIterator : DocIdSetIterator
         {
-            protected internal int doc;
-            protected internal readonly int index;
-            protected internal readonly int maxID;
-            protected internal readonly BigSegmentedArray orderArray;
+            protected internal int _doc;
+            protected internal readonly int _index;
+            protected internal readonly int _maxID;
+            protected internal readonly BigSegmentedArray _orderArray;
 
-            public FacetDocIdSetIterator(FacetDataCache dataCache, int index)
+            public FacetDocIdSetIterator(FacetDataCache<T> dataCache, int index)
             {
-                this.index = index;
-                doc = Math.Max(-1, dataCache.minIDs[this.index] - 1);
-                maxID = dataCache.maxIDs[this.index];
-                orderArray = dataCache.orderArray;
-            }
-
-            public override int Advance(int target)
-            {
-                if (target < doc)
-                {
-                    target = doc + 1;
-                }
-                doc = orderArray.FindValue(index, target, maxID);
-                return doc > maxID ? DocIdSetIterator.NO_MORE_DOCS : doc;
+                _index = index;
+                _doc = Math.Max(-1, dataCache.minIDs[_index] - 1);
+                _maxID = dataCache.maxIDs[_index];
+                _orderArray = dataCache.orderArray;
             }
 
             public override int DocID()
             {
-                return doc;
+                return _doc;
             }
 
             public override int NextDoc()
             {
-                doc = orderArray.FindValue(index, doc + 1, maxID);
-                return doc > maxID ? DocIdSetIterator.NO_MORE_DOCS : doc;
+                _doc = (_doc < _maxID) ? _orderArray.FindValue(_index, _doc + 1, _maxID) : NO_MORE_DOCS;
+                return _doc;
+            }
+
+            public override int Advance(int id)
+            {
+                if (_doc < id)
+                {
+                    _doc = (id <= _maxID) ? _orderArray.FindValue(_index, id, _maxID) : NO_MORE_DOCS;
+                    return _doc;
+                }
+                return NextDoc();
             }
         }
 
-        private class EmptyFacetFilterDocIdSet : RandomAccessDocIdSet
+        public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboIndexReader reader)
         {
-            private readonly DocIdSet empty = EmptyDocIdSet.GetInstance();
-
-            public override bool Get(int docId)
-            {
-                return false;
-            }
-
-            public override DocIdSetIterator Iterator()
-            {
-                return empty.Iterator();
-            }
-        }
-
-        private class CacheFacetFilterDocIdSet : RandomAccessDocIdSet
-        {
-            private readonly FacetFilter parent;
-
-            public CacheFacetFilterDocIdSet(FacetFilter parent)
-            {
-                this.parent = parent;
-            }
-
-            public override DocIdSetIterator Iterator()
-            {
-                return new FacetDocIdSetIterator(parent.dataCache, parent.index);
-            }
-
-            public override bool Get(int docId)
-            {
-                return parent.orderArray.Get(docId) == parent.index;
-            }
-        }
-
-        public override RandomAccessDocIdSet GetRandomAccessDocIdSet(IndexReader reader)
-        {
+            FacetDataCache<T> dataCache = _facetHandler.GetFacetData(reader);
+            int index = dataCache.valArray.IndexOf(_value);
             if (index < 0)
             {
-                return new EmptyFacetFilterDocIdSet();
+                return EmptyDocIdSet.GetInstance();
             }
             else
             {
-                return new CacheFacetFilterDocIdSet(this);
+                return new FacetDataRandomAccessDocIdSet(dataCache, index);
+            }
+        }
+
+        private class FacetDataRandomAccessDocIdSet : RandomAccessDocIdSet
+        {
+            private readonly FacetDataCache<T> _dataCache;
+	        private readonly BigSegmentedArray _orderArray;
+	        private readonly int _index;
+
+            public FacetDataRandomAccessDocIdSet(FacetDataCache<T> dataCache, int index)
+            {
+                _dataCache = dataCache;
+                _orderArray = dataCache.orderArray;
+                _index = index;
+            }
+
+            public override bool Get(int docId)
+            {
+                return _orderArray.Get(docId) == _index;
+            }
+
+            public override DocIdSetIterator Iterator()
+            {
+                return new FacetDocIdSetIterator(_dataCache, _index);
             }
         }
     }
