@@ -114,6 +114,7 @@
     <Compile Include="DocIdSet\BitsetDocSet.cs" />
     <Compile Include="DocIdSet\EmptyDocIdSet.cs" />
     <Compile Include="FacetSpec.cs" />
+    <Compile Include="Facets\Range\IBitSetBuilder.cs" />
     <Compile Include="Facets\Data\FacetDataCache.cs" />
     <Compile Include="Facets\Data\PredefinedTermListFactory.cs" />
     <Compile Include="Facets\Data\TermCharList.cs" />
@@ -155,6 +156,10 @@
     <Compile Include="Facets\Data\TermListFactory.cs" />
     <Compile Include="Facets\Data\TermStringList.cs" />
     <Compile Include="Facets\Impl\SimpleGroupbyFacetHandler.cs" />
+    <Compile Include="Facets\Range\MultiDataCacheBuilder.cs" />
+    <Compile Include="Facets\Range\MultiRangeFacetHandler.cs" />
+    <Compile Include="Facets\Range\SimpleDataCacheBuilder.cs" />
+    <Compile Include="Facets\Range\ValueConverterBitSetBuilder.cs" />
     <Compile Include="Facets\Statistics\ChiSquaredFacetCountStatisticsGenerator.cs" />
     <Compile Include="Facets\Statistics\FacetCountStatisicsGenerator.cs" />
     <Compile Include="Facets\Statistics\FacetCountStatistics.cs" />
@@ -208,6 +213,7 @@
     <Compile Include="Util\BitSet.cs" />
     <Compile Include="Util\BoundedPriorityQueue.cs" />
     <Compile Include="Util\DocIdSetUtil.cs" />
+    <Compile Include="Util\IDictionaryExtensions.cs" />
     <Compile Include="Util\ListMerger.cs" />
     <Compile Include="Util\MutableSparseFloatArray.cs" />
     <Compile Include="Util\ObjectCopier.cs" />
