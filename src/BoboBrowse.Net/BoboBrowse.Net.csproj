@@ -195,6 +195,8 @@
     <Compile Include="Service\DefaultBrowseQueryParser.cs" />
     <Compile Include="Service\HitCompareMulti.cs" />
     <Compile Include="Service\IBrowseQueryParser.cs" />
+    <Compile Include="Sort\DocComparator.cs" />
+    <Compile Include="Sort\DocComparatorSource.cs" />
     <Compile Include="Util\Arrays.cs" />
     <Compile Include="Util\BigByteArray.cs" />
     <Compile Include="Util\BigFloatArray.cs" />
