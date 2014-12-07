@@ -107,9 +107,9 @@ namespace BoboBrowse.Net.Util
             numrows = newNumrows;
         }
 
-        public override int MaxValue()
+        public override int MaxValue
         {
-            return sbyte.MaxValue;
+            get { return sbyte.MaxValue; }
         }
     }
 }

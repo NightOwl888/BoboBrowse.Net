@@ -60,7 +60,7 @@ namespace BoboBrowse.Net.Util
 
         public abstract void EnsureCapacity(int size);
 
-        public abstract int MaxValue();
+        public abstract int MaxValue { get; }
 
         public abstract int FindValue(int val, int docId, int maxId);
 
