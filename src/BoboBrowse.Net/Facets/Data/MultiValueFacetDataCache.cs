@@ -19,19 +19,24 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Facets.Data
 {
+    using BoboBrowse.Net.Sort;
+    using BoboBrowse.Net.Util;
+    using Common.Logging;
+    using Lucene.Net.Index;
+    using Lucene.Net.Search;
+    using Lucene.Net.Util;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Common.Logging;
-    using BoboBrowse.Net.Util;
-    using Lucene.Net.Index;
-    using Lucene.Net.Search;
+    
 
-    public class MultiValueFacetDataCache : FacetDataCache
+    public class MultiValueFacetDataCache<T> : FacetDataCache<T>
     {
-        private static ILog logger = LogManager.GetLogger(typeof(MultiValueFacetDataCache));
+        private static long serialVersionUID = 1L;
+        private static ILog logger = LogManager.GetLogger<MultiValueFacetDataCache<T>>();
 
         public readonly BigNestedIntArray _nestedArray;
         private int _maxItems = BigNestedIntArray.MAX_ITEMS;
@@ -42,13 +47,19 @@ namespace BoboBrowse.Net.Facets.Data
             _nestedArray = new BigNestedIntArray();
         }
 
-        public virtual void SetMaxItems(int maxItems)
+        public virtual MultiValueFacetDataCache<T> SetMaxItems(int maxItems)
         {
             _maxItems = Math.Min(maxItems, BigNestedIntArray.MAX_ITEMS);
-            _nestedArray.setMaxItems(_maxItems);
+            _nestedArray.MaxItems = _maxItems;
+            return this;
         }
 
-        public override void Load(string fieldName, IndexReader reader, TermListFactory listFactory)
+        public override int GetNumItems(int docid)
+        {
+            return _nestedArray.GetNumItems(docid);
+        } 
+
+        public override void Load(string fieldName, IndexReader reader, TermListFactory<T> listFactory)
         {
             this.Load(fieldName, reader, listFactory, new BoboIndexReader.WorkArea());
         }
@@ -61,18 +72,20 @@ namespace BoboBrowse.Net.Facets.Data
         ///   * <param name="workArea"> </param>
         ///   * <exception cref="IOException"> </exception>
         ///   
-        public virtual void Load(string fieldName, IndexReader reader, TermListFactory listFactory, BoboIndexReader.WorkArea workArea)
-        {          
+        public virtual void Load(string fieldName, IndexReader reader, TermListFactory<T> listFactory, BoboIndexReader.WorkArea workArea)
+        {
+            long t0 = Environment.TickCount;
             int maxdoc = reader.MaxDoc;
             BigNestedIntArray.BufferedLoader loader = GetBufferedLoader(maxdoc, workArea);
 
             TermEnum tenum = null;
             TermDocs tdoc = null;
-            ITermValueList list = (listFactory == null ? new TermStringList() : listFactory.CreateTermList());
+            TermValueList<T> list = (listFactory == null ? (TermValueList<T>)new TermStringList() : listFactory.CreateTermList());
             List<int> minIDList = new List<int>();
             List<int> maxIDList = new List<int>();
             List<int> freqList = new List<int>();
-
+            OpenBitSet bitset = new OpenBitSet();
+            int negativeValueCount = GetNegativeValueCount(reader, string.Intern(fieldName));
             int t = 0; // current term number
             list.Add(null);
             minIDList.Add(-1);
@@ -84,7 +97,7 @@ namespace BoboBrowse.Net.Facets.Data
             try
             {
                 tdoc = reader.TermDocs();
-                tenum = reader.Terms(new Term(fieldName));
+                tenum = reader.Terms(new Term(fieldName, ""));
                 if (tenum != null)
                 {
                     do
@@ -95,7 +108,6 @@ namespace BoboBrowse.Net.Facets.Data
 
                         string val = term.Text;
 
-                        // if (val!=null && val.length()>0){
                         if (val != null)
                         {
                             list.Add(val);
@@ -105,19 +117,24 @@ namespace BoboBrowse.Net.Facets.Data
                             int df = 0;
                             int minID = -1;
                             int maxID = -1;
+                            int valId = (t - 1 < negativeValueCount) ? (negativeValueCount - t + 1) : t;
                             if (tdoc.Next())
                             {
                                 df++;
                                 int docid = tdoc.Doc;
-                                if (!loader.Add(docid, t))
+
+                                if (!loader.Add(docid, valId))
                                     LogOverflow(fieldName);
                                 minID = docid;
+                                bitset.FastSet(docid);
                                 while (tdoc.Next())
                                 {
                                     df++;
                                     docid = tdoc.Doc;
-                                    if (!loader.Add(docid, t))
+
+                                    if (!loader.Add(docid, valId))
                                         LogOverflow(fieldName);
+                                    bitset.FastSet(docid);
                                 }
                                 maxID = docid;
                             }
@@ -137,14 +154,14 @@ namespace BoboBrowse.Net.Facets.Data
                 {
                     if (tdoc != null)
                     {
-                        tdoc.Dispose();
+                        tdoc.Close();
                     }
                 }
                 finally
                 {
                     if (tenum != null)
                     {
-                        tenum.Dispose();
+                        tenum.Close();
                     }
                 }
             }
@@ -153,7 +170,7 @@ namespace BoboBrowse.Net.Facets.Data
 
             try
             {
-                _nestedArray.load(maxdoc, loader);
+                _nestedArray.Load(maxdoc + 1, loader);
             }
             catch (System.IO.IOException e)
             {
@@ -167,7 +184,27 @@ namespace BoboBrowse.Net.Facets.Data
             this.valArray = list;
             this.freqs = freqList.ToArray();
             this.minIDs = minIDList.ToArray();
-            this.maxIDs = maxIDList.ToArray();          
+            this.maxIDs = maxIDList.ToArray();
+
+            int doc = 0;
+            while (doc <= maxdoc && !_nestedArray.Contains(doc, 0, true))
+            {
+                ++doc;
+            }
+            if (doc <= maxdoc)
+            {
+                this.minIDs[0] = doc;
+                doc = maxdoc;
+                while (doc > 0 && !_nestedArray.Contains(doc, 0, true))
+                {
+                    --doc;
+                }
+                if (doc > 0)
+                {
+                    this.maxIDs[0] = doc;
+                }
+            }
+            this.freqs[0] = maxdoc + 1 - (int)bitset.Cardinality();
         }
 
         ///  
@@ -178,14 +215,14 @@ namespace BoboBrowse.Net.Facets.Data
         ///   * <param name="listFactory"> </param>
         ///   * <exception cref="IOException"> </exception>
         ///   
-        public virtual void Load(string fieldName, IndexReader reader, TermListFactory listFactory, Term sizeTerm)
+        public virtual void Load(string fieldName, IndexReader reader, TermListFactory<T> listFactory, Term sizeTerm)
         {
             int maxdoc = reader.MaxDoc;
             BigNestedIntArray.Loader loader = new AllocOnlyLoader(_maxItems, sizeTerm, reader);
-
+            int negativeValueCount = GetNegativeValueCount(reader, string.Intern(fieldName));
             try
             {
-                _nestedArray.load(maxdoc, loader);
+                _nestedArray.Load(maxdoc + 1, loader);
             }
             catch (System.IO.IOException e)
             {
@@ -198,10 +235,11 @@ namespace BoboBrowse.Net.Facets.Data
 
             TermEnum tenum = null;
             TermDocs tdoc = null;
-            ITermValueList list = (listFactory == null ? new TermStringList() : listFactory.CreateTermList());
+            TermValueList<T> list = (listFactory == null ? (TermValueList<T>)new TermStringList() : listFactory.CreateTermList());
             List<int> minIDList = new List<int>();
             List<int> maxIDList = new List<int>();
             List<int> freqList = new List<int>();
+            OpenBitSet bitset = new OpenBitSet();
 
             int t = 0; // current term number
             list.Add(null);
@@ -238,15 +276,18 @@ namespace BoboBrowse.Net.Facets.Data
                             {
                                 df++;
                                 int docid = tdoc.Doc;
-                                if (!_nestedArray.addData(docid, t))
+                                if (!_nestedArray.AddData(docid, t))
                                     LogOverflow(fieldName);
                                 minID = docid;
+                                bitset.FastSet(docid);
+                                int valId = (t - 1 < negativeValueCount) ? (negativeValueCount - t + 1) : t;
                                 while (tdoc.Next())
                                 {
                                     df++;
                                     docid = tdoc.Doc;
-                                    if (!_nestedArray.addData(docid, t))
+                                    if (!_nestedArray.AddData(docid, valId))
                                         LogOverflow(fieldName);
+                                    bitset.FastSet(docid);
                                 }
                                 maxID = docid;
                             }
@@ -266,14 +307,14 @@ namespace BoboBrowse.Net.Facets.Data
                 {
                     if (tdoc != null)
                     {
-                        tdoc.Dispose();
+                        tdoc.Close();
                     }
                 }
                 finally
                 {
                     if (tenum != null)
                     {
-                        tenum.Dispose();
+                        tenum.Close();
                     }
                 }
             }
@@ -284,9 +325,29 @@ namespace BoboBrowse.Net.Facets.Data
             this.freqs = freqList.ToArray();
             this.minIDs = minIDList.ToArray();
             this.maxIDs = maxIDList.ToArray();
+
+            int doc = 0;
+            while (doc <= maxdoc && !_nestedArray.Contains(doc, 0, true))
+            {
+                ++doc;
+            }
+            if (doc <= maxdoc)
+            {
+                this.minIDs[0] = doc;
+                doc = maxdoc;
+                while (doc > 0 && !_nestedArray.Contains(doc, 0, true))
+                {
+                    --doc;
+                }
+                if (doc > 0)
+                {
+                    this.maxIDs[0] = doc;
+                }
+            }
+            this.freqs[0] = maxdoc + 1 - (int)bitset.Cardinality();
         }
 
-        private void LogOverflow(string fieldName)
+        protected void LogOverflow(string fieldName)
         {
             if (!_overflow)
             {
@@ -295,7 +356,7 @@ namespace BoboBrowse.Net.Facets.Data
             }
         }
 
-        private BigNestedIntArray.BufferedLoader GetBufferedLoader(int maxdoc, BoboIndexReader.WorkArea workArea)
+        protected BigNestedIntArray.BufferedLoader GetBufferedLoader(int maxdoc, BoboIndexReader.WorkArea workArea)
         {
             if (workArea == null)
             {
@@ -315,23 +376,23 @@ namespace BoboBrowse.Net.Facets.Data
                 }
 
                 BigNestedIntArray.BufferedLoader loader = workArea.Get<BigNestedIntArray.BufferedLoader>();
-                if (loader == null || loader.capacity() < maxdoc)
+                if (loader == null || loader.Capacity < maxdoc)
                 {
                     loader = new BigNestedIntArray.BufferedLoader(maxdoc, _maxItems, buffer);
                     workArea.Put(loader);
                 }
                 else
                 {
-                    loader.reset(maxdoc, _maxItems, buffer);
+                    loader.Reset(maxdoc, _maxItems, buffer);
                 }
                 return loader;
             }
         }
 
-        ///  
-        ///   <summary> * A loader that allocate data storage without loading data to BigNestedIntArray.
-        ///   * Note that this loader supports only non-negative integer data. </summary>
-        ///   
+        /// <summary>
+        /// A loader that allocate data storage without loading data to BigNestedIntArray.
+        /// Note that this loader supports only non-negative integer data.
+        /// </summary>
         public sealed class AllocOnlyLoader : BigNestedIntArray.Loader
         {
             private IndexReader _reader;
@@ -363,14 +424,14 @@ namespace BoboBrowse.Net.Facets.Data
                             tp.NextPosition();
                             tp.GetPayload(payloadBuffer, 0);
                             int len = BytesToInt(payloadBuffer);
-                            allocate(tp.Doc, Math.Min(len, _maxItems), true);
+                            Allocate(tp.Doc, Math.Min(len, _maxItems), true);
                         }
                     }
                 }
                 finally
                 {
                     if (tp != null)
-                        tp.Dispose();
+                        tp.Close();
                 }
             }
 
@@ -380,110 +441,41 @@ namespace BoboBrowse.Net.Facets.Data
             }
         }
 
-        public override FieldComparator GeFieldComparator(int numDocs, int type)
+        public sealed class MultiFacetDocCaomparatorSource : DocComparatorSource
         {
-            return new FacetMultiValueComparator(numDocs, type, this);
-        }       
+            private MultiDataCacheBuilder cacheBuilder;
+		    public MultiFacetDocComparatorSource(MultiDataCacheBuilder multiDataCacheBuilder){
+		      cacheBuilder = multiDataCacheBuilder;
+		    }
 
-        private class FacetMultiValueComparator : FieldComparator
-        {
-            private int[] _docs;
-            private int _fieldType;
-            private MultiValueFacetDataCache _dataCache;
-            private string[] _bottom;
-            
-            public FacetMultiValueComparator(int numHits,int type, MultiValueFacetDataCache dataCache)
+            public override GetComparator(IndexReader reader, int docbase)
             {
-                _docs = new int[numHits];
-                _fieldType = type;                             
-                _dataCache = dataCache;
-                              
+                if (!reader.GetType().Equals(typeof(BoboIndexReader))) 
+                    throw new ArgumentException("reader must be instance of BoboIndexReader");
+                BoboIndexReader boboReader = (BoboIndexReader)reader;
+                MultiValueFacetDataCache<T> datacache = cacheBuilder.Build(boboReader);
+                return new MyComparator(dataCache);
             }
 
-            public override int Compare(int slot1, int slot2)
+            public sealed class MyComparator : DocComparator
             {
-                var doc1 = _docs[slot1];
-                var doc2 = _docs[slot2];
-                return this.CompareValue(_dataCache._nestedArray.getTranslatedData(doc1, _dataCache.valArray),
-                    _dataCache._nestedArray.getTranslatedData(doc2, _dataCache.valArray));
-            }
+                private readonly MultiValueFacetDataCache<T> _dataCache;
 
-            public override int CompareBottom(int doc)
-            {
-                return this.CompareValue(_bottom, _dataCache._nestedArray.getTranslatedData(doc, _dataCache.valArray));
-            }
-
-            public override void Copy(int slot, int doc)
-            {
-                _docs[slot] = doc;
-            }
-
-            public override void SetBottom(int slot)
-            {
-                _bottom = _dataCache._nestedArray.getTranslatedData(slot, _dataCache.valArray);
-            }
-
-            public override void SetNextReader(IndexReader reader, int docBase)
-            {
-            }
-
-            public override IComparable this[int slot]
-            {
-                get
+                public MyComparator(MultiValueFacetDataCache<T> dataCache)
                 {
-                    var doc = _docs[slot];
-                    var vals = _dataCache._nestedArray.getTranslatedData(doc, _dataCache.valArray);
+                    _dataCache = dataCache;
+                }
+
+                public override int Compare(ScoreDoc doc1, ScoreDoc doc2)
+                {
+                    return _dataCache._nestedArray.Compare(doc1.Doc, doc2.Doc);
+                }
+
+                public override IComparable Value(ScoreDoc doc)
+                {
+                    string[] vals = _dataCache._nestedArray.GetTranslatedData(doc.Doc, _dataCache.valArray);
                     return new StringArrayComparator(vals);
                 }
-            }
-
-            private int CompareValue<T>(string[] value1, string[] value2, Func<string, T> parser) where T : IComparable
-            {
-                //(T)Convert.ChangeType(value, typeof(T))
-                var v1 = value1.Select(k => parser(k)).OrderByDescending(k => k).ToArray();
-                var v2 = value2.Select(k => parser(k)).OrderByDescending(k => k).ToArray();
-                for (var i = 0; i < Math.Min(v1.Length, v2.Length); i++)
-                {
-                    var compare = v1[i].CompareTo(v2[i]);
-                    if (compare != 0)
-                    {
-                        return compare;
-                    }
-                }
-                return value1.Length.CompareTo(value2.Length);
-            }
-
-            private int CompareValue(string[] value1, string[] value2)
-            {
-                switch (_fieldType)
-                {
-                    case SortField.BYTE:
-                    case SortField.INT:
-                        {
-                            return this.CompareValue(value1, value2, (k => int.Parse(k)));
-                        }
-                    case SortField.DOUBLE:
-                        {
-                            return this.CompareValue(value1, value2, (k => double.Parse(k)));
-                        }
-                    case SortField.FLOAT:
-                        {
-                            return this.CompareValue(value1, value2, (k => float.Parse(k)));
-                        }
-                    case SortField.LONG:
-                        {
-                            return this.CompareValue(value1, value2, (k => long.Parse(k)));
-                        }
-                    case SortField.SHORT:
-                        {
-                            return this.CompareValue(value1, value2, (k => short.Parse(k)));
-                        }
-                    case SortField.STRING:
-                        {
-                            return this.CompareValue(value1, value2, (k => k));
-                        }                        
-                }
-                return 0;
             }
         }
     }

@@ -21,32 +21,42 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Facets.Data
 {
-    using System;
-    using System.Collections.Generic;
+    using BoboBrowse.Net.Sort;
+    using BoboBrowse.Net.Util;
+    using Common.Logging;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
-    using BoboBrowse.Net.Util;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    
 
     [Serializable]
-    public class FacetDataCache
+    public class FacetDataCache<T>
     {
+        private static ILog logger = LogManager.GetLogger<FacetDataCache<T>>();
+
+        private readonly static long serialVersionUID = 1L;
+
         public BigSegmentedArray orderArray;
-        public ITermValueList valArray;
+        public TermValueList<T> valArray;
         public int[] freqs;
         public int[] minIDs;
         public int[] maxIDs;
-        private readonly FacetHandler.TermCountSize termCountSize;
+        private readonly TermCountSize _termCountSize;
 
-        public FacetDataCache(BigSegmentedArray orderArray, ITermValueList valArray, int[] freqs, int[] minIDs, int[] maxIDs, FacetHandler.TermCountSize termCountSize)
+        public FacetDataCache(BigSegmentedArray orderArray, TermValueList<T> valArray, int[] freqs, int[] minIDs, 
+            int[] maxIDs, TermCountSize termCountSize)
         {
             this.orderArray = orderArray;
             this.valArray = valArray;
             this.freqs = freqs;
             this.minIDs = minIDs;
             this.maxIDs = maxIDs;
-            this.termCountSize = termCountSize;
+            _termCountSize = termCountSize;
         }
 
         public FacetDataCache()
@@ -56,16 +66,22 @@ namespace BoboBrowse.Net.Facets.Data
             this.maxIDs = null;
             this.minIDs = null;
             this.freqs = null;
-            termCountSize = FacetHandler.TermCountSize.Large;
+            _termCountSize = TermCountSize.Large;
         }
 
-        private static BigSegmentedArray NewInstance(FacetHandler.TermCountSize termCountSize, int maxDoc)
+        public virtual int GetNumItems(int docid)
         {
-            if (termCountSize == FacetHandler.TermCountSize.Small)
+            int valIdx = orderArray.Get(docid);
+            return valIdx <= 0 ? 0 : 1;
+        }
+
+        private static BigSegmentedArray NewInstance(TermCountSize termCountSize, int maxDoc)
+        {
+            if (termCountSize == TermCountSize.Small)
             {
                 return new BigByteArray(maxDoc);
             }
-            else if (termCountSize == FacetHandler.TermCountSize.Medium)
+            else if (termCountSize == TermCountSize.Medium)
             {
                 return new BigShortArray(maxDoc);
             }
@@ -73,34 +89,66 @@ namespace BoboBrowse.Net.Facets.Data
                 return new BigIntArray(maxDoc);
         }
 
-        public virtual void Load(string fieldName, IndexReader reader, TermListFactory listFactory)
+        protected int GetNegativeValueCount(IndexReader reader, string field)
+        {
+            int ret = 0;
+            TermEnum termEnum = null;
+            try
+            {
+                termEnum = reader.Terms(new Term(field, ""));
+                do
+                {
+                    Term term = termEnum.Term;
+                    if (term == null || string.CompareOrdinal(term.Field, field) != 0)
+                        break;
+                    if (!term.Text.StartsWith("-"))
+                    {
+                        break;
+                    }
+                    ret++;
+                } while (termEnum.Next());
+            }
+            finally
+            {
+                termEnum.Close();
+            }
+            return ret;
+        }
+
+        public virtual void Load(string fieldName, IndexReader reader, TermListFactory<T> listFactory)
         {
             string field = string.Intern(fieldName);
             int maxDoc = reader.MaxDoc;
 
-            if (orderArray == null) // we want to reuse the memory
+            BigSegmentedArray order = this.orderArray;
+            if (order == null) // we want to reuse the memory
             {
-                orderArray = NewInstance(termCountSize, maxDoc);
+                order = NewInstance(_termCountSize, maxDoc);
             }
             else
             {
-                orderArray.EnsureCapacity(maxDoc); // no need to fill to 0, we are reseting the data anyway
+                order.EnsureCapacity(maxDoc); // no need to fill to 0, we are reseting the 
+                                              // data anyway
             }
+            this.orderArray = order;
 
             List<int> minIDList = new List<int>();
             List<int> maxIDList = new List<int>();
             List<int> freqList = new List<int>();
 
             int length = maxDoc + 1;
-            ITermValueList list = listFactory == null ? new TermStringList() : listFactory.CreateTermList();
+            TermValueList<T> list = listFactory == null ? (TermValueList<T>)new TermStringList() : listFactory.CreateTermList();
+            int negativeValueCount = GetNegativeValueCount(reader, field);
+
             TermDocs termDocs = reader.TermDocs();
-            TermEnum termEnum = reader.Terms(new Term(field));
+            TermEnum termEnum = reader.Terms(new Term(field, ""));
             int t = 0; // current term number
 
             list.Add(null);
             minIDList.Add(-1);
             maxIDList.Add(-1);
             freqList.Add(0);
+            int totalFreq = 0;
             //int df = 0;
             t++;
             try
@@ -111,38 +159,43 @@ namespace BoboBrowse.Net.Facets.Data
                     if (term == null || string.CompareOrdinal(term.Field, field) != 0)
                         break;
 
-                    if (t >= orderArray.MaxValue())
+                    if (t > orderArray.MaxValue)
                     {
-                        throw new System.IO.IOException("maximum number of value cannot exceed: " + orderArray.MaxValue());
+                        throw new System.IO.IOException("maximum number of value cannot exceed: " + orderArray.MaxValue);
                     }
+                    // store term text
+                    // we expect that there is at most one term per document
+
                     // Alexey: well, we could get now more than one term per document. Effectively, we could build facet againsts tokenized field
-                    /*// we expect that there is at most one term per document
+                    // NightOwl888: This check was commented by Alexey, but was replaced to align with the 3.1.0 source.
                     if (t >= length)
                     {
-                        throw new RuntimeException("there are more terms than " + "documents in field \"" + field + "\", but it's impossible to sort on " + "tokenized fields");
-                    }*/
-                    // store term text
+                        throw new RuntimeException("there are more terms than " + "documents in field \"" + field 
+                            + "\", but it's impossible to sort on " + "tokenized fields");
+                    }
                     list.Add(term.Text);
                     termDocs.Seek(termEnum);
                     // freqList.add(termEnum.docFreq()); // doesn't take into account deldocs
                     int minID = -1;
                     int maxID = -1;
                     int df = 0;
+                    int valId = (t - 1 < negativeValueCount) ? (negativeValueCount - t + 1) : t;
                     if (termDocs.Next())
                     {
                         df++;
                         int docid = termDocs.Doc;
-                        orderArray.Add(docid, t);
+                        order.Add(docid, valId);
                         minID = docid;
                         while (termDocs.Next())
                         {
                             df++;
                             docid = termDocs.Doc;
-                            orderArray.Add(docid, t);
+                            order.Add(docid, valId);
                         }
                         maxID = docid;
                     }
                     freqList.Add(df);
+                    totalFreq += df;
                     minIDList.Add(minID);
                     maxIDList.Add(maxID);
 
@@ -151,20 +204,41 @@ namespace BoboBrowse.Net.Facets.Data
             }
             finally
             {
-                termDocs.Dispose();
-                termEnum.Dispose();
+                termDocs.Close();
+                termEnum.Close();
             }
             list.Seal();
-
             this.valArray = list;
             this.freqs = freqList.ToArray();
             this.minIDs = minIDList.ToArray();
             this.maxIDs = maxIDList.ToArray();
+
+            int doc = 0;
+            while (doc <= maxDoc && order.Get(doc) != 0)
+            {
+                ++doc;
+            }
+            if (doc <= maxDoc)
+            {
+                this.minIDs[0] = doc;
+                // Try to get the max
+                doc = maxDoc;
+                while (doc > 0 && order.Get(doc) != 0)
+                {
+                    --doc;
+                }
+                if (doc > 0)
+                {
+                    this.maxIDs[0] = doc;
+                }
+            }
+            this.freqs[0] = maxDoc + 1 - totalFreq;
         }
 
-        public static int[] Convert(FacetDataCache dataCache, string[] vals)
+        // NOTE: This was FacetDataCache (non generic) in the source. Not sure if FacetDataCache<T> is equivalent.
+        private static int[] ConvertString(FacetDataCache<T> dataCache, string[] vals)
         {
-            List<int> list = new List<int>(vals.Length);
+            var list = new List<int>(vals.Length);
             for (int i = 0; i < vals.Length; ++i)
             {
                 int index = dataCache.valArray.IndexOf(vals[i]);
@@ -176,92 +250,66 @@ namespace BoboBrowse.Net.Facets.Data
             return list.ToArray();
         }
 
-        public virtual FieldComparator GeFieldComparator(int numDocs,int type)
+        /// <summary>
+        /// Same as ConvertString(FacetDataCache dataCache,String[] vals) except that the
+        /// values are supplied in raw form so that we can take advantage of the type
+        /// information to find index faster.
+        /// </summary>
+        /// <param name="dataCache"></param>
+        /// <param name="vals"></param>
+        /// <returns>the array of order indices of the values.</returns>
+        public static int[] Convert(FacetDataCache<T> dataCache, T[] vals) 
         {
-            return new FacetFieldComparator(numDocs, type, this);
+            if (vals != null && (typeof(T) == typeof(string)))
+            {
+                var valsString = vals.Cast<string>().ToArray();
+                return ConvertString(dataCache, valsString);
+            }
+            var list = new List<int>(vals.Length);
+            for (int i = 0; i < vals.Length; ++i) {
+                int index = dataCache.valArray.IndexOfWithType(vals[i]);
+                if (index >= 0) {
+                list.Add(index);
+                }
+            }
+            return list.ToArray();
         }
 
-        private class FacetFieldComparator : FieldComparator
+        public class FacetDocComparatorSource : DocComparatorSource
         {
-            private int[] _docs;
-            private int _fieldType;
-            private FacetDataCache _dataCache;
-            private BigSegmentedArray orderArray;
-            private int _bottom;
+            private FacetHandler<FacetDataCache<T>> _facetHandler;
 
-            public FacetFieldComparator(int numHits,int type, FacetDataCache dataCache)
+            public FacetDocComparatorSource(FacetHandler<FacetDataCache<T>> facetHandler)
             {
-                _docs = new int[numHits];
-                _fieldType = type;
-                _dataCache = dataCache;
-                orderArray = _dataCache.orderArray;
+                _facetHandler = facetHandler;
             }
 
-            public override int Compare(int slot1, int slot2)
+            public override DocComparator GetComparator(IndexReader reader, int docbase)
             {
-                var doc1 = _docs[slot1];
-                var doc2 = _docs[slot2];
-                var value1 = _dataCache.valArray.Get(orderArray.Get(doc1));
-                var value2 = _dataCache.valArray.Get(orderArray.Get(doc2));
-                return this.CompareValue(value1, value2);               
+                if (!(reader.GetType().Equals(typeof(BoboIndexReader))))
+                    throw new ArgumentException("reader not instance of BoboIndexReader");
+                BoboIndexReader boboReader = (BoboIndexReader)reader;
+                var dataCache = _facetHandler.GetFacetData(boboReader);
+                var orderArray = dataCache.orderArray;
+                return new MyDocComparator(dataCache, orderArray);
             }
 
-            public override int CompareBottom(int doc)
+            public class MyDocComparator : DocComparator
             {
-                var value1 = _dataCache.valArray.Get(_bottom);
-                var value2 = _dataCache.valArray.Get(orderArray.Get(doc));
-                return this.CompareValue(value1, value2);
-            }
+                private readonly FacetDataCache<T> _dataCache;
+                private readonly BigSegmentedArray _orderArray;
 
-            public override void Copy(int slot, int doc)
-            {
-                _docs[slot] = doc;
-            }
-
-            public override void SetBottom(int slot)
-            {
-                _bottom = orderArray.Get(slot);
-            }
-
-            public override void SetNextReader(IndexReader reader, int docBase)
-            {               
-            }
-
-            public override IComparable this[int slot]
-            {
-                get {
-                    var index = orderArray.Get(_docs[slot]);
-                    return _dataCache.valArray.Get(index);
-                }
-            }
-
-            private int CompareValue(string value1, string value2)
-            {
-                switch (_fieldType)
+                public MyDocComparator(FacetDataCache<T> dataCache, BigSegmentedArray orderArray)
                 {
-                    case SortField.BYTE:
-                    case SortField.INT:
-                        {
-                            return int.Parse(value1).CompareTo(int.Parse(value2));
-                        }
-                    case SortField.DOUBLE:
-                        {
-                            return double.Parse(value1).CompareTo(double.Parse(value2));
-                        }
-                    case SortField.FLOAT:
-                        {
-                            return float.Parse(value1).CompareTo(float.Parse(value2));
-                        }
-                    case SortField.LONG:
-                        {
-                            return long.Parse(value1).CompareTo(long.Parse(value2));
-                        }
-                    case SortField.SHORT:
-                        {
-                            return short.Parse(value1).CompareTo(short.Parse(value2));
-                        }                    
+                    _dataCache = dataCache;
+                    _orderArray = orderArray;
                 }
-                return string.Compare(value1, value2, true);
+
+                public override IComparable Value(ScoreDoc doc)
+                {
+                    int index = _orderArray.Get(doc.Doc);
+                    return _dataCache.valArray.GetComparableValue(index);
+                }
             }
         }
     }
