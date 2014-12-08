@@ -165,7 +165,6 @@
     <Compile Include="Facets\Statistics\FacetCountStatistics.cs" />
     <Compile Include="IFacetAccessible.cs" />
     <Compile Include="IComparatorFactory.cs" />
-    <Compile Include="Facets\IFacetHandlerFactory.cs" />
     <Compile Include="IFieldValueAccessor.cs" />
     <Compile Include="Impl\BrowseServiceImpl.cs" />
     <Compile Include="Impl\DefaultBrowseServiceImpl.cs" />
