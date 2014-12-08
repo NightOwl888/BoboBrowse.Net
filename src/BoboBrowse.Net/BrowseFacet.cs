@@ -21,42 +21,62 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net
 {
     using System;
     using System.Collections.Generic;
 
+    /// <summary>
+    /// This class represents a facet
+    /// </summary>
     [Serializable]
     public class BrowseFacet
     {
+        private static long serialVersionUID = 1L;
+
+        private string _value;
+        private int _hitcount;
+
         public BrowseFacet() { }
 
-        public BrowseFacet(object value, int hitCount)
+        public BrowseFacet(string value, int hitCount)
         {
-            this.Value = value;
-            this.HitCount = hitCount;
+            _value = value;
+            _hitcount = hitCount;
         }
 
-        public virtual List<BrowseFacet> Merge(List<BrowseFacet> v, IComparer<BrowseFacet> comparator)
+        /// <summary>
+        /// Gets or sets the facet value
+        /// </summary>
+        public string Value 
         {
-            int i = 0;
-            foreach (var facet in v)
-            {
-                int val = comparator.Compare(this, facet);
-                if (val == 0)
-                {
-                    facet.HitCount += HitCount;
-                    return v;
-                }                
-                i++;
-            }
-            v.Add(this);
-            return v;
+            get { return _value; }
+            set { _value = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the hit count
+        /// </summary>
+        [Obsolete("Use FacetValueHitCount instead")]
+        public int HitCount
+        {
+            get { return _hitcount; }
+            set { _hitcount = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the hit count
+        /// </summary>
+        public int FacetValueHitCount
+        {
+            get { return _hitcount; }
+            set { _hitcount = value; }
         }
 
         public override string ToString()
         {
-            return string.Concat(Value, "(", HitCount, ")");
+            return string.Concat(Value, "(", _hitcount, ")");
         }
 
         public override bool Equals(object obj)
@@ -66,7 +86,7 @@ namespace BoboBrowse.Net
             if (obj is BrowseFacet)
             {
                 BrowseFacet c2 = (BrowseFacet)obj;
-                if (HitCount == c2.HitCount && Value.Equals(c2.Value))
+                if (_hitcount == c2._hitcount && _value.Equals(c2._value))
                 {
                     equals = true;
                 }
@@ -74,13 +94,22 @@ namespace BoboBrowse.Net
             return equals;
         }
 
-        public override int GetHashCode()
+        public virtual IEnumerable<BrowseFacet> Merge(IEnumerable<BrowseFacet> v, IComparer<BrowseFacet> comparator)
         {
-            return base.GetHashCode();
+            int i = 0;
+            foreach (var facet in v)
+            {
+                int val = comparator.Compare(this, facet);
+                if (val == 0)
+                {
+                    facet._hitcount += _hitcount;
+                    return v;
+                }
+                i++;
+            }
+            var result = new List<BrowseFacet>(v);
+            result.Add(this);
+            return result;
         }
-
-        public int HitCount { get; set; }
-
-        public object Value { get; set; }
     }
 }

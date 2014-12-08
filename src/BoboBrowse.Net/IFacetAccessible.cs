@@ -21,7 +21,7 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
-
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net
 {
     using System;
@@ -37,5 +37,17 @@ namespace BoboBrowse.Net
         ///<param name="value">Facet value </param>
         ///<returns>a facet with count filled in </returns>
         BrowseFacet GetFacet(string value);
+
+        /// <summary>
+        /// Responsible for release resources used. If the implementing class
+        /// does not use a lot of resources,
+        /// it does not have to do anything.
+        /// </summary>
+        public void Close();
+
+        /// <summary>
+        /// Returns an iterator to visit all the facets
+        /// </summary>
+        FacetIterator Iterator { get; }
     }
 }
