@@ -114,6 +114,12 @@
     <Compile Include="DocIdSet\BitsetDocSet.cs" />
     <Compile Include="DocIdSet\EmptyDocIdSet.cs" />
     <Compile Include="FacetSpec.cs" />
+    <Compile Include="Facets\AbstractRuntimeFacetHandlerFactory.cs" />
+    <Compile Include="Facets\CombinedFacetAccessible.cs" />
+    <Compile Include="Facets\DefaultFacetHandlerInitializerParam.cs" />
+    <Compile Include="Facets\FacetCountCollectorSource.cs" />
+    <Compile Include="Facets\FacetHandlerInitializerParam.cs" />
+    <Compile Include="Facets\IRuntimeFacetHandlerFactory.cs" />
     <Compile Include="Facets\Range\IBitSetBuilder.cs" />
     <Compile Include="Facets\Data\FacetDataCache.cs" />
     <Compile Include="Facets\Data\PredefinedTermListFactory.cs" />
@@ -160,6 +166,7 @@
     <Compile Include="Facets\Range\MultiRangeFacetHandler.cs" />
     <Compile Include="Facets\Range\SimpleDataCacheBuilder.cs" />
     <Compile Include="Facets\Range\ValueConverterBitSetBuilder.cs" />
+    <Compile Include="Facets\RuntimeFacetHandler.cs" />
     <Compile Include="Facets\Statistics\ChiSquaredFacetCountStatisticsGenerator.cs" />
     <Compile Include="Facets\Statistics\FacetCountStatisicsGenerator.cs" />
     <Compile Include="Facets\Statistics\FacetCountStatistics.cs" />

@@ -21,103 +21,150 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Facets
 {
+    using BoboBrowse.Net.Facets.Filter;
+    using BoboBrowse.Net.Sort;
+    using BoboBrowse.Net.Util;
+    using Lucene.Net.Search;
     using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using Lucene.Net.Search;
-    using BoboBrowse.Net.Facets.Filter;
 
-    public abstract class FacetHandler : ICloneable
+    public enum TermCountSize
     {
-        public enum TermCountSize
+        Small,
+        Medium,
+        Large
+    }
+
+    public abstract class FacetHandler<D> : ICloneable
+    {
+        [Serializable]
+        public class FacetDataNone
         {
-            Small,
-            Medium,
-            Large
+            private static long serialVersionUID = 1L;
+            public static FacetDataNone instance = new FacetDataNone();
+            private FacetDataNone() { }
         }
 
-        private readonly Dictionary<string, FacetHandler> _dependedFacetHandlers;       
+        protected readonly string _name;
+        private readonly IEnumerable<string> _dependsOn;
+        // TODO: See if there is a way to use another type besides object; original was <string, FacetHandler<?>>
+        private readonly Dictionary<string, object> _dependedFacetHandlers;
+        private TermCountSize _termCountSize;
 
-        protected FacetHandler(string name) : this(name, null) { }
-
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="dependsOn">Set of names of facet handlers this facet handler depend on for loading</param>
         protected FacetHandler(string name, IEnumerable<string> dependsOn)
         {
-            this.Name = name;
-            this.DependsOn = dependsOn == null ? new List<string>() : new List<string>(dependsOn);
-            this._dependedFacetHandlers = new Dictionary<string, FacetHandler>();
-            this.TermCountSizeFlag = TermCountSize.Large;
+            _name = name;
+            _dependsOn = dependsOn == null ? new List<string>() : new List<string>(dependsOn);
+            _dependedFacetHandlers = new Dictionary<string, object>();
+            _termCountSize = TermCountSize.Large;
         }
 
-        public abstract void Load(BoboIndexReader reader);
-
-        public abstract RandomAccessFilter BuildRandomAccessFilter(string value, Properties selectionProperty);
-
-       /// <summary>
-        /// Gets a FacetCountCollector 
-       /// </summary>
-       /// <param name="sel"></param>
-       /// <param name="fspec"></param>
-       /// <returns></returns>
-        public abstract IFacetCountCollector GetFacetCountCollector(BrowseSelection sel, FacetSpec fspec);
-
-       /// <summary>
-        /// Gets the field value
-       /// </summary>
-       /// <param name="id"></param>
-       /// <returns></returns>
-        public abstract string[] GetFieldValues(int id);
-
-        public abstract object[] GetRawFieldValues(int id);
-
-        /// <summary>
-        /// builds a comparator to determine how sorting is done
-        /// </summary>
-        /// <returns></returns>
-        public abstract FieldComparator GetComparator(int numDocs, SortField field);
-
-        /// <summary>
-        /// Gets a single field value 
-        /// </summary>
-         /// <param name="id"></param>
-        /// <returns></returns>
-        public virtual string GetFieldValue(int id)
+        public FacetHandler<D> SetTermCountSize(string termCountSize)
         {
-            return GetFieldValues(id)[0];
+            this.SetTermCountSize((TermCountSize)Enum.Parse(typeof(TermCountSize), termCountSize, true));
+            return this;
         }
+
+        public FacetHandler<D> SetTermCountSize(TermCountSize termCountSize)
+        {
+            _termCountSize = termCountSize;
+            return this;
+        }
+
+        public TermCountSize GetTermCountSize()
+        {
+            return _termCountSize;
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="name"></param>
+        protected FacetHandler(string name) 
+            : this(name, null) 
+        { }
+
+        /// <summary>
+        /// Gets name of the current facet handler
+        /// </summary>
+        public string Name
+        {
+            get { return _name; }
+        }
+
+        /// <summary>
+        /// Gets names of the facet handler this depends on
+        /// </summary>
+        public IEnumerable<string> DependsOn
+        {
+            get { return _dependsOn; }
+        }
+
+        // TODO: Need to revisit this design later to see if there is a better alternative
+        // to using FacetHandler<T>. In Java, they used FacetHandler<?>.
 
         /// <summary>
         /// Adds a list of depended facet handlers
         /// </summary>
-        /// <param name="facetHandler"></param>
-        public void PutDependedFacetHandler(FacetHandler facetHandler)
+        /// <param name="name">Name of handler depended facet handler</param>
+        /// <param name="facetHandler">Handler depended facet handler</param>
+        public void PutDependedFacetHandler<T>(FacetHandler<T> facetHandler)
         {
-            this._dependedFacetHandlers[facetHandler.Name] = facetHandler;
+            _dependedFacetHandlers.Put(facetHandler._name, facetHandler);
         }
 
-        public FacetHandler GetDependedFacetHandler(string name)
+        /// <summary>
+        /// Gets a depended facet handler
+        /// </summary>
+        /// <param name="name">facet handler name</param>
+        /// <returns>facet handler instance</returns>
+        public object GetDependedFacetHandler(string name)
         {
-            FacetHandler facetHandler = null;
-            if (this._dependedFacetHandlers.TryGetValue(name, out facetHandler))
-            {
-                return facetHandler;
-            }
-            return null;
+            return _dependedFacetHandlers.Get(name);
         }
+
+        /// <summary>
+        /// Load information from an index reader, initialized by <see cref="T:BoboBrowse.Net.BoboIndexReader"/>.
+        /// </summary>
+        /// <param name="reader"></param>
+        public abstract D Load(BoboIndexReader reader);
 
         public virtual IFacetAccessible Merge(FacetSpec fspec, IEnumerable<IFacetAccessible> facetList)
         {
             return new CombinedFacetAccessible(fspec, facetList);
         }
 
-        public virtual void Load(BoboIndexReader reader, BoboIndexReader.WorkArea workArea)
+        public virtual D GetFacetData(BoboIndexReader reader)
         {
-            Load(reader);
+            return (D)reader.GetFacetData(_name);
         }
 
-        public RandomAccessFilter BuildFilter(BrowseSelection sel)
+        public virtual D Load(BoboIndexReader reader, BoboIndexReader.WorkArea workArea)
+        {
+            return Load(reader);
+        }
+
+        public virtual void LoadFacetData(BoboIndexReader reader, BoboIndexReader.WorkArea workArea)
+        {
+            reader.PutFacetData(_name, Load(reader, workArea));
+        }
+
+        public virtual void LoadFacetData(BoboIndexReader reader)
+        {
+            reader.PutFacetData(_name, Load(reader));
+        }
+
+        public virtual RandomAccessFilter BuildFilter(BrowseSelection sel)
         {
             string[] selections = sel.Values;
             string[] notSelections = sel.NotValues;
@@ -162,6 +209,8 @@ namespace BoboBrowse.Net.Facets
             return filter;
         }
 
+        public abstract RandomAccessFilter BuildRandomAccessFilter(string value, Properties selectionProperty);
+
         public virtual RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, Properties prop)
         {
             List<RandomAccessFilter> filterList = new List<RandomAccessFilter>(vals.Length);
@@ -175,12 +224,12 @@ namespace BoboBrowse.Net.Facets
                 }
                 else
                 {
-                    // there is no hit in this AND filter because this value has no hit
-                    return null;
+                    return EmptyFilter.GetInstance();
                 }
             }
-            if (filterList.Count == 0)
-                return null;
+
+            if (filterList.Count == 1)
+                return filterList.First();
             return new RandomAccessAndFilter(filterList);
         }
 
@@ -214,140 +263,73 @@ namespace BoboBrowse.Net.Facets
             return finalFilter;
         }
 
-        #region Properties
         /// <summary>
-        /// Gets name of the current facet handler.
+        /// Gets a FacetCountCollector
         /// </summary>
-        public string Name
+        /// <param name="sel">selection</param>
+        /// <param name="fspec">facetSpec</param>
+        /// <returns>a FacetCountCollector</returns>
+        public abstract FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec fspec);
+
+        /// <summary>
+        /// Override this method if your facet handler have a better group mode like the SimpleFacetHandler.
+        /// </summary>
+        /// <param name="sel">selection</param>
+        /// <param name="ospec">facetSpec</param>
+        /// <param name="groupMode">groupMode</param>
+        /// <returns></returns>
+        public virtual FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec ospec, bool groupMode)
         {
-            get;
-            private set;
+            return GetFacetCountCollectorSource(sel, ospec);
         }
 
         /// <summary>
-        /// Gets names of the facet handler this depends on
+        /// Gets the field value
         /// </summary>
-        public List<string> DependsOn
+        /// <param name="reader">index reader</param>
+        /// <param name="id">doc</param>
+        /// <returns>array of field values</returns>
+        public abstract string[] GetFieldValues(BoboIndexReader reader, int id);
+
+        public int GetNumItems(BoboIndexReader reader, int id)
         {
-            get;
-            private set;
+            throw new NotImplementedException("GetNumItems is not supported for this facet handler: " + this.GetType().FullName);
+        }
+
+        public virtual object[] GetRawFieldValues(BoboIndexReader reader, int id)
+        {
+            return GetFieldValues(reader, id);
         }
 
         /// <summary>
-        /// Gets or sets a term count length.
+        /// Gets a single field value 
         /// </summary>
-        public TermCountSize TermCountSizeFlag
+        /// <param name="reader">index reader</param>
+        /// <param name="id">doc</param>
+        /// <returns>first field value</returns>
+        public virtual string GetFieldValue(BoboIndexReader reader, int id)
         {
-            get;
-            set;
+            return GetFieldValues(reader, id)[0];
         }
-        #endregion
+
+        /// <summary>
+        /// builds a comparator to determine how sorting is done
+        /// </summary>
+        /// <returns>a sort comparator</returns>
+        public abstract DocComparatorSource GetDocComparatorSource();
+
+
+       /// <summary>
+        /// Gets a FacetCountCollector 
+       /// </summary>
+       /// <param name="sel"></param>
+       /// <param name="fspec"></param>
+       /// <returns></returns>
+        public abstract IFacetCountCollector GetFacetCountCollector(BrowseSelection sel, FacetSpec fspec);
 
         public virtual object Clone()
         {
-            throw new NotImplementedException("implement Clone");            
-        }
-
-        private class CombinedFacetAccessible : IFacetAccessible
-        {
-            private readonly IEnumerable<IFacetAccessible> list;
-            private readonly FacetSpec fspec;
-
-            internal CombinedFacetAccessible(FacetSpec fspec, IEnumerable<IFacetAccessible> list)
-            {
-                this.list = list;
-                this.fspec = fspec;
-            }
-
-            public override string ToString()
-            {
-                return "_list:" + list + " _fspec:" + fspec;
-            }
-
-            public virtual BrowseFacet GetFacet(string @value)
-            {
-                int sum = -1;
-                object foundValue = null;
-                if (list != null)
-                {
-                    foreach (IFacetAccessible facetAccessor in list)
-                    {
-                        BrowseFacet facet = facetAccessor.GetFacet(@value);
-                        if (facet != null)
-                        {
-                            foundValue = facet.Value;
-                            if (sum == -1)
-                                sum = facet.HitCount;
-                            else
-                                sum += facet.HitCount;
-                        }
-                    }
-                }
-                if (sum == -1)
-                    return null;
-                return new BrowseFacet(foundValue, sum);
-            }
-
-            public virtual IEnumerable<BrowseFacet> GetFacets()
-            {
-                C5.IDictionary<object, BrowseFacet> facetMap;
-                if (FacetSpec.FacetSortSpec.OrderValueAsc.Equals(fspec.OrderBy))
-                {
-                    facetMap = new C5.TreeDictionary<object, BrowseFacet>();
-                }
-                else
-                {
-                    facetMap = new C5.HashDictionary<object, BrowseFacet>();
-                }
-
-                foreach (IFacetAccessible facetAccessor in this.list)
-                {
-                    IEnumerator<BrowseFacet> iter = facetAccessor.GetFacets().GetEnumerator();
-                    if (facetMap.Count == 0)
-                    {
-                        while (iter.MoveNext())
-                        {
-                            BrowseFacet facet = iter.Current;
-                            facetMap.Add(facet.Value, facet);
-                        }
-                    }
-                    else
-                    {
-                        while (iter.MoveNext())
-                        {
-                            BrowseFacet facet = iter.Current;
-                            BrowseFacet existing = facetMap[facet.Value];
-                            if (existing == null)
-                            {
-                                facetMap.Add(facet.Value, facet);
-                            }
-                            else
-                            {
-                                existing.HitCount = existing.HitCount + facet.HitCount;
-                            }
-                        }
-                    }
-                }
-
-                List<BrowseFacet> list = new List<BrowseFacet>(facetMap.Values);
-                // FIXME: we need to reorganize all that stuff with comparators
-                Comparer comparer = new Comparer(System.Globalization.CultureInfo.InvariantCulture);
-                if (FacetSpec.FacetSortSpec.OrderHitsDesc.Equals(fspec.OrderBy))
-                {
-                    list.Sort(
-                        delegate(BrowseFacet f1, BrowseFacet f2)
-                        {
-                            int val = f2.HitCount - f1.HitCount;
-                            if (val == 0)
-                            {
-                                val = -(comparer.Compare(f1.Value, f2.Value));
-                            }
-                            return val;
-                        }
-                        );
-                }
-                return list;
-            }
+            return base.MemberwiseClone();
         }
     }
 }
