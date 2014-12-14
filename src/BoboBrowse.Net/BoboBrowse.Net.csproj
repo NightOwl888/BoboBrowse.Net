@@ -104,6 +104,7 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="BoboIndexReader.cs" />
+    <Compile Include="BoboSubBrowser.cs" />
     <Compile Include="BrowseException.cs" />
     <Compile Include="BrowseFacet.cs" />
     <Compile Include="BrowseRequest.cs" />
@@ -111,6 +112,12 @@
     <Compile Include="Client\BoboCmdlineApp.cs" />
     <Compile Include="Client\BrowseRequestBuilder.cs" />
     <Compile Include="Client\BrowseResultFormatter.cs" />
+    <Compile Include="DoubleFacetIterator.cs" />
+    <Compile Include="FacetIterator.cs" />
+    <Compile Include="FloatFacetIterator.cs" />
+    <Compile Include="IntFacetIterator.cs" />
+    <Compile Include="LongFacetIterator.cs" />
+    <Compile Include="QueriesSupport.cs" />
     <Compile Include="DocIdSet\BitsetDocSet.cs" />
     <Compile Include="DocIdSet\EmptyDocIdSet.cs" />
     <Compile Include="FacetSpec.cs" />
@@ -206,6 +213,7 @@
     <Compile Include="Service\DefaultBrowseQueryParser.cs" />
     <Compile Include="Service\HitCompareMulti.cs" />
     <Compile Include="Service\IBrowseQueryParser.cs" />
+    <Compile Include="ShortFacetIterator.cs" />
     <Compile Include="Sort\DocComparator.cs" />
     <Compile Include="Sort\DocComparatorSource.cs" />
     <Compile Include="Util\Arrays.cs" />
