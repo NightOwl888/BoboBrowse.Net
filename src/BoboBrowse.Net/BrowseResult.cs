@@ -21,70 +21,130 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+﻿// Version compatibility level: 3.1.0
+// EXCEPTION: MapReduceResult
 namespace BoboBrowse.Net
 {
+    using BoboBrowse.Net.Sort;
+    using BoboBrowse.Net.Util;
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Text;
-    using BoboBrowse.Net.Util;
-
+    
     [Serializable]
     public class BrowseResult
     {
-        private Dictionary<string, IFacetAccessible> facetMap;
-        private BrowseHit[] hits;
-        private static BrowseHit[] NO_HITS = new BrowseHit[0];
+        private static long serialVersionUID = -8620935391852879446L;
 
-        public BrowseResult()
+        /// <summary>
+        /// The transaction ID
+        /// </summary>
+        private long tid = -1;
+
+        /// <summary>
+        /// Get or sets the transaction ID.
+        /// </summary>
+        public sealed long Tid
         {
-            facetMap = new Dictionary<string, IFacetAccessible>();
+            get { return tid; }
+            set { tid = value; }
         }
 
-        public int NumHits { get; set; }
-        public int TotalDocs { get; set; }
-        ///<summary>Search Time in milliseconds </summary>
-        public long Time { get; set; }
-        public string Error { get; set; }
+        private int numHits;
+	    private int numGroups;
+	    private int totalDocs;
 
+        //private int totalGroups;
+	    private IDictionary<string, IFacetAccessible> _facetMap;
+	    private BrowseHit[] hits;
+	    private long time;
+	    //private MapReduceResult mapReduceResult; // TODO: Work out how to replace this
+        private IList<string> errors = new List<errors>();
+	    private static BrowseHit[] NO_HITS = new BrowseHit[0];
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public BrowseResult()
+        {
+            _facetMap = new Dictionary<string, IFacetAccessible>();
+        }
+
+        /// <summary>
+        /// Gets or sets the group accessible.
+        /// </summary>
+        public virtual IFacetAccessible[] GroupAccessibles { get; set; }
+
+        /// <summary>
+        /// Get or sets the sort collector.
+        /// </summary>
+        public virtual SortCollector SortCollector { get; set; }
+
+        /// <summary>
+        /// Get the facets by name
+        /// </summary>
+        /// <param name="name">name</param>
+        /// <returns>IFacetAccessible instance corresponding to the name</returns>
+        public virtual IFacetAccessible GetFacetAccessor(string name)
+        {
+            return _facetMap.Get(name);
+        }
+
+        /// <summary>
+        /// Gets or sets the hit count
+        /// </summary>
+        public virtual int NumHits { get; set; }
+
+        /// <summary>
+        /// Gets or sets the group count
+        /// </summary>
+        public virtual int NumGroups { get; set; }
+
+        /// <summary>
+        /// Gets or sets the total number of docs in the index
+        /// </summary>
+        public virtual int TotalDocs { get; set; }
+
+        ///<summary>Add a container full of choices </summary>
+        ///<param name="facets"> container full of facets </param>
+        public virtual void AddFacets(string name, IFacetAccessible facets)
+        {
+            _facetMap.Put(name, facets);
+        }
+
+        ///<summary>Add all of the given FacetAccessible to this BrowseResult </summary>
+        ///<param name="facets"> map of facets to add to the result set </param>
+        public virtual void AddAll(IDictionary<string, IFacetAccessible> facets)
+        {
+            _facetMap.PutAll(facets);
+        }
+
+        /// <summary>
+        /// Gets or sets the hits
+        /// </summary>
         public BrowseHit[] Hits
         {
             get { return hits == null ? NO_HITS : hits; }
             set { hits = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the Search Time in milliseconds
+        /// </summary>
+        public long Time { get; set; }
+
+
         ///<summary>Gets all the facet collections </summary>
-        public Dictionary<string, IFacetAccessible> FacetMap
+        public IDictionary<string, IFacetAccessible> FacetMap
         {
-            get { return facetMap; }
+            get { return _facetMap; }
         }
 
-        ///<summary>Get the facets by name </summary>
-        ///<param name="name"> </param>
-        ///<returns> FacetAccessible instance corresponding to the name </returns>
-        public virtual IFacetAccessible GetFacetAccessor(string name)
-        {
-            return facetMap[name];
-        }
+        //// Not implemented, because there is no clear purpose
+        //// and the Java implementation is unclear.
+        //public MapReduceResult MapReduceResult { get; set; }
 
-        ///<summary>Add a container full of choices </summary>
-        ///<param name="facets"> container full of facets </param>
-        public virtual void AddFacets(string name, IFacetAccessible facets)
-        {
-            facetMap.Add(name, facets);
-        }
-
-        ///<summary>Add all of the given FacetAccessible to this BrowseResult </summary>
-        ///<param name="facets"> map of facets to add to the result set </param>
-        public virtual void AddAll(Dictionary<string, IFacetAccessible> facets)
-        {
-            foreach (KeyValuePair<string, IFacetAccessible> pair in facets)
-            {
-                facetMap.Add(pair.Key, pair.Value);
-            }
-        }
-
-        public static string ToString(Dictionary<string, IFacetAccessible> map)
+        public static string ToString(IDictionary<string, IFacetAccessible> map)
         {
             StringBuilder buffer = new StringBuilder();
 
@@ -96,18 +156,48 @@ namespace BoboBrowse.Net
                 buffer.Append("name=").Append(name).Append(",");
                 buffer.Append("facets=").Append(facetAccessor.GetFacets()).Append(";");
             }
-            buffer.Append("}").Append('\n');
+            buffer.Append("}").AppendLine();
             return buffer.ToString();
         }
 
         public override string ToString()
         {
             StringBuilder buf = new StringBuilder();
-            buf.Append("hit count: ").Append(NumHits).Append('\n');
-            buf.Append("total docs: ").Append(TotalDocs).Append('\n');
-            buf.Append("facets: ").Append(ToString(facetMap));
+            buf.Append("hit count: ").Append(NumHits).AppendLine();
+            buf.Append("total docs: ").Append(TotalDocs).AppendLine();
+            buf.Append("facets: ").Append(ToString(this.FacetMap));
             buf.Append("hits: ").Append(Arrays.ToString(hits));
             return buf.ToString();
+        }
+
+        // TODO: implement dispose?
+        public virtual void Close()
+        {
+            if (GroupAccessibles != null)
+            {
+                foreach (var accessible in this.GroupAccessibles)
+                {
+                    if (accessible != null)
+                        accessible.Close();
+                }
+            }
+            if (this.SortCollector != null)
+                this.SortCollector.Close();
+            if (this.FacetMap == null) return;
+            foreach (var fa in this.FacetMap.Values)
+            {
+                fa.Close();
+            }
+        }
+
+        public virtual void AddError(string message)
+        {
+            errors.Add(message);
+        }
+
+        public virtual IEnumerable<string> BoboErrors
+        {
+            get { return errors; }
         }
     }
 }

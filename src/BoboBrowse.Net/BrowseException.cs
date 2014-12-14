@@ -1,14 +1,13 @@
-﻿
-
+﻿// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
 
+    [Serializable]
     public class BrowseException : Exception
     {
+        private static long serialVersionUID = 1L;
+
         public BrowseException(string msg)
             : this(msg, null)
         {

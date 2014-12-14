@@ -21,86 +21,170 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+﻿// Version compatibility level: 3.1.0
+// EXCEPTION: MapReduceResult
 namespace BoboBrowse.Net
 {
+    using BoboBrowse.Net.Facets;
+    using BoboBrowse.Net.Util;
+    using Lucene.Net.Search;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
-    using Lucene.Net.Search;
-
+    
+    /// <summary>
+    /// Browse Request.
+    /// author jwang
+    /// </summary>
     [Serializable]
     public class BrowseRequest
     {
-        private readonly Dictionary<string, BrowseSelection> selections;
-        private readonly List<SortField> sortFields;
+        private static long serialVersionUID = 3172092238778154933L;
 
-        public Lucene.Net.Search.Query Query { get; set; }
+        /// <summary>
+        /// The transaction ID
+        /// </summary>
+        private long tid = -1;
 
-        public int Offset { get; set; }
-
-        public int Count { get; set; }
-
-        public bool FetchStoredFields { get; set; }
-
-        public Dictionary<string, FacetSpec> FacetSpecs { get; set; }
-
-        public Filter Filter { get; set; }
-
-        public BrowseRequest()
+        /// <summary>
+        /// Get or sets the transaction ID.
+        /// </summary>
+        public sealed long Tid
         {
-            selections = new Dictionary<string, BrowseSelection>();
-            sortFields = new List<SortField>();
-            FacetSpecs = new Dictionary<string, FacetSpec>();
-            Filter = null;
-            FetchStoredFields = false;
+            get { return tid; }
+            set { tid = value; }
         }
+
+        // Fields
+        private readonly Dictionary<string, BrowseSelection> _selections;
+        private readonly List<SortField> _sortSpecs;
+
+
+        public virtual IEnumerable<string> TermVectorsToFetch { get; set; }
+
+        public virtual bool ShowExplanation { get; set; }
 
         public virtual IEnumerable<string> GetSelectionNames()
         {
-            return selections.Keys;
+            return _selections.Keys;
         }
 
         public virtual void RemoveSelection(string name)
         {
-            selections.Remove(name);
+            _selections.Remove(name);
         }
 
-        public int SelectionCount
+        public virtual IDictionary<string, FacetSpec> FacetSpecs { get; set; }
+
+        public virtual IDictionary<string, FacetHandlerInitializerParam> FacetHandlerDataMap { get; set; }
+
+        public virtual int SelectionCount
         {
-            get { return selections.Count; }
+            get { return _selections.Count; }
         }
+
+        /// <summary>
+        /// Gets or sets the default filter
+        /// </summary>
+        public virtual Filter Filter { get; set; }
 
         public virtual void ClearSelections()
         {
-            selections.Clear();
+            _selections.Clear();
         }
 
         ///<summary>Gets the number of facet specs </summary>
         ///<returns> number of facet pecs </returns>
         ///<seealso cref= #setFacetSpec(String, FacetSpec) </seealso>
         ///<seealso cref= #getFacetSpec(String) </seealso>
-        public int FacetSpecCount
+        public virtual int FacetSpecCount
         {
             get { return FacetSpecs.Count; }
         }
 
-        public virtual void ClearSort()
+        public BrowseRequest()
         {
-            sortFields.Clear();
+            _selections = new Dictionary<string, BrowseSelection>();
+            _sortSpecs = new List<SortField>();
+            this.FacetSpecs = new Dictionary<string, FacetSpec>();
+            this.FacetHandlerDataMap = new Dictionary<string, FacetHandlerInitializerParam>();
+            Filter = null;
+            FetchStoredFields = false;
+            GroupBy = null;
+            MaxPerGroup = 0;
+            CollectDocIdCache = false;
         }
 
+        public virtual void ClearSort()
+        {
+            _sortSpecs.Clear();
+        }
+
+        public virtual bool FetchStoredFields { get; set; }
+
+        public virtual string[] GroupBy { get; set; }
+
+        public virtual int MaxPerGroup { get; set; }
+
+        public virtual bool CollectDocIdCache { get; set; }
+
+        /// <summary>
+        /// Sets a facet spec
+        /// </summary>
+        /// <param name="name">field name</param>
+        /// <param name="facetSpec">Facet spec</param>
         public virtual void SetFacetSpec(string name, FacetSpec facetSpec)
         {
             FacetSpecs.Add(name, facetSpec);
         }
 
+        /// <summary>
+        /// Gets a facet spec
+        /// </summary>
+        /// <param name="name">field name</param>
+        /// <returns>facet spec</returns>
         public virtual FacetSpec GetFacetSpec(string name)
         {
             FacetSpec result;
             FacetSpecs.TryGetValue(name, out result);
             return result;
         }
+
+        /// <summary>
+        /// Sets a facet handler.
+        /// </summary>
+        /// <param name="name">the name of the <b>RuntimeFacetHandler</b>.</param>
+        /// <param name="data">the data Bobo is to use to initialize the corresponding RuntimeFacetHandler.</param>
+        public virtual void SetFacetHandlerData(string name, FacetHandlerInitializerParam data)
+        {
+            this.FacetHandlerDataMap.Put(name, data);
+        }
+
+        /// <summary>
+        /// Gets a facet handler.
+        /// </summary>
+        /// <param name="name">the name of the <b>RuntimeFacetHandler</b>.</param>
+        /// <returns>the data Bobo is to use to initialize the corresponding RuntimeFacetHandler.</returns>
+        public virtual FacetHandlerInitializerParam GetFacetHandlerData(string name)
+        {
+            return this.FacetHandlerDataMap.Get(name);
+        }
+
+        /// <summary>
+        /// Gets or sets the number of hits to return. Part of the paging parameters.
+        /// </summary>
+        public virtual int Count { get; set; }
+
+        /// <summary>
+        /// Gets or sets of the offset. Part of the paging parameters.
+        /// </summary>
+        public virtual int Offset { get; set; }
+
+        /// <summary>
+        /// Gets or sets the search query
+        /// </summary>
+        public Lucene.Net.Search.Query Query { get; set; }
 
         ///<summary>Adds a browse selection </summary>
         ///<param name="sel"> selection </param>
@@ -116,7 +200,7 @@ namespace BoboBrowse.Net
                     return;
                 }
             }
-            selections.Add(sel.FieldName, sel);
+            _selections.Put(sel.FieldName, sel);
         }
 
         ///<summary>Gets all added browse selections </summary>
@@ -124,7 +208,7 @@ namespace BoboBrowse.Net
         ///<seealso cref= #addSelection(BrowseSelection) </seealso>
         public virtual BrowseSelection[] GetSelections()
         {
-            return selections.Values.ToArray();
+            return _selections.Values.ToArray();
         }
 
         ///<summary> Gets selection by field name </summary>
@@ -132,56 +216,59 @@ namespace BoboBrowse.Net
         ///<returns> selection on the field </returns>
         public virtual BrowseSelection GetSelection(string fieldname)
         {
-            BrowseSelection result;
-            selections.TryGetValue(fieldname, out result);
-            return result;
+            return _selections.Get(fieldname);
         }
 
-        public virtual Dictionary<string, BrowseSelection> GetAllSelections()
+        public virtual IDictionary<string, BrowseSelection> GetAllSelections()
         {
-            return selections;
+            return _selections;
         }
 
-        /*public virtual void putAllSelections(Dictionary<string, BrowseSelection> map)
+        public virtual void PutAllSelections(IDictionary<string, BrowseSelection> map)
         {
-            //FIXME: There is no .NET Dictionary equivalent to the Java 'putAll' method:
-            _selections.putAll(map);
-        }*/
+            _selections.PutAll(map);
+        }
 
-        ///	 <summary> * Add a sort spec </summary>
-        ///	 * <param name="sortSpec"> sort spec </param>
-        ///	 * <seealso cref= #getSort()  </seealso>
-        ///	 * <seealso cref= #setSort(SortField[]) </seealso>
+        //// Not implemented, because there is no clear purpose
+        //// and the Java implementation is unclear.
+        //public BoboMapFunctionWrapper MapReduceWrapper { get; set; }
+
+        ///	 <summary> Add a sort spec </summary>
+        ///	 <param name="sortSpec"> sort spec </param>
         public virtual void AddSortField(SortField sortSpec)
         {
-            sortFields.Add(sortSpec);
+            _sortSpecs.Add(sortSpec);
         }
 
+        /// <summary>
+        /// Gets or sets the sort criteria
+        /// </summary>
         public SortField[] Sort
         {
             get
             {
-                return sortFields.ToArray();
+                return _sortSpecs.ToArray();
             }
             set
             {
-                sortFields.Clear();
+                _sortSpecs.Clear();
                 for (int i = 0; i < value.Length; ++i)
                 {
-                    sortFields.Add(value[i]);
+                    _sortSpecs.Add(value[i]);
                 }
             }
         }
-
+       
         public override string ToString()
         {
             StringBuilder buf = new StringBuilder();
             buf.Append("query: ").Append(Query).Append('\n');
             buf.Append("page: [").Append(Offset).Append(',').Append(Count).Append("]\n");
-            buf.Append("sort spec: ").Append(sortFields).Append('\n');
-            buf.Append("selections: ").Append(selections).Append('\n');
+            buf.Append("sort spec: ").Append(_sortSpecs).Append('\n');
+            buf.Append("selections: ").Append(_selections).Append('\n');
             buf.Append("facet spec: ").Append(FacetSpecs).Append('\n');
             buf.Append("fetch stored fields: ").Append(FetchStoredFields);
+            buf.Append("group by: ").Append(string.Join(",", GroupBy));
             return buf.ToString();
         }
     }

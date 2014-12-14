@@ -21,15 +21,19 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+﻿// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net
 {
     using System;
+    using System.Collections.Generic;
     using System.Text;
 
     ///<summary>specifies how facets are to be returned for a browse</summary>
     [Serializable]
-    public class FacetSpec
+    public class FacetSpec : ICloneable
     {
+        private static long serialVersionUID = 1L;
+
         ///<summary>Sort options for facets </summary>
         public enum FacetSortSpec
         {
@@ -41,13 +45,28 @@ namespace BoboBrowse.Net
             OrderByCustom
         }       
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
         public FacetSpec()
         {
             OrderBy = FacetSortSpec.OrderValueAsc;
             MinHitCount = 1;
             ExpandSelection = false;
             CustomComparatorFactory = null;
+            Properties = new Dictionary<string, string>();
         }
+
+        public IComparatorFactory CustomComparatorFactory { get; set; }
+
+        ///<summary>Gets or sets the minimum number of hits a choice would need to have to be returned. </summary>
+        public int MinHitCount { get; set; }
+
+        ///<summary>Gets or sets the current choice sort order</summary>
+        public FacetSortSpec OrderBy { get; set; }
+
+        ///<summary>Gets or sets the maximum number of choices to return. Default = 0 which means all </summary>
+        public int MaxCount { get; set; }
 
         public override string ToString()
         {
@@ -59,20 +78,28 @@ namespace BoboBrowse.Net
             return buffer.ToString();
         }
 
-        ///<summary>The minimum number of hits a choice would need to have to be returned. </summary>
-        public int MinHitCount { get; set; }
-
-        ///<summary>The maximum number of choices to return. Default = 0 which means all </summary>
-        public int MaxCount { get; set; }
-
-        ///<summary>Whether we are expanding sibling choices </summary>
+        ///<summary>Gets or sets whether we are expanding sibling choices</summary>
         public bool ExpandSelection { get; set; }
 
-        ///<summary>Get the current choice sort order </summary>
-        public FacetSortSpec OrderBy { get; set; }
+        /// <summary>
+        /// Gets or sets custom properties for the facet search. For example AttributeFacetHandler uses this to perform custom facet filtering
+        /// </summary>
+        public IDictionary<string, string> Properties { get; set; }
 
-        public string Prefix { get; set; }
+        public object Clone()
+        {
+            var properties = this.Properties;
+            var clonedProperties = new Dictionary<string, string>(properties);
 
-        public IComparatorFactory CustomComparatorFactory { get; set; }
+            return new FacetSpec()
+            {
+                CustomComparatorFactory = this.CustomComparatorFactory,
+                ExpandSelection = this.ExpandSelection,
+                MaxCount = this.MaxCount,
+                MinHitCount = this.MinHitCount,
+                OrderBy = this.OrderBy,
+                Properties = clonedProperties
+            };
+        }
     }
 }

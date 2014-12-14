@@ -21,26 +21,40 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+﻿// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net
 {
-    using System;
-    using System.Collections.Generic;    
-    using System.Text;
+    using BoboBrowse.Net.Util;
+    using Lucene.Net.Search;
     using Lucene.Net.Documents;
+    using System;
+    using System.Collections.Generic;
+    using System.Text;
 
     ///<summary>A hit from a browse </summary>
     [Serializable]
     public class BrowseHit
     {
+        private static long serialVersionUID = 1L;
+
+        [Serializable]
+        public class TermFrequencyVector
+        {
+            private static long serialVersionUID = 1L;
+            public readonly string[] terms;
+            public readonly int[] freqs;
+
+            public TermFrequencyVector(string[] terms, int[] freqs)
+            {
+                this.terms = terms;
+                this.freqs = freqs;
+            }
+        }
+
+        /// <summary>
+        /// Get or sets the score
+        /// </summary>
         public float Score { get; set; }
-
-        public int DocId { get; set; }
-
-        public Dictionary<string, string[]> FieldValues { get; set; }
-
-        public Document StoredFields { get; set; }
-
-        private readonly Dictionary<string, IComparable> comparableMap = new Dictionary<string, IComparable>();
 
         ///<summary>Get the field values </summary>
         ///<param name="field"> field name </param>
@@ -48,7 +62,17 @@ namespace BoboBrowse.Net
         ///<seealso cref= #getField(String) </seealso>
         public virtual string[] GetFields(string field)
         {
-            return FieldValues != null ? FieldValues[field] : null;
+            return this.FieldValues != null ? this.FieldValues[field] : null;
+        }
+
+        /// <summary>
+        /// Get the raw field values
+        /// </summary>
+        /// <param name="field">field name</param>
+        /// <returns>field value array</returns>
+        public virtual object[] GetRawFields(string field)
+        {
+            return this.RawFieldValues != null ? this.RawFieldValues.Get(field) : null;
         }
 
         ///<summary>Get the field value </summary>
@@ -57,7 +81,7 @@ namespace BoboBrowse.Net
         ///<seealso cref= #getFields(String) </seealso>
         public virtual string GetField(string field)
         {
-            string[] fields = GetFields(field);
+            string[] fields = this.GetFields(field);
             if (fields != null && fields.Length > 0)
             {
                 return fields[0];
@@ -68,15 +92,62 @@ namespace BoboBrowse.Net
             }
         }
 
-        public virtual void AddComparable(string field, IComparable comparable)
+        /// <summary>
+        /// Get the raw field value
+        /// </summary>
+        /// <param name="field">field name</param>
+        /// <returns>raw field value</returns>
+        public virtual object GetRawField(string field)
         {
-            comparableMap.Add(field, comparable);
+            object[] fields = this.GetRawFields(field);
+            if (fields != null && fields.Length > 0)
+            {
+                return fields[0];
+            }
+            else
+            {
+                return null;
+            }
         }
 
-        public virtual IComparable GetComparable(string field)
-        {
-            return comparableMap[field];
-        }
+        public virtual Dictionary<string, TermFrequencyVector> TermFreqMap { get; set; }
+
+        public virtual int GroupPosition { get; set; }
+
+        public virtual string GroupField { get; set; }
+
+        public virtual string GroupValue { get; set; }
+
+        public virtual object RawGroupValue { get; set; }
+
+        public virtual int GroupHitsCount { get; set; }
+
+        public virtual BrowseHit[] GroupHits { get; set; }
+
+        public virtual Explanation Explanation { get; set; }
+
+        public virtual IComparable Comparable { get; set; }
+
+        /// <summary>
+        /// Gets or sets the internal document id
+        /// </summary>
+        public int DocId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the field values
+        /// </summary>
+        public Dictionary<string, string[]> FieldValues { get; set; }
+
+        /// <summary>
+        /// Gets or sets the raw field value map
+        /// </summary>
+        public Dictionary<string, object[]> RawFieldValues { get; set; }
+
+        /// <summary>
+        /// Gets or sets the stored fields
+        /// </summary>
+        public Document StoredFields { get; set; }
+
 
         public string ToString(Dictionary<string, string[]> map)
         {
@@ -94,8 +165,8 @@ namespace BoboBrowse.Net
         {
             StringBuilder buffer = new StringBuilder();
             buffer.Append("docid: ").Append(DocId);
-            buffer.Append(" score: ").Append(Score).Append('\n');
-            buffer.Append(" field values: ").Append(ToString(FieldValues)).Append('\n');
+            buffer.Append(" score: ").Append(Score).AppendLine();
+            buffer.Append(" field values: ").Append(ToString(FieldValues)).AppendLine();
             return buffer.ToString();
         }
     }

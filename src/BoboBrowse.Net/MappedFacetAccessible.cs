@@ -23,6 +23,7 @@
 
 namespace BoboBrowse.Net
 {
+    using BoboBrowse.Net.Util;
     using System;
     using System.Linq;
     using System.Collections.Generic;
@@ -32,29 +33,43 @@ namespace BoboBrowse.Net
     {
         private const long serialVersionUID = 1L;
 
-        private readonly Dictionary<object, BrowseFacet> facetMap;
-        private readonly BrowseFacet[] facets;
+        private readonly IDictionary<object, BrowseFacet> _facetMap;
+        private readonly BrowseFacet[] _facets;
 
         public MappedFacetAccessible(BrowseFacet[] facets)
         {
-            this.facets = facets;
-
-            facetMap = new Dictionary<object, BrowseFacet>();
-
+            _facetMap = new Dictionary<object, BrowseFacet>();
             foreach (BrowseFacet facet in facets)
             {
-                facetMap.Add(facet.Value, facet);
+                _facetMap.Put(facet.Value, facet);
             }
+            _facets = facets;
         }
 
-        public virtual BrowseFacet GetFacet(string @value)
+        public virtual BrowseFacet GetFacet(string value)
         {
-            return facetMap[@value];
+            return _facetMap[value];
+        }
+
+        public virtual int GetFacetHitsCount(object value)
+        {
+            BrowseFacet facet = _facetMap.Get(value);
+            if (facet != null)
+                return facet.HitCount;
+            return 0;
         }
 
         public virtual IEnumerable<BrowseFacet> GetFacets()
         {
-            return facets.ToList();
+            return _facets.ToList();
+        }
+
+        public virtual void Close()
+        { }
+
+        public FacetIterator Iterator()
+        {
+            return new PathFacetIterator(_facets);
         }
     }
 }

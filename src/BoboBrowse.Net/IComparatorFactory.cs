@@ -1,9 +1,13 @@
-﻿
+﻿// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net
 {
     using System;
     using System.Collections.Generic;
 
+    /// <summary>
+    /// Comparator for custom sorting a facet value.
+    /// author jwang
+    /// </summary>
     public interface IComparatorFactory
     {
         ///<summary>Providers a Comparator from field values and counts. This is called within a browse. </summary>

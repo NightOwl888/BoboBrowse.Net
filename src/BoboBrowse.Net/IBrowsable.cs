@@ -21,35 +21,52 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net
 {
     using BoboBrowse.Net.Facets;
+    using BoboBrowse.Net.Sort;
     using Lucene.Net.Search;
     using System;
     using System.Collections.Generic;
 
     public interface IBrowsable : Searchable
     {
-        void Browse(BrowseRequest req, Collector hitCollector, Dictionary<string, IFacetAccessible> facets); // throws BrowseException;
+        void Browse(BrowseRequest req, 
+	        Collector hitCollector,
+	        IDictionary<string, IFacetAccessible> facets);
 
-        BrowseResult Browse(BrowseRequest req); // throws BrowseException;
+        void Browse(BrowseRequest req, 
+	        Collector hitCollector,
+	        IDictionary<string, IFacetAccessible> facets,
+	        int start);
 
-        void SetFacetHandler(FacetHandler facetHandler); // throws IOException;
+        void Browse(BrowseRequest req, 
+	        Weight weight,
+	        Collector hitCollector,
+	        IDictionary<string, IFacetAccessible> facets,
+	        int start);
 
-        FacetHandler GetFacetHandler(string name);
+        BrowseResult Browse(BrowseRequest req);
 
-        //Similarity GetSimilarity();
+        IEnumerable<string> FacetNames { get; }
 
-        //void SetSimilarity(Similarity similarity);
+        void SetFacetHandler(IFacetHandler facetHandler);
 
-        string[] GetFieldVal(int docid, string fieldname); // throws IOException;
+        IFacetHandler GetFacetHandler(string name);
 
-        object[] GetRawFieldVal(int docid, string fieldname); // throws IOException;
+        Similarity Similarity { get; set; }
+
+        string[] GetFieldVal(int docid, string fieldname);
+
+        object[] GetRawFieldVal(int docid, string fieldname);
 
         int NumDocs();
 
-        Explanation Explain(Lucene.Net.Search.Query q, int docid); // throws IOException;
+        SortCollector GetSortCollector(SortField[] sort, Lucene.Net.Search.Query q, int offset, int count, bool fetchStoredFields, IEnumerable<string> termVectorsToFetch, bool forceScoring, string[] groupBy, int maxPerGroup, bool collectDocIdCache);
 
-        TopDocsSortedHitCollector GetSortedHitCollector(SortField[] sort, int offset, int count, bool fetchStoredFields);
+        Explanation Explain(Lucene.Net.Search.Query q, int docid);
+
+        IDictionary<string, IFacetHandler> FacetHandlerMap { get; }
     }
 }

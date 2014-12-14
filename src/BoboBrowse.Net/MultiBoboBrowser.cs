@@ -21,21 +21,25 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net
 {
     using BoboBrowse.Net.Facets;
-    using BoboBrowse.Net.Search;
+    using BoboBrowse.Net.Sort;
+    using BoboBrowse.Net.Util;
     using Common.Logging;
-    using Lucene.Net.Index;
     using Lucene.Net.Search;
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
 
     ///<summary> * Provides implementation of Browser for multiple Browser instances </summary>
     public class MultiBoboBrowser : MultiSearcher, IBrowsable
     {
-        private static ILog logger = LogManager.GetLogger(typeof(MultiBoboBrowser));
+        private static ILog logger = LogManager.GetLogger<MultiBoboBrowser>();
+
+        protected readonly IBrowsable[] _subBrowsers;
 
         ///   <summary> *  </summary>
         ///   * <param name="browsers">
@@ -44,80 +48,85 @@ namespace BoboBrowse.Net
         public MultiBoboBrowser(IBrowsable[] browsers)
             : base(browsers)
         {
+            _subBrowsers = browsers;
         }
 
-        private class MultiBoboBrowserHitCollector : Collector
+
+        ///   <summary>
+        ///   Implementation of the browse method using a Lucene HitCollector
+        ///   </summary>
+        ///   <param name="req">BrowseRequest</param>
+        ///   <param name="collector">HitCollector for the hits generated during a search</param>
+        ///   <param name="facetMap"></param>
+        public virtual void Browse(BrowseRequest req, Collector hitCollector, Dictionary<string, IFacetAccessible> facetMap)
         {
-            internal Collector hitCollector;
-            internal int start;
-
-            /*public override void Collect(int doc, float score)
-            {
-                hitCollector.Collect(doc + start, score);
-            }*/
-
-            public override void SetScorer(Scorer scorer)
-            {
-                hitCollector.SetScorer(scorer);
-            }
-
-            public override void Collect(int doc)
-            {
-                hitCollector.Collect(doc);
-            }
-
-            public override void SetNextReader(IndexReader reader, int docBase)
-            {
-                hitCollector.SetNextReader(reader, docBase);
-            }
-
-            public override bool AcceptsDocsOutOfOrder
-            {
-                get
-                {
-                    return hitCollector.AcceptsDocsOutOfOrder;
-                }
-            }
+            Browse(req, hitCollector, facetMap, 0);
         }
-
-        ///  
-        ///   <summary> * Implementation of the browse method using a Lucene HitCollector
-        ///   *  </summary>
-        ///   * <param name="req">
-        ///   *          BrowseRequest </param>
-        ///   * <param name="hitCollector">
-        ///   *          HitCollector for the hits generated during a search
-        ///   *           </param>
-        ///   
-        public virtual void Browse(BrowseRequest req, Collector hitCollector, Dictionary<string, IFacetAccessible> facetMap) // throws BrowseException
+        
+        public virtual void Browse(
+            BrowseRequest req, 
+            Collector hitCollector, 
+            IDictionary<string, IFacetAccessible> facetMap,
+            int start)
         {
-            IBrowsable[] browsers = getSubBrowsers();
-            int[] starts = GetStarts();
-
-            Dictionary<string, List<IFacetAccessible>> mergedMap = new Dictionary<string, List<IFacetAccessible>>();
+            Weight w = null;
             try
             {
-                Dictionary<string, IFacetAccessible> facetColMap = new Dictionary<string, IFacetAccessible>();
+                var q = req.Query;
+                MatchAllDocsQuery matchAllDocsQuery = new MatchAllDocsQuery();
+                if (q == null)
+                {
+                    q = matchAllDocsQuery;
+                } 
+                else if (!(q is MatchAllDocsQuery)) 
+                {
+                    //MatchAllQuery is needed to filter out the deleted docids, that reside in ZoieSegmentReader and are not visible on Bobo level         
+                    matchAllDocsQuery.Boost = 0f;
+                    q = QueriesSupport.CombineAnd(matchAllDocsQuery, q);        
+                }
+                w = CreateWeight(q);
+            }
+            catch (Exception ioe)
+            {
+                throw new BrowseException(ioe.Message, ioe);
+            }
+    
+            Browse(req, w, hitCollector, facetMap, start);
+        }
+
+        public virtual void Browse(
+            BrowseRequest req, 
+            Weight weight, 
+            Collector hitCollector, 
+            IDictionary<String, IFacetAccessible> facetMap, 
+            int start)
+        {
+            IBrowsable[] browsers = this.GetSubBrowsers();
+            // index empty
+            if (browsers==null || browsers.Length ==0 ) return;
+            int[] starts = GetStarts();
+
+            var mergedMap = new Dictionary<string, IList<IFacetAccessible>>();
+            try
+            {
+                var facetColMap = new Dictionary<string, IFacetAccessible>();
                 for (int i = 0; i < browsers.Length; i++)
                 {
-                    int start = starts[i];
                     try
                     {
-                        browsers[i].Browse(req,
-                                           new MultiBoboBrowserHitCollector { hitCollector = hitCollector, start = start },
-                                           facetColMap);
+                        browsers[i].Browse(req, weight, hitCollector, facetColMap, (start + starts[i]));
                     }
                     finally
                     {
-                        foreach (KeyValuePair<string, IFacetAccessible> entry in facetColMap)
+                        foreach (var entry in facetColMap)
                         {
-                            string name = entry.Key;
+                            String name = entry.Key;
                             IFacetAccessible facetAccessor = entry.Value;
-                            List<IFacetAccessible> list = mergedMap[name];
+                            var list = mergedMap.Get(name);
                             if (list == null)
                             {
                                 list = new List<IFacetAccessible>(browsers.Length);
-                                mergedMap.Add(name, list);
+                                mergedMap.Put(name, list);
                             }
                             list.Add(facetAccessor);
                         }
@@ -127,17 +136,22 @@ namespace BoboBrowse.Net
             }
             finally
             {
-                foreach (KeyValuePair<string, List<IFacetAccessible>> entry in mergedMap)
+                // TODO: ReduceWrapper not supported
+                //if (req.GetMapReduceWrapper() != null)
+                //{
+                //    req.GetMapReduceWrapper().FinalizePartition();
+                //}
+                foreach (var entry in mergedMap)
                 {
-                    string name = entry.Key;
-                    FacetHandler handler = GetFacetHandler(name);
+                    String name = entry.Key;
+                    IFacetHandler handler = GetFacetHandler(name);
                     try
                     {
-                        List<IFacetAccessible> subList = entry.Value;
+                        IList<IFacetAccessible> subList = entry.Value;
                         if (subList != null)
                         {
                             IFacetAccessible merged = handler.Merge(req.GetFacetSpec(name), subList);
-                            facetMap.Add(name, merged);
+                            facetMap.Put(name, merged);
                         }
                     }
                     catch (Exception e)
@@ -148,92 +162,128 @@ namespace BoboBrowse.Net
             }
         }
 
-        ///   <summary> * Generate a merged BrowseResult from the given BrowseRequest </summary>
-        ///   * <param name="req">
-        ///   *          BrowseRequest for generating the facets </param>
-        ///   * <returns> BrowseResult of the results of the BrowseRequest </returns>
-        public virtual BrowseResult Browse(BrowseRequest req) // throws BrowseException
-        {           
-            long start = System.Environment.TickCount;
 
+        /// <summary>
+        /// Generate a merged BrowseResult from the given BrowseRequest
+        /// </summary>
+        /// <param name="req">BrowseRequest for generating the facets</param>
+        /// <returns>BrowseResult of the results of the BrowseRequest</returns>
+        public virtual BrowseResult Browse(BrowseRequest req)
+        {
+            BrowseResult result = new BrowseResult();
+
+            // index empty
+            if (_subBrowsers == null || _subBrowsers.Length == 0)
+            {
+                return result;
+            }
+            long start = System.Environment.TickCount;
             int offset = req.Offset;
             int count = req.Count;
 
-            if (offset < 0 || count <= 0)
+            if (offset < 0 || count < 0)
             {
-                throw new System.ArgumentException("both offset and count must be >= 0: " + offset + "/" + count);
+                throw new ArgumentOutOfRangeException("both offset and count must be > 0: " + offset + "/" + count);
             }
+            SortCollector collector = GetSortCollector(req.Sort, req.Query, offset, count, req.FetchStoredFields, req.TermVectorsToFetch, false, req.GroupBy, req.MaxPerGroup, req.CollectDocIdCache);
 
-            TopDocsSortedHitCollector hitCollector = GetSortedHitCollector(req.Sort, offset, count, req.FetchStoredFields);
+            var facetCollectors = new Dictionary<String, IFacetAccessible>();
+            Browse(req, collector, facetCollectors);
 
-            Dictionary<string, IFacetAccessible> mergedMap = new Dictionary<string, IFacetAccessible>();
-            Browse(req, hitCollector, mergedMap);
-
-            BrowseResult finalResult = new BrowseResult();
-
-            finalResult.NumHits = hitCollector.GetTotalHits();
-            finalResult.TotalDocs = NumDocs();
-            finalResult.AddAll(mergedMap);
-
-            BrowseHit[] hits;
+            //// TODO: ReduceWrapper not supported
+            //if (req.GetMapReduceWrapper() != null) 
+            //{
+            //    result.SetMapReduceResult(req.GetMapReduceWrapper().Result);
+            //}
+            BrowseHit[] hits = null;
             try
             {
-                hits = hitCollector.GetTopDocs();
+                hits = collector.TopDocs;
             }
-            catch (System.IO.IOException e)
+            catch (Exception e)
             {
                 logger.Error(e.Message, e);
+                result.AddError(e.Message);
                 hits = new BrowseHit[0];
             }
 
-            finalResult.Hits = hits;
+            var q = req.Query;
+            if (q == null)
+            {
+                q = new MatchAllDocsQuery();
+            }
+            if (req.ShowExplanation)
+            {
+                foreach (BrowseHit hit in hits)
+                {
+                    try
+                    {
+                        Explanation expl = Explain(q, hit.DocId);
+                        hit.Explanation = expl;
+                    }
+                    catch (Exception e)
+                    {
+                        logger.Error(e.Message, e);
+                        result.AddError(e.Message);
+                    }
+                }
+            }
 
+            result.Hits = hits;
+            result.NumHits = collector.TotalHits;
+            result.NumGroups = collector.TotalGroups;
+            result.GroupAccessibles = collector.GroupAccessibles;
+            result.SortCollector = collector;
+            result.TotalDocs = this.NumDocs();
+            result.AddAll(facetCollectors);
             long end = System.Environment.TickCount;
-
-            finalResult.Time = end - start;
-
-            return finalResult;
+            result.Time = (end - start);
+            // set the transaction ID to trace transactions
+            result.Tid = req.Tid;
+            return result;
         }
 
-        ///  
-        ///   <summary> * Return the values of a field for the given doc
-        ///   *  </summary>
-        ///   
+        /// <summary>
+        /// Return the values of a field for the given doc
+        /// </summary>
+        /// <param name="docid"></param>
+        /// <param name="fieldname"></param>
+        /// <returns></returns>
         public virtual string[] GetFieldVal(int docid, string fieldname)
         {
             int i = SubSearcher(docid);
-            IBrowsable browser = getSubBrowsers()[i];
+            IBrowsable browser = GetSubBrowsers()[i];
             return browser.GetFieldVal(SubDoc(docid), fieldname);
         }
-
 
         public virtual object[] GetRawFieldVal(int docid, string fieldname)
         {
             int i = SubSearcher(docid);
-            IBrowsable browser = getSubBrowsers()[i];
+            IBrowsable browser = GetSubBrowsers()[i];
             return browser.GetRawFieldVal(SubDoc(docid), fieldname);
         }
-        ///  
-        ///   <summary> * Gets the array of sub-browsers
-        ///   *  </summary>
-        ///   * <returns> sub-browsers </returns>
-        ///   * <seealso cref= MultiSearcher#getSearchables() </seealso>
-        ///   
-        public virtual IBrowsable[] getSubBrowsers()
+       
+        /// <summary>
+        /// Gets the array of sub-browsers
+        /// </summary>
+        /// <returns>sub-browsers</returns>
+        public virtual IBrowsable[] GetSubBrowsers()
         {
             return (IBrowsable[])GetSearchables();
         }
 
-        public int[] getStarts()
+
+        protected override int[] GetStarts()
         {
-            // TODO Auto-generated method stub
             return base.GetStarts();
         }
 
-        /// <summary> * Compare BrowseFacets by their value </summary>
+        /// <summary>
+        /// Compare BrowseFacets by their value
+        /// </summary>
         public class BrowseFacetValueComparator : IComparer<BrowseFacet>
         {
-            // FIXME: we need to reorganize all that stuff with comparators
+            // TODO: we need to reorganize all that stuff with comparators
             private IComparer valueComparer = new Comparer(System.Globalization.CultureInfo.InvariantCulture);
 
             public int Compare(BrowseFacet o1, BrowseFacet o2)
@@ -242,32 +292,36 @@ namespace BoboBrowse.Net
             }
         }
 
-        ///  
-        ///   <summary> * Gets the sub-browser for a given docid
-        ///   *  </summary>
-        ///   * <param name="docid"> </param>
-        ///   * <returns> sub-browser instance </returns>
-        ///   * <seealso cref= MultiSearcher#subSearcher(int) </seealso>
-        ///   
-        public virtual IBrowsable subBrowser(int docid)
+        /// <summary>
+        /// Gets the sub-browser for a given docid
+        /// </summary>
+        /// <param name="docid">sub-browser instance</param>
+        /// <returns></returns>
+        public virtual IBrowsable SubBrowser(int docid)
         {
-            return ((IBrowsable)(getSubBrowsers()[SubSearcher(docid)]));
+            return ((IBrowsable)(GetSubBrowsers()[SubSearcher(docid)]));
         }
 
-        public void SetSimilarity(Similarity similarity)
+        public override Similarity Similarity
         {
-            throw new NotImplementedException();
-        }
-
-        public Similarity GetSimilarity()
-        {
-            throw new NotImplementedException();
+            private get
+            {
+                return base.Similarity;
+            }
+            set
+            {
+                base.Similarity = value;
+                foreach (IBrowsable subBrowser in GetSubBrowsers())
+                {
+                    subBrowser.Similarity = value;
+                }
+            }
         }
 
         public virtual int NumDocs()
         {
             int count = 0;
-            IBrowsable[] subBrowsers = getSubBrowsers();
+            IBrowsable[] subBrowsers = GetSubBrowsers();
             foreach (IBrowsable subBrowser in subBrowsers)
             {
                 count += subBrowser.NumDocs();
@@ -275,38 +329,75 @@ namespace BoboBrowse.Net
             return count;
         }
 
-        public virtual FacetHandler GetFacetHandler(string name)
+        public virtual IEnumerable<string> FacetNames
         {
-            IBrowsable[] subBrowsers = getSubBrowsers();
+            get
+            {
+                var names = new List<String>();
+                IBrowsable[] subBrowsers = GetSubBrowsers();
+                foreach (IBrowsable subBrowser in subBrowsers)
+                {
+                    names.AddRange(subBrowser.FacetNames);
+                }
+                return names.Distinct();
+            }
+        }
+
+        public virtual IFacetHandler GetFacetHandler(string name)
+        {
+            IBrowsable[] subBrowsers = GetSubBrowsers();
             foreach (IBrowsable subBrowser in subBrowsers)
             {
-                FacetHandler subHandler = subBrowser.GetFacetHandler(name);
+                IFacetHandler subHandler = subBrowser.GetFacetHandler(name);
                 if (subHandler != null)
                     return subHandler;
             }
             return null;
         }
 
-
-        public virtual void SetFacetHandler(FacetHandler facetHandler)
+        public virtual IDictionary<string, IFacetHandler> FacetHandlerMap
         {
-            IBrowsable[] subBrowsers = getSubBrowsers();
-            foreach (IBrowsable subBrowser in subBrowsers)
+            get 
             {
-                try
+                var map = new Dictionary<string, IFacetHandler>();
+                IBrowsable[] subBrowsers = GetSubBrowsers();
+                foreach (IBrowsable subBrowser in subBrowsers)
                 {
-                    subBrowser.SetFacetHandler((FacetHandler)facetHandler.Clone());
+                    map.PutAll(subBrowser.FacetHandlerMap);
                 }
-                catch (NotSupportedException e)
-                {
-                    throw new RuntimeException(e.Message, e);
-                }
+
+                return map;
             }
         }
 
-        public virtual TopDocsSortedHitCollector GetSortedHitCollector(SortField[] sort, int offset, int count, bool fetchStoredFields)
+        public virtual void SetFacetHandler(IFacetHandler facetHandler)
         {
-            return new MultiTopDocsSortedHitCollector(this, sort, offset, count, fetchStoredFields);
+            IBrowsable[] subBrowsers = GetSubBrowsers();
+            foreach (IBrowsable subBrowser in subBrowsers)
+            {
+                subBrowser.SetFacetHandler(facetHandler);
+            }
+        }
+
+        public SortCollector GetSortCollector(SortField[] sort, Lucene.Net.Search.Query q,
+            int offset, int count, bool fetchStoredFields, IEnumerable<string> termVectorsToFetch,
+            bool forceScoring, string[] groupBy, int maxPerGroup, bool collectDocIdCache)
+        {
+            if (_subBrowsers.Length == 1)
+            {
+                return _subBrowsers[0].GetSortCollector(sort, q, offset, count, fetchStoredFields, termVectorsToFetch, forceScoring, groupBy, maxPerGroup, collectDocIdCache);
+            }
+            return SortCollector.BuildSortCollector(this, q, sort, offset, count, forceScoring, fetchStoredFields, termVectorsToFetch, groupBy, maxPerGroup, collectDocIdCache);
+        }
+
+        // TODO: Implement Dispose?
+        public virtual void Close()
+        {
+            IBrowsable[] subBrowsers = GetSubBrowsers();
+            foreach (IBrowsable subBrowser in subBrowsers)
+            {
+                subBrowser.Close();
+            }
         }
     }
 }

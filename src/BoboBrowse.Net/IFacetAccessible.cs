@@ -48,6 +48,6 @@ namespace BoboBrowse.Net
         /// <summary>
         /// Returns an iterator to visit all the facets
         /// </summary>
-        FacetIterator Iterator { get; }
+        FacetIterator Iterator();
     }
 }

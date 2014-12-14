@@ -21,12 +21,14 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+﻿// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net
 {
+    using BoboBrowse.Net.Facets.Impl;
+    using BoboBrowse.Net.Util;
     using System;
     using System.Collections.Generic;
     using System.Text;
-    using BoboBrowse.Net.Facets.Impl;
 
     [Serializable]
     public class BrowseSelection
@@ -37,33 +39,37 @@ namespace BoboBrowse.Net
             ValueOperationAnd
         }
 
+        private static long serialVersionUID = 1L;
+
         private readonly List<string> values;
         private readonly List<string> notValues;
 
-        public BrowseSelection(string fieldName)
-        {
-            this.values = new List<string>();
-            this.notValues = new List<string>();
+        public virtual Properties SelectionProperties { get; private set; }
 
-            this.FieldName = fieldName;
-            this.SelectionOperation = ValueOperation.ValueOperationOr;
-            this.SelectionProperties = new Properties();
+        public virtual void SetSelectionProperty(string key, string val)
+        {
+            SelectionProperties.SetProperty(key, val);
         }
 
-        public Properties SelectionProperties { get; private set; }
+        public virtual void SetSelectionProperties(IDictionary<string, string> props)
+        {
+            SelectionProperties.PutAll(props);
+        }
 
-        public string FieldName { get; private set; }
-
-        public ValueOperation SelectionOperation { get; set; }
-
-        public bool IsStrict
+        /// <summary>
+        /// Gets if strict applied for counting. Used if the field is of type <b><i>path</i></b>.
+        /// </summary>
+        [Obsolete("use SelectionProperties")]
+        public virtual bool IsStrict
         {
             get { return Convert.ToBoolean(SelectionProperties.GetProperty(PathFacetHandler.SEL_PROP_NAME_STRICT)); }
             set { SelectionProperties.SetProperty(PathFacetHandler.SEL_PROP_NAME_STRICT, value.ToString()); }
         }
 
-        ///<summary>the depth.  Used if the field is of type <b><i>path</i></b>. </summary>
-        public int Depth
+        /// <summary>
+        /// the depth.  Used if the field is of type <b><i>path</i></b>. 
+        /// </summary>
+        public virtual int Depth
         {
             get
             {
@@ -79,12 +85,15 @@ namespace BoboBrowse.Net
             }
         }
 
-        public void SetSelectionProperty(string key, string val)
-        {
-            SelectionProperties.SetProperty(key, val);
-        }
+        /// <summary>
+        /// Gets or sets the field name
+        /// </summary>
+        public virtual string FieldName { get; private set; }
 
-        public string[] Values
+        /// <summary>
+        /// Gets or sets the selected values
+        /// </summary>
+        public virtual string[] Values
         {
             get { return values.ToArray(); }
             set
@@ -94,7 +103,10 @@ namespace BoboBrowse.Net
             }
         }
 
-        public string[] NotValues
+        /// <summary>
+        /// Gets or sets the selected NOT values
+        /// </summary>
+        public virtual string[] NotValues
         {
             get { return notValues.ToArray(); }
             set
@@ -103,29 +115,47 @@ namespace BoboBrowse.Net
                 notValues.AddRange(value);
             }
         }
+
         ///<summary>Add a select value </summary>
         ///<param name="val"> select value </param>
-        public void AddValue(string val)
+        public virtual void AddValue(string val)
         {
             values.Add(val);
         }
 
         ///<summary>Add a select NOT value </summary>
         ///<param name="val"> select NOT value </param>
-        public void AddNotValue(string val)
+        public virtual void AddNotValue(string val)
         {
             notValues.Add(val);
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="fieldName">field name</param>
+        public BrowseSelection(string fieldName)
+        {
+            this.FieldName = fieldName;
+            this.values = new List<string>();
+            this.notValues = new List<string>();
+            this.SelectionOperation = ValueOperation.ValueOperationOr;
+            this.SelectionProperties = new Properties();
+        }
+
+        /// <summary>
+        /// Gets or sets value operation.
+        /// </summary>
+        public virtual ValueOperation SelectionOperation { get; set; }
 
         public override string ToString()
         {
             StringBuilder buf = new StringBuilder();
             buf.Append("name: ").Append(FieldName);
-            buf.Append("values: " + values);
-            buf.Append("nots: " + notValues);
-            buf.Append("op: " + SelectionOperation);
-            buf.Append("sel props: " + SelectionProperties);
+            buf.Append("values: " + string.Join(",", values));
+            buf.Append("nots: " + string.Join(",", notValues));
+            buf.Append("op: " + SelectionOperation.ToString());
+            buf.Append("sel props: " + SelectionProperties.ToString());
             return buf.ToString();
         }
     }

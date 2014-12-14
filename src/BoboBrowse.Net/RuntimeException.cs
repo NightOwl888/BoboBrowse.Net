@@ -1,8 +1,9 @@
-﻿
+﻿// TODO: Move to support namespace
 namespace BoboBrowse.Net
 {
     using System;
 
+    [Serializable]
     public class RuntimeException : Exception
     {
         public RuntimeException(string message)
