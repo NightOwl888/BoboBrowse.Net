@@ -119,6 +119,13 @@
     <Compile Include="Facets\Data\PrimitiveLongArrayWrapper.cs" />
     <Compile Include="Facets\Data\TermFixedLengthLongArrayList.cs" />
     <Compile Include="Facets\Data\TermFixedLengthLongArrayListFactory.cs" />
+    <Compile Include="Facets\Impl\CombinedDoubleFacetIterator.cs" />
+    <Compile Include="Facets\Impl\CombinedFacetIterator.cs" />
+    <Compile Include="Facets\Impl\CombinedFloatFacetIterator.cs" />
+    <Compile Include="Facets\Impl\CombinedIntFacetIterator.cs" />
+    <Compile Include="Facets\Impl\CombinedLongFacetIterator.cs" />
+    <Compile Include="Facets\Impl\CombinedShortFacetIterator.cs" />
+    <Compile Include="Facets\Impl\GroupByFacetCountCollector.cs" />
     <Compile Include="FloatFacetIterator.cs" />
     <Compile Include="IntFacetIterator.cs" />
     <Compile Include="LongFacetIterator.cs" />
