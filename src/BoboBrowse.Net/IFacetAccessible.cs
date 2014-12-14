@@ -39,6 +39,14 @@ namespace BoboBrowse.Net
         BrowseFacet GetFacet(string value);
 
         /// <summary>
+        /// Gets the facet count given a value. This is a way for random
+        /// accessing the facet count.
+        /// </summary>
+        /// <param name="value">Facet value</param>
+        /// <returns></returns>
+        int GetFacetHitsCount(object value);
+
+        /// <summary>
         /// Responsible for release resources used. If the implementing class
         /// does not use a lot of resources,
         /// it does not have to do anything.
