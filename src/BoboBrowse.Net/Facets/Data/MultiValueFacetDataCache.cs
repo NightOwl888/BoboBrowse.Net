@@ -40,7 +40,7 @@ namespace BoboBrowse.Net.Facets.Data
 
         public readonly BigNestedIntArray _nestedArray;
         private int _maxItems = BigNestedIntArray.MAX_ITEMS;
-        private bool _overflow = false;
+        protected bool _overflow = false;
 
         public MultiValueFacetDataCache()
         {
