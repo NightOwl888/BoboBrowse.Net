@@ -59,12 +59,12 @@ namespace BoboBrowse.Net.Facets.Impl
         {
         }
 
-        public virtual FacetHandler NewInstance()
+        public virtual IFacetHandler NewInstance()
         {
             return new SimpleFacetHandler(Name, _indexFieldName, _termListFactory);
         }
 
-        public override FieldComparator GetComparator(int numDocs,SortField field)
+        public override FieldComparator GetComparator(int numDocs, SortField field)
         {
             return _dataCache.GeFieldComparator(numDocs, field.Type);
         }

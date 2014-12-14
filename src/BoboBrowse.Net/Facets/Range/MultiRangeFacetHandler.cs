@@ -19,13 +19,13 @@ namespace BoboBrowse.Net.Facets.Range
         private int maxItems = BigNestedIntArray.MAX_ITEMS;
 
         public MultiRangeFacetHandler(string name, string indexFieldName, Term sizePayloadTerm,
-            TermListFactory<T> termListFactory, IEnumerable<string> predefinedRanges)
+            TermListFactory termListFactory, IEnumerable<string> predefinedRanges)
             : base(name, indexFieldName, termListFactory, predefinedRanges)
         {
             this.sizePayloadTerm = sizePayloadTerm;
         }
 
-        public override GetDocComparatorSource()
+        public override DocComparatorSource GetDocComparatorSource()
         {
             return new MultiValueFacetDataCache<T>.MultiFacetDocCaomparatorSource(new MultiDataCacheBuilder<T>(name, _indexFieldName));
         }
@@ -35,7 +35,7 @@ namespace BoboBrowse.Net.Facets.Range
             MultiValueFacetDataCache<T> dataCache = GetFacetData(reader);
             if (dataCache != null)
             {
-                return dataCache._nestedArray.GetTranslatedData(id, dataCache.valArray);
+                return dataCache._nestedArray.GetTranslatedData(id, dataCache.ValArray);
             }
             return new string[0];
         }
@@ -44,7 +44,7 @@ namespace BoboBrowse.Net.Facets.Range
         {
  	        MultiValueFacetDataCache<T> dataCache = GetFacetData(reader);
             if (dataCache != null) {
-                return dataCache._nestedArray.GetRawData(id, dataCache.valArray);
+                return dataCache._nestedArray.GetRawData(id, dataCache.ValArray);
             }
             return new String[0];
         }
@@ -106,7 +106,7 @@ namespace BoboBrowse.Net.Facets.Range
             IDictionary<string, float> boostMap)
         {
             MultiValueFacetDataCache<T> dataCache = GetFacetData(reader);
-            float[] boostList = BoboDocScorer.BuildBoostList(dataCache.valArray, boostMap);
+            float[] boostList = BoboDocScorer.BuildBoostList(dataCache.ValArray, boostMap);
             return new MultiValueDocScorer(dataCache, scoringFunctionFactory, boostList);
         }
 

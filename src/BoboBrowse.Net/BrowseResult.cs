@@ -59,7 +59,7 @@ namespace BoboBrowse.Net
 	    private BrowseHit[] hits;
 	    private long time;
 	    //private MapReduceResult mapReduceResult; // TODO: Work out how to replace this
-        private IList<string> errors = new List<errors>();
+        private IList<string> errors = new List<string>();
 	    private static BrowseHit[] NO_HITS = new BrowseHit[0];
 
         /// <summary>

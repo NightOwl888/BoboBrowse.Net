@@ -85,7 +85,7 @@ namespace BoboBrowse.Net
         /// <returns></returns>
         public static BoboIndexReader GetInstance(IndexReader reader)
         {
-            return BoboIndexReader.GetInstance(reader, null, null, new WorkArea);
+            return BoboIndexReader.GetInstance(reader, null, null, new WorkArea());
         }
 
         public static BoboIndexReader GetInstance(IndexReader reader, WorkArea workArea)
