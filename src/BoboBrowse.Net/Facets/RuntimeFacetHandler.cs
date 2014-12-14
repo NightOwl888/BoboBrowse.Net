@@ -14,7 +14,7 @@ namespace BoboBrowse.Net.Facets
     /// author ymatsuda
     /// </summary>
     /// <typeparam name="D">type parameter for FacetData</typeparam>
-    public abstract class RuntimeFacetHandler<D> : FacetHandler<D>
+    public abstract class RuntimeFacetHandler : FacetHandler
     {
         /// <summary>
         /// Constructor that specifying the dependent facet handlers using names.
@@ -35,9 +35,14 @@ namespace BoboBrowse.Net.Facets
             : base(name)
         { }
 
-        public override D GetFacetData(BoboIndexReader reader)
+        //public override D GetFacetData(BoboIndexReader reader)
+        //{
+        //    return (D)reader.GetRuntimeFacetData(_name);
+        //}
+
+        public override object GetFacetData(BoboIndexReader reader)
         {
-            return (D)reader.GetRuntimeFacetData(_name);
+            return reader.GetRuntimeFacetData(_name);
         }
 
         public override void LoadFacetData(BoboIndexReader reader)

@@ -32,23 +32,87 @@ namespace BoboBrowse.Net.Facets.Data
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    
+
+    public interface IFacetDataCache
+    {
+        BigSegmentedArray OrderArray { get; }
+        ITermValueList ValueArray { get; }
+        int[] Freqs { get; }
+        int[] MinIDs { get; }
+        int[] MaxIDs { get; }
+        int GetNumItems(int docid);
+        void Load(string fieldName, IndexReader reader, TermListFactory listFactory);
+    }
+
+    public class FacetDataCache_Converter
+    {
+        private static int[] ConvertString(IFacetDataCache dataCache, string[] vals)
+        {
+            var list = new List<int>(vals.Length);
+            for (int i = 0; i < vals.Length; ++i)
+            {
+                int index = dataCache.ValueArray.IndexOf(vals[i]);
+                if (index >= 0)
+                {
+                    list.Add(index);
+                }
+            }
+            return list.ToArray();
+        }
+
+        /// <summary>
+        /// Same as ConvertString(FacetDataCache dataCache,String[] vals) except that the
+        /// values are supplied in raw form so that we can take advantage of the type
+        /// information to find index faster.
+        /// </summary>
+        /// <param name="dataCache"></param>
+        /// <param name="vals"></param>
+        /// <returns>the array of order indices of the values.</returns>
+        public static int[] Convert<T>(IFacetDataCache dataCache, T[] vals)
+        {
+            if (vals != null && (typeof(T) == typeof(string)))
+            {
+                var valsString = vals.Cast<string>().ToArray();
+                return ConvertString(dataCache, valsString);
+            }
+            var list = new List<int>(vals.Length);
+            for (int i = 0; i < vals.Length; ++i)
+            {
+                int index = -1;
+                var valArrayTyped = dataCache.ValueArray as TermValueList<T>;
+                if (valArrayTyped != null)
+                {
+                    index = valArrayTyped.IndexOfWithType(vals[i]);
+                }
+                else
+                {
+                    index = dataCache.ValueArray.IndexOf(vals[i]);
+                }
+                if (index >= 0)
+                {
+                    list.Add(index);
+                }
+
+            }
+            return list.ToArray();
+        }
+    }
 
     [Serializable]
-    public class FacetDataCache<T>
+    public class FacetDataCache<T> : IFacetDataCache
     {
         private static ILog logger = LogManager.GetLogger<FacetDataCache<T>>();
 
         private readonly static long serialVersionUID = 1L;
 
-        public BigSegmentedArray orderArray;
-        public TermValueList<T> valArray;
-        public int[] freqs;
-        public int[] minIDs;
-        public int[] maxIDs;
+        protected BigSegmentedArray orderArray;
+        protected ITermValueList valArray;
+        protected int[] freqs;
+        protected int[] minIDs;
+        protected int[] maxIDs;
         private readonly TermCountSize _termCountSize;
 
-        public FacetDataCache(BigSegmentedArray orderArray, TermValueList<T> valArray, int[] freqs, int[] minIDs, 
+        public FacetDataCache(BigSegmentedArray orderArray, ITermValueList valArray, int[] freqs, int[] minIDs, 
             int[] maxIDs, TermCountSize termCountSize)
         {
             this.orderArray = orderArray;
@@ -68,6 +132,33 @@ namespace BoboBrowse.Net.Facets.Data
             this.freqs = null;
             _termCountSize = TermCountSize.Large;
         }
+
+        public virtual ITermValueList ValArray
+        {
+            get { return this.valArray; }
+        }
+
+        public virtual BigSegmentedArray OrderArray
+        {
+            get { return this.orderArray; }
+        }
+
+        public virtual int[] Freqs
+        {
+            get { return freqs; }
+        }
+
+        public virtual int[] MinIDs
+        {
+            get { return minIDs; }
+        }
+
+        public virtual int[] MaxIDs
+        {
+            get { return maxIDs; }
+        }
+
+        
 
         public virtual int GetNumItems(int docid)
         {
@@ -115,7 +206,7 @@ namespace BoboBrowse.Net.Facets.Data
             return ret;
         }
 
-        public virtual void Load(string fieldName, IndexReader reader, TermListFactory<T> listFactory)
+        public virtual void Load(string fieldName, IndexReader reader, TermListFactory listFactory)
         {
             string field = string.Intern(fieldName);
             int maxDoc = reader.MaxDoc;
@@ -137,7 +228,7 @@ namespace BoboBrowse.Net.Facets.Data
             List<int> freqList = new List<int>();
 
             int length = maxDoc + 1;
-            TermValueList<T> list = listFactory == null ? (TermValueList<T>)new TermStringList() : listFactory.CreateTermList();
+            ITermValueList list = listFactory == null ? (ITermValueList)new TermStringList() : listFactory.CreateTermList();
             int negativeValueCount = GetNegativeValueCount(reader, field);
 
             TermDocs termDocs = reader.TermDocs();
@@ -235,45 +326,56 @@ namespace BoboBrowse.Net.Facets.Data
             this.freqs[0] = maxDoc + 1 - totalFreq;
         }
 
-        // NOTE: This was FacetDataCache (non generic) in the source. Not sure if FacetDataCache<T> is equivalent.
-        private static int[] ConvertString(FacetDataCache<T> dataCache, string[] vals)
-        {
-            var list = new List<int>(vals.Length);
-            for (int i = 0; i < vals.Length; ++i)
-            {
-                int index = dataCache.valArray.IndexOf(vals[i]);
-                if (index >= 0)
-                {
-                    list.Add(index);
-                }
-            }
-            return list.ToArray();
-        }
+        //private static int[] ConvertString(IFacetDataCache dataCache, string[] vals)
+        //{
+        //    var list = new List<int>(vals.Length);
+        //    for (int i = 0; i < vals.Length; ++i)
+        //    {
+        //        int index = dataCache.ValueArray.IndexOf(vals[i]);
+        //        if (index >= 0)
+        //        {
+        //            list.Add(index);
+        //        }
+        //    }
+        //    return list.ToArray();
+        //}
 
-        /// <summary>
-        /// Same as ConvertString(FacetDataCache dataCache,String[] vals) except that the
-        /// values are supplied in raw form so that we can take advantage of the type
-        /// information to find index faster.
-        /// </summary>
-        /// <param name="dataCache"></param>
-        /// <param name="vals"></param>
-        /// <returns>the array of order indices of the values.</returns>
-        public static int[] Convert(FacetDataCache<T> dataCache, T[] vals) 
-        {
-            if (vals != null && (typeof(T) == typeof(string)))
-            {
-                var valsString = vals.Cast<string>().ToArray();
-                return ConvertString(dataCache, valsString);
-            }
-            var list = new List<int>(vals.Length);
-            for (int i = 0; i < vals.Length; ++i) {
-                int index = dataCache.valArray.IndexOfWithType(vals[i]);
-                if (index >= 0) {
-                list.Add(index);
-                }
-            }
-            return list.ToArray();
-        }
+        ///// <summary>
+        ///// Same as ConvertString(FacetDataCache dataCache,String[] vals) except that the
+        ///// values are supplied in raw form so that we can take advantage of the type
+        ///// information to find index faster.
+        ///// </summary>
+        ///// <param name="dataCache"></param>
+        ///// <param name="vals"></param>
+        ///// <returns>the array of order indices of the values.</returns>
+        //public static int[] Convert(IFacetDataCache dataCache, T[] vals) 
+        //{
+        //    if (vals != null && (typeof(T) == typeof(string)))
+        //    {
+        //        var valsString = vals.Cast<string>().ToArray();
+        //        return ConvertString(dataCache, valsString);
+        //    }
+        //    var list = new List<int>(vals.Length);
+        //    for (int i = 0; i < vals.Length; ++i) 
+        //    {
+        //        int index = -1;
+        //        var valArrayTyped = dataCache.ValueArray as TermValueList<T>;
+        //        if (valArrayTyped != null)
+        //        {
+        //            index = valArrayTyped.IndexOfWithType(vals[i]);
+        //        }
+        //        else
+        //        {
+        //            index = dataCache.ValueArray.IndexOf(vals[i]);
+        //        }
+        //        if (index >= 0)
+        //        {
+        //            list.Add(index);
+        //        }
+                
+        //    }
+        //    return list.ToArray();
+        //}
 
         public class FacetDocComparatorSource : DocComparatorSource
         {
@@ -308,7 +410,7 @@ namespace BoboBrowse.Net.Facets.Data
                 public override IComparable Value(ScoreDoc doc)
                 {
                     int index = _orderArray.Get(doc.Doc);
-                    return _dataCache.valArray.GetComparableValue(index);
+                    return _dataCache.ValueArray.GetComparableValue(index);
                 }
             }
         }

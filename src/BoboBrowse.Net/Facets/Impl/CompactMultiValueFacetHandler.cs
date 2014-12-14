@@ -18,7 +18,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         private const int MAX_VAL_COUNT = 32;
         private readonly TermListFactory _termListFactory;
-        private FacetDataCache _dataCache;
+        private IFacetDataCache _dataCache;
         private readonly string _indexFieldName;
 
         public CompactMultiValueFacetHandler(string name, string indexFieldName, TermListFactory termListFactory)
@@ -43,17 +43,17 @@ namespace BoboBrowse.Net.Facets.Impl
         {
         }
 
-        public virtual FacetHandler NewInstance()
+        public virtual IFacetHandler NewInstance()
         {
             return new CompactMultiValueFacetHandler(Name, _indexFieldName, _termListFactory);
         }
 
         public override FieldComparator GetComparator(int numDocs, SortField field)
         {
-            return _dataCache.GeFieldComparator(numDocs, field.Type);
+            return _dataCache.GetFieldComparator(numDocs, field.Type);
         }
 
-        public FacetDataCache GetDataCache()
+        public IFacetDataCache GetDataCache()
         {
             return _dataCache;
         }
@@ -110,7 +110,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override string[] GetFieldValues(int id)
         {
-            int encoded = _dataCache.orderArray.Get(id);
+            int encoded = _dataCache.OrderArray.Get(id);
             if (encoded == 0)
             {
                 return new string[] { "" };

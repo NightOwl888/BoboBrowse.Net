@@ -40,7 +40,57 @@ namespace BoboBrowse.Net.Facets
         Large
     }
 
-    public abstract class FacetHandler<D> : ICloneable
+    public interface IFacetHandler
+    {
+        RandomAccessFilter BuildFilter(BrowseSelection sel);
+        RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, Properties prop);
+        RandomAccessFilter BuildRandomAccessFilter(string value, Properties selectionProperty);
+        RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, Properties prop, bool isNot);
+        object Clone();
+        IEnumerable<string> DependsOn { get; }
+
+
+        object GetDependedFacetHandler(string name); // Generic - IFacetHandler
+
+
+        DocComparatorSource GetDocComparatorSource();
+        IFacetCountCollector GetFacetCountCollector(BrowseSelection sel, FacetSpec fspec);
+        FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec fspec);
+        FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec ospec, bool groupMode);
+
+        //D GetFacetData(BoboIndexReader reader);// Generic
+        object GetFacetData(BoboIndexReader reader);
+
+        string GetFieldValue(BoboIndexReader reader, int id);
+        string[] GetFieldValues(BoboIndexReader reader, int id);
+        int GetNumItems(BoboIndexReader reader, int id);
+        object[] GetRawFieldValues(BoboIndexReader reader, int id);
+
+        //TermCountSize GetTermCountSize();
+
+        //D Load(BoboIndexReader reader);// Generic
+        //D Load(BoboIndexReader reader, BoboIndexReader.WorkArea workArea);// Generic
+
+        object Load(BoboIndexReader reader);
+        object Load(BoboIndexReader reader, BoboIndexReader.WorkArea workArea);
+
+        void LoadFacetData(BoboIndexReader reader);
+        void LoadFacetData(BoboIndexReader reader, BoboIndexReader.WorkArea workArea);
+
+        IFacetAccessible Merge(FacetSpec fspec, IEnumerable<IFacetAccessible> facetList);
+        string Name { get; }
+
+        //void PutDependedFacetHandler<T>(FacetHandler<T> facetHandler); // Generic - IFacetHandler
+        void PutDependedFacetHandler(IFacetHandler facetHandler);
+
+        void SetTermCountSize(string termCountSize);
+        TermCountSize TermCountSize { get; set; }
+
+        //FacetHandler<D> SetTermCountSize(TermCountSize termCountSize);//Make void
+        //FacetHandler<D> SetTermCountSize(string termCountSize);//Make void
+    }
+
+    public abstract class FacetHandler<D> : ICloneable, IFacetHandler
     {
         [Serializable]
         public class FacetDataNone
@@ -53,7 +103,7 @@ namespace BoboBrowse.Net.Facets
         protected readonly string _name;
         private readonly IEnumerable<string> _dependsOn;
         // TODO: See if there is a way to use another type besides object; original was <string, FacetHandler<?>>
-        private readonly Dictionary<string, object> _dependedFacetHandlers;
+        private readonly Dictionary<string, IFacetHandler> _dependedFacetHandlers;
         private TermCountSize _termCountSize;
 
         /// <summary>
@@ -65,25 +115,36 @@ namespace BoboBrowse.Net.Facets
         {
             _name = name;
             _dependsOn = dependsOn == null ? new List<string>() : new List<string>(dependsOn);
-            _dependedFacetHandlers = new Dictionary<string, object>();
+            _dependedFacetHandlers = new Dictionary<string, IFacetHandler>();
             _termCountSize = TermCountSize.Large;
         }
 
-        public FacetHandler<D> SetTermCountSize(string termCountSize)
+        //public FacetHandler<D> SetTermCountSize(string termCountSize)
+        //{
+        //    this.SetTermCountSize((TermCountSize)Enum.Parse(typeof(TermCountSize), termCountSize, true));
+        //    return this;
+        //}
+
+        //public FacetHandler<D> SetTermCountSize(TermCountSize termCountSize)
+        //{
+        //    _termCountSize = termCountSize;
+        //    return this;
+        //}
+
+        //public TermCountSize GetTermCountSize()
+        //{
+        //    return _termCountSize;
+        //}
+
+        public virtual void SetTermCountSize(string termCountSize)
         {
-            this.SetTermCountSize((TermCountSize)Enum.Parse(typeof(TermCountSize), termCountSize, true));
-            return this;
+            _termCountSize = (TermCountSize)Enum.Parse(typeof(TermCountSize), termCountSize, true);
         }
 
-        public FacetHandler<D> SetTermCountSize(TermCountSize termCountSize)
+        public virtual TermCountSize TermCountSize
         {
-            _termCountSize = termCountSize;
-            return this;
-        }
-
-        public TermCountSize GetTermCountSize()
-        {
-            return _termCountSize;
+            get { return _termCountSize; }
+            set { _termCountSize = value; }
         }
 
         /// <summary>
@@ -113,14 +174,34 @@ namespace BoboBrowse.Net.Facets
         // TODO: Need to revisit this design later to see if there is a better alternative
         // to using FacetHandler<T>. In Java, they used FacetHandler<?>.
 
+        ///// <summary>
+        ///// Adds a list of depended facet handlers
+        ///// </summary>
+        ///// <param name="name">Name of handler depended facet handler</param>
+        ///// <param name="facetHandler">Handler depended facet handler</param>
+        //public void PutDependedFacetHandler<T>(FacetHandler<T> facetHandler)
+        //{
+        //    _dependedFacetHandlers.Put(facetHandler._name, facetHandler);
+        //}
+
+        ///// <summary>
+        ///// Gets a depended facet handler
+        ///// </summary>
+        ///// <param name="name">facet handler name</param>
+        ///// <returns>facet handler instance</returns>
+        //public object GetDependedFacetHandler(string name)
+        //{
+        //    return _dependedFacetHandlers.Get(name);
+        //}
+
         /// <summary>
         /// Adds a list of depended facet handlers
         /// </summary>
         /// <param name="name">Name of handler depended facet handler</param>
         /// <param name="facetHandler">Handler depended facet handler</param>
-        public void PutDependedFacetHandler<T>(FacetHandler<T> facetHandler)
+        public void PutDependedFacetHandler(IFacetHandler facetHandler)
         {
-            _dependedFacetHandlers.Put(facetHandler._name, facetHandler);
+            _dependedFacetHandlers.Put(facetHandler.Name, facetHandler);
         }
 
         /// <summary>
@@ -128,28 +209,47 @@ namespace BoboBrowse.Net.Facets
         /// </summary>
         /// <param name="name">facet handler name</param>
         /// <returns>facet handler instance</returns>
-        public object GetDependedFacetHandler(string name)
+        public IFacetHandler GetDependedFacetHandler(string name)
         {
             return _dependedFacetHandlers.Get(name);
         }
+
+
+
+        ///// <summary>
+        ///// Load information from an index reader, initialized by <see cref="T:BoboBrowse.Net.BoboIndexReader"/>.
+        ///// </summary>
+        ///// <param name="reader"></param>
+        //public abstract D Load(BoboIndexReader reader);
 
         /// <summary>
         /// Load information from an index reader, initialized by <see cref="T:BoboBrowse.Net.BoboIndexReader"/>.
         /// </summary>
         /// <param name="reader"></param>
-        public abstract D Load(BoboIndexReader reader);
+        public abstract object Load(BoboIndexReader reader);
 
         public virtual IFacetAccessible Merge(FacetSpec fspec, IEnumerable<IFacetAccessible> facetList)
         {
             return new CombinedFacetAccessible(fspec, facetList);
         }
 
-        public virtual D GetFacetData(BoboIndexReader reader)
+        //public virtual D GetFacetData(BoboIndexReader reader)
+        //{
+        //    return (D)reader.GetFacetData(_name);
+        //}
+
+        public virtual object GetFacetData(BoboIndexReader reader)
         {
-            return (D)reader.GetFacetData(_name);
+            return reader.GetFacetData(_name);
         }
 
-        public virtual D Load(BoboIndexReader reader, BoboIndexReader.WorkArea workArea)
+
+        //public virtual D Load(BoboIndexReader reader, BoboIndexReader.WorkArea workArea)
+        //{
+        //    return Load(reader);
+        //}
+
+        public virtual object Load(BoboIndexReader reader, BoboIndexReader.WorkArea workArea)
         {
             return Load(reader);
         }

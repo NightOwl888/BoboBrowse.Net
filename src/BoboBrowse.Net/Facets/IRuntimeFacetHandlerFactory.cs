@@ -11,12 +11,7 @@ namespace BoboBrowse.Net.Facets
     /// 
     /// author xiaoyang
     /// </summary>
-    /// <typeparam name="P"></typeparam>
-    /// <typeparam name="F"></typeparam>
-    /// <typeparam name="T"></typeparam>
-    public interface IRuntimeFacetHandlerFactory<P, F, T>
-        where P : FacetHandlerInitializerParam
-        where F : RuntimeFacetHandler<T>
+    public interface IRuntimeFacetHandlerFactory
     {
         /// <summary>
         /// Gets the facet name of the RuntimeFacetHandler it creates.
@@ -33,6 +28,6 @@ namespace BoboBrowse.Net.Facets
         /// </summary>
         /// <param name="params">the data used to initialize the RuntimeFacetHandler.</param>
         /// <returns>a new instance of </returns>
-        F Get(P @params);
+        RuntimeFacetHandler Get(FacetHandlerInitializerParam @params);
     }
 }
