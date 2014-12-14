@@ -1,82 +1,86 @@
-
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Facets.Data
 {
-    using Lucene.Net.Documents;
     using System;
-    using System.Collections.Generic;
-    using System.Globalization;
 
     ///<summary>Internal data are stored in a long[] with values generated from <seealso cref="Date#getTime()"/> </summary>
-	public class TermDateList : TermValueList<object>
-	{
+    public class TermDateList : TermLongList
+    {
         public TermDateList()
-        {
-        }
+            : base()
+        {}
 
         public TermDateList(string formatString)
-		{
-            this.FormatString = formatString;
-		}
+            : base(formatString)
+        {}
 
         public TermDateList(string formatString, IFormatProvider formatProvider)
-        {
-            this.FormatString = formatString;
-            this.FormatProvider = formatProvider;
-        }
+            : base(formatString, formatProvider)
+        {}
 
-		public TermDateList(int capacity, string formatString) 
-            : base(capacity)
-		{
-            this.FormatString = formatString;
-        }
+        public TermDateList(int capacity, string formatString)
+            : base(capacity, formatString)
+        {}
 
         public TermDateList(int capacity, string formatString, IFormatProvider formatProvider)
-            : base(capacity)
+            : base(capacity, formatString, formatProvider)
+        {}
+
+        protected override long Parse(string s)
         {
-            this.FormatString = formatString;
-            this.FormatProvider = formatProvider;
-        }
-
-        public string FormatString { get; protected set; }
-        public IFormatProvider FormatProvider { get; protected set; }
-
-		private DateTime? Parse(string s)
-		{
             if (s == null || s.Length == 0)
             {
-                return null;
+                return 0L;
             }
             else
             {
-                return DateTools.StringToDate(s);
+                try
+                {
+                    return DateTime.Parse(s, this.FormatProvider).ToBinary();
+                }
+                catch (Exception e)
+                {
+                    throw new RuntimeException(e.Message, e);
+                }
             }
-		}
+        }
 
-		public override void Add(string @value)
-		{
-            Add(Parse(@value));
-		}
-
-		public override string Format(object o)
-		{
-            if (o != null)
+        public virtual string this[int index]// From IList<string>
+        {
+            get
             {
-                if (!string.IsNullOrEmpty(this.FormatString))
-                {
-                    return ((DateTime)o).ToString(this.FormatString, this.FormatProvider);
-                }
-                else
-                {
-                    return DateTools.DateToString((DateTime)o, DateTools.Resolution.MINUTE);
-                }
+                return Format(_elements[index]);
             }
-            return null;
-		}
+            set
+            {
+                throw new NotSupportedException("not supported");
+            }
+        }
 
-		public override int IndexOf(object o)
-		{
-			DateTime? val = Parse((string)o);
-            return this.BinarySearch(val);
-		}
-	}
+        public override string Format(object o)
+        {
+            long val;
+            if (o is string)
+            {
+                val = Parse(Convert.ToString(o));
+            }
+            else
+            {
+                val = Convert.ToInt64(o);
+            }
+
+            if (string.IsNullOrEmpty(this.FormatString))
+            {
+                return Convert.ToString(o);
+            }
+            else
+            {
+                if (this.FormatProvider == null)
+                {
+                    return DateTime.FromBinary(val).ToString(this.FormatString);
+                }
+                return DateTime.FromBinary(val).ToString(this.FormatString, this.FormatProvider);
+            }
+        }
+    }
 }
