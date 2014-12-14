@@ -216,6 +216,13 @@
     <Compile Include="ShortFacetIterator.cs" />
     <Compile Include="Sort\DocComparator.cs" />
     <Compile Include="Sort\DocComparatorSource.cs" />
+    <Compile Include="Sort\DocIDPriorityQueue.cs" />
+    <Compile Include="Sort\LuceneCustomDocComparatorSource.cs" />
+    <Compile Include="Sort\MultiDocIdComparator.cs" />
+    <Compile Include="Sort\MultiDocIdComparatorSource.cs" />
+    <Compile Include="Sort\ReverseDocComparatorSource.cs" />
+    <Compile Include="Sort\SortCollector.cs" />
+    <Compile Include="Sort\SortCollectorImpl.cs" />
     <Compile Include="Util\Arrays.cs" />
     <Compile Include="Util\BigByteArray.cs" />
     <Compile Include="Util\BigFloatArray.cs" />
