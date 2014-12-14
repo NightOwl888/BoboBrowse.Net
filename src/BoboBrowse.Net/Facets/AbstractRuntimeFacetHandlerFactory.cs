@@ -3,7 +3,7 @@ namespace BoboBrowse.Net.Facets
 {
     using System;
 
-    public abstract class AbstractRuntimeFacetHandlerFactory<P, F, T> : IRuntimeFacetHandlerFactory<P, F, T>
+    public abstract class AbstractRuntimeFacetHandlerFactory : IRuntimeFacetHandlerFactory
     {
         public abstract string Name { get; }
 
@@ -15,6 +15,6 @@ namespace BoboBrowse.Net.Facets
             get { return false; }
         }
 
-        public abstract F Get(P @params);
+        public abstract RuntimeFacetHandler Get(FacetHandlerInitializerParam @params);
     }
 }
