@@ -1,5 +1,5 @@
 ﻿// Copyright (c) COMPANY. All rights reserved. 
-
+// TODO: Move to support namespace
 namespace BoboBrowse.Net.Util
 {
     using System;
@@ -18,6 +18,25 @@ namespace BoboBrowse.Net.Util
         public static string ToString<T>(T[] block)
         {
             return string.Join(", ", block.Select(x => x.ToString()).ToArray());
+        }
+
+        public static int HashCode(long[] array)
+        {
+            if (array == null)
+            {
+                return 0;
+            }
+            int hashCode = 1;
+            foreach (long elementValue in array)
+            {
+                /*
+                 * the hash code value for long value is (int) (value ^ (value >>>
+                 * 32))
+                 */
+                hashCode = 31 * hashCode
+                        + (int)(elementValue ^ (long)(((ulong)elementValue) >> 32));
+            }
+            return hashCode;
         }
     }
 }

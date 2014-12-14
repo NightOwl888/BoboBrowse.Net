@@ -1,4 +1,5 @@
-﻿namespace BoboBrowse.Net.Util
+﻿// TODO: Move to support namespace
+namespace BoboBrowse.Net.Util
 {
     using System;
     using System.IO;

@@ -41,6 +41,7 @@
 
 // Source ported to C# from: http://fuseyism.com/classpath/doc/java/util/BitSet-source.html
 
+// TODO: Move to support namespace
 namespace BoboBrowse.Net.Util
 {
     using System;
