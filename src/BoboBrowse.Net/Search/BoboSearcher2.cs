@@ -19,45 +19,135 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Search
 {
     using BoboBrowse.Net.DocIdSet;
     using BoboBrowse.Net.Facets;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
+    using Lucene.Net.Util;
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
 
-    public class BoboSearcher2 : BoboSearcher
+    public class BoboSearcher2 : IndexSearcher
     {
+        protected IEnumerable<FacetHitCollector> _facetCollectors;
+        protected BoboIndexReader[] _subReaders;
+        protected int[] _docStarts;
+
         public BoboSearcher2(BoboIndexReader reader)
             : base(reader)
         {
+            _facetCollectors = new List<FacetHitCollector>();
+            var readerList = new List<IndexReader>();
+            ReaderUtil.GatherSubReaders(readerList, reader);
+            _subReaders = (BoboIndexReader[])readerList.ToArray();
+            _docStarts = new int[_subReaders.Length];
+            int maxDoc = 0;
+            for (int i = 0; i < _subReaders.Length; ++i)
+            {
+                _docStarts[i] = maxDoc;
+                maxDoc += _subReaders[i].MaxDoc;
+            }
+        }
+
+        public IEnumerable<FacetHitCollector> FacetHitCollectorList
+        {
+            set
+            {
+                if (value != null)
+                {
+                    _facetCollectors = value;
+                }
+            }
         }
 
         public abstract class FacetValidator
         {
-            protected internal readonly FacetHitCollector[] Collectors;
-            protected internal readonly IFacetCountCollector[] CountCollectors;
-            protected internal readonly int NumPostFilters;
-            public int NextTarget;
+            protected readonly FacetHitCollector[] _collectors;
+            protected readonly int _numPostFilters;
+            protected IFacetCountCollector[] _countCollectors;
+            public int _nextTarget;
 
-            protected FacetValidator(FacetHitCollector[] collectors, IFacetCountCollector[] countCollectors, int numPostFilters)
+            private void SortPostCollectors(BoboIndexReader reader)
             {
-                Collectors = collectors;
-                CountCollectors = countCollectors;
-                NumPostFilters = numPostFilters;
+                var comparator = new SortPostCollectorsComparator(reader);
+                System.Array.Sort(_collectors, 0, _numPostFilters, comparator);
+            }
+
+            private class SortPostCollectorsComparator : IComparer<FacetHitCollector>
+            {
+                private readonly BoboIndexReader reader;
+
+                public SortPostCollectorsComparator(BoboIndexReader reader)
+                {
+                    this.reader = reader;
+                }
+
+                public int Compare(FacetHitCollector fhc1, FacetHitCollector fhc2)
+                {
+                    double selectivity1 = fhc1._filter.GetFacetSelectivity(reader);
+                    double selectivity2 = fhc2._filter.GetFacetSelectivity(reader);
+
+                    if (selectivity1 < selectivity2)
+                    {
+                        return -1;
+                    }
+                    else if (selectivity1 > selectivity2)
+                    {
+                        return 1;
+                    }
+                    return 0;
+                }
+            }
+    
+            public FacetValidator(FacetHitCollector[] collectors, int numPostFilters)
+            {
+                _collectors = collectors;
+                _numPostFilters = numPostFilters;
+                _countCollectors = new IFacetCountCollector[collectors.Length];
             }
 
             ///<summary>This method validates the doc against any multi-select enabled fields. </summary>
             ///<param name="docid"> </param>
             ///<returns> true if all fields matched </returns>
             public abstract bool Validate(int docid);
+
+            public virtual void SetNextReader(BoboIndexReader reader, int docBase)
+            {
+                List<IFacetCountCollector> collectorList = new List<IFacetCountCollector>();
+                SortPostCollectors(reader);
+                for (int i = 0; i < _collectors.Length; ++i)
+                {
+                    _collectors[i].SetNextReader(reader, docBase);
+                    IFacetCountCollector collector = _collectors[i]._currentPointers.FacetCountCollector;
+                    if (collector != null)
+                    {
+                        collectorList.Add(collector);
+                    }
+                }
+                _countCollectors = collectorList.ToArray();
+            }
+
+            public virtual IFacetCountCollector[] GetCountCollectors()
+            {
+                List<IFacetCountCollector> collectors = new List<IFacetCountCollector>();
+                collectors.AddRange(_countCollectors);
+                foreach (FacetHitCollector facetHitCollector in _collectors)
+                {
+                    collectors.AddRange(facetHitCollector._collectAllCollectorList);
+                    collectors.AddRange(facetHitCollector._countCollectorList);
+                }
+                return collectors.ToArray();
+            }
         }
 
         private sealed class DefaultFacetValidator : FacetValidator
         {
-            public DefaultFacetValidator(FacetHitCollector[] collectors, IFacetCountCollector[] countCollectors, int numPostFilters)
-                : base(collectors, countCollectors, numPostFilters)
+            public DefaultFacetValidator(FacetHitCollector[] collectors, int numPostFilters)
+                : base(collectors, numPostFilters)
             {
             }
 
@@ -66,54 +156,39 @@ namespace BoboBrowse.Net.Search
             ///<returns>true if all fields matched </returns>
             public override bool Validate(int docid)
             {
-                FacetHitCollector miss = null;
+                FacetHitCollector.CurrentPointers miss = null;
 
-                for (int i = 0; i < NumPostFilters; i++)
+                for (int i = 0; i < _numPostFilters; i++)
                 {
-                    FacetHitCollector facetCollector = Collectors[i];
-                    if (facetCollector.More)
+                    FacetHitCollector.CurrentPointers cur = _collectors[i]._currentPointers;
+                    int sid = cur.Doc;
+
+                    if (sid < docid)
                     {
-                        int sid = facetCollector.Doc;
-                        if (sid == docid) // matched
+                        sid = cur.PostDocIDSetIterator.Advance(docid);
+                        cur.Doc = sid;
+                        if (sid == DocIdSetIterator.NO_MORE_DOCS)
                         {
-                            continue;
-                        }
-
-                        if (sid < docid)
-                        {
-                            DocIdSetIterator iterator = facetCollector.PostDocIDSetIterator;
-                            if (iterator.Advance(docid)!=DocIdSetIterator.NO_MORE_DOCS)
-                            {
-                                sid = iterator.DocID();
-                                facetCollector.Doc = sid;
-                                if (sid == docid) // matched
-                                {
-                                    continue;
-                                }
-                            }
-                            else
-                            {
-                                facetCollector.More = false;
-                                facetCollector.Doc = int.MaxValue;
-
-                                // move this to front so that the call can find the failure faster
-                                FacetHitCollector tmp = Collectors[0];
-                                Collectors[0] = facetCollector;
-                                Collectors[i] = tmp;
-                            }
+                            // move this to front so that the call can find the failure faster
+                            FacetHitCollector tmp = _collectors[0];
+                            _collectors[0] = _collectors[i];
+                            _collectors[i] = tmp;
                         }
                     }
 
-                    if (miss != null)
+                    if (sid > docid) //mismatch
                     {
-                        // failed because we already have a mismatch
-                        NextTarget = (miss.Doc < facetCollector.Doc ? miss.Doc : facetCollector.Doc);
-                        return false;
+                        if (miss != null)
+                        {
+                            // failed because we already have a mismatch
+                            _nextTarget = (miss.Doc < cur.Doc ? miss.Doc : cur.Doc);
+                            return false;
+                        }
+                        miss = cur;
                     }
-                    miss = facetCollector;
                 }
 
-                NextTarget = docid + 1;
+                _nextTarget = docid + 1;
 
                 if (miss != null)
                 {
@@ -122,9 +197,9 @@ namespace BoboBrowse.Net.Search
                 }
                 else
                 {
-                    foreach (IFacetCountCollector collector in CountCollectors)
+                    foreach (IFacetCountCollector collector in _countCollectors)
                     {
-                        collector.Collect(docid);
+                      collector.Collect(docid);
                     }
                     return true;
                 }
@@ -133,24 +208,24 @@ namespace BoboBrowse.Net.Search
 
         private sealed class OnePostFilterFacetValidator : FacetValidator
         {
-            private FacetHitCollector firsttime;
+            private FacetHitCollector _firsttime;
 
-            internal OnePostFilterFacetValidator(FacetHitCollector[] collectors, IFacetCountCollector[] countCollectors, int numPostFilters)
-                : base(collectors, countCollectors, numPostFilters)
+            public OnePostFilterFacetValidator(FacetHitCollector[] collectors)
+                : base(collectors, 1)
             {
-                firsttime = Collectors[0];
+                _firsttime = _collectors[0];
             }
 
             public override bool Validate(int docid)
             {
-                FacetHitCollector miss = null;
+                FacetHitCollector.CurrentPointers miss = null;
 
-                RandomAccessDocIdSet @set = firsttime.DocIdSet;
+                RandomAccessDocIdSet @set = _firsttime._currentPointers.DocIdSet;
                 if (@set != null && !@set.Get(docid))
                 {
-                    miss = firsttime;
+                    miss = _firsttime._currentPointers;
                 }
-                NextTarget = docid + 1;
+                _nextTarget = docid + 1;
 
                 if (miss != null)
                 {
@@ -159,7 +234,7 @@ namespace BoboBrowse.Net.Search
                 }
                 else
                 {
-                    foreach (IFacetCountCollector collector in CountCollectors)
+                    foreach (IFacetCountCollector collector in _countCollectors)
                     {
                         collector.Collect(docid);
                     }
@@ -170,14 +245,14 @@ namespace BoboBrowse.Net.Search
 
         private sealed class NoNeedFacetValidator : FacetValidator
         {
-            internal NoNeedFacetValidator(FacetHitCollector[] collectors, IFacetCountCollector[] countCollectors, int numPostFilters)
-                : base(collectors, countCollectors, numPostFilters)
+            public NoNeedFacetValidator(FacetHitCollector[] collectors)
+                : base(collectors, 0)
             {
             }
 
             public override bool Validate(int docid)
             {
-                foreach (IFacetCountCollector collector in CountCollectors)
+                foreach (IFacetCountCollector collector in _countCollectors)
                 {
                     collector.Collect(docid);
                 }
@@ -187,136 +262,180 @@ namespace BoboBrowse.Net.Search
 
         protected FacetValidator CreateFacetValidator()
         {
-            FacetHitCollector[] collectors = new FacetHitCollector[facetCollectors.Count];
-            IFacetCountCollector[] countCollectors = new IFacetCountCollector[collectors.Length];
+            FacetHitCollector[] collectors = new FacetHitCollector[_facetCollectors.Count()];
+            FacetCountCollectorSource[] countCollectors = new FacetCountCollectorSource[collectors.Length];
             int numPostFilters;
             int i = 0;
             int j = collectors.Length;
 
-            foreach (FacetHitCollector facetCollector in facetCollectors)
+            foreach (FacetHitCollector facetCollector in _facetCollectors)
             {
-                if (facetCollector.PostDocIDSetIterator != null)
+                if (facetCollector._filter != null)
                 {
-                    facetCollector.More = facetCollector.PostDocIDSetIterator.NextDoc()!=DocIdSetIterator.NO_MORE_DOCS;
-                    facetCollector.Doc = (facetCollector.More ? facetCollector.PostDocIDSetIterator.DocID() : int.MaxValue);
                     collectors[i] = facetCollector;
-                    countCollectors[i] = facetCollector.FacetCountCollector;
+                    countCollectors[i] = facetCollector._facetCountCollectorSource;
                     i++;
                 }
                 else
                 {
                     j--;
                     collectors[j] = facetCollector;
-                    countCollectors[j] = facetCollector.FacetCountCollector;
+                    countCollectors[j] = facetCollector._facetCountCollectorSource;
                 }
             }
             numPostFilters = i;
 
             if (numPostFilters == 0)
             {
-                return new NoNeedFacetValidator(collectors, countCollectors, numPostFilters);
+                return new NoNeedFacetValidator(collectors);
             }
             else if (numPostFilters == 1)
             {
-                return new OnePostFilterFacetValidator(collectors, countCollectors, numPostFilters);
+                return new OnePostFilterFacetValidator(collectors);
             }
             else
             {
-                return new DefaultFacetValidator(collectors, countCollectors, numPostFilters);
+                return new DefaultFacetValidator(collectors, numPostFilters);
             }
         }
 
-        public override void Search(Weight weight, Filter filter, Collector results)
+        public override void Search(Weight weight, Filter filter, Collector collector)
         {
-            IndexReader reader = IndexReader;
+            //base.Search(weight, filter, collector, 0, null);
+            this.Search(weight, filter, collector, 0);
+        }
 
-            Scorer scorer = weight.Scorer(reader, true, false);
-
-            if (scorer == null)
-            {
-                return;
-            }
-
-            results.SetScorer(scorer);
-            results.SetNextReader(reader, 0);
-
+        //public virtual void Search(Weight weight, Filter filter, Collector collector, int start, BoboMapFunctionWrapper mapReduceWrapper)
+        public virtual void Search(Weight weight, Filter filter, Collector collector, int start)
+        {
             FacetValidator validator = CreateFacetValidator();
             int target = 0;
-            bool more;
 
             if (filter == null)
             {
-                more = scorer.NextDoc()!=DocIdSetIterator.NO_MORE_DOCS;
-                while (more)
-                {
-                    target = scorer.DocID();
-                    if (validator.Validate(target))
+                for (int i = 0; i < _subReaders.Length; i++)
+                { // search each subreader
+                    int docStart = start + _docStarts[i];
+                    collector.SetNextReader(_subReaders[i], docStart);
+                    validator.SetNextReader(_subReaders[i], docStart);
+
+
+                    Scorer scorer = weight.Scorer(_subReaders[i], true, true);
+                    if (scorer != null)
                     {
-                        results.Collect(target);
-                        more = scorer.NextDoc()!=DocIdSetIterator.NO_MORE_DOCS;
+
+                        collector.SetScorer(scorer);
+                        target = scorer.NextDoc();
+                        while (target != DocIdSetIterator.NO_MORE_DOCS)
+                        {
+                            if (validator.Validate(target))
+                            {
+                                collector.Collect(target);
+                                target = scorer.NextDoc();
+                            }
+                            else
+                            {
+                                target = validator._nextTarget;
+                                target = scorer.Advance(target);
+                            }
+                        }
                     }
-                    else
-                    {
-                        target = validator.NextTarget;
-                        more = scorer.Advance(target) != DocIdSetIterator.NO_MORE_DOCS;
-                    }
+                    //// TODO: Reduce wrapper not supported
+                    //if (mapReduceWrapper != null)
+                    //{
+                    //    mapReduceWrapper.mapFullIndexReader(_subReaders[i], validator.getCountCollectors());
+                    //}
                 }
                 return;
             }
 
-            DocIdSetIterator filterDocIdIterator = filter.GetDocIdSet(reader).Iterator(); // CHECKME: use ConjunctionScorer here?
-
-            target = filterDocIdIterator.NextDoc();
-            if (target == DocIdSetIterator.NO_MORE_DOCS)
+            for (int i = 0; i < _subReaders.Length; i++)
             {
-                return;
-            }
-
-            int doc = -1;
-            while (true)
-            {
-                if (doc < target)
+                DocIdSet filterDocIdSet = filter.GetDocIdSet(_subReaders[i]);
+                if (filterDocIdSet == null) return;  //shall we use return or continue here ??
+                int docStart = start + _docStarts[i];
+                collector.SetNextReader(_subReaders[i], docStart);
+                validator.SetNextReader(_subReaders[i], docStart);
+                Scorer scorer = weight.Scorer(_subReaders[i], true, false);
+                if (scorer != null)
                 {
-                    doc = scorer.Advance(target);
-                    if (doc == DocIdSetIterator.NO_MORE_DOCS)
-                    {
-                        break;
-                    }
-                }
+                    collector.SetScorer(scorer);
+                    DocIdSetIterator filterDocIdIterator = filterDocIdSet.Iterator(); // CHECKME: use ConjunctionScorer here?
 
-                if (doc == target) // permitted by filter
-                {
-                    if (validator.Validate(doc))
-                    {
-                        results.Collect(doc);
+                    if (filterDocIdIterator == null)
+                        continue;
 
-                        target = filterDocIdIterator.NextDoc();
-                        if (target == DocIdSetIterator.NO_MORE_DOCS)
+                    int doc = -1;
+                    target = filterDocIdIterator.NextDoc();
+                    //// TODO: Reduce wrapper not supported in .NET
+                    //if (mapReduceWrapper == null)
+                    //{
+                        while (target < DocIdSetIterator.NO_MORE_DOCS)
                         {
-                            break;
-                        }
-                        else
-                        {
-                            continue;
-                        }
-                    }
-                    else
-                    {
-                        // skip to the next possible docid
-                        target = validator.NextTarget;
-                    }
-                }
-                else // doc > target
-                {
-                    target = doc;
-                }
+                            if (doc < target)
+                            {
+                                doc = scorer.Advance(target);
+                            }
 
-                target = filterDocIdIterator.Advance(target);
-                if (target == DocIdSetIterator.NO_MORE_DOCS)
-                {
-                    break;
+                            if (doc == target) // permitted by filter
+                            {
+                                if (validator.Validate(doc))
+                                {
+                                    collector.Collect(doc);
+
+                                    target = filterDocIdIterator.NextDoc();
+                                }
+                                else
+                                {
+                                    // skip to the next possible docid
+                                    target = filterDocIdIterator.Advance(validator._nextTarget);
+                                }
+                            }
+                            else // doc > target
+                            {
+                                if (doc == DocIdSetIterator.NO_MORE_DOCS)
+                                    break;
+                                target = filterDocIdIterator.Advance(doc);
+                            }
+                        }
+                    //// TODO: Reduce wrapper not supported in .NET
+                    //}
+                    //else
+                    //{
+                    //    //MapReduce wrapper is not null
+                    //    while (target < DocIdSetIterator.NO_MORE_DOCS)
+                    //    {
+                    //        if (doc < target)
+                    //        {
+                    //            doc = scorer.Advance(target);
+                    //        }
+
+                    //        if (doc == target) // permitted by filter
+                    //        {
+                    //            if (validator.Validate(doc))
+                    //            {
+                    //                mapReduceWrapper.MapSingleDocument(doc, _subReaders[i]);
+                    //                collector.Collect(doc);
+
+                    //                target = filterDocIdIterator.NextDoc();
+                    //            }
+                    //            else
+                    //            {
+                    //                // skip to the next possible docid
+                    //                target = filterDocIdIterator.Advance(validator._nextTarget);
+                    //            }
+                    //        }
+                    //        else // doc > target
+                    //        {
+                    //            if (doc == DocIdSetIterator.NO_MORE_DOCS)
+                    //                break;
+                    //            target = filterDocIdIterator.Advance(doc);
+                    //        }
+                    //    }
+                    //    mapReduceWrapper.FinalizeSegment(_subReaders[i], validator.GetCountCollectors());
+                    //}
                 }
-            }
+            }     
         }
     }
 }

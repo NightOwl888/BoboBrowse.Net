@@ -19,20 +19,56 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Search
 {
-    using System;
-    using Lucene.Net.Search;
     using BoboBrowse.Net.DocIdSet;
     using BoboBrowse.Net.Facets;
-
+    using BoboBrowse.Net.Facets.Filter;
+    using Lucene.Net.Search;
+    using System;
+    using System.Collections.Generic;
+    
     public sealed class FacetHitCollector
     {
-        public IFacetCountCollector FacetCountCollector;
-        public DocIdSetIterator PostDocIDSetIterator;
-        public int Doc;
-        public bool More;
-        public FacetHandler FacetHandler;
-        public RandomAccessDocIdSet DocIdSet;
+        public FacetCountCollectorSource _facetCountCollectorSource;	
+	    public FacetCountCollectorSource _collectAllSource = null;
+	    public IFacetHandler facetHandler;
+	    public RandomAccessFilter _filter;
+	    public readonly CurrentPointers _currentPointers = new CurrentPointers();
+	    public List<IFacetCountCollector> _countCollectorList = new List<IFacetCountCollector>();
+	    public List<IFacetCountCollector> _collectAllCollectorList = new List<IFacetCountCollector>();
+
+        public void SetNextReader(BoboIndexReader reader, int docBase)
+        {
+            if (_collectAllSource != null)
+            {
+                IFacetCountCollector collector = _collectAllSource.GetFacetCountCollector(reader, docBase);
+                _collectAllCollectorList.Add(collector);
+                collector.CollectAll();
+            }
+            else
+            {
+                if (_filter != null)
+                {
+                    _currentPointers.DocIdSet = _filter.GetRandomAccessDocIdSet(reader);
+                    _currentPointers.PostDocIDSetIterator = _currentPointers.DocIdSet.Iterator();
+                    _currentPointers.Doc = _currentPointers.PostDocIDSetIterator.NextDoc();
+                }
+                if (_facetCountCollectorSource != null)
+                {
+                    _currentPointers.FacetCountCollector = _facetCountCollectorSource.GetFacetCountCollector(reader, docBase);
+                    _countCollectorList.Add(_currentPointers.FacetCountCollector);
+                }
+            }
+        }
+
+        public class CurrentPointers
+        {
+            public RandomAccessDocIdSet DocIdSet = null;
+            public DocIdSetIterator PostDocIDSetIterator = null;
+            public int Doc;
+            public IFacetCountCollector FacetCountCollector;
+        }
     }
 }
