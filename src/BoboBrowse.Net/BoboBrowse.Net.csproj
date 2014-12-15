@@ -103,6 +103,7 @@
     <Compile Include="..\Common\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="BoboCustomSortField.cs" />
     <Compile Include="BoboIndexReader.cs" />
     <Compile Include="BoboSubBrowser.cs" />
     <Compile Include="BrowseException.cs" />
