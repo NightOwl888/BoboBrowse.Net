@@ -125,6 +125,8 @@
     <Compile Include="Facets\Filter\GeoFacetFilter.cs" />
     <Compile Include="Facets\Filter\GeoSimpleFacetFilter.cs" />
     <Compile Include="Facets\Filter\IFacetValueConverter.cs" />
+    <Compile Include="Facets\Impl\BucketFacetCountCollector.cs" />
+    <Compile Include="Facets\Impl\BucketFacetHandler.cs" />
     <Compile Include="Facets\Impl\CombinedDoubleFacetIterator.cs" />
     <Compile Include="Facets\Impl\CombinedFacetIterator.cs" />
     <Compile Include="Facets\Impl\CombinedFloatFacetIterator.cs" />
