@@ -30,7 +30,7 @@ namespace BoboBrowse.Net.Facets.Data
     using System.Linq;
     using System.Text;
 
-    public interface ITermValueList
+    public interface ITermValueList : IList<string>
     {
         int Count { get; }
         string Get(int index);
@@ -41,6 +41,7 @@ namespace BoboBrowse.Net.Facets.Data
         void Add(string o);
         List<string> GetInnerList();
         void Seal();
+        Type Type { get; }
     }
 
     /// <summary>This class behaves as List<String> with a few extensions:
@@ -50,7 +51,7 @@ namespace BoboBrowse.Net.Facets.Data
     /// <li> <seealso cref="#indexOf(Object)"/> return value conforms to the contract of <seealso cref="Arrays#binarySearch(Object[], Object)"/></li>
     /// <li> <seealso cref="#seal()"/> is introduce to trim the List size, similar to <seealso cref="ArrayList#TrimToSize()"/>, once it is called, no add should be performed.</li>
     /// </u> </summary>
-    public abstract class TermValueList<T> : ITermValueList, IList<string>
+    public abstract class TermValueList<T> : ITermValueList
     {
         public abstract string Format(object o);
         public virtual void Seal()
@@ -123,6 +124,11 @@ namespace BoboBrowse.Net.Facets.Data
         //{
         //    throw new NotSupportedException("not supported");
         //}
+
+        public virtual Type Type
+        {
+            get { return typeof(T); }
+        }
 
         public virtual string Get(int index)
         {

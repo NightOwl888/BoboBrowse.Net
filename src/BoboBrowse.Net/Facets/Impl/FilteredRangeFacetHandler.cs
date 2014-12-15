@@ -1,12 +1,15 @@
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net;
+    using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Facets.Filter;
+    using BoboBrowse.Net.Sort;
     using Lucene.Net.Search;
     using System.Collections.Generic;
     using System.IO;
 
-    public class FilteredRangeFacetHandler : FacetHandler, IFacetHandlerFactory
+    public class FilteredRangeFacetHandler : FacetHandler<FacetDataNone>
 	{
         private readonly IEnumerable<string> _predefinedRanges;
 		private readonly string _inner;
@@ -20,9 +23,9 @@ namespace BoboBrowse.Net.Facets.Impl
             _innerHandler = null;
         }
 
-	    public override RandomAccessFilter BuildRandomAccessFilter(string @value, Properties selectionProperty)
+	    public override RandomAccessFilter BuildRandomAccessFilter(string value, Properties selectionProperty)
 		{
-			return _innerHandler.BuildRandomAccessFilter(@value, selectionProperty);
+			return _innerHandler.BuildRandomAccessFilter(value, selectionProperty);
 		}
 
 
@@ -36,42 +39,59 @@ namespace BoboBrowse.Net.Facets.Impl
 			return _innerHandler.BuildRandomAccessOrFilter(vals, prop, isNot);
 		}
 
-		public override IFacetCountCollector GetFacetCountCollector(BrowseSelection sel, FacetSpec fspec)
-		{
-			return new RangeFacetCountCollector(Name, _innerHandler.GetDataCache(), fspec, _predefinedRanges, false);
-		}
-
-		public override string[] GetFieldValues(int id)
-		{
-			return _innerHandler.GetFieldValues(id);
-		}
-
-		public override object[] GetRawFieldValues(int id)
-		{
-			return _innerHandler.GetRawFieldValues(id);
-		}
-
-        public override FieldComparator GetComparator(int numDocs, SortField field)
+        public override FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec fspec) 
         {
-            return _innerHandler.GetComparator(numDocs, field);
+            return new FilteredRangeFacetCountCollectorSource(_innerHandler, _name, fspec, _predefinedRanges);
+		}
+
+        public class FilteredRangeFacetCountCollectorSource : FacetCountCollectorSource
+        {
+            private readonly RangeFacetHandler _innerHandler;
+            private readonly string _name;
+            private readonly FacetSpec _fspec;
+            private readonly IEnumerable<string> _predefinedRanges;
+
+            public FilteredRangeFacetCountCollectorSource(RangeFacetHandler innerHandler, string name, FacetSpec fspec, IEnumerable<string> predefinedRanges)
+            {
+                this._innerHandler = innerHandler;
+                this._name = name;
+                this._fspec = fspec;
+                this._predefinedRanges = predefinedRanges;
+            }
+            public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
+            {
+                IFacetDataCache dataCache = _innerHandler.GetFacetData(reader);
+                return new RangeFacetCountCollector(_name, dataCache, docBase, _fspec, _predefinedRanges);
+            }
         }
 
-		public override void Load(BoboIndexReader reader)
+		public override string[] GetFieldValues(BoboIndexReader reader, int id)
 		{
-			FacetHandler handler = reader.GetFacetHandler(_inner);
+			return _innerHandler.GetFieldValues(reader, id);
+		}
+
+		public override object[] GetRawFieldValues(BoboIndexReader reader, int id)
+		{
+			return _innerHandler.GetRawFieldValues(reader, id);
+		}
+
+        public override DocComparatorSource GetDocComparatorSource()
+        {
+            return _innerHandler.GetDocComparatorSource();
+        }
+
+		public override FacetDataNone Load(BoboIndexReader reader)
+		{
+			IFacetHandler handler = reader.GetFacetHandler(_inner);
 			if (handler is RangeFacetHandler)
 			{
 				_innerHandler = (RangeFacetHandler)handler;
+                return FacetDataNone.instance;
 			}
 			else
 			{
-				throw new IOException("inner handler is not instance of "+typeof(RangeFacetHandler));
+                throw new IOException("inner handler is not instance of RangeFacetHandler");
 			}
-		}
-
-		public virtual FacetHandler NewInstance()
-		{
-			return new FilteredRangeFacetHandler(Name, _inner, _predefinedRanges);
 		}
 	}
 }

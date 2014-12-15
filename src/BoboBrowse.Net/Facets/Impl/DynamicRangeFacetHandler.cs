@@ -1,31 +1,34 @@
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net;
+    using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Facets.Filter;
+    using BoboBrowse.Net.Sort;
+    using BoboBrowse.Net.Util;
     using Lucene.Net.Search;
     using System.Collections.Generic;
 
     ///<summary>@author ymatsuda
     ///</summary>
-    public abstract class DynamicRangeFacetHandler : FacetHandler, IFacetHandlerFactory
+    public abstract class DynamicRangeFacetHandler : RuntimeFacetHandler<FacetDataNone>
     {
-        protected internal readonly string dataFacetName;
-        protected internal RangeFacetHandler dataFacetHandler;
+        protected internal readonly string _dataFacetName;
+        protected internal RangeFacetHandler _dataFacetHandler;
 
         public DynamicRangeFacetHandler(string name, string dataFacetName)
             : base(name, new string[] { dataFacetName })
         {
-            this.dataFacetName = dataFacetName;
+            this._dataFacetName = dataFacetName;
         }
 
         protected internal abstract string BuildRangeString(string val);
         protected internal abstract IEnumerable<string> BuildAllRangeStrings();
         protected internal abstract string GetValueFromRangeString(object rangeString);
-        public abstract FacetHandler NewInstance();
 
         public override RandomAccessFilter BuildRandomAccessFilter(string val, Properties props)
         {
-            return dataFacetHandler.BuildRandomAccessFilter(BuildRangeString(val), props);
+            return _dataFacetHandler.BuildRandomAccessFilter(BuildRangeString(val), props);
         }
 
         public override RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, Properties prop)
@@ -36,7 +39,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 valList.Add(BuildRangeString(val));
             }
 
-            return dataFacetHandler.BuildRandomAccessAndFilter(valList.ToArray(), prop);
+            return _dataFacetHandler.BuildRandomAccessAndFilter(valList.ToArray(), prop);
         }
 
         public override RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, Properties prop, bool isNot)
@@ -46,52 +49,89 @@ namespace BoboBrowse.Net.Facets.Impl
             {
                 valList.Add(BuildRangeString(val));
             }
-            return dataFacetHandler.BuildRandomAccessOrFilter(valList.ToArray(), prop, isNot);
+            return _dataFacetHandler.BuildRandomAccessOrFilter(valList.ToArray(), prop, isNot);
         }
 
-        public override IFacetCountCollector GetFacetCountCollector(BrowseSelection sel, FacetSpec fspec)
+        public override FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec fspec)
         {
             var list = BuildAllRangeStrings();
-            return new DynamicRangeFacetCountCollector(this, Name, dataFacetHandler, fspec, list);
+            return new DynamicRangeFacetCountCollector(this, name, _dataFacetHandler, docBase, fspec, list);
         }
 
-        public override string[] GetFieldValues(int docid)
+        private class DynamicRangeFacetCountCollectorSource : FacetCountCollectorSource
         {
-            return dataFacetHandler.GetFieldValues(docid);
+            private readonly DynamicRangeFacetHandler _parent;
+            private readonly RangeFacetHandler _dataFacetHandler;
+            private readonly string _name;
+            private readonly FacetSpec _fspec;
+            private readonly IEnumerable<string> _predefinedList;
+
+            public DynamicRangeFacetCountCollectorSource(DynamicRangeFacetHandler parent, RangeFacetHandler dataFacetHandler, string name, FacetSpec fspec, IEnumerable<string> predefinedList)
+            {
+                this._parent = parent;
+                this._dataFacetHandler = dataFacetHandler;
+                this._name = name;
+                this._fspec = fspec;
+                this._predefinedList = predefinedList;
+            }
+
+            public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
+            {
+                IFacetDataCache dataCache = this._dataFacetHandler.GetFacetData(reader);
+                return new DynamicRangeFacetCountCollector(_parent, _name, dataCache, docBase, _fspec, _predefinedList);
+            }
+
         }
 
-        public override FieldComparator GetComparator(int numDocs, SortField field)
+        public override string[] GetFieldValues(BoboIndexReader reader, int docid)
         {
-            return dataFacetHandler.GetComparator(numDocs, field);
+            return _dataFacetHandler.GetFieldValues(reader, docid);
         }
 
-        public override void Load(BoboIndexReader reader)
+        public override object[] GetRawFieldValues(BoboIndexReader reader, int docid)
         {
-            dataFacetHandler = (RangeFacetHandler)GetDependedFacetHandler(dataFacetName);
+            return _dataFacetHandler.GetRawFieldValues(reader, docid);
+        }
+
+        public override DocComparatorSource GetDocComparatorSource()
+        {
+            return _dataFacetHandler.GetDocComparatorSource();
+        }
+
+        public override FacetDataNone Load(BoboIndexReader reader)
+        {
+            _dataFacetHandler = (RangeFacetHandler)GetDependedFacetHandler(_dataFacetName);
+            return FacetDataNone.instance;
         }
 
         private class DynamicRangeFacetCountCollector : RangeFacetCountCollector
         {
-            private DynamicRangeFacetHandler parent;
+            private readonly DynamicRangeFacetHandler parent;
 
-            internal DynamicRangeFacetCountCollector(DynamicRangeFacetHandler parent, string name, RangeFacetHandler handler, FacetSpec fspec, IEnumerable<string> predefinedList)
-                : base(name, handler, fspec, predefinedList, false)
+            internal DynamicRangeFacetCountCollector(DynamicRangeFacetHandler parent, string name, IFacetDataCache dataCache, int docBase, FacetSpec fspec, IEnumerable<string> predefinedList)
+                : base(name, dataCache, docBase, fspec, predefinedList)
             {
                 this.parent = parent;
             }
 
-            public override BrowseFacet GetFacet(string @value)
+            public override BrowseFacet GetFacet(string value)
             {
-                string rangeString = parent.BuildRangeString(@value);
+                string rangeString = parent.BuildRangeString(value);
                 BrowseFacet facet = base.GetFacet(rangeString);
                 if (facet != null)
                 {
-                    return new BrowseFacet(@value, facet.HitCount);
+                    return new BrowseFacet(value, facet.HitCount);
                 }
                 else
                 {
                     return null;
                 }
+            }
+
+            public override int GetFacetHitsCount(object value)
+            {
+                string rangeString = parent.BuildRangeString((string)value);
+                return base.GetFacetHitsCount(rangeString);
             }
 
             public override IEnumerable<BrowseFacet> GetFacets()

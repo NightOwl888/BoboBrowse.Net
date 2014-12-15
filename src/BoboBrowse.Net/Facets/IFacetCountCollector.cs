@@ -28,6 +28,6 @@ namespace BoboBrowse.Net.Facets
     public static class IFacetCountCollector_Fields
     {
         ///<summary>Empty facet list.  </summary>
-        public static LinkedList<BrowseFacet> EMPTY_FACET_LIST = new LinkedList<BrowseFacet>();
+        public static List<BrowseFacet> EMPTY_FACET_LIST = new List<BrowseFacet>();
     }
 }

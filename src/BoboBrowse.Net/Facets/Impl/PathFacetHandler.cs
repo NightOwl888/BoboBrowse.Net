@@ -8,43 +8,48 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Facets.Impl
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
-    using Lucene.Net.Search;
     using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Facets.Filter;
-    using BoboBrowse.Net.Util;
-
-    public class PathFacetHandler : FacetHandler, IFacetHandlerFactory
+    using BoboBrowse.Net.Sort;
+    using Lucene.Net.Search;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    
+    public class PathFacetHandler : FacetHandler<FacetDataCache>
     {
         private const string DEFAULT_SEP = "/";
 
         public const string SEL_PROP_NAME_STRICT = "strict";
         public const string SEL_PROP_NAME_DEPTH = "depth";
 
-        private FacetDataCache dataCache;
-        private readonly TermListFactory termListFactory;
-        private string separator;
+        private readonly bool _multiValue;
+
+        private readonly TermListFactory _termListFactory;
+        private string _separator;
+        private readonly string _indexedName;
 
         public PathFacetHandler(string name)
+            : this(name, false)
+        {
+        }
+
+        public PathFacetHandler(string name, bool multiValue)
+            : this(name, name, multiValue)
+        {
+        }
+
+        public PathFacetHandler(string name, string indexedName, bool multiValue)
             : base(name)
         {
-            dataCache = null;
-            termListFactory = TermListFactory.StringListFactory;
-            separator = DEFAULT_SEP;
-        }
-
-        public virtual FacetHandler NewInstance()
-        {
-            return new PathFacetHandler(Name);
-        }
-
-        public FacetDataCache GetDataCache()
-        {
-            return dataCache;
+            _indexedName = indexedName;
+            _multiValue = multiValue;
+            _termListFactory = TermListFactory.StringListFactory;
+            _separator = DEFAULT_SEP;
         }
 
         ///<summary>Sets is strict applied for counting. Used if the field is of type <b><i>path</i></b>. </summary>
@@ -54,14 +59,12 @@ namespace BoboBrowse.Net.Facets.Impl
             props.SetProperty(PathFacetHandler.SEL_PROP_NAME_STRICT, Convert.ToString(strict));
         }
 
-
         ///<summary>Sets the depth.  Used if the field is of type <b><i>path</i></b>. </summary>
         ///<param name="depth">depth </param>
         public static void SetDepth(Properties props, int depth)
         {
             props.SetProperty(PathFacetHandler.SEL_PROP_NAME_DEPTH, Convert.ToString(depth));
         }
-
 
         ///<summary> Gets if strict applied for counting. Used if the field is of type <b><i>path</i></b>. </summary>
         ///<returns> is strict applied </returns>
@@ -75,6 +78,13 @@ namespace BoboBrowse.Net.Facets.Impl
             {
                 return false;
             }
+        }
+
+        public override int GetNumItems(BoboIndexReader reader, int id)
+        {
+            IFacetDataCache data = GetFacetData(reader);
+            if (data == null) return 0;
+            return data.GetNumItems(id);
         }
 
         ///<summary> Gets the depth.  Used if the field is of type <b><i>path</i></b>. </summary>
@@ -91,94 +101,115 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public override FieldComparator GetComparator(int numDocs, SortField field)
+        public override DocComparatorSource GetDocComparatorSource()
         {
-            return dataCache.GeFieldComparator(numDocs, field.Type);
+            return new FacetDataCache.FacetDocComparatorSource(this);
         }
 
-        public override string[] GetFieldValues(int id)
+        public override string[] GetFieldValues(BoboIndexReader reader, int id)
         {
-            return new string[] { dataCache.valArray.Get(dataCache.orderArray.Get(id)) };
-        }
-
-        public override object[] GetRawFieldValues(int id)
-        {
-            return GetFieldValues(id);
-        }
-
-        public virtual void SetSeparator(string separator)
-        {
-            this.separator = separator;
-        }
-
-        public virtual string GetSeparator()
-        {
-            return separator;
-        }
-
-        private int GetPathDepth(string path)
-        {
-            return path.Split(new string[] { separator }, StringSplitOptions.RemoveEmptyEntries).Length;
-        }
-
-        private void GetFilters(List<int> intSet, string[] vals, int depth, bool strict)
-        {
-            foreach (string val in vals)
+            FacetDataCache dataCache = GetFacetData(reader);
+            if (dataCache == null) return new string[0];
+            if (_multiValue)
             {
-                GetFilters(intSet, val, depth, strict);
-            }
-        }
-
-        private void GetFilters(List<int> intSet, string val, int depth, bool strict)
-        {
-            ITermValueList termList = dataCache.valArray;
-            int index = termList.IndexOf(val);
-
-            int startDepth = GetPathDepth(val);
-
-            if (index < 0)
-            {
-                int nextIndex = -(index + 1);
-                if (nextIndex == termList.Count)
-                {
-                    return;
-                }
-                index = nextIndex;
-            }
-
-
-            for (int i = index; i < termList.Count; ++i)
-            {
-                string path = termList.Get(i);
-                if (path.StartsWith(val))
-                {
-                    if (!strict || GetPathDepth(path) - startDepth == depth)
-                    {
-                        intSet.Add(i);
-                    }
-                }
-                else
-                {
-                    break;
-                }
-            }
-        }
-
-        public override RandomAccessFilter BuildRandomAccessFilter(string @value, Properties props)
-        {
-            int depth = GetDepth(props);
-            bool strict = IsStrict(props);
-            List<int> intSet = new List<int>();
-            GetFilters(intSet, @value, depth, strict);
-            if (intSet.Count > 0)
-            {
-                int[] indexes = intSet.ToArray();
-                return new FacetOrFilter(dataCache, indexes);
+                return ((MultiValueFacetDataCache)dataCache).NestedArray.GetTranslatedData(id, dataCache.valArray);
             }
             else
             {
-                return null;
+
+                return new string[] { dataCache.ValArray.get(dataCache.OrderArray.Get(id)) };
             }
+        }
+
+        public override object[] GetRawFieldValues(BoboIndexReader reader, int id)
+        {
+            return GetFieldValues(reader, id);
+        }
+
+        public virtual string Separator
+        {
+            get { return _separator; }
+            set { _separator = value; }
+        }
+
+        private class PathValueConverter : IFacetValueConverter
+        {
+            private readonly bool _strict;
+            private readonly string _sep;
+            private readonly int _depth;
+            public PathValueConverter(int depth, bool strict, string sep)
+            {
+                _strict = strict;
+                _sep = sep;
+                _depth = depth;
+            }
+
+            private void GetFilters(IFacetDataCache dataCache, IList<int> intSet, string[] vals, int depth, bool strict)
+            {
+                foreach (string val in vals)
+                {
+                    GetFilters(dataCache, intSet, val, depth, strict);
+                }
+            }
+
+            private void GetFilters(IFacetDataCache dataCache, IList<int> intSet, string val, int depth, bool strict)
+            {
+                IList<string> termList = dataCache.ValArray;
+                int index = termList.IndexOf(val);
+
+                int startDepth = GetPathDepth(val, _sep);
+
+                if (index < 0)
+                {
+                    int nextIndex = -(index + 1);
+                    if (nextIndex == termList.Count)
+                    {
+                        return;
+                    }
+                    index = nextIndex;
+                }
+
+
+                for (int i = index; i < termList.Count; ++i)
+                {
+                    string path = termList[i];
+                    if (path.StartsWith(val))
+                    {
+                        if (!strict || GetPathDepth(path, _sep) - startDepth == depth)
+                        {
+                            intSet.Add(i);
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+
+            public int[] Convert(IFacetDataCache dataCache, string[] vals)
+            {
+                IList<int> intSet = new List<int>();
+                GetFilters(dataCache, intSet, vals, _depth, _strict);
+                return intSet.ToArray();
+            }
+
+            // NOTE: Originally, this method was in the PathFacetHandler class, but was moved here
+            // because this is the only class that references it.
+            private int GetPathDepth(string path, string separator)
+            {
+                return path.Split(new string[] { separator }, StringSplitOptions.RemoveEmptyEntries).Length;
+            }
+        }
+
+        public override RandomAccessFilter BuildRandomAccessFilter(string value, Properties props)
+        {
+            int depth = GetDepth(props);
+            bool strict = IsStrict(props);
+            PathValueConverter valConverter = new PathValueConverter(depth, strict, _separator);
+            string[] vals = new string[] { value };
+
+            return _multiValue ? new MultiValueORFacetFilter(this, vals, valConverter, false) : new FacetOrFilter(this, vals, false, valConverter);
         }
 
         public override RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, Properties prop)
@@ -205,13 +236,12 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             if (vals.Length > 1)
             {
-                int depth = GetDepth(prop);
-                bool strict = IsStrict(prop);
-                List<int> intSet = new List<int>();
-                GetFilters(intSet, vals, depth, strict);
-                if (intSet.Count > 0)
+                if (vals.Length > 0)
                 {
-                    return new FacetOrFilter(dataCache, intSet.ToArray(), isNot);
+                    int depth = GetDepth(prop);
+                    bool strict = IsStrict(prop);
+                    PathValueConverter valConverter = new PathValueConverter(depth, strict, _separator);
+                    return _multiValue ? new MultiValueORFacetFilter(this, vals, valConverter, isNot) : new FacetOrFilter(this, vals, isNot, valConverter);
                 }
                 else
                 {
@@ -238,217 +268,59 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public override IFacetCountCollector GetFacetCountCollector(BrowseSelection sel, FacetSpec ospec)
+        public override FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec fspec)
         {
-            return new PathFacetCountCollector(this.Name, separator, sel, ospec, dataCache);
+            return new PathFacetHandlerFacetCountCollectorSource(this, _name, _separator, sel, fspec, _multiValue);
         }
 
-        public override void Load(BoboIndexReader reader)
+        public class PathFacetHandlerFacetCountCollectorSource : FacetCountCollectorSource
         {
-            if (dataCache == null)
-            {
-                dataCache = new FacetDataCache();
-            }
-            dataCache.Load(this.Name, reader, termListFactory);
-        }
-
-        private sealed class PathFacetCountCollector : IFacetCountCollector
-        {
+            private readonly PathFacetHandler _parent;
+            private readonly string _name;
+            private readonly string _separator;
             private readonly BrowseSelection _sel;
             private readonly FacetSpec _ospec;
-            private int[] _count;
-            private readonly string _name;
-            private readonly string _sep;
-            private readonly BigSegmentedArray _orderArray;
-            private readonly FacetDataCache _dataCache;
+            private readonly bool _multiValue;
 
-            internal PathFacetCountCollector(string name, string sep, BrowseSelection sel, FacetSpec ospec, FacetDataCache dataCache)
+            public PathFacetHandlerFacetCountCollectorSource(PathFacetHandler parent, string name, string separator, BrowseSelection sel, FacetSpec ospec, bool multiValue)
             {
+                _parent = parent;
+                _name = name;
+                _separator = separator;
                 _sel = sel;
                 _ospec = ospec;
-                _name = name;
-                _dataCache = dataCache;
-                _sep = sep;
-                _count = new int[_dataCache.freqs.Length];
-                _orderArray = _dataCache.orderArray;
+                _multiValue = multiValue;
             }
 
-            public int[] GetCountDistribution()
+            public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
             {
-                return _count;
+                IFacetDataCache dataCache = _parent.GetFacetData(reader);
+				if (_multiValue)
+                {
+					return new MultiValuedPathFacetCountCollector(_name, _separator, _sel, _ospec, dataCache);
+				}
+				else
+                {
+					return new PathFacetCountCollector(_name, _separator, _sel, _ospec, dataCache);
+				}
             }
+        }
 
-            public string Name
+        // TODO: Possibly need to create a factory of some kind to create the
+        // cache instances.
+        public override IFacetDataCache Load(BoboIndexReader reader)
+        {
+            if (!_multiValue)
             {
-                get
-                {
-                    return _name;
-                }
+                IFacetDataCache dataCache = new FacetDataCache();
+                dataCache.Load(_indexedName, reader, _termListFactory);
+                return dataCache;
             }
-
-            public void Collect(int docid)
+            else
             {
-                _count[_orderArray.Get(docid)]++;
-            }
-
-            public void CollectAll()
-            {
-                _count = _dataCache.freqs;
-            }
-            public BrowseFacet GetFacet(string @value)
-            {
-                return null;
-            }
-
-            private IEnumerable<BrowseFacet> getFacetsForPath(string selectedPath, int depth, bool strict, int minCount)
-            {
-                LinkedList<BrowseFacet> list = new LinkedList<BrowseFacet>();
-
-                string[] startParts = null;
-                int startDepth = 0;
-
-                if (selectedPath != null && selectedPath.Length > 0)
-                {
-                    startParts = selectedPath.Split(new string[] { _sep }, StringSplitOptions.RemoveEmptyEntries);
-                    startDepth = startParts.Length;
-                    if (!selectedPath.EndsWith(_sep))
-                    {
-                        selectedPath += _sep;
-                    }
-                }
-
-                string currentPath = null;
-                int currentCount = 0;
-
-                int wantedDepth = startDepth + depth;
-
-                int index = 0;
-                if (selectedPath != null && selectedPath.Length > 0)
-                {
-                    index = _dataCache.valArray.IndexOf(selectedPath);
-                    if (index < 0)
-                    {
-                        index = -(index + 1);
-                    }
-                }
-
-                for (int i = index; i < _count.Length; ++i)
-                {
-                    if (_count[i] >= minCount)
-                    {
-                        string path = _dataCache.valArray.Get(i);
-                        //if (path==null || path.equals(selectedPath)) continue;						
-
-                        int subCount = _count[i];
-
-                        string[] pathParts = path.Split(new string[] { _sep }, StringSplitOptions.RemoveEmptyEntries);
-
-                        int pathDepth = pathParts.Length;
-
-                        if ((startDepth == 0) || (startDepth > 0 && path.StartsWith(selectedPath)))
-                        {
-                            StringBuilder buf = new StringBuilder();
-                            int minDepth = Math.Min(wantedDepth, pathDepth);
-                            for (int k = 0; k < minDepth; ++k)
-                            {
-                                buf.Append(pathParts[k]);
-                                if (!pathParts[k].EndsWith(_sep))
-                                {
-                                    if (pathDepth != wantedDepth || k < (wantedDepth - 1))
-                                        buf.Append(_sep);
-                                }
-                            }
-                            string wantedPath = buf.ToString();
-                            if (currentPath == null)
-                            {
-                                currentPath = wantedPath;
-                                currentCount = subCount;
-                            }
-                            else if (wantedPath.Equals(currentPath))
-                            {
-                                if (!strict)
-                                {
-                                    currentCount += subCount;
-                                }
-                            }
-                            else
-                            {
-                                bool directNode = false;
-
-                                if (wantedPath.EndsWith(_sep))
-                                {
-                                    if (currentPath.Equals(wantedPath.Substring(0, wantedPath.Length - 1)))
-                                    {
-                                        directNode = true;
-                                    }
-                                }
-
-                                if (strict)
-                                {
-                                    if (directNode)
-                                    {
-                                        currentCount += subCount;
-                                    }
-                                    else
-                                    {
-                                        BrowseFacet ch = new BrowseFacet(currentPath, currentCount);
-                                        list.AddLast(ch);
-                                        currentPath = wantedPath;
-                                        currentCount = subCount;
-                                    }
-                                }
-                                else
-                                {
-                                    if (!directNode)
-                                    {
-                                        BrowseFacet ch = new BrowseFacet(currentPath, currentCount);
-                                        list.AddLast(ch);
-                                        currentPath = wantedPath;
-                                        currentCount = subCount;
-                                    }
-                                    else
-                                    {
-                                        currentCount += subCount;
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
-
-                if (currentPath != null && currentCount > 0)
-                {
-                    list.AddLast(new BrowseFacet(currentPath, currentCount));
-                }
-
-                return list;
-            }
-
-            public IEnumerable<BrowseFacet> GetFacets()
-            {
-                int minCount = _ospec.MinHitCount;
-
-                Properties props = _sel == null ? null : _sel.SelectionProperties;
-                int depth = PathFacetHandler.GetDepth(props);
-                bool strict = PathFacetHandler.IsStrict(props);
-
-                string[] paths = _sel == null ? null : _sel.Values;
-                if (paths == null || paths.Length == 0)
-                {
-                    return getFacetsForPath(null, depth, strict, minCount);
-                }
-
-                List<BrowseFacet> finalList = new List<BrowseFacet>();
-                foreach (string path in paths)
-                {
-                    IEnumerable<BrowseFacet> subList = getFacetsForPath(path, depth, strict, minCount);
-                    finalList.AddRange(subList);
-                }
-                return finalList;
+                MultiValueFacetDataCache dataCache = new MultiValueFacetDataCache();
+                dataCache.Load(_indexedName, reader, _termListFactory);
+                return dataCache;
             }
         }
     }

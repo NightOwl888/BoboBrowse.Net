@@ -21,8 +21,10 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Facets.Impl
 {
+    using BoboBrowse.Net.Util;
     using System;
     using System.Collections;
     using System.Collections.Generic;

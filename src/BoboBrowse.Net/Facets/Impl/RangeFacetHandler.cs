@@ -19,36 +19,34 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Facets.Impl
 {
+    using BoboBrowse.Net.Facets.Data;
+    using BoboBrowse.Net.Facets.Filter;
+    using BoboBrowse.Net.Facets.Range;
+    using BoboBrowse.Net.Query.Scoring;
+    using BoboBrowse.Net.Sort;
+    using Common.Logging;
+    using Lucene.Net.Search;
     using System;    
     using System.Collections.Generic;
     using System.Linq;
     using System.Text.RegularExpressions;
-    using Common.Logging;
-    using Lucene.Net.Search;
-    using BoboBrowse.Net.Facets.Data;
-    using BoboBrowse.Net.Facets.Filter;
-    using BoboBrowse.Net.Search;
 
-    public class RangeFacetHandler : FacetHandler, IFacetHandlerFactory
+    public class RangeFacetHandler : FacetHandler<FacetDataCache>
     {
-        private static ILog logger = LogManager.GetLogger(typeof(RangeFacetHandler));
-
-        private FacetDataCache dataCache;
-        private readonly string indexFieldName;
-        private readonly TermListFactory termListFactory;
-        private readonly IEnumerable<string> predefinedRanges;
-        private readonly bool autoRange;
+        private static ILog logger = LogManager.GetLogger<RangeFacetHandler>();
+        private readonly string _indexFieldName;
+        private readonly TermListFactory _termListFactory;
+        private readonly IEnumerable<string> _predefinedRanges;
 
         public RangeFacetHandler(string name, string indexFieldName, TermListFactory termListFactory, IEnumerable<string> predefinedRanges)
             : base(name)
         {
-            this.indexFieldName = indexFieldName;
-            this.dataCache = null;
-            this.termListFactory = termListFactory;
-            this.predefinedRanges = predefinedRanges;
-            this.autoRange = false;
+            _indexFieldName = indexFieldName;
+            _termListFactory = termListFactory;
+            _predefinedRanges = predefinedRanges;
         }
 
         public RangeFacetHandler(string name, TermListFactory termListFactory, IEnumerable<string> predefinedRanges)
@@ -66,186 +64,48 @@ namespace BoboBrowse.Net.Facets.Impl
         {
         }
 
-        public RangeFacetHandler(string name, string indexFieldName, TermListFactory termListFactory, bool autoRange)
-            : base(name)
+        public override DocComparatorSource GetDocComparatorSource()
         {
-            this.dataCache = null;
-            this.indexFieldName = indexFieldName;
-            this.termListFactory = termListFactory;
-            this.predefinedRanges = null;
-            this.autoRange = autoRange;
+            return new FacetDataCache.FacetDocComparatorSource(this);
         }
 
-        public RangeFacetHandler(string name, TermListFactory termListFactory, bool autoRange)
-            : this(name, name, termListFactory, autoRange)
+        public override int GetNumItems(BoboIndexReader reader, int id)
         {
+            IFacetDataCache data = GetFacetData(reader);
+            if (data == null) return 0;
+            return data.GetNumItems(id);
         }
 
-        public RangeFacetHandler(string name, string indexFieldName, bool autoRange)
-            : this(name, indexFieldName, null, autoRange)
+        public override string[] GetFieldValues(BoboIndexReader reader, int id)
         {
-        }
-
-        public RangeFacetHandler(string name, bool autoRange)
-            : this(name, name, null, autoRange)
-        {
-        }
-
-        public virtual FacetHandler NewInstance()
-        {
-            if (predefinedRanges == null)
+            IFacetDataCache dataCache = GetFacetData(reader);
+            if (dataCache != null)
             {
-                return new RangeFacetHandler(Name, indexFieldName, termListFactory, autoRange);
+                return new string[] { dataCache.ValArray.Get(dataCache.OrderArray.Get(id)) };
             }
-            else
-            {
-                return new RangeFacetHandler(Name, indexFieldName,termListFactory, predefinedRanges);
-            }
+            return new string[0];
         }
 
-        public virtual bool IsAutoRange()
+        public override object[] GetRawFieldValues(BoboIndexReader reader, int id)
         {
-            return autoRange;
+            IFacetDataCache dataCache = GetFacetData(reader);
+            if (dataCache != null)
+            {
+                return new object[] { dataCache.ValArray.GetRawValue(dataCache.OrderArray.Get(id)) };
+            }
+            return new string[0];
         }
 
-        public override FieldComparator GetComparator(int numDocs,SortField field)
+        public override RandomAccessFilter BuildRandomAccessFilter(string value, Properties prop)
         {
-            return dataCache.GeFieldComparator(numDocs, field.Type);
-        }
-
-        public override string[] GetFieldValues(int id)
-        {
-            return new string[] { dataCache.valArray.Get(dataCache.orderArray.Get(id)) };
-        }
-
-        public override object[] GetRawFieldValues(int id)
-        {
-            return new object[] { dataCache.valArray.GetRawValue(dataCache.orderArray.Get(id)) };
-        }
-
-        public static string[] GetRangeStrings(string rangeString)
-        {
-            int index = rangeString.IndexOf('[');
-            int index2 = rangeString.IndexOf(" TO ", StringComparison.InvariantCultureIgnoreCase);
-            int index3 = rangeString.LastIndexOf(']');
-
-            if (index == -1 || index2 == -1 || index3 == -1)
-            {
-                return new string[] { rangeString, rangeString };
-            }
-            string lower, upper;
-
-            lower = rangeString.Substring(index + 1, index2 - index - 1).Trim();
-            upper = rangeString.Substring(index2 + 4, index3 - index2 - 4).Trim();
-
-            return new string[] { lower, upper };
-        }
-
-        internal static int[] Parse(FacetDataCache dataCache, string rangeString)
-        {
-            string[] ranges = GetRangeStrings(rangeString);
-            string lower = ranges[0];
-            string upper = ranges[1];
-
-            if ("*".Equals(lower) || "".Equals(lower))
-            {
-                lower = null;
-            }
-
-            if ("*".Equals(upper) || "".Equals(upper))
-            {
-                upper = null;
-            }
-
-            int start, end;
-            if (lower == null)
-            {
-                start = 0;
-            }
-            else
-            {
-                start = dataCache.valArray.IndexOf(lower);
-                if (start < 0)
-                {
-                    start = -(start + 1);
-                }
-            }
-
-            if (upper == null)
-            {
-                end = dataCache.valArray.Count - 1;
-            }
-            else
-            {
-                end = dataCache.valArray.IndexOf(upper);
-                if (end < 0)
-                {
-                    end = -(end + 1);
-                    end = Math.Max(0, end - 1);
-                }
-            }
-
-            return new int[] { start, end };
-        }
-
-        public FacetDataCache GetDataCache()
-        {
-            return dataCache;
-        }
-
-        public override RandomAccessFilter BuildRandomAccessFilter(string @value, Properties prop)
-        {
-            int[] range = Parse(dataCache, @value);
-            if (range != null)
-                return new FacetRangeFilter(dataCache, range[0], range[1]);
-            else
-                return null;
-        }
-
-        public static int[] ConvertIndexes(FacetDataCache dataCache, string[] vals)
-        {
-            List<int> list = new List<int>();
-            foreach (string val in vals)
-            {
-                int[] range = Parse(dataCache, val);
-                if (range != null)
-                {
-                    for (int i = range[0]; i <= range[1]; ++i)
-                    {
-                        list.Add(i);
-                    }
-                }
-            }
-            return list.ToArray();
-        }
-
-        public override RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, Properties prop)
-        {
-            List<RandomAccessFilter> filterList = new List<RandomAccessFilter>(vals.Length);
-
-            foreach (string val in vals)
-            {
-                RandomAccessFilter f = BuildRandomAccessFilter(val, prop);
-                if (f != null)
-                {
-                    filterList.Add(f);
-                }
-                else
-                {
-                    return EmptyFilter.GetInstance();
-                }
-            }
-
-            if (filterList.Count == 1)
-                return filterList[0];
-            return new RandomAccessAndFilter(filterList);
+            return new FacetRangeFilter(this, value);
         }
 
         public override RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, Properties prop, bool isNot)
         {
             if (vals.Length > 1)
             {
-                return new FacetOrFilter(dataCache, ConvertIndexes(dataCache, vals), isNot);
+                return new BitSetFilter(new ValueConverterBitSetBuilder(FacetRangeValueConverter.Instance, vals, isNot), new SimpleDataCacheBuilder(Name, _indexFieldName));
             }
             else
             {
@@ -260,27 +120,75 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public override IFacetCountCollector GetFacetCountCollector(BrowseSelection sel, FacetSpec ospec)
+        public override FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec fspec)
         {
-            return new RangeFacetCountCollector(this.Name, dataCache, ospec, predefinedRanges, autoRange);
+            return new RangeFacetHandlerFacetCountCollectorSource(this, _name, fspec, _predefinedRanges);
         }
 
-        public override void Load(BoboIndexReader reader)
+        public class RangeFacetHandlerFacetCountCollectorSource : FacetCountCollectorSource
         {
-            if (dataCache == null)
+            private readonly RangeFacetHandler _parent;
+            private readonly string _name;
+            private readonly FacetSpec _ospec;
+            private readonly IEnumerable<string> _predefinedRanges;
+
+            public RangeFacetHandlerFacetCountCollectorSource(RangeFacetHandler parent, string name, FacetSpec ospec, IEnumerable<string> predefinedRanges)
             {
-                dataCache = new FacetDataCache();
+                _parent = parent;
+                _name = name;
+                _ospec = ospec;
+                _predefinedRanges = predefinedRanges;
             }
-            dataCache.Load(indexFieldName, reader, termListFactory);
+
+            public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
+            {
+                IFacetDataCache dataCache = _parent.GetFacetData(reader);
+                return new RangeFacetCountCollector(_name, dataCache, docBase, _ospec, _predefinedRanges);
+            }
         }
 
-        public override IFacetAccessible Merge(FacetSpec fspec, IEnumerable<IFacetAccessible> facetList)
+        public bool HasPredefinedRanges
         {
-            if (autoRange)
+            get { return (_predefinedRanges != null); }
+        }
+
+        public override IFacetDataCache Load(BoboIndexReader reader)
+        {
+            IFacetDataCache dataCache = new FacetDataCache();
+            dataCache.Load(_indexFieldName, reader, _termListFactory);
+            return dataCache;
+        }
+
+        public BoboDocScorer GetDocScorer(BoboIndexReader reader,
+            IFacetTermScoringFunctionFactory scoringFunctionFactory,
+            IDictionary<string, float> boostMap)
+        {
+            IFacetDataCache dataCache = GetFacetData(reader);
+            float[] boostList = BoboDocScorer.BuildBoostList(dataCache.ValArray, boostMap);
+            return new RangeBoboDocScorer(dataCache, scoringFunctionFactory, boostList);
+        }
+
+        public class RangeBoboDocScorer : BoboDocScorer
+        {
+            private readonly IFacetDataCache _dataCache;
+
+            public RangeBoboDocScorer(IFacetDataCache dataCache, IFacetTermScoringFunctionFactory scoreFunctionFactory, float[] boostList)
+                : base(scoreFunctionFactory.GetFacetTermScoringFunction(dataCache.ValArray.Count, dataCache.OrderArray.Size()), boostList)
             {
-                throw new InvalidOperationException("Cannot support merging for autoRange");
+                _dataCache = dataCache;
             }
-            return base.Merge(fspec, facetList);
+
+            public override Explanation Explain(int doc)
+            {
+                int idx = _dataCache.OrderArray.Get(doc);
+                return _function.Explain(_dataCache.Freqs[idx], _boostList[idx]);
+            }
+
+            public override sealed float Score(int docid)
+            {
+                int idx = _dataCache.OrderArray.Get(docid);
+                return _function.Score(_dataCache.Freqs[idx], _boostList[idx]);
+            }
         }
     }
 }

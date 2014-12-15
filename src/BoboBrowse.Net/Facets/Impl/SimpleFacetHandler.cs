@@ -19,29 +19,34 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Facets.Filter;
     using BoboBrowse.Net.Query.Scoring;
+    using BoboBrowse.Net.Sort;
     using Common.Logging;
     using Lucene.Net.Search;
     using System;
     using System.Collections.Generic;
 
-    public class SimpleFacetHandler : FacetHandler, IFacetHandlerFactory, IFacetScoreable
+    public class SimpleFacetHandler : FacetHandler<IFacetDataCache>, IFacetScoreable
     {
-        private static ILog logger = LogManager.GetLogger(typeof(SimpleFacetHandler));
-        private FacetDataCache _dataCache;
-        private readonly TermListFactory _termListFactory;
-        private readonly string _indexFieldName;
+        private static ILog logger = LogManager.GetLogger<SimpleFacetHandler>();
+        protected readonly TermListFactory _termListFactory;
+        protected readonly string _indexFieldName;
 
-        public SimpleFacetHandler(string name, string indexFieldName, TermListFactory termListFactory)
-            : base(name)
+        public SimpleFacetHandler(string name, string indexFieldName, TermListFactory termListFactory, IEnumerable<string> dependsOn)
+            : base(name, dependsOn)
         {
             _indexFieldName = indexFieldName;
-            _dataCache = null;
             _termListFactory = termListFactory;
+        }
+
+        public SimpleFacetHandler(string name, string indexFieldName, TermListFactory termListFactory)
+            : this(name, indexFieldName, termListFactory, null)
+        {
         }
 
         public SimpleFacetHandler(string name, TermListFactory termListFactory)
@@ -59,33 +64,76 @@ namespace BoboBrowse.Net.Facets.Impl
         {
         }
 
-        public virtual IFacetHandler NewInstance()
+        public override int GetNumItems(BoboIndexReader reader, int id)
         {
-            return new SimpleFacetHandler(Name, _indexFieldName, _termListFactory);
+            IFacetDataCache data = GetFacetData(reader);
+            if (data == null) return 0;
+            return data.GetNumItems(id);
         }
 
-        public override FieldComparator GetComparator(int numDocs, SortField field)
+        public override DocComparatorSource GetDocComparatorSource()
         {
-            return _dataCache.GeFieldComparator(numDocs, field.Type);
+            return new FacetDataCache.FacetDocComparatorSource(this);
         }
 
-        public override string[] GetFieldValues(int id)
+        public override string[] GetFieldValues(BoboIndexReader reader, int id)
         {
-            return new string[] { _dataCache.valArray.Get(_dataCache.orderArray.Get(id)) };
+            IFacetDataCache dataCache = GetFacetData(reader);
+            if (dataCache != null)
+            {
+                return new string[] { dataCache.ValArray.Get(dataCache.OrderArray.Get(id)) };
+            }
+            return new string[0];
         }
 
-        public override object[] GetRawFieldValues(int id)
+        public override object[] GetRawFieldValues(BoboIndexReader reader, int id)
         {
-            return new object[] { _dataCache.valArray.GetRawValue(_dataCache.orderArray.Get(id)) };
+            IFacetDataCache dataCache = GetFacetData(reader);
+            if (dataCache != null)
+            {
+                return new object[] { dataCache.ValArray.GetRawValue(dataCache.OrderArray.Get(id)) };
+            }
+            return new string[0];
         }
 
-        public override RandomAccessFilter BuildRandomAccessFilter(string @value, Properties prop)
+        public override RandomAccessFilter BuildRandomAccessFilter(string value, Properties prop)
         {
-            int index = _dataCache.valArray.IndexOf(@value);
-            if (index >= 0)
-                return new FacetFilter(_dataCache, index);
-            else
-                return null;
+            FacetFilter f = new FacetFilter(this, value);
+            AdaptiveFacetFilter af = new AdaptiveFacetFilter(
+                new SimpleFacetHandlerFacetDataCacheBuilder(this.GetFacetData, _name, _indexFieldName), 
+                f, 
+                new string[] { value }, 
+                false);
+            return af;
+        }
+
+        public class SimpleFacetHandlerFacetDataCacheBuilder : IFacetDataCacheBuilder
+        {
+            private readonly Func<BoboIndexReader, IFacetDataCache> getFacetData;
+            private readonly string _name;
+            private readonly string _indexFieldName;
+
+            public SimpleFacetHandlerFacetDataCacheBuilder(Func<BoboIndexReader, IFacetDataCache> getFacetData, string name, string indexFieldName)
+            {
+                this.getFacetData = getFacetData;
+                this._name = name;
+                this._indexFieldName = indexFieldName;
+            }
+
+            public virtual IFacetDataCache Build(BoboIndexReader reader)
+            {
+                return getFacetData(reader);
+            }
+
+            public virtual string Name
+            {
+                get { return _name; }
+            }
+
+            public virtual string IndexFieldName
+            {
+                get { return _indexFieldName; }
+            }
         }
 
         public override RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, Properties prop)
@@ -104,50 +152,111 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             RandomAccessFilter filter = null;
 
-            int[] indexes = FacetDataCache.Convert(_dataCache, vals);
-            if (indexes.Length > 1)
+            if (vals.Length > 1)
             {
-                return new FacetOrFilter(_dataCache, indexes, isNot);
+                RandomAccessFilter f = new FacetOrFilter(this, vals, false);
+                filter = new AdaptiveFacetFilter(
+                    new SimpleFacetHandlerFacetDataCacheBuilder(this.GetFacetData, _name, _indexFieldName),
+                    f,
+                    vals,
+                    isNot);
             }
-            else if (indexes.Length == 1)
+            else if (vals.Length == 1)
             {
-                filter = new FacetFilter(_dataCache, indexes[0]);
+                filter = BuildRandomAccessFilter(vals[0], prop);
             }
             else
             {
                 filter = EmptyFilter.GetInstance();
             }
+
             if (isNot)
             {
                 filter = new RandomAccessNotFilter(filter);
             }
+
             return filter;
         }
 
-        public override IFacetCountCollector GetFacetCountCollector(BrowseSelection sel, FacetSpec ospec)
+        public override FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec ospec)
         {
-            return new SimpleFacetCountCollector(sel, _dataCache, this.Name, ospec);
+            return GetFacetCountCollectorSource(sel, ospec, false);
+        }
+
+        public override FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec ospec, bool groupMode)
+        {
+            if (groupMode)
+            {
+                return new SimpleGroupByFacetHandlerFacetCountCollectorSource(this.GetFacetData, _name, sel, ospec);
+            }
+            else
+            {
+                return new SimpleFacetHandlerFacetCountCollectorSource(this.GetFacetData, _name, sel, ospec);
+            }
+        }
+
+        private class SimpleGroupByFacetHandlerFacetCountCollectorSource : FacetCountCollectorSource
+        {
+            private readonly Func<BoboIndexReader, IFacetDataCache> getFacetData;
+            private readonly string _name;
+            private readonly BrowseSelection _sel;
+            private readonly FacetSpec _ospec;
+
+            public SimpleGroupByFacetHandlerFacetCountCollectorSource(Func<BoboIndexReader, IFacetDataCache> getFacetData, string name, BrowseSelection sel, FacetSpec ospec)
+            {
+                this.getFacetData = getFacetData;
+                _name = name;
+                _sel = sel;
+                _ospec = ospec;
+            }
+
+            public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
+            {
+                IFacetDataCache dataCache = getFacetData(reader);
+                return new SimpleGroupByFacetCountCollector(_name, dataCache, docBase, _sel, _ospec);
+            }
+        }
+
+        private class SimpleFacetHandlerFacetCountCollectorSource : FacetCountCollectorSource
+        {
+            private readonly Func<BoboIndexReader, IFacetDataCache> getFacetData;
+            private readonly string _name;
+            private readonly BrowseSelection _sel;
+            private readonly FacetSpec _ospec;
+
+            public SimpleFacetHandlerFacetCountCollectorSource(Func<BoboIndexReader, IFacetDataCache> getFacetData, string name, BrowseSelection sel, FacetSpec ospec)
+            {
+                this.getFacetData = getFacetData;
+                _name = name;
+                _sel = sel;
+                _ospec = ospec;
+            }
+
+            public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
+            {
+                IFacetDataCache dataCache = getFacetData(reader);
+                return new SimpleFacetCountCollector(_name, dataCache, docBase, _sel, _ospec);
+            }
         }
 
         public override void Load(BoboIndexReader reader)
         {
-            if (_dataCache == null)
-            {
-                _dataCache = new FacetDataCache();
-            }
-            _dataCache.Load(_indexFieldName, reader, _termListFactory);
+            IFacetDataCache dataCache = new FacetDataCache();
+            dataCache.Load(_indexFieldName, reader, _termListFactory);
+            return dataCache;
         }
 
-        public virtual BoboDocScorer GetDocScorer(IFacetTermScoringFunctionFactory scoringFunctionFactory, Dictionary<string, float> boostMap)
+        public virtual BoboDocScorer GetDocScorer(BoboIndexReader reader, IFacetTermScoringFunctionFactory scoringFunctionFactory, IDictionary<string, float> boostMap)
         {
-            float[] boostList = BoboDocScorer.BuildBoostList(_dataCache.valArray.GetInnerList(), boostMap);
-            return new SimpleBoboDocScorer(_dataCache, scoringFunctionFactory, boostList);
+            IFacetDataCache dataCache = GetFacetData(reader);
+            float[] boostList = BoboDocScorer.BuildBoostList(dataCache.ValArray, boostMap);
+            return new SimpleBoboDocScorer(dataCache, scoringFunctionFactory, boostList);
         }
 
         private sealed class SimpleFacetCountCollector : DefaultFacetCountCollector
         {
-            public SimpleFacetCountCollector(BrowseSelection sel, FacetDataCache dataCache, string name, FacetSpec ospec)
-                : base(sel, dataCache, name, ospec)
+            public SimpleFacetCountCollector(string name, IFacetDataCache dataCache, int docBase, BrowseSelection sel, FacetSpec ospec)
+                : base(name, dataCache, docBase, sel, ospec)
             {
             }
 
@@ -158,30 +267,68 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override void CollectAll()
             {
-                _count = _dataCache.freqs;
+                _count = _dataCache.Freqs;
+            }
+        }
+
+        public sealed class SimpleGroupByFacetCountCollector : GroupByFacetCountCollector
+        {
+            protected int _totalGroups;
+
+            public SimpleGroupByFacetCountCollector(string name, IFacetDataCache dataCache, int docBase, BrowseSelection sel, FacetSpec ospec)
+                : base(name, dataCache, docBase, sel, ospec)
+            {
+                _totalGroups = 0;
+            }
+
+            public override sealed void Collect(int docid)
+            {
+                if (++_count[_array.Get(docid)] <= 1)
+                    ++_totalGroups;
+            }
+
+            public override sealed void CollectAll()
+            {
+                _count = _dataCache.Freqs;
+                _totalGroups = -1;
+            }
+
+            public override sealed int GetTotalGroups()
+            {
+                if (_totalGroups >= 0)
+                    return _totalGroups;
+
+                // If the user calls collectAll instead of collect, we have to collect all the groups here:
+                _totalGroups = 0;
+                foreach (int c in _count)
+                {
+                    if (c > 0)
+                        ++_totalGroups;
+                }
+                return _totalGroups;
             }
         }
 
         private sealed class SimpleBoboDocScorer : BoboDocScorer
         {
-            private readonly FacetDataCache _dataCache;
+            private readonly IFacetDataCache _dataCache;
 
-            public SimpleBoboDocScorer(FacetDataCache dataCache, IFacetTermScoringFunctionFactory scoreFunctionFactory, float[] boostList)
-                : base(scoreFunctionFactory.GetFacetTermScoringFunction(dataCache.valArray.Count, dataCache.orderArray.Size()), boostList)
+            public SimpleBoboDocScorer(IFacetDataCache dataCache, IFacetTermScoringFunctionFactory scoreFunctionFactory, float[] boostList)
+                : base(scoreFunctionFactory.GetFacetTermScoringFunction(dataCache.ValArray.Count, dataCache.OrderArray.Size()), boostList)
             {
                 _dataCache = dataCache;
             }
 
             public override Explanation Explain(int doc)
             {
-                int idx = _dataCache.orderArray.Get(doc);
-                return Function.Explain(_dataCache.freqs[idx], BoostList[idx]);
+                int idx = _dataCache.OrderArray.Get(doc);
+                return Function.Explain(_dataCache.Freqs[idx], BoostList[idx]);
             }
 
             public override sealed float Score(int docid)
             {
-                int idx = _dataCache.orderArray.Get(docid);
-                return Function.Score(_dataCache.freqs[idx], BoostList[idx]);
+                int idx = _dataCache.OrderArray.Get(docid);
+                return Function.Score(_dataCache.Freqs[idx], BoostList[idx]);
             }
         }
     }

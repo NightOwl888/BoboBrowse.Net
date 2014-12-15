@@ -1,492 +1,544 @@
-// TODO: Work out how to make this function with Lucene.Net 3.0.3.
+// Version compatibility level: 3.1.0
+namespace BoboBrowse.Net.Facets.Impl
+{
+    using BoboBrowse.Net;
+    using BoboBrowse.Net.Facets.Filter;
+    using BoboBrowse.Net.Sort;
+    using BoboBrowse.Net.Util;
+    using Lucene.Net.Search;
+    using Lucene.Net.Index;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
 
-//namespace BoboBrowse.Net.Facets.Impl
-//{
-//    using BoboBrowse.Net;
-//    using BoboBrowse.Net.Facets.Filter;
-//    using BoboBrowse.Net.Util;
-//    using C5;
-//    using Lucene.Net.Search;
-//    using System;
-//    using System.Collections.Generic;
-//    using System.Text;
+    public class SimpleGroupbyFacetHandler : FacetHandler<FacetDataNone>
+    {
+        private readonly IEnumerable<string> _fieldsSet;
+        private IList<SimpleFacetHandler> _facetHandlers;
+        private IDictionary<string, SimpleFacetHandler> _facetHandlerMap;
 
-//    public class SimpleGroupbyFacetHandler : FacetHandler, IFacetHandlerFactory
-//    {
-//        private readonly C5.HashedLinkedList<string> _fieldsSet;
-//        private List<SimpleFacetHandler> _facetHandlers;
-//        private Dictionary<string, SimpleFacetHandler> _facetHandlerMap;
+        private const string SEP = ",";
+        private readonly string _sep;
 
-//        private const string SEP = ",";
-//        private int _maxdoc;
-//        private readonly string _sep;
+        public SimpleGroupbyFacetHandler(string name, IEnumerable<string> dependsOn, string separator)
+            : base(name, dependsOn)
+        {
+            _fieldsSet = dependsOn;
+            _facetHandlers = null;
+            _facetHandlerMap = null;
+            _sep = separator;
+        }
 
-//        public SimpleGroupbyFacetHandler(string name, HashedLinkedList<string> dependsOn, string separator)
-//            : base(name, dependsOn)
-//        {
-//            _fieldsSet = dependsOn;
-//            _facetHandlers = null;
-//            _facetHandlerMap = null;
-//            _maxdoc = 0;
-//            _sep = separator;
-//        }
+        public SimpleGroupbyFacetHandler(string name, IEnumerable<string> dependsOn)
+            : this(name, dependsOn, SEP)
+        {
+        }
 
-//        public SimpleGroupbyFacetHandler(string name, HashedLinkedList<string> dependsOn)
-//            : this(name, dependsOn, SEP)
-//        {
-//        }
+        public override RandomAccessFilter BuildRandomAccessFilter(string value, Properties selectionProperty)
+        {
+            List<RandomAccessFilter> filterList = new List<RandomAccessFilter>();
+            string[] vals = value.Split(new string[] { _sep }, StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 0; i < vals.Length; ++i)
+            {
+                SimpleFacetHandler handler = _facetHandlers[i];
+                BrowseSelection sel = new BrowseSelection(handler.Name);
+                sel.AddValue(vals[i]);
+                filterList.Add(handler.BuildFilter(sel));
+            }
+            return new RandomAccessAndFilter(filterList);
+        }
 
-//        public override RandomAccessFilter BuildRandomAccessFilter(string @value, Properties selectionProperty)
-//        {
-//            List<RandomAccessFilter> filterList = new List<RandomAccessFilter>();
-//            string[] vals = @value.Split(new string[] {_sep}, StringSplitOptions.RemoveEmptyEntries);
-//            for (int i = 0; i < vals.Length; ++i)
-//            {
-//                SimpleFacetHandler handler = _facetHandlers[i];
-//                BrowseSelection sel = new BrowseSelection(handler.Name);
-//                sel.AddValue(vals[i]);
-//                filterList.Add(handler.BuildFilter(sel));
-//            }
-//            return new RandomAccessAndFilter(filterList);
-//        }
+        public override FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec fspec)
+        {
+            return new GroupbyFacetCountCollectorSource(_facetHandlers, _name, _sep, sel, fspec);
+        }
 
-//        public override IFacetCountCollector GetFacetCountCollector(BrowseSelection sel, FacetSpec fspec)
-//        {
-//            List<DefaultFacetCountCollector> collectorList = new List<DefaultFacetCountCollector>(_facetHandlers.Count);
-//            foreach (SimpleFacetHandler facetHandler in _facetHandlers)
-//            {
-//                collectorList.Add((DefaultFacetCountCollector)facetHandler.GetFacetCountCollector(sel, fspec));
-//            }
-//            return new GroupbyFacetCountCollector(Name, fspec, collectorList.ToArray(), _maxdoc, _sep);
-//        }
+        private class GroupbyFacetCountCollectorSource : FacetCountCollectorSource
+        {
+            private readonly IEnumerable<SimpleFacetHandler> _facetHandlers;
+            private readonly string _name;
+            private readonly string _sep;
+            private readonly BrowseSelection _sel;
+            private readonly FacetSpec _fspec;
 
-//        public override string[] GetFieldValues(int id)
-//        {
-//            List<string> valList = new List<string>();
-//            foreach (FacetHandler handler in _facetHandlers)
-//            {
-//                StringBuilder buf = new StringBuilder();
-//                bool firsttime = true;
-//                string[] vals = handler.GetFieldValues(id);
-//                if (vals != null && vals.Length > 0)
-//                {
-//                    if (!firsttime)
-//                    {
-//                        buf.Append(",");
-//                    }
-//                    else
-//                    {
-//                        firsttime = false;
-//                    }
-//                    foreach (string val in vals)
-//                    {
-//                        buf.Append(val);
-//                    }
-//                }
-//                valList.Add(buf.ToString());
-//            }
-//            return valList.ToArray();
-//        }
+            public GroupbyFacetCountCollectorSource(IEnumerable<SimpleFacetHandler> facetHandlers, string name, string sep, BrowseSelection sel, FacetSpec fspec)
+            {
+                _facetHandlers = facetHandlers;
+                _name = name;
+                _sep = sep;
+                _sel = sel;
+                _fspec = fspec;
+            }
 
-//        public override object[] GetRawFieldValues(int id)
-//        {
-//            return GetFieldValues(id);
-//        }
+            public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
+            {
+                var collectorList = new List<DefaultFacetCountCollector>(_facetHandlers.Count());
+                foreach (var facetHandler in _facetHandlers)
+                {
+                    collectorList.Add((DefaultFacetCountCollector)facetHandler.GetFacetCountCollectorSource(_sel, _fspec).GetFacetCountCollector(reader, docBase));
+                }
+                return new GroupbyFacetCountCollector(_name, _fspec, collectorList.ToArray(), reader.MaxDoc, _sep);
+            }
+        }
 
-//        //public override ScoreDocComparator GetScoreDocComparator()
-//        //{
-//        //    List<ScoreDocComparator> comparatorList = new List<ScoreDocComparator>(_fieldsSet.Count);
-//        //    foreach (FacetHandler handler in _facetHandlers)
-//        //    {
-//        //        comparatorList.Add(handler.GetScoreDocComparator());
-//        //    }
-//        //    return new GroupbyScoreDocComparator(comparatorList.ToArray());
-//        //}
+        public override string[] GetFieldValues(BoboIndexReader reader, int id)
+        {
+            List<string> valList = new List<string>();
+            foreach (IFacetHandler handler in _facetHandlers)
+            {
+                StringBuilder buf = new StringBuilder();
+                bool firsttime = true;
+                string[] vals = handler.GetFieldValues(reader, id);
+                if (vals != null && vals.Length > 0)
+                {
+                    if (!firsttime)
+                    {
+                        buf.Append(",");
+                    }
+                    else
+                    {
+                        firsttime = false;
+                    }
+                    foreach (string val in vals)
+                    {
+                        buf.Append(val);
+                    }
+                }
+                valList.Add(buf.ToString());
+            }
+            return valList.ToArray();
+        }
 
-//        public override FieldComparator GetComparator(int numDocs, SortField field)
-//        {
-//            var comparatorList = new List<FieldComparator>(_fieldsSet.Count);
-//            foreach (var handler in _facetHandlers)
-//            {
-//                comparatorList.Add(handler.GetComparator(numDocs, field));
-//            }
-//            return new GroupbyScoreDocComparator(
-//        }
+        public override object[] GetRawFieldValues(BoboIndexReader reader, int id)
+        {
+            return GetFieldValues(reader, id);
+        }
 
-//        public override void Load(BoboIndexReader reader)
-//        {
-//            _facetHandlers = new List<SimpleFacetHandler>(_fieldsSet.Count);
-//            _facetHandlerMap = new Dictionary<string, SimpleFacetHandler>(_fieldsSet.Count);
-//            foreach (string name in _fieldsSet)
-//            {
-//                FacetHandler handler = reader.GetFacetHandler(name);
-//                if (handler == null || !(handler is SimpleFacetHandler))
-//                {
-//                    throw new InvalidOperationException("only simple facet handlers supported");
-//                }
-//                SimpleFacetHandler sfh = (SimpleFacetHandler)handler;
-//                _facetHandlers.Add(sfh);
-//                _facetHandlerMap.Add(name, sfh);
-//            }
-//            _maxdoc = reader.MaxDoc;
-//        }
+        public override DocComparatorSource GetDocComparatorSource()
+        {
+            return new GroupbyDocComparatorSource(_fieldsSet, _facetHandlers);
+        }
 
-//        public virtual FacetHandler NewInstance()
-//        {
-//            return new SimpleGroupbyFacetHandler(Name, _fieldsSet);
-//        }
+        public class GroupbyDocComparatorSource : DocComparatorSource
+        {
+            private readonly IEnumerable<string> _fieldsSet;
+            private readonly IEnumerable<SimpleFacetHandler> _facetHandlers;
 
-//        private class GroupByFieldComparator : FieldComparator
-//        {
-//            private FieldComparator[] _comparators;
+            public GroupbyDocComparatorSource(IEnumerable<string> fieldsSet, IEnumerable<SimpleFacetHandler> facetHandlers)
+            {
+                _fieldsSet = fieldsSet;
+                _facetHandlers = facetHandlers;
+            }
 
-//            public GroupByFieldComparator(FieldComparator[] comparators)
-//            {
-//                _comparators = comparators;
-//            }
+            public override DocComparator GetComparator(IndexReader reader, int docbase)
+            {
+                var comparatorList = new List<DocComparator>(_fieldsSet.Count());
+                foreach (var handler in _facetHandlers)
+                {
+                    comparatorList.Add(handler.GetDocComparatorSource().GetComparator(reader, docbase));
+                }
+                return new GroupbyDocComparator(comparatorList.ToArray());
+            }
+        }
 
-//            public override int Compare(int slot1, int slot2)
-//            {
-//                int retval = 0;
-//                foreach (var comparator in _comparators)
-//                {
-//                    retval = comparator.Compare(slot1, slot2);
-//                    if (retval != 0)
-//                        break;
-//                }
-//                return retval;
-//            }
+        public override FacetDataNone Load(BoboIndexReader reader)
+        {
+            _facetHandlers = new List<SimpleFacetHandler>(_fieldsSet.Count());
+            _facetHandlerMap = new Dictionary<string, SimpleFacetHandler>(_fieldsSet.Count());
+            foreach (string name in _fieldsSet)
+            {
+                IFacetHandler handler = reader.GetFacetHandler(name);
+                if (handler == null || !(handler is SimpleFacetHandler))
+                {
+                    throw new InvalidOperationException("only simple facet handlers supported");
+                }
+                SimpleFacetHandler sfh = (SimpleFacetHandler)handler;
+                _facetHandlers.Add(sfh);
+                _facetHandlerMap.Add(name, sfh);
+            }
+            return FacetDataNone.instance;
+        }
 
-//            public int SortType()
-//            {
-//                return SortField.CUSTOM;
-//            }
+        private class GroupbyDocComparator : DocComparator
+        {
+            private readonly DocComparator[] _comparators;
 
-//            private class GroupbyScoreFieldComparatorComparable : IComparable
-//            {
-//                private ScoreDoc doc;
-//                private GroupByFieldComparator parent;
+            public GroupbyDocComparator(DocComparator[] comparators)
+            {
+                _comparators = comparators;
+            }
 
-//                public GroupbyScoreFieldComparatorComparable(GroupByFieldComparator parent, ScoreDoc doc)
-//                {
-//                    this.parent = parent;
-//                    this.doc = doc;
-//                }
+            public override int Compare(ScoreDoc d1, ScoreDoc d2)
+            {
+                int retval = 0;
+                foreach (DocComparator comparator in _comparators)
+                {
+                    retval = comparator.Compare(d1, d2);
+                    if (retval != 0) break;
+                }
+                return retval;
+            }
 
-                
+            public override IComparable Value(ScoreDoc doc)
+            {
+                return new GroupbyComparable(_comparators, doc);
+            }
+        }
 
-//                public int CompareTo(object obj)
-//                {
-//                    int retval = 0;
-//                    foreach (var comparator in parent._comparators)
-//                    {
-//                        retval = comparator.SortValue(doc).CompareTo(obj);
+        public class GroupbyComparable : IComparable
+        {
+            private readonly DocComparator[] _comparators;
+            private readonly ScoreDoc _doc;
 
-//                        if (retval != 0)
-//                            break;
-//                    }
-//                    return retval;
-//                }
+            public GroupbyComparable(DocComparator[] comparators, ScoreDoc doc)
+            {
+                _comparators = comparators;
+                _doc = doc;
+            }
 
-//                //public int CompareTo(ScoreDoc other)
-//                //{
-//                //    int retval = 0;
-//                //    foreach (var comparator in parent._comparators)
-//                //    {
-//                //        //retval = comparator.SortValue(doc).CompareTo(obj);
-//                //        retval = 
-//                //        if (retval != 0)
-//                //            break;
-//                //    }
-//                //    return retval
-//                //}
-//            }
+            public int CompareTo(object o)
+            {
+                int retval = 0;
+                foreach (DocComparator comparator in _comparators)
+                {
+                    retval = comparator.Value(_doc).CompareTo(o);
+                    if (retval != 0) break;
+                }
+                return retval;
+            }
+        }
 
-//            public IComparable SortValue(ScoreDoc doc)
-//            {
-//                return new GroupbyScoreFieldComparatorComparable(this, doc);
-//            }
-//        }
+        private class GroupbyFacetCountCollector : IFacetCountCollector
+        {
+            private readonly DefaultFacetCountCollector[] _subcollectors;
+            private readonly string _name;
+            private readonly FacetSpec _fspec;
+            private readonly int[] _count;
+            private readonly int _countlength;
+            private readonly int[] _lens;
+            private readonly int _maxdoc;
+            private readonly string _sep;
 
-//        //private class GroupbyScoreDocComparator : ScoreDocComparator
-//        //{
-//        //    private ScoreDocComparator[] _comparators;
+            public GroupbyFacetCountCollector(string name, FacetSpec fspec, DefaultFacetCountCollector[] subcollectors, int maxdoc, string sep)
+            {
+                _name = name;
+                _fspec = fspec;
+                _subcollectors = subcollectors;
+                _sep = sep;
+                int totalLen = 1;
+                _lens = new int[_subcollectors.Length];
+                for (int i = 0; i < _subcollectors.Length; ++i)
+                {
+                    _lens[i] = _subcollectors[i]._count.Length;
+                    totalLen *= _lens[i];
+                }
+                _countlength = totalLen;
+                _count = new int[_countlength];
+                _maxdoc = maxdoc;
+            }
 
-//        //    public GroupbyScoreDocComparator(ScoreDocComparator[] comparators)
-//        //    {
-//        //        _comparators = comparators;
-//        //    }
+            public sealed void Collect(int docid)
+            {
+                int idx = 0;
+                int i = 0;
+                int segsize = _countlength;
+                foreach (DefaultFacetCountCollector subcollector in _subcollectors)
+                {
+                    segsize = segsize / _lens[i++];
+                    idx += (subcollector._dataCache.OrderArray.Get(docid) * segsize);
+                }
+                _count[idx]++;
+            }
 
-//        //    public int Compare(ScoreDoc d1, ScoreDoc d2)
-//        //    {
-//        //        int retval = 0;
-//        //        foreach (ScoreDocComparator comparator in _comparators)
-//        //        {
-//        //            retval = comparator.Compare(d1, d2);
-//        //            if (retval != 0)
-//        //                break;
-//        //        }
-//        //        return retval;
-//        //    }
+            public virtual void CollectAll()
+            {
+                for (int i = 0; i < _maxdoc; ++i)
+                {
+                    Collect(i);
+                }
+            }
 
-//        //    public int SortType()
-//        //    {
-//        //        return SortField.CUSTOM;
-//        //    }
+            public virtual int[] GetCountDistribution()
+            {
+                return _count;
+            }
 
-//        //    private class GroupbyScoreDocComparatorComparable : IComparable
-//        //    {
-//        //        private ScoreDoc doc;
-//        //        private GroupbyScoreDocComparator parent;
+            public virtual string Name
+            {
+                get { return _name; }
+            }
 
-//        //        public GroupbyScoreDocComparatorComparable(GroupbyScoreDocComparator parent, ScoreDoc doc)
-//        //        {
-//        //            this.parent = parent;
-//        //        }
+            public virtual BrowseFacet GetFacet(string value)
+            {
+                string[] vals = value.Split(new string[] { _sep }, StringSplitOptions.RemoveEmptyEntries);
+                if (vals.Length == 0)
+                    return null;
+                StringBuilder buf = new StringBuilder();
+                int startIdx = 0;
+                int segLen = _countlength;
 
-//        //        public int CompareTo(object obj)
-//        //        {
-//        //            int retval = 0;
-//        //            foreach (ScoreDocComparator comparator in parent._comparators)
-//        //            {
-//        //                retval = comparator.SortValue(doc).CompareTo(obj);
-//        //                if (retval != 0)
-//        //                    break;
-//        //            }
-//        //            return retval;
-//        //        }
-//        //    }
+                for (int i = 0; i < vals.Length; ++i)
+                {
+                    if (i > 0)
+                    {
+                        buf.Append(_sep);
+                    }
+                    int index = _subcollectors[i]._dataCache.ValArray.IndexOf(vals[i]);
+                    string facetName = _subcollectors[i]._dataCache.ValArray.Get(index);
+                    buf.Append(facetName);
 
+                    segLen /= _subcollectors[i]._countlength;
+                    startIdx += index * segLen;
+                }
 
-//        //    public IComparable SortValue(ScoreDoc doc)
-//        //    {
-//        //        return new GroupbyScoreDocComparatorComparable(this, doc);
-//        //    }
-//        //}
+                int count = 0;
+                for (int i = startIdx; i < startIdx + segLen; ++i)
+                {
+                    count += _count[i];
+                }
 
-//        private class GroupbyFacetCountCollector : IFacetCountCollector
-//        {
-//            private readonly DefaultFacetCountCollector[] _subcollectors;
-//            private readonly string _name;
-//            private readonly FacetSpec _fspec;
-//            private readonly int[] _count;
-//            private readonly int[] _lens;
-//            private readonly int _maxdoc;
-//            private readonly string _sep;
+                BrowseFacet f = new BrowseFacet(buf.ToString(), count);
+                return f;
+            }
 
-//            public GroupbyFacetCountCollector(string name, FacetSpec fspec, DefaultFacetCountCollector[] subcollectors, int maxdoc, string sep)
-//            {
-//                _name = name;
-//                _fspec = fspec;
-//                _subcollectors = subcollectors;
-//                _sep = sep;
-//                int totalLen = 1;
-//                _lens = new int[_subcollectors.Length];
-//                for (int i = 0; i < _subcollectors.Length; ++i)
-//                {
-//                    _lens[i] = _subcollectors[i]._count.Length;
-//                    totalLen *= _lens[i];
-//                }
-//                _count = new int[totalLen];
-//                _maxdoc = maxdoc;
-//            }
+            public int GetFacetHitsCount(object value)
+            {
+                string[] vals = ((string)value).Split(new string[] { _sep }, StringSplitOptions.RemoveEmptyEntries);
+                if (vals.Length == 0) return 0;
+                int startIdx = 0;
+                int segLen = _countlength;
 
-//            public void Collect(int docid)
-//            {
-//                int idx = 0;
-//                int i = 0;
-//                int segsize = _count.Length;
-//                foreach (DefaultFacetCountCollector subcollector in _subcollectors)
-//                {
-//                    segsize = segsize / _lens[i++];
-//                    idx += (subcollector._dataCache.orderArray.Get(docid) * segsize);
-//                }
-//                _count[idx]++;
-//            }
+                for (int i = 0; i < vals.Length; ++i)
+                {
+                    int index = _subcollectors[i]._dataCache.ValArray.IndexOf(vals[i]);
+                    segLen /= _subcollectors[i]._countlength;
+                    startIdx += index * segLen;
+                }
 
-//            public virtual void CollectAll()
-//            {
-//                for (int i = 0; i < _maxdoc; ++i)
-//                {
-//                    Collect(i);
-//                }
-//            }
+                int count = 0;
+                for (int i = startIdx; i < startIdx + segLen; ++i)
+                    count += _count[i];
 
-//            public virtual int[] GetCountDistribution()
-//            {
-//                return _count;
-//            }
+                return count;
+            }
 
-//            public virtual string Name
-//            {
-//                get
-//                {
-//                    return _name;
-//                }
-//            }
+            private string GetFacetString(int idx)
+            {
+                StringBuilder buf = new StringBuilder();
+                int i = 0;
+                foreach (int len in _lens)
+                {
+                    if (i > 0)
+                    {
+                        buf.Append(_sep);
+                    }
 
-//            public virtual BrowseFacet GetFacet(string @value)
-//            {
-//                string[] vals = @value.Split(new string[] {_sep}, StringSplitOptions.RemoveEmptyEntries);
-//                if (vals.Length == 0)
-//                    return null;
-//                StringBuilder buf = new StringBuilder();
-//                int startIdx = 0;
-//                int segLen = _count.Length;
+                    int adjusted = idx * len;
 
-//                for (int i = 0; i < vals.Length; ++i)
-//                {
-//                    if (i > 0)
-//                    {
-//                        buf.Append(_sep);
-//                    }
-//                    int index = _subcollectors[i]._dataCache.valArray.IndexOf(vals[i]);
-//                    string facetName = _subcollectors[i]._dataCache.valArray.Get(index);
-//                    buf.Append(facetName);
+                    int bucket = adjusted / _countlength;
+                    buf.Append(_subcollectors[i]._dataCache.ValArray.Get(bucket));
+                    idx = adjusted % _countlength;
+                    i++;
+                }
+                return buf.ToString();
+            }
 
-//                    segLen /= _subcollectors[i]._count.Length;
-//                    startIdx += index * segLen;
-//                }
+            private object[] GetRawFaceValue(int idx)
+            {
+                object[] retVal = new object[_lens.Length];
+                int i = 0;
+                foreach (int len in _lens)
+                {
+                    int adjusted = idx * len;
+                    int bucket = adjusted / _countlength;
+                    retVal[i++] = _subcollectors[i]._dataCache.ValArray.GetRawValue(bucket);
+                    idx = adjusted % _countlength;
+                }
+                return retVal;
+            }
 
-//                int count = _count[startIdx];
-//                for (int i = startIdx; i < startIdx + segLen; ++i)
-//                {
-//                    count += _count[i];
-//                }
+            public virtual IEnumerable<BrowseFacet> GetFacets()
+            {
+                if (_fspec != null)
+                {
+                    int minCount = _fspec.MinHitCount;
+                    int max = _fspec.MaxCount;
+                    if (max <= 0)
+                        max = _countlength;
 
-//                BrowseFacet f = new BrowseFacet(buf.ToString(), count);
-//                return f;
-//            }
+                    FacetSpec.FacetSortSpec sortspec = _fspec.OrderBy;
+                    List<BrowseFacet> facetColl;
+                    if (sortspec == FacetSpec.FacetSortSpec.OrderValueAsc)
+                    {
+                        facetColl = new List<BrowseFacet>(max);
+                        for (int i = 1; i < _countlength; ++i) // exclude zero
+                        {
+                            int hits = _count[i];
+                            if (hits >= minCount)
+                            {
+                                BrowseFacet facet = new BrowseFacet(GetFacetString(i), hits);
+                                facetColl.Add(facet);
+                            }
+                            if (facetColl.Count >= max)
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        IComparatorFactory comparatorFactory;
+                        if (sortspec == FacetSpec.FacetSortSpec.OrderHitsDesc)
+                        {
+                            comparatorFactory = new FacetHitcountComparatorFactory();
+                        }
+                        else
+                        {
+                            comparatorFactory = _fspec.CustomComparatorFactory;
+                        }
 
-//            private string getFacetString(int idx)
-//            {
-//                StringBuilder buf = new StringBuilder();
-//                int i = 0;
-//                foreach (int len in _lens)
-//                {
-//                    if (i > 0)
-//                    {
-//                        buf.Append(_sep);
-//                    }
+                        if (comparatorFactory == null)
+                        {
+                            throw new System.ArgumentException("facet comparator factory not specified");
+                        }
 
-//                    int adjusted = idx * len;
+                        IComparer<int> comparator = comparatorFactory.NewComparator(new GroupbyFieldValueAccessor(this), _count);
+                        facetColl = new List<BrowseFacet>();
+                        int forbidden = -1;
+                        BoundedPriorityQueue<int> pq = new BoundedPriorityQueue<int>(comparator, max, forbidden);
 
-//                    int bucket = adjusted / _count.Length;
-//                    buf.Append(_subcollectors[i]._dataCache.valArray.Get(bucket));
-//                    idx = adjusted % _count.Length;
-//                    i++;
-//                }
-//                return buf.ToString();
-//            }
+                        for (int i = 1; i < _countlength; ++i) // exclude zero
+                        {
+                            int hits = _count[i];
+                            if (hits >= minCount)
+                            {
+                                if (!pq.Offer(i))
+                                {
+                                    // pq is full. we can safely ignore any facet with <=hits.
+                                    minCount = hits + 1;
+                                }
+                            }
+                        }
 
-//            private object[] getRawFaceValue(int idx)
-//            {
-//                object[] retVal = new object[_lens.Length];
-//                int i = 0;
-//                foreach (int len in _lens)
-//                {
-//                    int adjusted = idx * len;
-//                    int bucket = adjusted / _count.Length;
-//                    retVal[i++] = _subcollectors[i]._dataCache.valArray.GetRawValue(bucket);
-//                    idx = adjusted % _count.Length;
-//                }
-//                return retVal;
-//            }
+                        //// NOTE: The code below is the equivalent
+                        //int val;
+                        //while ((val = pq.pollInt()) != forbidden)
+                        //{
+                        //    BrowseFacet facet = new BrowseFacet(getFacetString(val), _count[val]);
+                        //    ((LinkedList<BrowseFacet>)facetColl).addFirst(facet);
+                        //}
 
-//            private class GroupByFieldValueAccessor : IFieldValueAccessor
-//            {
-//                private GroupbyFacetCountCollector parent;
+                        while (!pq.IsEmpty)
+                        {
+                            int val = pq.DeleteMax();
+                            BrowseFacet facet = new BrowseFacet(GetFacetString(val), _count[val]);
+                            facetColl.Insert(0, facet);
+                        }
+                    }
+                    return facetColl;
+                }
+                else
+                {
+                    return IFacetCountCollector_Fields.EMPTY_FACET_LIST;
+                }
+            }
 
-//                public GroupByFieldValueAccessor(GroupbyFacetCountCollector parent)
-//                {
-//                    this.parent = parent;
-//                }
+            public virtual void Close()
+            { }
 
-//                public string GetFormatedValue(int index)
-//                {
-//                    return parent.getFacetString(index);
-//                }
+            public FacetIterator Iterator()
+            {
+                return new GroupByFacetIterator(this);
+            }
 
-//                public object GetRawValue(int index)
-//                {
-//                    return parent.getRawFaceValue(index);
-//                }
-//            }
+            public class GroupByFacetIterator : FacetIterator
+            {
+                private readonly GroupbyFacetCountCollector _parent;
+                private int _index;
 
-//            public virtual IEnumerable<BrowseFacet> GetFacets()
-//            {
-//                if (_fspec != null)
-//                {
-//                    int minCount = _fspec.MinHitCount;
-//                    int max = _fspec.MaxCount;
-//                    if (max <= 0)
-//                        max = _count.Length;
+                public GroupByFacetIterator(GroupbyFacetCountCollector parent)
+                {
+                    _parent = parent;
+                    _index = 0;
+                    _stringFacet = null;
+                    _count = 0;
+                }
 
-//                    FacetSpec.FacetSortSpec sortspec = _fspec.OrderBy;
-//                    List<BrowseFacet> facetColl;
-//                    if (sortspec == FacetSpec.FacetSortSpec.OrderValueAsc)
-//                    {
-//                        facetColl = new List<BrowseFacet>(max);
-//                        for (int i = 1; i < _count.Length; ++i) // exclude zero
-//                        {
-//                            int hits = _count[i];
-//                            if (hits >= minCount)
-//                            {
-//                                BrowseFacet facet = new BrowseFacet(getFacetString(i), hits);
-//                                facetColl.Add(facet);
-//                            }
-//                            if (facetColl.Count >= max)
-//                                break;
-//                        }
-//                    }
-//                    else
-//                    {
-//                        IComparatorFactory comparatorFactory;
-//                        if (sortspec == FacetSpec.FacetSortSpec.OrderHitsDesc)
-//                        {
-//                            comparatorFactory = new FacetHitcountComparatorFactory();
-//                        }
-//                        else
-//                        {
-//                            comparatorFactory = _fspec.CustomComparatorFactory;
-//                        }
+                /// <summary>
+                /// (non-Javadoc)
+                /// see com.browseengine.bobo.api.FacetIterator#next()
+                /// </summary>
+                /// <returns></returns>
+                public override string Next()
+                {
+                    if ((_index >= 0) && !HasNext())
+                        throw new IndexOutOfRangeException("No more facets in this iteration");
+                    _index++;
+                    _stringFacet = _parent.GetFacetString(_index);
+                    _count = _parent._count[_index];
+                    return _stringFacet;
+                }
 
-//                        if (comparatorFactory == null)
-//                        {
-//                            throw new System.ArgumentException("facet comparator factory not specified");
-//                        }
+                /// <summary>
+                /// (non-Javadoc)
+                /// see java.util.Iterator#hasNext()
+                /// </summary>
+                /// <returns></returns>
+                public bool HasNext()
+                {
+                    return (_index < (_parent._countlength - 1));
+                }
 
-//                        IComparer<int> comparator = comparatorFactory.NewComparator(new GroupByFieldValueAccessor(this), _count);
-//                        facetColl = new List<BrowseFacet>();
-//                        BoundedPriorityQueue<int> pq = new BoundedPriorityQueue<int>(comparator, max);
+                /// <summary>
+                /// (non-Javadoc)
+                /// see java.util.Iterator#remove()
+                /// </summary>
+                public void Remove()
+                {
+                    throw new NotSupportedException("remove() method not supported for Facet Iterators");
+                }
 
-//                        for (int i = 1; i < _count.Length; ++i) // exclude zero
-//                        {
-//                            int hits = _count[i];
-//                            if (hits >= minCount)
-//                            {
-//                                if (!pq.Offer(i))
-//                                {
-//                                    // pq is full. we can safely ignore any facet with <=hits.
-//                                    minCount = hits + 1;
-//                                }
-//                            }
-//                        }
+                /// <summary>
+                /// (non-Javadoc)
+                /// see com.browseengine.bobo.api.FacetIterator#next(int)
+                /// </summary>
+                /// <param name="minHits"></param>
+                /// <returns></returns>
+                public string Next(int minHits)
+                {
+                    if ((_index >= 0) && !HasNext())
+                    {
+                        _count = 0;
+                        _stringFacet = null;
+                        return null;
+                    }
+                    do
+                    {
+                        _index++;
+                    } while ((_index < (_parent._countlength - 1)) && (_parent._count[_index] < minHits));
+                    if (_parent._count[_index] >= minHits)
+                    {
+                        _stringFacet = _parent.GetFacetString(_index);
+                        _count = _parent._count[_index];
+                    }
+                    else
+                    {
+                        _count = 0;
+                        _stringFacet = null;
+                    }
+                    return _stringFacet;
+                }
 
-//                        while (!pq.IsEmpty) 
-//                        {
-//                            int val = pq.DeleteMax();
-//                            BrowseFacet facet = new BrowseFacet(getFacetString(val), _count[val]);
-//                            facetColl.Add(facet);
-//                        }
-//                    }
-//                    return facetColl;
-//                }
-//                else
-//                {
-//                    return IFacetCountCollector_Fields.EMPTY_FACET_LIST;
-//                }
-//            }
-//        }
-//    }
-//}
+                /// <summary>
+                /// The string from here should be already formatted. No need to reformat.
+                /// see com.browseengine.bobo.api.FacetIterator#format(java.lang.Object)
+                /// </summary>
+                /// <param name="val"></param>
+                /// <returns></returns>
+                public override string Format(Object val)
+                {
+                    return (string)val;
+                }
+            }
+        }
+    }
+}

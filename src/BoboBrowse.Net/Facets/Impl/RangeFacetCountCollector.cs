@@ -1,59 +1,70 @@
-﻿namespace BoboBrowse.Net.Facets.Impl
+﻿// Version compatibility level: 3.1.0
+namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
+    using BoboBrowse.Net.Facets.Filter;
     using BoboBrowse.Net.Util;
-    using C5;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text;
 
     public class RangeFacetCountCollector : IFacetCountCollector
     {
-        private readonly FacetSpec ospec;
-        private int[] count;
-        private readonly BigSegmentedArray orderArray;
-        private readonly FacetDataCache dataCache;
-        private readonly string name;
-        private readonly bool autoRange;
-        private readonly IEnumerable<string> predefinedRanges;
-        private readonly int[][] predefinedRangeIndexes;
+        private readonly FacetSpec _ospec;
+        private int[] _count;
+        private int _countLength;
+        private readonly BigSegmentedArray _array;
+        private readonly IFacetDataCache _dataCache;
+        private readonly string _name;
+        private readonly TermStringList _predefinedRanges;
+        private readonly int[][] _predefinedRangeIndexes;
+        private int _docBase;
 
-        public RangeFacetCountCollector(string name, RangeFacetHandler rangeFacetHandler, FacetSpec ospec, IEnumerable<string> predefinedRanges, bool autoRange)
-            : this(name, rangeFacetHandler.GetDataCache(), ospec, predefinedRanges, autoRange)
+        public RangeFacetCountCollector(string name, IFacetDataCache dataCache, int docBase, FacetSpec ospec, IEnumerable<string> predefinedRanges)
         {
-        }
-
-        protected internal RangeFacetCountCollector(string name, FacetDataCache dataCache, FacetSpec ospec, IEnumerable<string> predefinedRanges, bool autoRange)
-        {
-            this.name = name;
-            this.dataCache = dataCache;
-            this.ospec = ospec;
-            count = new int[this.dataCache.freqs.Length];
-            orderArray = this.dataCache.orderArray;
-            this.predefinedRanges = predefinedRanges;
-            this.autoRange = autoRange;
-
-            if (this.predefinedRanges != null)
+            _name = name;
+            _dataCache = dataCache;
+            _countLength = _dataCache.Freqs.Length;
+            _count = new int[_countLength];
+            _array = _dataCache.OrderArray;
+            _docBase = docBase;
+            _ospec = ospec;
+            if (predefinedRanges != null)
             {
-                predefinedRangeIndexes = new int[this.predefinedRanges.Count()][];
+                _predefinedRanges = new TermStringList();
+                var tempList = new List<string>(predefinedRanges);
+                tempList.Sort();
+                _predefinedRanges.AddAll(tempList);
+            }
+            else
+            {
+                _predefinedRanges = null;
+            }
+
+            if (_predefinedRanges != null)
+            {
+                _predefinedRangeIndexes = new int[_predefinedRanges.Count()][];
                 int i = 0;
-                foreach (string range in this.predefinedRanges)
+                foreach (string range in this._predefinedRanges)
                 {
-                    predefinedRangeIndexes[i++] = RangeFacetHandler.Parse(this.dataCache, range);
+                    _predefinedRangeIndexes[i++] = RangeFacetHandler.Parse(this._dataCache, range);
                 }
             }
         }
 
-        ///   <summary> * gets distribution of the value arrays. This is only valid when predefined ranges are available. </summary>
+        /// <summary>
+        /// gets distribution of the value arrays. This is only valid when predefined ranges are available.
+        /// </summary>
+        /// <returns></returns>
         public virtual int[] GetCountDistribution()
         {
-
             int[] dist = null;
-            if (predefinedRangeIndexes != null)
+            if (_predefinedRangeIndexes != null)
             {
-                dist = new int[predefinedRangeIndexes.Length];
+                dist = new int[_predefinedRangeIndexes.Length];
                 int n = 0;
-                foreach (int[] range in predefinedRangeIndexes)
+                foreach (int[] range in _predefinedRangeIndexes)
                 {
                     int start = range[0];
                     int end = range[1];
@@ -61,10 +72,14 @@
                     int sum = 0;
                     for (int i = start; i < end; ++i)
                     {
-                        sum += count[i];
+                        sum += _count[i];
                     }
                     dist[n++] = sum;
                 }
+            }
+            else
+            {
+                dist = _count;
             }
 
             return dist;
@@ -72,36 +87,48 @@
 
         public virtual string Name
         {
-            get
-            {
-                return name;
-            }
+            get { return _name; }
         }
 
-        public virtual BrowseFacet GetFacet(string @value)
+        public virtual BrowseFacet GetFacet(string value)
         {
             BrowseFacet facet = null;
-            int[] range = RangeFacetHandler.Parse(dataCache, @value);
+            int[] range = RangeFacetHandler.Parse(_dataCache, value);
             if (range != null)
             {
                 int sum = 0;
                 for (int i = range[0]; i <= range[1]; ++i)
                 {
-                    sum += count[i];
+                    sum += _count[i];
                 }
-                facet = new BrowseFacet(@value, sum);
+                facet = new BrowseFacet(value, sum);
             }
             return facet;
         }
 
+        public int GetFacetHitsCount(object value)
+        {
+            int[] range = FacetRangeFilter.Parse(_dataCache, (string)value);
+            int sum = 0;
+            if (range != null)
+            {
+                for (int i = range[0]; i <= range[1]; ++i)
+                {
+                    sum += _count[i];
+                }
+            }
+            return sum;
+        }
+
         public void Collect(int docid)
         {
-            count[orderArray.Get(docid)]++;
+            _count[_array.Get(docid)]++;
         }
 
         public void CollectAll()
         {
-            count = dataCache.freqs;
+            _count = _dataCache.Freqs;
+            _countLength = _dataCache.Freqs.Length;
         }
 
         internal virtual void ConvertFacets(BrowseFacet[] facets)
@@ -110,7 +137,7 @@
             foreach (BrowseFacet facet in facets)
             {
                 int hit = facet.HitCount;
-                object val = facet.Value;
+                string val = facet.Value;
                 RangeFacet rangeFacet = new RangeFacet();
                 rangeFacet.SetValues(val, val);
                 rangeFacet.HitCount = hit;
@@ -133,8 +160,8 @@
                     if (choices is RangeFacet[])
                     {
                         RangeFacet[] rChoices = (RangeFacet[])choices;
-                        object val1 = rChoices[i].Lower;
-                        object val2 = rChoices[i + 1].Upper;
+                        string val1 = rChoices[i].Lower;
+                        string val2 = rChoices[i + 1].Upper;
                         rangeChoice.SetValues(val1, val2);
                         rangeChoice.HitCount = choices[i].HitCount + choices[i + 1].HitCount;
                     }
@@ -165,95 +192,208 @@
             return FoldChoices(result, max);
         }
 
-        private class RangeComparator : MultiBoboBrowser.BrowseFacetValueComparator
-        {
-        }
-
-        private IEnumerable<BrowseFacet> BuildDynamicRanges()
-        {
-            TreeSet<BrowseFacet> facetSet = new TreeSet<BrowseFacet>(new RangeComparator());
-
-            int minCount = ospec.MinHitCount;
-            // we would skip first element at index 0 (which means no value)
-            for (int i = 1; i < count.Length; ++i)
-            {
-                if (count[i] >= minCount)
-                {
-                    object val = dataCache.valArray.GetRawValue(i);
-                    facetSet.Add(new BrowseFacet(val, count[i]));
-                }
-            }
-
-            if (ospec.MaxCount <= 0)
-            {
-                ospec.MaxCount = 5;
-            }
-            int maxCount = ospec.MaxCount;
-
-            BrowseFacet[] facets = facetSet.ToArray();
-
-            if (facetSet.Count < maxCount)
-            {
-                ConvertFacets(facets);
-            }
-            else
-            {
-                facets = FoldChoices(facets, maxCount);
-            }
-
-            return facets;
-        }
-
         public virtual IEnumerable<BrowseFacet> GetFacets()
         {
-            if (ospec != null)
+            if (_ospec != null)
             {
-                if (autoRange)
+                if (_predefinedRangeIndexes != null)
                 {
-                    return BuildDynamicRanges();
+                    int minCount = _ospec.MinHitCount;
+                    //int maxNumOfFacets = _ospec.getMaxCount();
+                    //if (maxNumOfFacets <= 0 || maxNumOfFacets > _predefinedRangeIndexes.length) maxNumOfFacets = _predefinedRangeIndexes.length;
+
+                    int[] rangeCount = new int[_predefinedRangeIndexes.Length];
+                    for (int k = 0; k < _predefinedRangeIndexes.Length; ++k)
+                    {
+                        int count = 0;
+                        int idx = _predefinedRangeIndexes[k][0];
+                        int end = _predefinedRangeIndexes[k][1];
+                        while (idx < end)
+                        {
+                            count += _count[idx++];
+                        }
+                        rangeCount[k] = count;
+                    }
+
+                    List<BrowseFacet> facetColl = new List<BrowseFacet>(_predefinedRanges.Count());
+                    for (int k = 0; k < _predefinedRanges.Count(); ++k)
+                    {
+                        if (rangeCount[k] >= minCount)
+                        {
+                            BrowseFacet choice = new BrowseFacet(_predefinedRanges.ElementAt(k), rangeCount[k]);
+                            facetColl.Add(choice);
+                        }
+                        //if(facetColl.size() >= maxNumOfFacets) break;
+                    }
+                    return facetColl;
                 }
                 else
                 {
-                    if (predefinedRangeIndexes != null)
-                    {
-                        int minCount = ospec.MinHitCount;
-                        int[] rangeCounts = new int[predefinedRangeIndexes.Length];
-                        for (int i = 0; i < count.Length; ++i)
-                        {
-                            if (count[i] > 0)
-                            {
-                                for (int k = 0; k < predefinedRangeIndexes.Length; ++k)
-                                {
-                                    if (i >= predefinedRangeIndexes[k][0] && i <= predefinedRangeIndexes[k][1])
-                                    {
-                                        rangeCounts[k] += count[i];
-                                    }
-                                }
-                            }
-                        }
-                        List<BrowseFacet> list = new List<BrowseFacet>(rangeCounts.Length);
-                        for (int i = 0; i < rangeCounts.Length; ++i)
-                        {
-                            if (rangeCounts[i] >= minCount)
-                            {
-                                BrowseFacet choice = new BrowseFacet();
-                                choice.HitCount = rangeCounts[i];
-                                choice.Value = predefinedRanges.ElementAt(i);
-                                list.Add(choice);
-                            }
-                        }
-                        return list;
-                    }
-                    else
-                    {
-                        return IFacetCountCollector_Fields.EMPTY_FACET_LIST;
-                    }
+                    return IFacetCountCollector_Fields.EMPTY_FACET_LIST;
                 }
             }
             else
             {
                 return IFacetCountCollector_Fields.EMPTY_FACET_LIST;
             }
+        }
+
+        public List<BrowseFacet> GetFacetsNew()
+        {
+            if (_ospec != null)
+            {
+                if (_predefinedRangeIndexes != null)
+                {
+                    int minCount = _ospec.MinHitCount;
+                    int maxNumOfFacets = _ospec.MaxCount;
+                    if (maxNumOfFacets <= 0 || maxNumOfFacets > _predefinedRangeIndexes.Length) maxNumOfFacets = _predefinedRangeIndexes.Length;
+
+                    int[] rangeCount = new int[_predefinedRangeIndexes.Length];
+
+                    for (int k = 0; k < _predefinedRangeIndexes.Length; ++k)
+                    {
+                        int count = 0;
+                        int idx = _predefinedRangeIndexes[k][0];
+                        int end = _predefinedRangeIndexes[k][1];
+                        while (idx <= end)
+                        {
+                            count += _count[idx++];
+                        }
+                        rangeCount[k] = count;
+                    }
+
+                    List<BrowseFacet> facetColl;
+                    FacetSpec.FacetSortSpec sortspec = _ospec.OrderBy;
+                    if (sortspec == FacetSpec.FacetSortSpec.OrderValueAsc)
+                    {
+                        facetColl = new List<BrowseFacet>(maxNumOfFacets);
+                        for (int k = 0; k < _predefinedRangeIndexes.Length; ++k)
+                        {
+                            if (rangeCount[k] >= minCount)
+                            {
+                                BrowseFacet choice = new BrowseFacet(_predefinedRanges.ElementAt(k), rangeCount[k]);
+                                facetColl.Add(choice);
+                            }
+                            if (facetColl.Count >= maxNumOfFacets) break;
+                        }
+                    }
+                    else //if (sortspec == FacetSortSpec.OrderHitsDesc)
+                    {
+                        IComparatorFactory comparatorFactory;
+                        if (sortspec == FacetSpec.FacetSortSpec.OrderHitsDesc)
+                        {
+                            comparatorFactory = new FacetHitcountComparatorFactory();
+                        }
+                        else
+                        {
+                            comparatorFactory = _ospec.CustomComparatorFactory;
+                        }
+
+                        if (comparatorFactory == null)
+                        {
+                            throw new ArgumentException("facet comparator factory not specified");
+                        }
+
+                        IComparer<int> comparator = comparatorFactory.NewComparator(new RangeFacetCountCollectorFieldAccessor(_predefinedRanges), rangeCount);
+
+                        int forbidden = -1;
+                        IntBoundedPriorityQueue pq = new IntBoundedPriorityQueue(comparator, maxNumOfFacets, forbidden);
+                        for (int i = 0; i < _predefinedRangeIndexes.Length; ++i)
+                        {
+                            if (rangeCount[i] >= minCount) pq.offer(i);
+                        }
+
+                        int val;
+                        facetColl = new List<BrowseFacet>();
+                        while ((val = pq.pollInt()) != forbidden)
+                        {
+                            BrowseFacet facet = new BrowseFacet(_predefinedRanges.ElementAt(val), rangeCount[val]);
+                            facetColl.Insert(0, facet);
+                        }
+                    }
+                    return facetColl;
+                }
+                else
+                {
+                    return IFacetCountCollector_Fields.EMPTY_FACET_LIST;
+                }
+            }
+            else
+            {
+                return IFacetCountCollector_Fields.EMPTY_FACET_LIST;
+            }
+        }
+
+        private class RangeFacetCountCollectorFieldAccessor : IFieldValueAccessor
+        {
+            private readonly TermStringList _predefinedRanges;
+
+            public RangeFacetCountCollectorFieldAccessor(TermStringList predefinedRanges)
+            {
+                this._predefinedRanges = predefinedRanges;
+            }
+
+            public string GetFormatedValue(int index)
+            {
+                return _predefinedRanges.Get(index);
+            }
+
+            public object GetRawValue(int index)
+            {
+                return _predefinedRanges.GetRawValue(index);
+            }
+        }
+
+        private class RangeFacet : BrowseFacet
+        {
+            private static long serialVersionUID = 1L;
+
+            private string _lower;
+            private string _upper;
+
+            public RangeFacet()
+            { }
+
+            public string Lower
+            {
+                get { return _lower; }
+            }
+
+            public string Upper
+            {
+                get { return _upper; }
+            }
+
+            public void SetValues(string lower, string upper)
+            {
+                _lower = lower;
+                _upper = upper;
+                this.Value = new StringBuilder("[").Append(_lower).Append(" TO ").Append(_upper).Append(']').ToString();
+            }
+        }
+
+        public void Close()
+        { }
+
+        public FacetIterator Iterator()
+        {
+            if (_predefinedRanges != null)
+            {
+                int[] rangeCounts = new int[_predefinedRangeIndexes.Length];
+                for (int k = 0; k < _predefinedRangeIndexes.Length; ++k)
+                {
+                    int count = 0;
+                    int idx = _predefinedRangeIndexes[k][0];
+                    int end = _predefinedRangeIndexes[k][1];
+                    while (idx <= end)
+                    {
+                        count += _count[idx++];
+                    }
+                    rangeCounts[k] += count;
+                }
+                return new DefaultFacetIterator(_predefinedRanges, rangeCounts, rangeCounts.Length, true);
+            }
+            return null;
         }
     }
 }

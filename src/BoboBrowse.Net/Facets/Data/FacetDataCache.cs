@@ -36,7 +36,7 @@ namespace BoboBrowse.Net.Facets.Data
     public interface IFacetDataCache
     {
         BigSegmentedArray OrderArray { get; }
-        ITermValueList ValueArray { get; }
+        ITermValueList ValArray { get; }
         int[] Freqs { get; }
         int[] MinIDs { get; }
         int[] MaxIDs { get; }
@@ -44,14 +44,14 @@ namespace BoboBrowse.Net.Facets.Data
         void Load(string fieldName, IndexReader reader, TermListFactory listFactory);
     }
 
-    public class FacetDataCache_Converter
+    public class FacetDataCache_Static
     {
         private static int[] ConvertString(IFacetDataCache dataCache, string[] vals)
         {
             var list = new List<int>(vals.Length);
             for (int i = 0; i < vals.Length; ++i)
             {
-                int index = dataCache.ValueArray.IndexOf(vals[i]);
+                int index = dataCache.ValArray.IndexOf(vals[i]);
                 if (index >= 0)
                 {
                     list.Add(index);
@@ -79,14 +79,14 @@ namespace BoboBrowse.Net.Facets.Data
             for (int i = 0; i < vals.Length; ++i)
             {
                 int index = -1;
-                var valArrayTyped = dataCache.ValueArray as TermValueList<T>;
+                var valArrayTyped = dataCache.ValArray as TermValueList<T>;
                 if (valArrayTyped != null)
                 {
                     index = valArrayTyped.IndexOfWithType(vals[i]);
                 }
                 else
                 {
-                    index = dataCache.ValueArray.IndexOf(vals[i]);
+                    index = dataCache.ValArray.IndexOf(vals[i]);
                 }
                 if (index >= 0)
                 {
