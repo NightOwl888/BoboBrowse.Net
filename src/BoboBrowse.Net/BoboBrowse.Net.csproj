@@ -119,6 +119,11 @@
     <Compile Include="Facets\Data\PrimitiveLongArrayWrapper.cs" />
     <Compile Include="Facets\Data\TermFixedLengthLongArrayList.cs" />
     <Compile Include="Facets\Data\TermFixedLengthLongArrayListFactory.cs" />
+    <Compile Include="Facets\Filter\AdaptiveFacetFilter.cs" />
+    <Compile Include="Facets\Filter\BitSetFilter.cs" />
+    <Compile Include="Facets\Filter\GeoFacetFilter.cs" />
+    <Compile Include="Facets\Filter\GeoSimpleFacetFilter.cs" />
+    <Compile Include="Facets\Filter\IFacetValueConverter.cs" />
     <Compile Include="Facets\Impl\CombinedDoubleFacetIterator.cs" />
     <Compile Include="Facets\Impl\CombinedFacetIterator.cs" />
     <Compile Include="Facets\Impl\CombinedFloatFacetIterator.cs" />
