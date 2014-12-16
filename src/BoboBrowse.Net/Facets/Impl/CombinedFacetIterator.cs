@@ -1,6 +1,7 @@
 ﻿// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Facets.Impl
 {
+    using BoboBrowse.Net.Support;
     using System;
     using System.Collections.Generic;
     using System.Linq;

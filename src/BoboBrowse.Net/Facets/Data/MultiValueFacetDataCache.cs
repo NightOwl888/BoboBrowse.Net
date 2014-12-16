@@ -23,6 +23,7 @@
 namespace BoboBrowse.Net.Facets.Data
 {
     using BoboBrowse.Net.Sort;
+    using BoboBrowse.Net.Support;
     using BoboBrowse.Net.Util;
     using Common.Logging;
     using Lucene.Net.Index;

@@ -224,7 +224,7 @@
     <Compile Include="Support\Properties.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DocIdSet\RandomAccessDocIdSet.cs" />
-    <Compile Include="RuntimeException.cs" />
+    <Compile Include="Support\RuntimeException.cs" />
     <Compile Include="Query\Scoring\IFacetTermScoringFunction.cs" />
     <Compile Include="Query\Scoring\BoboDocScorer.cs" />
     <Compile Include="Query\Scoring\IFacetTermScoringFunctionFactory.cs" />

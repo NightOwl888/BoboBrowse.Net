@@ -1,6 +1,7 @@
 // Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Facets.Data
 {
+    using BoboBrowse.Net.Support;
     using System;
 
     ///<summary>Internal data are stored in a long[] with values generated from <seealso cref="Date#getTime()"/> </summary>

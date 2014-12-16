@@ -1,6 +1,7 @@
 ﻿// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Facets.Data
 {
+    using BoboBrowse.Net.Support;
     using Common.Logging;
     using System;
     using System.Collections.Generic;
