@@ -213,6 +213,8 @@
     <Compile Include="Query\Scoring\DefaultFacetTermScoringFunctionFactory.cs" />
     <Compile Include="Query\Scoring\FacetTermQuery.cs" />
     <Compile Include="BoboBrowser.cs" />
+    <Compile Include="Query\Scoring\MultiplicativeFacetTermScoringFunction.cs" />
+    <Compile Include="Query\Scoring\MultiplicativeFacetTermScoringFunctionFactory.cs" />
     <Compile Include="Search\BoboSearcher2.cs" />
     <Compile Include="BrowseHit.cs" />
     <Compile Include="BrowseResult.cs" />
