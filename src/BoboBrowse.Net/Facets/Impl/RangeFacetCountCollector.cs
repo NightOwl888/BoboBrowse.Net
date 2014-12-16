@@ -300,12 +300,12 @@ namespace BoboBrowse.Net.Facets.Impl
                         IntBoundedPriorityQueue pq = new IntBoundedPriorityQueue(comparator, maxNumOfFacets, forbidden);
                         for (int i = 0; i < _predefinedRangeIndexes.Length; ++i)
                         {
-                            if (rangeCount[i] >= minCount) pq.offer(i);
+                            if (rangeCount[i] >= minCount) pq.Offer(i);
                         }
 
                         int val;
                         facetColl = new List<BrowseFacet>();
-                        while ((val = pq.pollInt()) != forbidden)
+                        while ((val = pq.Poll()) != forbidden)
                         {
                             BrowseFacet facet = new BrowseFacet(_predefinedRanges.ElementAt(val), rangeCount[val]);
                             facetColl.Insert(0, facet);

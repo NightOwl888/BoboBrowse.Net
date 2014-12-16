@@ -1,18 +1,18 @@
 ﻿// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Util
 {
-    using C5;
+    //using C5;
     using System;
     using System.Collections;
     using System.Collections.Generic;
 
-    public class IntBoundedPriorityQueue : IntervalHeap<int>
+    public class IntBoundedPriorityQueue //: IntervalHeap<int>
     {
         private static long serialVersionUID = 1L;
         private readonly int _capacity;
         private readonly int[] _items;
         private int _size = 0;
-        private IntComparator _comp;
+        private IComparer<int> _comp;
         private readonly int _forbiddenValue;
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace BoboBrowse.Net.Util
         /// <param name="comparator">a comparator that is used to order the items.</param>
         /// <param name="capacity">the maximum number of items the queue accepts</param>
         /// <param name="forbiddenValue"></param>
-        public IntBoundedPriorityQueue(IntComparator comparator, int capacity, int forbiddenValue)
+        public IntBoundedPriorityQueue(IComparer<int> comparator, int capacity, int forbiddenValue)
         {
             _capacity = capacity;
             _comp = comparator;
@@ -86,12 +86,8 @@ namespace BoboBrowse.Net.Util
 
             public bool MoveNext()
             {
-                bool hasNext = (i < parent._size);
-                if (hasNext)
-                {
-                    i++;
-                }
-                return hasNext;
+                i++;
+                return  (i < parent._size);
             }
 
             public void Reset()

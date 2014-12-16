@@ -162,7 +162,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     IComparer<int> comparator = comparatorFactory.NewComparator(new DefaultFacetCountCollectorFieldAccessor(valList), count);
                     facetColl = new List<BrowseFacet>();
                     int forbidden = -1;
-                    IntBoundedPriorityQueue pq = new IntBoundedPriorityQueue(comparator, max);
+                    IntBoundedPriorityQueue pq = new IntBoundedPriorityQueue(comparator, max, forbidden);
 
                     for (int i = 1; i < countLength; ++i) // exclude zero
                     {
@@ -174,7 +174,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     }
 
                     int val;
-                    while (val = pq.PollInt() != forbidden)
+                    while ((val = pq.Poll()) != forbidden)
                     {
                         BrowseFacet facet = new BrowseFacet(valList[val], _count[val]);
                         facetColl.Insert(0, facet);
