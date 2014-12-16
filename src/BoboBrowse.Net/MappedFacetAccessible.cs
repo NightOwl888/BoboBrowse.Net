@@ -23,6 +23,7 @@
 
 namespace BoboBrowse.Net
 {
+    using BoboBrowse.Net.Support;
     using BoboBrowse.Net.Util;
     using System;
     using System.Linq;

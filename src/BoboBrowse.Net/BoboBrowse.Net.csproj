@@ -257,7 +257,7 @@
     <Compile Include="Util\BitSet.cs" />
     <Compile Include="Util\BoundedPriorityQueue.cs" />
     <Compile Include="Util\DocIdSetUtil.cs" />
-    <Compile Include="Util\IDictionaryExtensions.cs" />
+    <Compile Include="Support\IDictionaryExtensions.cs" />
     <Compile Include="Util\ListMerger.cs" />
     <Compile Include="Util\MutableSparseFloatArray.cs" />
     <Compile Include="Support\ObjectCopier.cs" />

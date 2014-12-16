@@ -52,7 +52,7 @@ namespace BoboBrowse.Net
         }
 
         /// <summary>
-        /// Get or sets the score
+        /// Gets or sets the score
         /// </summary>
         public float Score { get; set; }
 

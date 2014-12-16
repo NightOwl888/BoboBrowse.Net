@@ -26,6 +26,7 @@ namespace BoboBrowse.Net
 {
     using BoboBrowse.Net.Facets;
     using BoboBrowse.Net.Sort;
+    using BoboBrowse.Net.Support;
     using BoboBrowse.Net.Util;
     using Common.Logging;
     using Lucene.Net.Search;

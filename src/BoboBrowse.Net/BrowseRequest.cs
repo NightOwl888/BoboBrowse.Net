@@ -26,6 +26,7 @@
 namespace BoboBrowse.Net
 {
     using BoboBrowse.Net.Facets;
+    using BoboBrowse.Net.Support;
     using BoboBrowse.Net.Util;
     using Lucene.Net.Search;
     using System;
@@ -48,7 +49,7 @@ namespace BoboBrowse.Net
         private long tid = -1;
 
         /// <summary>
-        /// Get or sets the transaction ID.
+        /// Gets or sets the transaction ID.
         /// </summary>
         public sealed long Tid
         {

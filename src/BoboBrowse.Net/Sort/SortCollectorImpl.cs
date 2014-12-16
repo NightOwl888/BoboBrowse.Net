@@ -5,6 +5,7 @@ namespace BoboBrowse.Net.Sort
     using BoboBrowse.Net.Facets;
     using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Facets.Impl;
+    using BoboBrowse.Net.Support;
     using BoboBrowse.Net.Util;
     using Lucene.Net.Index;
     using Lucene.Net.Search;

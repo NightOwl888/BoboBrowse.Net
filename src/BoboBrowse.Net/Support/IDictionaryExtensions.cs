@@ -1,5 +1,5 @@
-﻿// TODO: Move to support namespace
-namespace BoboBrowse.Net.Util
+﻿// Version compatibility level: 3.1.0
+namespace BoboBrowse.Net.Support
 {
     using System;
     using System.Collections.Generic;

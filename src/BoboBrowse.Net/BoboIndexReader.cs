@@ -29,6 +29,7 @@ namespace BoboBrowse.Net
     using BoboBrowse.Net.Facets;
     using BoboBrowse.Net.Query;
     using BoboBrowse.Net.Search;
+    using BoboBrowse.Net.Support;
     using BoboBrowse.Net.Util;
     using Common.Logging;
     using Lucene.Net.Documents;
