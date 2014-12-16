@@ -41,10 +41,8 @@
 
 // Source ported to C# from: http://fuseyism.com/classpath/doc/java/util/BitSet-source.html
 
-// TODO: Move to support namespace
-namespace BoboBrowse.Net.Util
+namespace BoboBrowse.Net.Support
 {
-    using BoboBrowse.Net.Support;
     using System;
     using System.Collections.Generic;
     using System.Text;

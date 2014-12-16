@@ -1,7 +1,7 @@
 ﻿// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.DocIdSet
 {
-    using BoboBrowse.Net.Util;
+    using BoboBrowse.Net.Support;
     using Lucene.Net.Search;
     using System;
     using System.Collections.Generic;

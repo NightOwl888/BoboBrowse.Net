@@ -254,7 +254,7 @@
     <Compile Include="Util\BigNestedIntArray.cs" />
     <Compile Include="Util\BigSegmentedArray.cs" />
     <Compile Include="Util\BigShortArray.cs" />
-    <Compile Include="Util\BitSet.cs" />
+    <Compile Include="Support\BitSet.cs" />
     <Compile Include="Util\BoundedPriorityQueue.cs" />
     <Compile Include="Util\DocIdSetUtil.cs" />
     <Compile Include="Support\IDictionaryExtensions.cs" />
