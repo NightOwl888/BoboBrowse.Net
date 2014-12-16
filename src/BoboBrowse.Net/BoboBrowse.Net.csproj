@@ -209,6 +209,13 @@
     <Compile Include="Index\Digest\FileDigester.cs" />
     <Compile Include="MappedFacetAccessible.cs" />
     <Compile Include="MethodExtensions.cs" />
+    <Compile Include="Query\FacetBasedBoostScorerBuilder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Query\IScorerBuilder.cs" />
+    <Compile Include="Query\MatchAllDocIdSetIterator.cs" />
+    <Compile Include="Query\RecencyBoostScorerBuilder.cs" />
+    <Compile Include="Query\ScoreAdjusterQuery.cs" />
     <Compile Include="Query\Scoring\DefaultFacetTermScoringFunction.cs" />
     <Compile Include="Query\Scoring\DefaultFacetTermScoringFunctionFactory.cs" />
     <Compile Include="Query\Scoring\FacetTermQuery.cs" />
@@ -249,6 +256,7 @@
     <Compile Include="Support\FloatExtensions.cs" />
     <Compile Include="Support\IEnumerableExtensions.cs" />
     <Compile Include="Support\Arrays.cs" />
+    <Compile Include="Support\TimeUnit.cs" />
     <Compile Include="Util\BigByteArray.cs" />
     <Compile Include="Util\BigFloatArray.cs" />
     <Compile Include="Util\BigIntArray.cs" />
