@@ -133,6 +133,9 @@
     <Compile Include="Facets\Impl\CombinedIntFacetIterator.cs" />
     <Compile Include="Facets\Impl\CombinedLongFacetIterator.cs" />
     <Compile Include="Facets\Impl\CombinedShortFacetIterator.cs" />
+    <Compile Include="Facets\Impl\ComboFacetHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Facets\Impl\GroupByFacetCountCollector.cs" />
     <Compile Include="Facets\Impl\PathFacetCountCollector.cs" />
     <Compile Include="Facets\Impl\PathFacetIterator.cs" />
