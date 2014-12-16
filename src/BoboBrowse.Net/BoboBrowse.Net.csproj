@@ -260,7 +260,7 @@
     <Compile Include="Util\IDictionaryExtensions.cs" />
     <Compile Include="Util\ListMerger.cs" />
     <Compile Include="Util\MutableSparseFloatArray.cs" />
-    <Compile Include="Util\ObjectCopier.cs" />
+    <Compile Include="Support\ObjectCopier.cs" />
     <Compile Include="Util\SparseFloatArray.cs" />
     <Compile Include="Util\StringArrayComparator.cs" />
   </ItemGroup>
