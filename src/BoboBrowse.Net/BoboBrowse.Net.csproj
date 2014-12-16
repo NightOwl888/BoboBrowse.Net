@@ -136,6 +136,12 @@
     <Compile Include="Facets\Impl\ComboFacetHandler.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Facets\Impl\DefaultDoubleFacetIterator.cs" />
+    <Compile Include="Facets\Impl\DefaultFacetIterator.cs" />
+    <Compile Include="Facets\Impl\DefaultFloatFacetIterator.cs" />
+    <Compile Include="Facets\Impl\DefaultIntFacetIterator.cs" />
+    <Compile Include="Facets\Impl\DefaultLongFacetIterator.cs" />
+    <Compile Include="Facets\Impl\DefaultShortFacetIterator.cs" />
     <Compile Include="Facets\Impl\GroupByFacetCountCollector.cs" />
     <Compile Include="Facets\Impl\PathFacetCountCollector.cs" />
     <Compile Include="Facets\Impl\PathFacetIterator.cs" />
