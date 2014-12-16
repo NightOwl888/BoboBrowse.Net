@@ -244,6 +244,8 @@
     <Compile Include="Sort\ReverseDocComparatorSource.cs" />
     <Compile Include="Sort\SortCollector.cs" />
     <Compile Include="Sort\SortCollectorImpl.cs" />
+    <Compile Include="Support\FloatExtensions.cs" />
+    <Compile Include="Support\IEnumerableExtensions.cs" />
     <Compile Include="Util\Arrays.cs" />
     <Compile Include="Util\BigByteArray.cs" />
     <Compile Include="Util\BigFloatArray.cs" />
