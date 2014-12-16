@@ -444,8 +444,9 @@ namespace BoboBrowse.Net.Facets.Data
         public sealed class MultiFacetDocCaomparatorSource : DocComparatorSource
         {
             private MultiDataCacheBuilder cacheBuilder;
-		    public MultiFacetDocComparatorSource(MultiDataCacheBuilder multiDataCacheBuilder){
-		      cacheBuilder = multiDataCacheBuilder;
+		    public MultiFacetDocComparatorSource(MultiDataCacheBuilder multiDataCacheBuilder)
+            {
+		        cacheBuilder = multiDataCacheBuilder;
 		    }
 
             public override GetComparator(IndexReader reader, int docbase)

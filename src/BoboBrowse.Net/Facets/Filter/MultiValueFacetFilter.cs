@@ -69,7 +69,7 @@ namespace BoboBrowse.Net.Facets.Filter
 
             public override int NextDoc()
             {
-                _doc = (_doc < _maxID ? _nestedArray.FindValue(_index, (_doc + 1), _maxID) : NO_MORE_DOCS));
+                _doc = (_doc < _maxID ? _nestedArray.FindValue(_index, (_doc + 1), _maxID) : NO_MORE_DOCS);
                 return _doc;
             }
 
@@ -77,7 +77,7 @@ namespace BoboBrowse.Net.Facets.Filter
             {
                 if (_doc < id)
                 {
-                    doc = (id <= _maxID ? _nestedArray.FindValue(_index, id, _maxID) : NO_MORE_DOCS));
+                    doc = (id <= _maxID ? _nestedArray.FindValue(_index, id, _maxID) : NO_MORE_DOCS);
                 }
                 return NextDoc();
             }            
