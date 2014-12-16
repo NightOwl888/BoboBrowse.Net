@@ -221,7 +221,7 @@
     <Compile Include="IBrowsable.cs" />
     <Compile Include="Query\Scoring\IFacetScoreable.cs" />
     <Compile Include="MultiBoboBrowser.cs" />
-    <Compile Include="Properties.cs" />
+    <Compile Include="Support\Properties.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DocIdSet\RandomAccessDocIdSet.cs" />
     <Compile Include="RuntimeException.cs" />

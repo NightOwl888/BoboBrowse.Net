@@ -28,6 +28,7 @@ namespace BoboBrowse.Net.Facets.Impl
     using BoboBrowse.Net.Facets.Filter;
     using BoboBrowse.Net.Query.Scoring;
     using BoboBrowse.Net.Sort;
+    using BoboBrowse.Net.Support;
     using BoboBrowse.Net.Util;
     using Common.Logging;
     using Lucene.Net.Index;

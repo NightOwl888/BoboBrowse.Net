@@ -14,6 +14,7 @@ namespace BoboBrowse.Net.Facets.Impl
     using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Facets.Filter;
     using BoboBrowse.Net.Sort;
+    using BoboBrowse.Net.Support;
     using Lucene.Net.Search;
     using System;
     using System.Collections.Generic;

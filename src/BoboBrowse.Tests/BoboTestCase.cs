@@ -33,6 +33,7 @@ namespace BoboBrowse.Net
     using BoboBrowse.Net.Index.Digest;
     using BoboBrowse.Net.Query.Scoring;
     using BoboBrowse.Net.Search;
+    using BoboBrowse.Net.Support;
     using BoboBrowse.Net.Util;
     using Lucene.Net.Analysis;
     using Lucene.Net.Analysis.Standard;

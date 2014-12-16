@@ -6,6 +6,7 @@ namespace BoboBrowse.Net.Facets.Range
     using BoboBrowse.Net.Facets.Impl;
     using BoboBrowse.Net.Query.Scoring;
     using BoboBrowse.Net.Sort;
+    using BoboBrowse.Net.Support;
     using BoboBrowse.Net.Util;
     using Lucene.Net.Index;
     using System;

@@ -8,8 +8,7 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
-// TODO: Move to support namespace
-namespace BoboBrowse.Net
+namespace BoboBrowse.Net.Support
 {
     using System;
     using System.Collections.Generic;

@@ -4,6 +4,7 @@
     using BoboBrowse.Net.Facets;
     using BoboBrowse.Net.Facets.Filter;
     using BoboBrowse.Net.Search;
+    using BoboBrowse.Net.Support;
     using Lucene.Net.Analysis.Standard;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
