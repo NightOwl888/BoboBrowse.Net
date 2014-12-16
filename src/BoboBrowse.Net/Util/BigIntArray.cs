@@ -1,4 +1,4 @@
-﻿
+﻿// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Util
 {
     using BoboBrowse.Net.Support;
@@ -13,7 +13,9 @@ namespace BoboBrowse.Net.Util
     [Serializable]
     public sealed class BigIntArray : BigSegmentedArray
     {
-        private int[][] array;
+        private static long serialVersionUID = 1L;
+
+        private int[][] _array;
 
         // Remember that 2^SHIFT_SIZE = BLOCK_SIZE 
         private const int BLOCK_SIZE = 1024;
@@ -21,68 +23,79 @@ namespace BoboBrowse.Net.Util
         private const int MASK = BLOCK_SIZE - 1;
 
         public BigIntArray(int size)
-            : base(size, BLOCK_SIZE, SHIFT_SIZE)
+            : base(size)
         {
-            array = new int[numrows][];
-            for (int i = 0; i < numrows; i++)
+            _array = new int[_numrows][];
+            for (int i = 0; i < _numrows; i++)
             {
-                array[i] = new int[BLOCK_SIZE];
+                _array[i] = new int[BLOCK_SIZE];
             }
         }
 
-        public override void Add(int docId, int val)
+        public override sealed void Add(int docId, int val)
         {
-            array[docId >> SHIFT_SIZE][docId & MASK] = val;
+            _array[docId >> SHIFT_SIZE][docId & MASK] = val;
         }
 
-        public override int Get(int docId)
+        public override sealed int Get(int docId)
         {
-            return array[docId >> SHIFT_SIZE][docId & MASK];
+            return _array[docId >> SHIFT_SIZE][docId & MASK];
         }
 
-        public override int FindValue(int val, int docId, int maxId)
+        public override sealed int FindValue(int val, int docId, int maxId)
         {
-            while (docId <= maxId && array[docId >> SHIFT_SIZE][docId & MASK] != val)
+            while (true)
             {
-                docId++;
+                if (_array[docId >> SHIFT_SIZE][docId & MASK] == val) return docId;
+                if (docId++ >= maxId) break;
             }
-
-            return docId > maxId ? DocIdSetIterator.NO_MORE_DOCS : docId;
+            return DocIdSetIterator.NO_MORE_DOCS;
         }
 
-        public override int FindValues(OpenBitSet bitset, int docId, int maxId)
+        public override sealed int FindValues(OpenBitSet bitset, int docId, int maxId)
         {
-            while (docId <= maxId && !bitset.FastGet(array[docId >> SHIFT_SIZE][docId & MASK]))
+            while (true)
             {
-                docId++;
+                if (bitset.FastGet(_array[docId >> SHIFT_SIZE][docId & MASK])) return docId;
+                if (docId++ >= maxId) break;
             }
-            return docId > maxId ? DocIdSetIterator.NO_MORE_DOCS : docId;
+            return DocIdSetIterator.NO_MORE_DOCS;
         }
 
-        public override int FindValueRange(int minVal, int maxVal, int docId, int maxId)
+        public override sealed int FindValues(BitVector bitset, int docId, int maxId)
         {
-            while (docId <= maxId)
+            while (true)
             {
-                int val = array[docId >> SHIFT_SIZE][docId & MASK];
-                if (val >= minVal && val <= maxVal)
-                    break;
-                docId++;
+                if (bitset.Get(_array[docId >> SHIFT_SIZE][docId & MASK])) return docId;
+                if (docId++ >= maxId) break;
             }
-            return docId > maxId ? DocIdSetIterator.NO_MORE_DOCS : docId;
+            return DocIdSetIterator.NO_MORE_DOCS;
         }
 
-        public override int FindBits(int bits, int docId, int maxId)
+        public override sealed int FindValueRange(int minVal, int maxVal, int docId, int maxId)
         {
-            while (docId <= maxId && (array[docId >> SHIFT_SIZE][docId & MASK] & bits) == 0)
+            while (true)
             {
-                docId++;
+                int val = _array[docId >> SHIFT_SIZE][docId & MASK];
+                if (val >= minVal && val <= maxVal) return docId;
+                if (docId++ >= maxId) break;
             }
-            return docId > maxId ? DocIdSetIterator.NO_MORE_DOCS : docId;
+            return DocIdSetIterator.NO_MORE_DOCS;
         }
 
-        public override void Fill(int val)
+        public override sealed int FindBits(int bits, int docId, int maxId)
         {
-            foreach (int[] block in array)
+            while (true)
+            {
+                if ((_array[docId >> SHIFT_SIZE][docId & MASK] & bits) != 0) return docId;
+                if (docId++ >= maxId) break;
+            }
+            return DocIdSetIterator.NO_MORE_DOCS;
+        }
+
+        public override sealed void Fill(int val)
+        {
+            foreach (int[] block in _array)
             {
                 Arrays.Fill(block, val);
             }
@@ -91,17 +104,27 @@ namespace BoboBrowse.Net.Util
         public override void EnsureCapacity(int size)
         {
             int newNumrows = (size >> SHIFT_SIZE) + 1;
-            if (newNumrows > array.Length)
+            if (newNumrows > _array.Length)
             {
                 int[][] newArray = new int[newNumrows][]; // grow
-                System.Array.Copy(array, 0, newArray, 0, array.Length);
-                for (int i = array.Length; i < newNumrows; ++i)
+                System.Array.Copy(_array, 0, newArray, 0, _array.Length);
+                for (int i = _array.Length; i < newNumrows; ++i)
                 {
                     newArray[i] = new int[BLOCK_SIZE];
                 }
-                array = newArray;
+                _array = newArray;
             }
-            numrows = newNumrows;
+            _numrows = newNumrows;
+        }
+
+        protected override sealed int GetBlockSize()
+        {
+            return BLOCK_SIZE;
+        }
+
+        protected override sealed int GetShiftSize()
+        {
+            return SHIFT_SIZE;
         }
 
         public override int MaxValue()

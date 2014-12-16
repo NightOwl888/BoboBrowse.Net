@@ -420,17 +420,9 @@ namespace BoboBrowse.Net.Facets.Impl
                             }
                         }
 
-                        //// NOTE: The code below is the equivalent
-                        //int val;
-                        //while ((val = pq.pollInt()) != forbidden)
-                        //{
-                        //    BrowseFacet facet = new BrowseFacet(getFacetString(val), _count[val]);
-                        //    ((LinkedList<BrowseFacet>)facetColl).addFirst(facet);
-                        //}
-
-                        while (!pq.IsEmpty)
+                        int val;
+                        while ((val = pq.Poll()) != forbidden)
                         {
-                            int val = pq.DeleteMax();
                             BrowseFacet facet = new BrowseFacet(GetFacetString(val), _count[val]);
                             facetColl.Insert(0, facet);
                         }

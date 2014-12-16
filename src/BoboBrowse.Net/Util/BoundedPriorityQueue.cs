@@ -1,5 +1,4 @@
-﻿// Copyright (c) COMPANY. All rights reserved. 
-
+﻿// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Util
 {
     using System;
@@ -8,31 +7,32 @@ namespace BoboBrowse.Net.Util
 
     public class BoundedPriorityQueue<E> : IntervalHeap<E>
     {
-        private readonly int maxSize;
+        private static long serialVersionUID = 1L;
 
+        private readonly int _maxSize;
         public BoundedPriorityQueue(int maxSize)
+            : base() // TODO: This may be a bug in the original bobo source - why was the size not being set with this overload?
         {
-            this.maxSize = maxSize;
+            this._maxSize = maxSize;
         }
 
         public BoundedPriorityQueue(IComparer<E> comparator, int maxSize)
             : base(maxSize, comparator)
         {
-            this.maxSize = maxSize;
+            this._maxSize = maxSize;
         }
+
 
         public bool Offer(E o)
         {
             int size = Count;
-
-            if (size < maxSize)
+            if (size < _maxSize)
             {
                 return base.Add(o);
             }
             else
             {
                 E smallest = base.FindMax();
-
                 IComparer<E> comparator = base.Comparer;
                 bool madeIt = false;
                 if (comparator == null)
@@ -52,7 +52,7 @@ namespace BoboBrowse.Net.Util
 
                 if (madeIt)
                 {
-                    base.DeleteMax();
+                    this.Poll();
                     return base.Add(o);
                 }
                 else
@@ -60,6 +60,11 @@ namespace BoboBrowse.Net.Util
                     return false;
                 }
             }
+        }
+
+        public E Poll()
+        {
+            return base.DeleteMax();
         }
     }
 }

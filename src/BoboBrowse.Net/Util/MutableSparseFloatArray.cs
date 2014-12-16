@@ -23,11 +23,14 @@
  * contact owner@browseengine.com.
  */
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Util
 {
+    using BoboBrowse.Net.Support;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Runtime.CompilerServices;
     using System.Text;
 
     public class MutableSparseFloatArray : SparseFloatArray
@@ -47,6 +50,7 @@ namespace BoboBrowse.Net.Util
             get { return _isDirty; }
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public override float Get(int index)
         {
             var val = base.Get(index);
@@ -67,61 +71,65 @@ namespace BoboBrowse.Net.Util
             return 0f;
         }
 
-        public void Set(int index, float value)
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public void Set(int idx, float val)
         {
             _isDirty = true;
             if (null == _bits && null != _floats)
             {
-                _floats[index] = value;
+                _floats[idx] = val;
             }
             else
             {
-                if (null != _bits && _bits.Get(index)) 
+                if (null != _bits && _bits.Get(idx))
                 {
-				    // count the number of bits that are on BEFORE this idx
-				    int count;
-				    int @ref = index / REFERENCE_POINT_EVERY-1;
-				    if (@ref >= 0) {
-					    count = _referencePoints[@ref];
-				    } else {
-					    count = 0;
-				    }
-                    int i = index - index % REFERENCE_POINT_EVERY;
-                    while ((i = _bits.NextSetBit(i)) >= 0 && i < index)
+                    // count the number of bits that are on BEFORE this idx
+                    int count;
+                    int @ref = idx / REFERENCE_POINT_EVERY - 1;
+                    if (@ref >= 0)
                     {
-					    count++;
-					    i++;
-				    }
-                    _floats[count] = value;
-			    } 
-                else 
+                        count = _referencePoints[@ref];
+                    }
+                    else
+                    {
+                        count = 0;
+                    }
+                    int i = idx - idx % REFERENCE_POINT_EVERY;
+                    while ((i = _bits.NextSetBit(i)) >= 0 && i < idx)
+                    {
+                        count++;
+                        i++;
+                    }
+                    _floats[count] = val;
+                }
+                else
                 {
-                    if (value != 0f)
+                    if (val != 0f)
                     {
-                        _map[index] = value;
-				    } 
-                    else 
+                        _map.Put(idx, val);
+                    }
+                    else
                     {
                         float? stored = null;
-                        if (_map.ContainsKey(index))
+                        if (_map.ContainsKey(idx))
                         {
-                            stored = _map[index];
+                            stored = _map[idx];
                         }
                         if (stored != null)
                         {
-                            _map.Remove(index);
+                            _map.Remove(idx);
                         }
-				    }
-				    int sz = _map.Count;
-				    // keep something on the order of 32KB, or 0.4*compressed size, in _map
-				    // if _floats is null, then that's the same as it existing but being of length 0
-				    // if sz > 512, and _floats is null, that's the same as checking if sz > 0.4f*0 and that sz > 2f*0, which is true
-				    // in other words, if _floats is null, and sz > 512, then our expansion rule says to condense()
-				    if (sz > 512 && (null == _floats || (sz > 4096 ? sz > 0.4f*_floats.Length : sz > 2f * _floats.Length))) 
+                    }
+                    int sz = _map.Count;
+                    // keep something on the order of 32KB, or 0.4*compressed size, in _map
+                    // if _floats is null, then that's the same as it existing but being of length 0
+                    // if sz > 512, and _floats is null, that's the same as checking if sz > 0.4f*0 and that sz > 2f*0, which is true
+                    // in other words, if _floats is null, and sz > 512, then our expansion rule says to condense()
+                    if (sz > 512 && (null == _floats || (sz > 4096 ? sz > 0.4f * _floats.Length : sz > 2f * _floats.Length)))
                     {
-					    Condense();
-				    }
-			    }
+                        Condense();
+                    }
+                }
             }
         }
 
@@ -131,15 +139,15 @@ namespace BoboBrowse.Net.Util
         /// from this point on all operations are UNDEFINED.
         /// </summary>
         /// <returns>the expanded primitive float array rep. of this.</returns>
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public override float[] Expand()
         {
-            var all = base.Expand();
-            foreach (var key in _map.Keys)
+            float[] all = base.Expand();
+            foreach (int key in _map.Keys)
             {
-                var value = _map[key];
-                all[key] = value;
+                float val = _map[key];
+                all[key] = val;
             }
-
             return all;
         }
 
@@ -152,6 +160,7 @@ namespace BoboBrowse.Net.Util
         /// Uses an expanded form of the float array as scratch space in memory, so be careful 
         /// that you have enough memory, and try doing this one at a time.
         /// </summary>
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void Condense()
         {
             base.Condense(this.Expand());

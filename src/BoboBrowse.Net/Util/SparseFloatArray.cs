@@ -23,6 +23,7 @@
  * send mail to owner@browseengine.com.
  */
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Util
 {
     using BoboBrowse.Net.Support;
@@ -88,7 +89,7 @@ namespace BoboBrowse.Net.Util
             {
                 if (floats[i] != 0f)
                 {
-                    bits.Set(i, true);
+                    bits.Set(i);
                     on++;
                 }
             }
@@ -168,37 +169,50 @@ namespace BoboBrowse.Net.Util
 
         public virtual float Get(int index)
         {
-            if (null == _bits) {
-			    if (null == _floats) {
-				    // super-compressed, all zeros
-				    if (index < 0 || index >= _capacity) {
-					    throw new IndexOutOfRangeException("bad index: " + index + " for SparseFloatArray representing array of length " + _capacity);
-				    }
-				    return 0f;
-			    } else {
-				    return _floats[index];
-			    }
-		    } else {
-			    if (_bits.Get(index)) {
+            if (null == _bits)
+            {
+                if (null == _floats)
+                {
+                    // super-compressed, all zeros
+                    if (index < 0 || index >= _capacity)
+                    {
+                        throw new IndexOutOfRangeException("bad index: " + index + " for SparseFloatArray representing array of length " + _capacity);
+                    }
+                    return 0f;
+                }
+                else
+                {
+                    return _floats[index];
+                }
+            }
+            else
+            {
+                if (_bits.Get(index))
+                {
                     // count the number of bits that are on BEFORE this index
-				    int count;
+                    int count;
                     int @ref = index / REFERENCE_POINT_EVERY - 1;
-				    if (@ref >= 0) {
-					    count = _referencePoints[@ref];
-				    } else {
-					    count = 0;
-				    }
+                    if (@ref >= 0)
+                    {
+                        count = _referencePoints[@ref];
+                    }
+                    else
+                    {
+                        count = 0;
+                    }
                     int i = index - index % REFERENCE_POINT_EVERY;
                     while ((i = _bits.NextSetBit(i)) >= 0 && i < index)
                     {
-					    count++;
-					    i++;
-				    }
-				    return _floats[count];
-			    } else {
-				    return 0f;
-			    }
-		    }
+                        count++;
+                        i++;
+                    }
+                    return _floats[count];
+                }
+                else
+                {
+                    return 0f;
+                }
+            }
         }
     }
 }

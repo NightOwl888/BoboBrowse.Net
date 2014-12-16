@@ -21,8 +21,10 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Util
 {
+    using BoboBrowse.Net.Support;
     using System;
 
     public class StringArrayComparator : IComparable<StringArrayComparator>, IComparable
@@ -56,21 +58,24 @@ namespace BoboBrowse.Net.Util
                     return 1;
                 }
                 int compVal = vals[i].CompareTo(o[i]);
-                if (compVal != 0)
+                if (vals[i].StartsWith("-") && o[i].StartsWith("-"))
                 {
-                    return compVal;
+                    compVal *= -1;
                 }
+                if (compVal != 0) return compVal;
             }
-            if (vals.Length == o.Length)
-            {
-                return 0;
-            }
+            if (vals.Length == o.Length) return 0;
             return -1;
         }
 
         public int CompareTo(object obj)
         {
             return CompareTo((StringArrayComparator)obj);
+        }
+
+        public override string ToString()
+        {
+            return Arrays.ToString(vals);
         }
     }
 }

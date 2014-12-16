@@ -1,12 +1,14 @@
-﻿
+﻿// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Util
 {
     using System;
 
     public class BigFloatArray
     {
-        private float[][] aarray;
-        private int numrows;
+        private static long serialVersionUID = 1L;
+
+        private float[][] _array;
+        private int _numrows;
 
         // Remember that 2^SHIFT_SIZE = BLOCK_SIZE 
         private const int BLOCK_SIZE = 1024;
@@ -15,43 +17,43 @@ namespace BoboBrowse.Net.Util
 
         public BigFloatArray(int size)
         {
-            numrows = size >> SHIFT_SIZE;
-            aarray = new float[numrows + 1][];
-            for (int i = 0; i <= numrows; i++)
+            _numrows = size >> SHIFT_SIZE;
+            _array = new float[_numrows + 1][];
+            for (int i = 0; i <= _numrows; i++)
             {
-                aarray[i] = new float[BLOCK_SIZE];
+                _array[i] = new float[BLOCK_SIZE];
             }
         }
 
         public virtual void Add(int docId, float val)
         {
-            aarray[docId >> SHIFT_SIZE][docId & MASK] = val;
+            _array[docId >> SHIFT_SIZE][docId & MASK] = val;
         }
 
         public virtual float Get(int docId)
         {
-            return aarray[docId >> SHIFT_SIZE][docId & MASK];
+            return _array[docId >> SHIFT_SIZE][docId & MASK];
         }
 
         public virtual int Capacity()
         {
-            return numrows * BLOCK_SIZE;
+            return _numrows * BLOCK_SIZE;
         }
 
         public virtual void EnsureCapacity(int size)
         {
             int newNumrows = (size >> SHIFT_SIZE) + 1;
-            if (newNumrows > aarray.Length)
+            if (newNumrows > _array.Length)
             {
                 float[][] newArray = new float[newNumrows][]; // grow
-                System.Array.Copy(aarray, 0, newArray, 0, aarray.Length);
-                for (int i = aarray.Length; i < newNumrows; ++i)
+                System.Array.Copy(_array, 0, newArray, 0, _array.Length);
+                for (int i = _array.Length; i < newNumrows; ++i)
                 {
                     newArray[i] = new float[BLOCK_SIZE];
                 }
-                aarray = newArray;
+                _array = newArray;
             }
-            numrows = newNumrows;
+            _numrows = newNumrows;
         }
     }
 }

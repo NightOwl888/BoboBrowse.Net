@@ -21,37 +21,43 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Util
 {
-    using System;
     using Lucene.Net.Util;
+    using System;
 
     public abstract class BigSegmentedArray
     {
-        private readonly int size;
-        private readonly int blockSize;
-        private readonly int shiftSize;
+        private readonly int _size;
+        private readonly int _blockSize;
+        private readonly int _shiftSize;
 
-        protected internal int numrows;
+        protected internal int _numrows;
 
-        protected BigSegmentedArray(int size, int blockSize, int shiftSize)
+        protected BigSegmentedArray(int size)
         {
-            this.size = size;
-            this.blockSize = blockSize;
-            this.shiftSize = shiftSize;
-            numrows = (size >> shiftSize) + 1;
+            _size = size;
+            _blockSize = GetBlockSize();
+            _shiftSize = GetShiftSize();
+            _numrows = (size >> _shiftSize) + 1;
         }
 
         public virtual int Size()
         {
-            return size;
+            return _size;
         }
+
+        protected abstract int GetBlockSize();
+
+        // TODO: maybe this should be automatically calculated
+        protected abstract int GetShiftSize();
 
         public abstract int Get(int docId);
 
         public virtual int Capacity()
         {
-            return numrows * blockSize;
+            return _numrows * _blockSize;
         }
 
         public abstract void Add(int docId, int val);
@@ -65,6 +71,8 @@ namespace BoboBrowse.Net.Util
         public abstract int FindValue(int val, int docId, int maxId);
 
         public abstract int FindValues(OpenBitSet bitset, int docId, int maxId);
+
+        public abstract int FindValues(BitVector bitset, int docId, int maxId);
 
         public abstract int FindValueRange(int minVal, int maxVal, int docId, int maxId);
 

@@ -349,15 +349,9 @@ namespace BoboBrowse.Net.Facets.Impl
 
             if (pq != null)
             {
-                //BrowseFacet val;
-                //while ((val = pq.Poll()) != null)
-                //{
-                //    list.Insert(0, val);
-                //}
-
-                while (!pq.IsEmpty)
+                BrowseFacet val;
+                while ((val = pq.Poll()) != null)
                 {
-                    BrowseFacet val = pq.DeleteMax();
                     list.Insert(0, val);
                 }
             }
