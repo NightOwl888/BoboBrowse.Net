@@ -9,6 +9,7 @@ namespace BoboBrowse.Net.Query.Scoring
     using Common.Logging;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
+    using Lucene.Net.Support;
     using System;
     using System.Collections;
     using System.Collections.Generic;
@@ -99,7 +100,7 @@ namespace BoboBrowse.Net.Query.Scoring
                     float boost_1 = _boostMap_1.Get(key_1);
                     float boost_2 = _boostMap_2.Get(key_1);
 
-                    if (Float.floatToIntBits(boost_1) != Float.floatToIntBits(boost_2))
+                    if (Lucene.Net.Support.Single.FloatToIntBits(boost_1) != Lucene.Net.Support.Single.FloatToIntBits(boost_2))
                         return false;
                 }
             }
