@@ -271,6 +271,7 @@
     <Compile Include="Util\DocIdSetUtil.cs" />
     <Compile Include="Support\IDictionaryExtensions.cs" />
     <Compile Include="Util\GeoMatchUtil.cs" />
+    <Compile Include="Util\IntBoundedPriorityQueue.cs" />
     <Compile Include="Util\ListMerger.cs" />
     <Compile Include="Util\MutableSparseFloatArray.cs" />
     <Compile Include="Support\ObjectCopier.cs" />

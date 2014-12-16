@@ -1,10 +1,10 @@
 ﻿// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Util
 {
+    using C5;
     using System;
     using System.Collections.Generic;
-    using C5;
-
+    
     public class BoundedPriorityQueue<E> : IntervalHeap<E>
     {
         private static long serialVersionUID = 1L;
