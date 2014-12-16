@@ -231,6 +231,7 @@
     <Compile Include="IBrowsable.cs" />
     <Compile Include="Query\Scoring\IFacetScoreable.cs" />
     <Compile Include="MultiBoboBrowser.cs" />
+    <Compile Include="Support\MathUtil.cs" />
     <Compile Include="Support\Properties.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DocIdSet\RandomAccessDocIdSet.cs" />
@@ -269,6 +270,7 @@
     <Compile Include="Util\BoundedPriorityQueue.cs" />
     <Compile Include="Util\DocIdSetUtil.cs" />
     <Compile Include="Support\IDictionaryExtensions.cs" />
+    <Compile Include="Util\GeoMatchUtil.cs" />
     <Compile Include="Util\ListMerger.cs" />
     <Compile Include="Util\MutableSparseFloatArray.cs" />
     <Compile Include="Support\ObjectCopier.cs" />
