@@ -1,6 +1,4 @@
-﻿// Copyright (c) COMPANY. All rights reserved. 
-// TODO: Move to support namespace
-namespace BoboBrowse.Net.Util
+﻿namespace BoboBrowse.Net.Support
 {
     using System;
     using System.Linq;

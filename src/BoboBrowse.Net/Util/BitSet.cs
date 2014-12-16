@@ -44,6 +44,7 @@
 // TODO: Move to support namespace
 namespace BoboBrowse.Net.Util
 {
+    using BoboBrowse.Net.Support;
     using System;
     using System.Collections.Generic;
     using System.Text;

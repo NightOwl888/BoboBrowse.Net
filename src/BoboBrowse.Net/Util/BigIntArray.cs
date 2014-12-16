@@ -1,10 +1,11 @@
 ﻿
 namespace BoboBrowse.Net.Util
 {
-    using System;
-    using Lucene.Net.Util;
+    using BoboBrowse.Net.Support;
     using Lucene.Net.Search;
-
+    using Lucene.Net.Util;
+    using System;
+    
     /// <summary> * 
     /// * @author femekci
     /// * This class is written for a special purpose. No check is done in insertion and getting a value

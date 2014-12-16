@@ -2,9 +2,10 @@
 
 namespace BoboBrowse.Net.Util
 {
-    using System;
+    using BoboBrowse.Net.Support;
     using Lucene.Net.Util;
-
+    using System;
+    
     public class BigShortArray : BigSegmentedArray
     {
         private short[][] array;

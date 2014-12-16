@@ -10,8 +10,9 @@
 
 namespace BoboBrowse.Net.Util
 {
-    using System;    
+    using BoboBrowse.Net.Support;
     using Lucene.Net.Util;
+    using System;
 
     [Serializable]
     public class BigByteArray : BigSegmentedArray

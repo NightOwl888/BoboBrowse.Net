@@ -5,6 +5,7 @@
     using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Facets.Impl;
     using BoboBrowse.Net.Search;
+    using BoboBrowse.Net.Support;
     using BoboBrowse.Net.Util;
     using Lucene.Net.Analysis;
     using Lucene.Net.Analysis.Standard;

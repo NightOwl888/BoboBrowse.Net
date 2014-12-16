@@ -4,6 +4,7 @@ namespace BoboBrowse.Net.Util
 {
     using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Query.Scoring;
+    using BoboBrowse.Net.Support;
     using Lucene.Net.Util;
     using System;
 

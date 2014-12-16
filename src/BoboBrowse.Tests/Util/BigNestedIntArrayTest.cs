@@ -1,5 +1,6 @@
 ﻿namespace BoboBrowse.Net.Util
 {
+    using BoboBrowse.Net.Support;
     using NUnit.Framework;
     using System;
 
