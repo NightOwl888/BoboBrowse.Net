@@ -322,13 +322,13 @@ namespace BoboBrowse.Net.Facets.Impl
             public override Explanation Explain(int doc)
             {
                 int idx = _dataCache.OrderArray.Get(doc);
-                return Function.Explain(_dataCache.Freqs[idx], BoostList[idx]);
+                return _function.Explain(_dataCache.Freqs[idx], _boostList[idx]);
             }
 
             public override sealed float Score(int docid)
             {
                 int idx = _dataCache.OrderArray.Get(docid);
-                return Function.Score(_dataCache.Freqs[idx], BoostList[idx]);
+                return _function.Score(_dataCache.Freqs[idx], _boostList[idx]);
             }
         }
     }

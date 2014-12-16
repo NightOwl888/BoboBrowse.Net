@@ -354,13 +354,13 @@ namespace BoboBrowse.Net.Facets.Impl
                     if ((encoded & 0x00000001) != 0x0)
                     {
                         int idx = count - 1;
-                        scoreList.Add(Function.Score(_dataCache.Freqs[idx], BoostList[idx]));
-                        explList.Add(Function.Explain(_dataCache.Freqs[idx], BoostList[idx]));
+                        scoreList.Add(_function.Score(_dataCache.Freqs[idx], _boostList[idx]));
+                        explList.Add(_function.Explain(_dataCache.Freqs[idx], _boostList[idx]));
                     }
                     count++;
                     encoded = (int)(((uint)encoded) >> 1);
                 }
-                Explanation topLevel = Function.Explain(scoreList.ToArray());
+                Explanation topLevel = _function.Explain(scoreList.ToArray());
                 foreach (Explanation sub in explList)
                 {
                     topLevel.AddDetail(sub);
@@ -370,7 +370,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override sealed float Score(int docid)
             {
-                Function.ClearScores();
+                _function.ClearScores();
                 int encoded = _dataCache.OrderArray.Get(docid);
 
                 int count = 1;
@@ -380,12 +380,12 @@ namespace BoboBrowse.Net.Facets.Impl
                     int idx = count - 1;
                     if ((encoded & 0x00000001) != 0x0)
                     {
-                        Function.ScoreAndCollect(_dataCache.Freqs[idx], BoostList[idx]);
+                        _function.ScoreAndCollect(_dataCache.Freqs[idx], _boostList[idx]);
                     }
                     count++;
                     encoded = (int)(((uint)encoded) >> 1);
                 }
-                return Function.GetCurrentScore();
+                return _function.GetCurrentScore();
             }
         }
 

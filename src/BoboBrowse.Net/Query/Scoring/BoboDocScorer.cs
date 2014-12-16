@@ -19,39 +19,42 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Query.Scoring
 {
-    using System;
-    using System.Collections.Generic;    
-    using Lucene.Net.Search;
     using BoboBrowse.Net.Util;
-
+    using Lucene.Net.Search;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    
     public abstract class BoboDocScorer
     {
-        protected internal readonly IFacetTermScoringFunction Function;
-        protected internal readonly float[] BoostList;
+        protected readonly IFacetTermScoringFunction _function;
+        protected readonly float[] _boostList;
 
         protected BoboDocScorer(IFacetTermScoringFunction scoreFunction, float[] boostList)
         {
-            Function = scoreFunction;
-            BoostList = boostList;
+            _function = scoreFunction;
+            _boostList = boostList;
         }
 
         public abstract float Score(int docid);
 
         public abstract Explanation Explain(int docid);
 
-        public static float[] BuildBoostList(List<string> valArray, Dictionary<string, float> boostMap)
+        public static float[] BuildBoostList(IEnumerable<string> valArray, IDictionary<string, float> boostMap)
         {
-            float[] boostList = new float[valArray.Count];
+            var valArray2 = new List<string>(valArray);
+            float[] boostList = new float[valArray2.Count];
             Arrays.Fill(boostList, 1.0f);
             if (boostMap != null && boostMap.Count > 0)
             {
-                Dictionary<string, float>.Enumerator iter = boostMap.GetEnumerator();
+                Dictionary<string, float>.Enumerator iter = new Dictionary<string, float>(boostMap).GetEnumerator();
                 while (iter.MoveNext())
                 {
                     KeyValuePair<string, float> entry = iter.Current;
-                    int index = valArray.IndexOf(entry.Key);
+                    int index = valArray2.IndexOf(entry.Key);
                     if (index >= 0)
                     {
                         float fval = entry.Value;

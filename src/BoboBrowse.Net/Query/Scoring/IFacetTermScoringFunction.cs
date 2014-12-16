@@ -21,6 +21,7 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Query.Scoring
 {
     using System;
@@ -31,8 +32,8 @@ namespace BoboBrowse.Net.Query.Scoring
         void ClearScores();
         float Score(int df, float boost);
         void ScoreAndCollect(int df, float boost);
-        float GetCurrentScore();
         Explanation Explain(int df, float boost);
+        float GetCurrentScore();
         Explanation Explain(params float[] scores);
     }
 }

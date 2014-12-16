@@ -19,14 +19,17 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Query.Scoring
 {
     using System;
     using System.Collections.Generic;
     
-
     public interface IFacetScoreable
     {
-        BoboDocScorer GetDocScorer(IFacetTermScoringFunctionFactory scoringFunctionFactory, Dictionary<string, float> boostMap);
+        BoboDocScorer GetDocScorer(
+            BoboIndexReader reader, 
+            IFacetTermScoringFunctionFactory scoringFunctionFactory, 
+            IDictionary<string, float> boostMap);
     }
 }

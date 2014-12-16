@@ -269,11 +269,11 @@ namespace BoboBrowse.Net.Facets.Impl
                     int idx = _dataCache.ValArray.IndexOf(val);
                     if (idx >= 0)
                     {
-                        scoreList.Add(Function.Score(_dataCache.Freqs[idx], BoostList[idx]));
-                        explList.Add(Function.Explain(_dataCache.Freqs[idx], BoostList[idx]));
+                        scoreList.Add(_function.Score(_dataCache.Freqs[idx], _boostList[idx]));
+                        explList.Add(_function.Explain(_dataCache.Freqs[idx], _boostList[idx]));
                     }
                 }
-                Explanation topLevel = Function.Explain(scoreList.ToArray());
+                Explanation topLevel = _function.Explain(scoreList.ToArray());
                 foreach (Explanation sub in explList)
                 {
                     topLevel.AddDetail(sub);
@@ -283,7 +283,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override sealed float Score(int docid)
             {
-                return _array.GetScores(docid, _dataCache.Freqs, BoostList, Function);
+                return _array.GetScores(docid, _dataCache.Freqs, _boostList, _function);
             }
         }
 
