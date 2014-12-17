@@ -21,8 +21,10 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net
 {
+    using BoboBrowse.Net.Facets.Impl;
     using BoboBrowse.Net.Support;
     using BoboBrowse.Net.Util;
     using System;
@@ -49,7 +51,7 @@ namespace BoboBrowse.Net
 
         public virtual BrowseFacet GetFacet(string value)
         {
-            return _facetMap[value];
+            return _facetMap.Get(value);
         }
 
         public virtual int GetFacetHitsCount(object value)
