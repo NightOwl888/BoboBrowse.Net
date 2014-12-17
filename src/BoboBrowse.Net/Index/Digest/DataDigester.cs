@@ -23,9 +23,10 @@
  * send mail to owner@browseengine.com.
  */
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Index.Digest
 {
-    using BoboBrowse.Net.Config;
+    using BoboBrowse.Net.Facets;
     using Lucene.Net.Documents;
     using System;
     using System.Collections.Generic;
@@ -43,22 +44,21 @@ namespace BoboBrowse.Net.Index.Digest
         {
         }
 
-        public static void PopulateDocument(Document doc, FieldConfiguration fConf)
+        public static void PopulateDocument(Document doc, IEnumerable<IFacetHandler> handlers)
         {
-            var fields = fConf.GetFieldNames();
+            StringBuilder tokenBuffer = new StringBuilder();
 
-            var tokenBuffer = new StringBuilder();
-
-            for (int i = 0; i < fields.Length; ++i)
+            foreach (var handler in handlers)
             {
-                var values = doc.GetValues(fields[i]);
+                string name = handler.Name;
+                string[] values = doc.GetValues(name);
                 if (values != null)
                 {
-                    doc.RemoveFields(fields[i]);
-                    for (int k = 0; k < values.Length; ++k)
+                    doc.RemoveFields(name);
+                    foreach (string value in values)
                     {
-                        doc.Add(new Field(fields[i], values[i], Field.Store.NO, Field.Index.NOT_ANALYZED));
-                        tokenBuffer.Append(" ").Append(values[i]);
+                        doc.Add(new Field(name, value, Field.Store.NO, Field.Index.NOT_ANALYZED));
+                        tokenBuffer.Append(' ').Append(value);
                     }
                 }
             }

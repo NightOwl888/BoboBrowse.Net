@@ -22,6 +22,8 @@
  * please go to https://sourceforge.net/projects/bobo-browse/, or 
  * send mail to owner@browseengine.com.
  */
+
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Index.Digest
 {
     using System;
@@ -41,5 +43,7 @@ namespace BoboBrowse.Net.Index.Digest
         public int MaxDocs { get; set; }
         public Encoding Encoding { get; set; }
         public string File { get { return _file; } }
+
+        abstract public void Digest(IDataHandler handler);
     }
 }

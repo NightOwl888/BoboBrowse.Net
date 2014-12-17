@@ -23,6 +23,7 @@
  * send mail to owner@browseengine.com.
  */
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Index
 {
     using BoboBrowse.Net.Facets;
@@ -50,13 +51,14 @@ namespace BoboBrowse.Net.Index
 	    private class MyDataHandler : DataDigester.IDataHandler
         {
 		    private IndexWriter _writer;
-		    public MyDataHandler(IndexWriter writer){
-			    _writer=writer;
-		    }
-		    public void HandleDocument(Document doc) 
+            public MyDataHandler(IndexWriter writer)
             {
-			    _writer.AddDocument(doc);		
-		    }
+                _writer = writer;
+            }
+            public void HandleDocument(Document doc)
+            {
+                _writer.AddDocument(doc);
+            }
 	    }
 
         public Analyzer Analyzer
@@ -65,7 +67,7 @@ namespace BoboBrowse.Net.Index
             set { _analyzer = value; }
         }
 	
-	    public BoboIndexer(DataDigester digester,Directory index)
+	    public BoboIndexer(DataDigester digester, Directory index)
             : base()
         {
 		    _index = index;
@@ -74,12 +76,10 @@ namespace BoboBrowse.Net.Index
 
 	    public void Index() 
         {
-		    bool create = !BoboIndexReader.IndexExists(_index);
-		
 		    _writer=null;
 		    try
             {
-			    _writer=new IndexWriter(_index, this.Analyzer, create, IndexWriter.MaxFieldLength.UNLIMITED);
+			    _writer = new IndexWriter(_index, this.Analyzer, IndexWriter.MaxFieldLength.UNLIMITED);
 			    MyDataHandler handler = new MyDataHandler(_writer);
 			    _digester.Digest(handler);
 			    _writer.Optimize();
