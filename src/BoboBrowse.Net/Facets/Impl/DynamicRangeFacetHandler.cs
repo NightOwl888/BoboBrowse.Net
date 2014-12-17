@@ -25,7 +25,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         protected internal abstract string BuildRangeString(string val);
         protected internal abstract IEnumerable<string> BuildAllRangeStrings();
-        protected internal abstract string GetValueFromRangeString(object rangeString);
+        protected internal abstract string GetValueFromRangeString(string rangeString);
 
         public override RandomAccessFilter BuildRandomAccessFilter(string val, Properties props)
         {

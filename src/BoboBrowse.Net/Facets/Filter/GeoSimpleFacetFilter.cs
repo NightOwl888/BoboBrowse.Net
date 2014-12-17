@@ -146,5 +146,68 @@ namespace BoboBrowse.Net.Facets.Filter
                 return new GeoSimpleDocIdSetIterator(_latStart, _latEnd, _longStart, _longEnd, _latDataCache, _longDataCache);
             }
         }
+
+        public static int[] Parse(IFacetDataCache latDataCache, IFacetDataCache longDataCache, string rangeString)
+        {
+            GeoSimpleFacetHandler.GeoLatLonRange range = GeoSimpleFacetHandler.GeoLatLonRange.Parse(rangeString);
+            // ranges[0] is latRangeStart, ranges[1] is latRangeEnd, ranges[2] is longRangeStart, ranges[3] is longRangeEnd
+            string latLower = Convert.ToString(range.latStart);
+            string latUpper = Convert.ToString(range.latEnd);
+            string longLower = Convert.ToString(range.lonStart);
+            string longUpper = Convert.ToString(range.lonEnd);
+
+            int latStart, latEnd, longStart, longEnd;
+            if (latLower == null)
+                latStart = 1;
+            else
+            {
+                latStart = latDataCache.ValArray.IndexOf(latLower);
+                if (latStart < 0)
+                {
+                    latStart = -(latStart + 1);
+                }
+            }
+
+            if (longLower == null)
+                longStart = 1;
+            else
+            {
+                longStart = longDataCache.ValArray.IndexOf(longLower);
+                if (longStart < 0)
+                {
+                    longStart = -(longStart + 1);
+                }
+            }
+
+            if (latUpper == null)
+            {
+                latEnd = latDataCache.ValArray.Count - 1;
+            }
+            else
+            {
+                latEnd = latDataCache.ValArray.IndexOf(latUpper);
+                if (latEnd < 0)
+                {
+                    latEnd = -(latEnd + 1);
+                    latEnd = Math.Max(0, latEnd - 1);
+                }
+            }
+
+            if (longUpper == null)
+            {
+                longEnd = longDataCache.ValArray.Count - 1;
+            }
+            else
+            {
+                longEnd = longDataCache.ValArray.IndexOf(longUpper);
+                if (longEnd < 0)
+                {
+                    longEnd = -(longEnd + 1);
+                    longEnd = Math.Max(0, longEnd - 1);
+                }
+            }
+
+            return new int[] { latStart, latEnd, longStart, longEnd };
+        }
     }
 }

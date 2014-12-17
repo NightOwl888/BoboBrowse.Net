@@ -16,7 +16,7 @@ namespace BoboBrowse.Net.Facets.Filter
     public class GeoFacetFilter : RandomAccessFilter
     {
         private static long serialVersionUID = 1L;
-	    private readonly FacetHandler<GeoFacetData> _handler;
+	    private readonly FacetHandler<GeoFacetHandler.GeoFacetData> _handler;
 	    private readonly float _lat;
 	    private readonly float _lon;
         private readonly float _rad;
@@ -31,7 +31,7 @@ namespace BoboBrowse.Net.Facets.Filter
         /// <param name="lon">longitude value of the user's point of interest</param>
         /// <param name="radius">Radius from the point of interest</param>
         /// <param name="miles">variable to specify if the geo distance calculations are in miles. False indicates distance calculation is in kilometers</param>
-        public GeoFacetFilter(FacetHandler<GeoFacetData> facetHandler, float lat, float lon, float radius, bool miles)
+        public GeoFacetFilter(FacetHandler<GeoFacetHandler.GeoFacetData> facetHandler, float lat, float lon, float radius, bool miles)
         {
             _handler = facetHandler;
             _lat = lat;
@@ -44,7 +44,7 @@ namespace BoboBrowse.Net.Facets.Filter
         {
             int maxDoc = reader.MaxDoc;
 
-		    GeoFacetData dataCache = _handler.GetFacetData(reader);
+		    GeoFacetHandler.GeoFacetData dataCache = _handler.GetFacetData(reader);
 		    return new GeoDocIdSet(dataCache.get_xValArray(), dataCache.get_yValArray(), dataCache.get_zValArray(),
 				_lat, _lon, _rad, maxDoc, _miles);
         }

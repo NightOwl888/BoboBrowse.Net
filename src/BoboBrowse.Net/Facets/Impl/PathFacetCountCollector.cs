@@ -16,11 +16,11 @@ namespace BoboBrowse.Net.Facets.Impl
         private static ILog log = LogManager.GetLogger<PathFacetCountCollector>();
         private readonly BrowseSelection _sel;
         private readonly FacetSpec _ospec;
-        private int[] _count;
+        protected int[] _count;
         private readonly string _name;
         private readonly string _sep;
         private readonly BigSegmentedArray _orderArray;
-        private readonly IFacetDataCache _dataCache;
+        protected readonly IFacetDataCache _dataCache;
         private readonly IComparatorFactory _comparatorFactory;
         private readonly int _minHitCount;
 	    private int _maxCount;

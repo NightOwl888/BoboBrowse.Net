@@ -72,7 +72,7 @@ namespace BoboBrowse.Net.Facets
         //D Load(BoboIndexReader reader);// Generic
         //D Load(BoboIndexReader reader, BoboIndexReader.WorkArea workArea);// Generic
 
-        object Load(BoboIndexReader reader);
+        object Load(BoboIndexReader reader); // TODO: Make these pass generic parameters - it appears the classes know what type to expect
         object Load(BoboIndexReader reader, BoboIndexReader.WorkArea workArea);
 
         void LoadFacetData(BoboIndexReader reader);

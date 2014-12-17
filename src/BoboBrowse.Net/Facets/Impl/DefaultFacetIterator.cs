@@ -12,13 +12,13 @@ namespace BoboBrowse.Net.Facets.Impl
     /// </summary>
     public class DefaultFacetIterator : FacetIterator
     {
-        private TermValueList _valList;
+        private ITermValueList _valList;
         private int[] _count;
         private int _countlength;
         private int _index;
         private int _lastIndex;
 
-        public DefaultFacetIterator(TermValueList valList, int[] counts, int countlength, bool zeroBased)
+        public DefaultFacetIterator(ITermValueList valList, int[] counts, int countlength, bool zeroBased)
         {
             _valList = valList;
             _count = counts;
