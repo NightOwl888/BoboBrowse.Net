@@ -229,7 +229,6 @@
     <Compile Include="Index\Digest\DataDigester.cs" />
     <Compile Include="Index\Digest\FileDigester.cs" />
     <Compile Include="MappedFacetAccessible.cs" />
-    <Compile Include="MethodExtensions.cs" />
     <Compile Include="Query\FacetBasedBoostScorerBuilder.cs">
       <SubType>Code</SubType>
     </Compile>
