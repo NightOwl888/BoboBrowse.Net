@@ -21,7 +21,7 @@
  //* please go to https://sourceforge.net/projects/bobo-browse/, or 
  //* send mail to owner@browseengine.com. 
 
-
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Impl
 {
     using System.IO;
@@ -35,16 +35,16 @@ namespace BoboBrowse.Net.Impl
 
     public class BrowseServiceImpl : IBrowseService
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(BrowseServiceImpl));
-        private readonly DirectoryInfo idxDir;
-        private readonly BoboIndexReader reader;
+        private static readonly ILog logger = LogManager.GetLogger<BrowseServiceImpl>();
+        private readonly DirectoryInfo _idxDir;
+        private readonly BoboIndexReader _reader;
 
         public BrowseServiceImpl(DirectoryInfo idxDir)
         {
-            this.idxDir = idxDir;
+            this._idxDir = idxDir;
             try
             {
-                reader = NewIndexReader();
+                _reader = NewIndexReader();
             }
             catch (IOException e)
             {
@@ -59,7 +59,7 @@ namespace BoboBrowse.Net.Impl
 
         private BoboIndexReader NewIndexReader()
         {
-            Directory idxDir = FSDirectory.Open(this.idxDir);
+            Directory idxDir = FSDirectory.Open(_idxDir);
             return NewIndexReader(idxDir);
         }
 
@@ -83,7 +83,7 @@ namespace BoboBrowse.Net.Impl
             {
                 try
                 {
-                    ir.Dispose();
+                    ir.Close();
                 }
                 catch
                 {
@@ -101,14 +101,15 @@ namespace BoboBrowse.Net.Impl
             return reader;
         }
 
+        // TODO: Implement dispose?
         [MethodImpl(MethodImplOptions.Synchronized)]
         public virtual void Close() // throws BrowseException
         {
             try
             {
-                if (reader != null)
+                if (_reader != null)
                 {
-                    reader.Dispose();
+                    _reader.Close();
                 }
             }
             catch (IOException e)
@@ -119,7 +120,7 @@ namespace BoboBrowse.Net.Impl
 
         public virtual BrowseResult Browse(BrowseRequest req) // throws BrowseException
         {
-            return BrowseServiceFactory.CreateBrowseService(reader).Browse(req);
+            return BrowseServiceFactory.CreateBrowseService(_reader).Browse(req);
         }
     }
 }

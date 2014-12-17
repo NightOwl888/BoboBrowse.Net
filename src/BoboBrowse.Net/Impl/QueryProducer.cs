@@ -23,6 +23,7 @@
  * send mail to owner@browseengine.com.
  */
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Impl
 {
     using Common.Logging;
@@ -189,7 +190,7 @@ namespace BoboBrowse.Net.Impl
         //    return finalBits;  
         //}
 
-        public Query BuildQuery(string query)
+        public virtual Query BuildQuery(string query)
         {
             return Convert(query, CONTENT_FIELD);
         }

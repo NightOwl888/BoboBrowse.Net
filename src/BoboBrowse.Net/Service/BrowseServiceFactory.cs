@@ -100,7 +100,7 @@ namespace BoboBrowse.Net.Service
             BoboIndexReader bReader = GetBoboIndexReader(idxDir);
 
             DefaultBrowseServiceImpl bs = (DefaultBrowseServiceImpl)CreateBrowseService(bReader);
-            bs.setCloseReaderOnCleanup(true);
+            bs.CloseReaderOnCleanup = true;
 
             return bs;
         }

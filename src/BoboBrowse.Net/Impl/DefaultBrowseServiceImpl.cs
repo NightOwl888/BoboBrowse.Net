@@ -21,18 +21,18 @@
 /// * To contact the project administrators for the bobo-browse project, 
 /// * please go to https://sourceforge.net/projects/bobo-browse/, or 
 /// * send mail to owner@browseengine.com. </summary>
-/// 
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Impl
 {
-    using System.IO;
     using BoboBrowse.Net;
     using BoboBrowse.Net.Service;
     using Common.Logging;
+    using System;
 
     public class DefaultBrowseServiceImpl : IBrowseService
     {
-        private static ILog logger = LogManager.GetLogger(typeof(DefaultBrowseServiceImpl));
+        private static ILog logger = LogManager.GetLogger<DefaultBrowseServiceImpl>();
         private BoboIndexReader _reader;
         private bool _closeReader;
 
@@ -42,9 +42,9 @@ namespace BoboBrowse.Net.Impl
             _closeReader = false;
         }
 
-        public virtual void setCloseReaderOnCleanup(bool closeReader)
+        public virtual bool CloseReaderOnCleanup
         {
-            _closeReader = closeReader;
+            set { _closeReader = value; }
         }
 
         public virtual BrowseResult Browse(BrowseRequest req) // throws BrowseException
@@ -56,7 +56,15 @@ namespace BoboBrowse.Net.Impl
             }
             if (_reader != null)
             {
-                BoboBrowser browser = new BoboBrowser(_reader);
+                BoboBrowser browser;
+                try
+                {
+                    browser = new BoboBrowser(_reader);
+                }
+                catch (Exception e)
+                {
+                    throw new BrowseException("failed to create BoboBrowser", e);
+                }
                 result = browser.Browse(req);
             }
             return result;
@@ -75,7 +83,7 @@ namespace BoboBrowse.Net.Impl
                             _reader.Dispose();
                             _reader = null;
                         }
-                        catch (IOException ioe)
+                        catch (Exception ioe)
                         {
                             throw new BrowseException(ioe.Message, ioe);
                         }
