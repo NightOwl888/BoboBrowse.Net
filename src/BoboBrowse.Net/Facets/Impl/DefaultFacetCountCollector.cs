@@ -34,7 +34,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         protected internal readonly FacetSpec _ospec;
         protected internal int[] _count;
-        protected int _countlength;
+        protected internal int _countlength;
         protected internal readonly IFacetDataCache _dataCache;
         private readonly string _name;
         protected internal readonly BrowseSelection _sel;
@@ -68,7 +68,6 @@ namespace BoboBrowse.Net.Facets.Impl
             _array = _dataCache.OrderArray;
             _docBase = docBase;
         }
-
 
         public virtual string Name
         {
