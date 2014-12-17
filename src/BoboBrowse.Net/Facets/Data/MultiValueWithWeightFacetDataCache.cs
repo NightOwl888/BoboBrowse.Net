@@ -74,7 +74,7 @@ namespace BoboBrowse.Net.Facets.Data
                         {
                             int weight = 0;
                             //string[] split = val.Split("\u0000");
-                            string[] split = val.Split('\0'); // TODO: Verify this
+                            string[] split = val.Split(new char[] { '\0' }, StringSplitOptions.RemoveEmptyEntries); // TODO: Verify this
                             if (split.Length > 1)
                             {
                                 val = split[0];

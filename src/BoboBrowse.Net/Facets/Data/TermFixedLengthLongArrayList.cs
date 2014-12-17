@@ -40,7 +40,7 @@ namespace BoboBrowse.Net.Facets.Data
             if (s == null || s.Length == 0)
                 return r;
 
-            String[] a = s.Split(',');
+            string[] a = s.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             if (a.Length != width)
                 throw new RuntimeException(s + " is not a " + width + " fixed width long.");
 

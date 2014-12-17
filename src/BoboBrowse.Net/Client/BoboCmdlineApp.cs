@@ -102,7 +102,7 @@
         private void ProcessCommand(string line)
         {
             if (string.IsNullOrEmpty(line)) return;
-            string[] parsed = line.Split(' ');
+            string[] parsed = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             if (parsed.Length == 0) return;
 
             string cmd = parsed[0];
@@ -166,10 +166,10 @@
                     try
                     {
                         string fspecString = parsed[1];
-					    string[] parts = fspecString.Split(':');
+                        string[] parts = fspecString.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
 					    string name = parts[0];
 					    string fvalue=parts[1];
-					    string[] valParts = fvalue.Split(',');
+                        string[] valParts = fvalue.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 					    if (valParts.Length != 4){
                             Console.WriteLine(@"spec must of of the form <minhitcount>,<maxcount>,<isExpand>,<orderby>");
 					    }
@@ -227,10 +227,10 @@
                     try
                     {
                         string selString = parsed[1];
-					    string[] parts = selString.Split(':');
+                        string[] parts = selString.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
 					    string name = parts[0];
 					    string selList = parts[1];
-					    string[] sels = selList.Split(',');
+                        string[] sels = selList.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 					    foreach (string sel in sels)
                         {
 						    bool isNot = false;
@@ -256,7 +256,7 @@
                 try
                 {
                     String pageString = parsed[1];
-                    String[] parts = pageString.Split(':');
+                    String[] parts = pageString.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
                     _reqBuilder.SetOffset(int.Parse(parts[0]));
                     _reqBuilder.SetCount(int.Parse(parts[1]));
                 }
@@ -311,11 +311,11 @@
                 if (parsed.Length == 2)
                 {
 				    string sortString = parsed[1];
-				    string[] sorts = sortString.Split(',');
+                    string[] sorts = sortString.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 				    var sortList = new List<SortField>();
 				    foreach (var sort in sorts)
                     {
-					    String[] sortParams = sort.Split(':');
+                        string[] sortParams = sort.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
 					    bool rev = false;
 					    if (sortParams.Length > 0)
                         {
