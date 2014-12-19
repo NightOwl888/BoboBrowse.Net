@@ -144,7 +144,7 @@ namespace BoboBrowse.Net.Facets.Impl
          * @param minHits the minHits from the _facet spec for CombinedFacetAccessible
          * @return        The next _facet that obeys the minHits 
          */
-        public string Next(int minHits)
+        public override string Next(int minHits)
         {
             int qsize = _queue.Size();
             if (qsize == 0)
