@@ -51,7 +51,7 @@ namespace BoboBrowse.Net.Facets
         IEnumerable<string> DependsOn { get; }
 
 
-        object GetDependedFacetHandler(string name); // Generic - IFacetHandler
+        IFacetHandler GetDependedFacetHandler(string name); // Generic - IFacetHandler
 
 
         DocComparatorSource GetDocComparatorSource();
