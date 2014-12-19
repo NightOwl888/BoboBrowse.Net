@@ -43,10 +43,10 @@ namespace BoboBrowse.Net.Facets.Filter
             _val = val;
         }
 
-        public double GetFacetSelectivity(BoboIndexReader reader)
+        public override double GetFacetSelectivity(BoboIndexReader reader)
         {
             double selectivity = 0;
-            IMultiValueFacetDataCache dataCache = multiDataCacheBuilder.Build(reader);
+            IFacetDataCache dataCache = multiDataCacheBuilder.Build(reader);
             int idx = dataCache.ValArray.IndexOf(_val);
             if (idx < 0)
             {
@@ -87,7 +87,7 @@ namespace BoboBrowse.Net.Facets.Filter
 
         public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboIndexReader reader)
         {
-            IMultiValueFacetDataCache dataCache = multiDataCacheBuilder.Build(reader);
+            IMultiValueFacetDataCache dataCache = (IMultiValueFacetDataCache)multiDataCacheBuilder.Build(reader);
             int index = dataCache.ValArray.IndexOf(_val);
             if (index < 0)
             {
