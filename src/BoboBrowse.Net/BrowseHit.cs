@@ -24,6 +24,7 @@
 ﻿// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net
 {
+    using BoboBrowse.Net.Support;
     using BoboBrowse.Net.Util;
     using Lucene.Net.Search;
     using Lucene.Net.Documents;
