@@ -112,7 +112,7 @@ namespace BoboBrowse.Net.Sort
         /// in log(size) time.
         /// </summary>
         /// <returns></returns>
-        public readonly ScoreDoc Pop()
+        public sealed ScoreDoc Pop()
         {
             if (size > 0)
             {
