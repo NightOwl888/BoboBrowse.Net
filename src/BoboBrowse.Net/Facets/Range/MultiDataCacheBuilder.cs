@@ -16,9 +16,9 @@ namespace BoboBrowse.Net.Facets.Range
             this.indexFieldName = indexFieldName;
         }
 
-        public IMultiValueFacetDataCache Build(BoboIndexReader reader)
+        public IFacetDataCache Build(BoboIndexReader reader)
         {
-            return (IMultiValueFacetDataCache)reader.GetFacetData(name);
+            return (IFacetDataCache)reader.GetFacetData(name);
         }
 
         public string Name
