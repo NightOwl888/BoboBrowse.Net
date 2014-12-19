@@ -29,14 +29,14 @@ namespace BoboBrowse.Net.Facets.Impl
             _count = 0;
         }
 
-        private sealed void Add(FacetIterator element)
+        private void Add(FacetIterator element)
         {
             size++;
             heap[size] = element;
             UpHeap();
         }
 
-        private sealed void UpHeap()
+        private void UpHeap()
         {
             int i = size;
             FacetIterator node = heap[i];   // save bottom node
@@ -51,7 +51,7 @@ namespace BoboBrowse.Net.Facets.Impl
             heap[i] = node;                 // install saved node
         }
 
-        private sealed void DownHeap()
+        private void DownHeap()
         {
             int i = 1;
             FacetIterator node = heap[i];   // save top node
@@ -76,7 +76,7 @@ namespace BoboBrowse.Net.Facets.Impl
             heap[i] = node;                 // install saved node
         }
 
-        private sealed void Pop()
+        private void Pop()
         {
             if (size > 0)
             {
@@ -161,7 +161,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// see java.util.Iterator#hasNext()
         /// </summary>
         /// <returns></returns>
-        public bool HasNext()
+        public virtual bool HasNext()
         {
             return (size > 0);
         }
@@ -170,7 +170,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// (non-Javadoc)
         /// see java.util.Iterator#remove()
         /// </summary>
-        public void Remove()
+        public virtual void Remove()
         {
             throw new NotSupportedException("remove() method not supported for Facet Iterators");
         }
