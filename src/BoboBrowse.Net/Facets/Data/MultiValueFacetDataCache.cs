@@ -473,7 +473,7 @@ namespace BoboBrowse.Net.Facets.Data
             if (!reader.GetType().Equals(typeof(BoboIndexReader)))
                 throw new ArgumentException("reader must be instance of BoboIndexReader");
             BoboIndexReader boboReader = (BoboIndexReader)reader;
-            IMultiValueFacetDataCache dataCache = cacheBuilder.Build(boboReader);
+            IMultiValueFacetDataCache dataCache = (IMultiValueFacetDataCache)cacheBuilder.Build(boboReader);
             return new MyComparator(dataCache);
         }
 
