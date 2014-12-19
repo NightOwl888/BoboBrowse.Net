@@ -89,7 +89,7 @@ namespace BoboBrowse.Net.Sort
         //private readonly Int2ObjectOpenHashMap<ScoreDoc> _currentValueDocMaps;
         private readonly IDictionary<int, ScoreDoc> _currentValueDocMaps;
 
-        private class MyScoreDoc : ScoreDoc
+        protected class MyScoreDoc : ScoreDoc
         {
             private static long serialVersionUID = 1L;
 
