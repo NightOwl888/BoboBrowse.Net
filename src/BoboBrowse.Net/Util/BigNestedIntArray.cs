@@ -1066,7 +1066,7 @@ namespace BoboBrowse.Net.Util
             /// <param name="size"></param>
             /// <param name="maxItems"></param>
             /// <param name="buffer"></param>
-            public virtual void Reset(int size, int maxItems, BigIntBuffer buffer)
+            public void Reset(int size, int maxItems, BigIntBuffer buffer)
             {
                 if (size >= Capacity)
                     throw new System.ArgumentException("unable to change size");
