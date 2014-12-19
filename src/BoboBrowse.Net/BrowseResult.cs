@@ -45,7 +45,7 @@ namespace BoboBrowse.Net
         /// <summary>
         /// Get or sets the transaction ID.
         /// </summary>
-        public sealed long Tid
+        public long Tid
         {
             get { return tid; }
             set { tid = value; }
