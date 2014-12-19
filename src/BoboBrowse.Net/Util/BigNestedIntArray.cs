@@ -309,7 +309,7 @@ namespace BoboBrowse.Net.Util
         /// </summary>
         /// <param name="size"></param>
         /// <param name="loader"></param>
-        public sealed void Load(int size, Loader loader)
+        public void Load(int size, Loader loader)
         {
             _size = size;
             loader.Initialize(size, _list);
@@ -332,7 +332,7 @@ namespace BoboBrowse.Net.Util
         /// <param name="idx"></param>
         /// <param name="defaultValue"></param>
         /// <returns></returns>
-        public sealed int GetData(int id, int idx, int defaultValue)
+        public int GetData(int id, int idx, int defaultValue)
         {
             int[] page = _list[id >> PAGEID_SHIFT];
             if (page == null) return defaultValue;
@@ -359,7 +359,7 @@ namespace BoboBrowse.Net.Util
         /// <param name="id"></param>
         /// <param name="buf"></param>
         /// <returns>length</returns>
-        public sealed int GetData(int id, int[] buf)
+        public int GetData(int id, int[] buf)
         {
             int[] page = _list[id >> PAGEID_SHIFT];
             if (page == null) return 0;
@@ -389,7 +389,7 @@ namespace BoboBrowse.Net.Util
         /// <param name="id"></param>
         /// <param name="valarray"></param>
         /// <returns></returns>
-        public sealed string[] GetTranslatedData(int id, ITermValueList valarray)
+        public string[] GetTranslatedData(int id, ITermValueList valarray)
         {
             int[] page = _list[id >> PAGEID_SHIFT];
 
@@ -430,7 +430,7 @@ namespace BoboBrowse.Net.Util
         /// <param name="id"></param>
         /// <param name="valarray"></param>
         /// <returns></returns>
-        public sealed object[] GetRawData(int id, ITermValueList valarray)
+        public object[] GetRawData(int id, ITermValueList valarray)
         {
             int[] page = _list[id >> PAGEID_SHIFT];
 
@@ -465,7 +465,7 @@ namespace BoboBrowse.Net.Util
             }
         }
 
-        public sealed float GetScores(int id, int[] freqs, float[] boosts, IFacetTermScoringFunction function)
+        public float GetScores(int id, int[] freqs, float[] boosts, IFacetTermScoringFunction function)
         {
             function.ClearScores();
             int[] page = _list[id >> PAGEID_SHIFT];
@@ -489,7 +489,7 @@ namespace BoboBrowse.Net.Util
             }
         }
 
-        public sealed int Compare(int i, int j)
+        public int Compare(int i, int j)
         {
             int[] page1 = _list[i >> PAGEID_SHIFT];
             int[] page2 = _list[j >> PAGEID_SHIFT];
@@ -574,12 +574,12 @@ namespace BoboBrowse.Net.Util
             return -1;
         }
 
-        public sealed bool Contains(int id, int value)
+        public bool Contains(int id, int value)
         {
             return Contains(id, value, false);
         }
 
-        public sealed bool Contains(int id, int value, bool withMissing)
+        public bool Contains(int id, int value, bool withMissing)
         {
             int[] page = _list[id >> PAGEID_SHIFT];
             if (page == null)
@@ -615,7 +615,7 @@ namespace BoboBrowse.Net.Util
             return false;
         }
 
-        public sealed bool Contains(int id, BitVector values)
+        public bool Contains(int id, BitVector values)
         {
             int[] page = _list[id >> PAGEID_SHIFT];
             if (page == null) return false;
@@ -637,7 +637,7 @@ namespace BoboBrowse.Net.Util
             return false;
         }
 
-        public sealed bool ContainsValueInRange(int id, int startValueId, int endValueId)
+        public bool ContainsValueInRange(int id, int startValueId, int endValueId)
         {
             int[] page = _list[id >> PAGEID_SHIFT];
             if (page == null) return false;
@@ -660,7 +660,7 @@ namespace BoboBrowse.Net.Util
             return false;
         }
 
-        public sealed bool Contains(int id, OpenBitSet values)
+        public bool Contains(int id, OpenBitSet values)
         {
             int[] page = _list[id >> PAGEID_SHIFT];
             if (page == null) return false;
@@ -682,12 +682,12 @@ namespace BoboBrowse.Net.Util
             return false;
         }
 
-        public sealed int FindValue(int value, int id, int maxID)
+        public int FindValue(int value, int id, int maxID)
         {
             return FindValue(value, id, maxID, false);
         }
 
-        public sealed int FindValue(int value, int id, int maxID, bool withMissing)
+        public int FindValue(int value, int id, int maxID, bool withMissing)
         {
             int[] page = _list[id >> PAGEID_SHIFT];
             if (page == null) page = MISSING_PAGE;
@@ -724,12 +724,12 @@ namespace BoboBrowse.Net.Util
             return DocIdSetIterator.NO_MORE_DOCS;
         }
 
-        public sealed int FindValues(BitVector values, int id, int maxID)
+        public int FindValues(BitVector values, int id, int maxID)
         {
             return FindValues(values, id, maxID, false);
         }
 
-        public sealed int FindValues(BitVector values, int id, int maxID, bool withMissing)
+        public int FindValues(BitVector values, int id, int maxID, bool withMissing)
         {
             int[] page = _list[id >> PAGEID_SHIFT];
             if (page == null) page = MISSING_PAGE;
@@ -766,12 +766,12 @@ namespace BoboBrowse.Net.Util
             return DocIdSetIterator.NO_MORE_DOCS;
         }
 
-        public sealed int FindValues(OpenBitSet values, int id, int maxID)
+        public int FindValues(OpenBitSet values, int id, int maxID)
         {
             return FindValues(values, id, maxID, false);
         }
 
-        public sealed int FindValues(OpenBitSet values, int id, int maxID, bool withMissing)
+        public int FindValues(OpenBitSet values, int id, int maxID, bool withMissing)
         {
             int[] page = _list[id >> PAGEID_SHIFT];
             if (page == null) page = MISSING_PAGE;
@@ -808,7 +808,7 @@ namespace BoboBrowse.Net.Util
             return DocIdSetIterator.NO_MORE_DOCS;
         }
 
-        public sealed int FindValuesInRange(int startIndex, int endIndex, int id, int maxID)
+        public int FindValuesInRange(int startIndex, int endIndex, int id, int maxID)
         {
             int[] page = _list[id >> PAGEID_SHIFT];
             if (page == null) page = MISSING_PAGE;
@@ -842,7 +842,7 @@ namespace BoboBrowse.Net.Util
             return DocIdSetIterator.NO_MORE_DOCS;
         }
 
-        public sealed int Count(int id, int[] count)
+        public int Count(int id, int[] count)
         {
             int[] page = _list[id >> PAGEID_SHIFT];
             if (page == null)
@@ -872,7 +872,7 @@ namespace BoboBrowse.Net.Util
             return 0;
         }
 
-        public sealed void CountNoReturn(int id, int[] count)
+        public void CountNoReturn(int id, int[] count)
         {
             int[] page = _list[id >> PAGEID_SHIFT];
             if (page == null)
@@ -902,7 +902,7 @@ namespace BoboBrowse.Net.Util
             return;
         }
 
-        public sealed void CountNoReturnWithFilter(int id, int[] count, BitVector filter)
+        public void CountNoReturnWithFilter(int id, int[] count, BitVector filter)
         {
             int[] page = _list[id >> PAGEID_SHIFT];
             if (page == null)
@@ -939,7 +939,7 @@ namespace BoboBrowse.Net.Util
             return;
         }
 
-        public sealed void CountNoReturnWithFilter(int id, int[] count, OpenBitSet filter)
+        public void CountNoReturnWithFilter(int id, int[] count, OpenBitSet filter)
         {
             int[] page = _list[id >> PAGEID_SHIFT];
             if (page == null)
@@ -1036,7 +1036,7 @@ namespace BoboBrowse.Net.Util
         /// Data does not need to be sorted prior to the operation.
         /// Note that this loader supports only non-negative integer data.
         /// </summary>
-        public class BufferedLoader : Loader
+        public sealed class BufferedLoader : Loader
         {
             private static int EOD = int.MinValue;
             private static int SEGSIZE = 8;
@@ -1082,7 +1082,7 @@ namespace BoboBrowse.Net.Util
             /// <param name="id"></param>
             /// <param name="val"></param>
             /// <returns></returns>
-            public sealed bool Add(int id, int val)
+            public bool Add(int id, int val)
             {
                 int ptr = _info.Get(id << 1);
                 if (ptr == EOD)
@@ -1135,7 +1135,7 @@ namespace BoboBrowse.Net.Util
                 return true;
             }
 
-            private sealed int ReadToBuf(int id, int[] buf)
+            private int ReadToBuf(int id, int[] buf)
             {
                 int ptr = _info.Get(id << 1);
                 int cnt = _info.Get((id << 1) + 1);
@@ -1170,7 +1170,7 @@ namespace BoboBrowse.Net.Util
                 return cnt;
             }
 
-            public override sealed void Load()
+            public override void Load()
             {
                 int[] buf = new int[MAX_ITEMS];
                 int size = _size;
@@ -1184,7 +1184,7 @@ namespace BoboBrowse.Net.Util
                 }
             }
 
-            public sealed int Capacity
+            public int Capacity
             {
                 get { return _info.Capacity() >> 1; }
             }
