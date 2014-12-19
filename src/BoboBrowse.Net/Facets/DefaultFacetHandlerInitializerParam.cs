@@ -19,7 +19,7 @@ namespace BoboBrowse.Net.Facets
         private readonly IDictionary<string, int[]> _intMap;
         private readonly IDictionary<string, long[]> _longMap;
         private readonly IDictionary<string, IEnumerable<string>> _stringMap;
-        private readonly IDictionary<string, byte[]> _byteMap;
+        private readonly IDictionary<string, sbyte[]> _byteMap;
         private readonly IDictionary<string, double[]> _doubleMap;
 
         public DefaultFacetHandlerInitializerParam()
@@ -28,7 +28,7 @@ namespace BoboBrowse.Net.Facets
             _intMap = new Dictionary<string, int[]>();
             _longMap = new Dictionary<string, long[]>();
             _stringMap = new Dictionary<string, IEnumerable<string>>();
-            _byteMap = new Dictionary<string, byte[]>();
+            _byteMap = new Dictionary<string, sbyte[]>();
             _doubleMap = new Dictionary<string, double[]>();
         }
 
@@ -73,13 +73,13 @@ namespace BoboBrowse.Net.Facets
             return _boolMap.Get(name);
         }
 
-        public DefaultFacetHandlerInitializerParam PutByteArrayParam(string key, byte[] value)
+        public DefaultFacetHandlerInitializerParam PutByteArrayParam(string key, sbyte[] value)
         {
             _byteMap.Put(key, value);
             return this;
         }
 
-        public override byte[] GetByteArrayParam(string name)
+        public override sbyte[] GetByteArrayParam(string name)
         {
             return _byteMap.Get(name);
         }
