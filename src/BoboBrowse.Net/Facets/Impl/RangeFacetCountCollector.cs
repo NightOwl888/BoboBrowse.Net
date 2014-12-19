@@ -106,7 +106,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return facet;
         }
 
-        public int GetFacetHitsCount(object value)
+        public virtual int GetFacetHitsCount(object value)
         {
             int[] range = FacetRangeFilter.Parse(_dataCache, (string)value);
             int sum = 0;
@@ -120,7 +120,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return sum;
         }
 
-        public void Collect(int docid)
+        public virtual void Collect(int docid)
         {
             _count[_array.Get(docid)]++;
         }
@@ -238,7 +238,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public List<BrowseFacet> GetFacetsNew()
+        public virtual List<BrowseFacet> GetFacetsNew()
         {
             if (_ospec != null)
             {
