@@ -43,7 +43,5 @@ namespace BoboBrowse.Net.Index.Digest
         public int MaxDocs { get; set; }
         public Encoding Encoding { get; set; }
         public string File { get { return _file; } }
-
-        abstract public void Digest(IDataHandler handler);
     }
 }
