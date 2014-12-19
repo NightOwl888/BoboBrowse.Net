@@ -101,7 +101,7 @@ namespace BoboBrowse.Net.Facets.Range
             }
         }
 
-        public override BoboDocScorer GetDocScorer(BoboIndexReader reader, DefaultFacetTermScoringFunctionFactory scoringFunctionFactory,
+        public override BoboDocScorer GetDocScorer(BoboIndexReader reader, IFacetTermScoringFunctionFactory scoringFunctionFactory,
             IDictionary<string, float> boostMap)
         {
             IMultiValueFacetDataCache dataCache = GetFacetData(reader);

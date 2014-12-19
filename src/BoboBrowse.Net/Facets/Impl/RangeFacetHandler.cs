@@ -35,7 +35,7 @@ namespace BoboBrowse.Net.Facets.Impl
     using System.Linq;
     using System.Text.RegularExpressions;
 
-    public class RangeFacetHandler : FacetHandler<IFacetDataCache>
+    public class RangeFacetHandler : FacetHandler<IFacetDataCache>, IFacetScoreable
     {
         private static ILog logger = LogManager.GetLogger<RangeFacetHandler>();
         protected readonly string _indexFieldName;
@@ -160,7 +160,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return dataCache;
         }
 
-        public BoboDocScorer GetDocScorer(BoboIndexReader reader,
+        public virtual BoboDocScorer GetDocScorer(BoboIndexReader reader,
             IFacetTermScoringFunctionFactory scoringFunctionFactory,
             IDictionary<string, float> boostMap)
         {
