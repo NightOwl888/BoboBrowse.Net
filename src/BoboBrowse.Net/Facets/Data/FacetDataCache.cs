@@ -65,7 +65,7 @@ namespace BoboBrowse.Net.Facets.Data
         }
 
         /// <summary>
-        /// Same as ConvertString(FacetDataCache dataCache,String[] vals) except that the
+        /// Same as ConvertString(FacetDataCache dataCache,string[] vals) except that the
         /// values are supplied in raw form so that we can take advantage of the type
         /// information to find index faster.
         /// </summary>
@@ -345,7 +345,7 @@ namespace BoboBrowse.Net.Facets.Data
         //}
 
         ///// <summary>
-        ///// Same as ConvertString(FacetDataCache dataCache,String[] vals) except that the
+        ///// Same as ConvertString(FacetDataCache dataCache,string[] vals) except that the
         ///// values are supplied in raw form so that we can take advantage of the type
         ///// information to find index faster.
         ///// </summary>

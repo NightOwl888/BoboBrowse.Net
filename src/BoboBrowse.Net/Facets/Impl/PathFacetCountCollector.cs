@@ -25,7 +25,7 @@ namespace BoboBrowse.Net.Facets.Impl
         private readonly int _minHitCount;
 	    private int _maxCount;
 	    private static Regex _splitPat;
-	    private String[] _stringData;
+	    private string[] _stringData;
 	    private char[] _sepArray;
 	    private int _patStart;
 	    private int _patEnd;
@@ -56,7 +56,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 default: throw new ArgumentOutOfRangeException("invalid sort option: " + sortOption);
             }
             _splitPat = new Regex(_sep, RegexOptions.Compiled);
-            _stringData = new String[10];
+            _stringData = new string[10];
             _patStart = 0;
             _patEnd = 0;
         }
@@ -182,7 +182,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 pq = new BoundedPriorityQueue<BrowseFacet>(new PathFacetCountCollectorComparator(comparator), maxCount);
             }
 
-            String[] startParts = null;
+            string[] startParts = null;
             int startDepth = 0;
 
             if (selectedPath != null && selectedPath.Length > 0)
@@ -195,7 +195,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 }
             }
 
-            String currentPath = null;
+            string currentPath = null;
             int currentCount = 0;
 
             int wantedDepth = startDepth + depth;
@@ -222,7 +222,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     int subCount = _count[i];
 
                     // do not use Java split string in a loop !
-                    //				String[] pathParts=path.split(_sep);
+                    //				string[] pathParts=path.split(_sep);
                     int pathDepth = 0;
                     if (!SplitString(path))
                     {
@@ -249,7 +249,7 @@ namespace BoboBrowse.Net.Facets.Impl
                                     buf.Append(_sep);
                             }
                         }
-                        String wantedPath = buf.ToString();
+                        string wantedPath = buf.ToString();
                         if (currentPath == null)
                         {
                             currentPath = wantedPath;

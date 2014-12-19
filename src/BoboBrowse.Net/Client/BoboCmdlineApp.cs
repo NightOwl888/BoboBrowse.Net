@@ -234,7 +234,7 @@
 					    foreach (string sel in sels)
                         {
 						    bool isNot = false;
-						    String val = sel;
+						    string val = sel;
 						    if (sel.StartsWith("!")){
 							    isNot=true;
 							    val = sel.Substring(1);
@@ -255,8 +255,8 @@
             {
                 try
                 {
-                    String pageString = parsed[1];
-                    String[] parts = pageString.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+                    string pageString = parsed[1];
+                    string[] parts = pageString.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
                     _reqBuilder.SetOffset(int.Parse(parts[0]));
                     _reqBuilder.SetCount(int.Parse(parts[1]));
                 }
@@ -273,7 +273,7 @@
 			    }
 			    else
                 {
-				    String name = parsed[1];
+				    string name = parsed[1];
 				    _reqBuilder.ClearFacetSpec(name);
 			    }
             }
@@ -285,7 +285,7 @@
                 }
                 else
                 {
-                    String name = parsed[1];
+                    string name = parsed[1];
                     _reqBuilder.ClearSelection(name);
                 }
             }

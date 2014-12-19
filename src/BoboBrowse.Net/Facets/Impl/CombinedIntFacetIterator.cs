@@ -36,7 +36,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 return false;
             }
 
-            public String Peek()//bad
+            public string Peek()//bad
             {
                 throw new NotSupportedException();
                 //      if(_iterator.hasNext()) 
@@ -90,16 +90,16 @@ namespace BoboBrowse.Net.Facets.Impl
         /// see com.browseengine.bobo.api.FacetIterator#getFacet()
         /// </summary>
         /// <returns></returns>
-        public String GetFacet()
+        public string GetFacet()
         {
             if (_facet == TermIntList.VALUE_MISSING) return null;
-            return format(_facet);
+            return Format(_facet);
         }
-        public String format(int val)
+        public string Format(int val)
         {
             return _iterators[0].Format(val);
         }
-        public String format(Object val)
+        public string Format(Object val)
         {
             return _iterators[0].Format(val);
         }
@@ -114,7 +114,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /* (non-Javadoc)
          * @see com.browseengine.bobo.api.FacetIterator#next()
          */
-        public String Next()
+        public string Next()
         {
             if (!HasNext())
                 throw new IndexOutOfRangeException("No more facets in this iteration");
@@ -130,7 +130,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 next = node._curFacet;
                 if ((next != TermIntList.VALUE_MISSING) && (next != _facet))
                 {
-                    return format(_facet);
+                    return Format(_facet);
                 }
                 _count += node._curFacetCount;
                 if (node.Fetch(1))
@@ -146,7 +146,7 @@ namespace BoboBrowse.Net.Facets.Impl
          * @param minHits the minHits from the facet spec for CombinedFacetAccessible
          * @return        The next facet that obeys the minHits 
          */
-        public String Next(int minHits)
+        public string Next(int minHits)
         {
             int qsize = _queue.Size();
             if (qsize == 0)
@@ -199,7 +199,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     _count += node._curFacetCount;
                 }
             }
-            return format(_facet);
+            return Format(_facet);
         }
 
         /* (non-Javadoc)

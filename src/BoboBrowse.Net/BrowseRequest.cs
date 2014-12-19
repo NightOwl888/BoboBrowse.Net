@@ -97,8 +97,8 @@ namespace BoboBrowse.Net
 
         ///<summary>Gets the number of facet specs </summary>
         ///<returns> number of facet pecs </returns>
-        ///<seealso cref= #setFacetSpec(String, FacetSpec) </seealso>
-        ///<seealso cref= #getFacetSpec(String) </seealso>
+        ///<seealso cref= #setFacetSpec(string, FacetSpec) </seealso>
+        ///<seealso cref= #getFacetSpec(string) </seealso>
         public virtual int FacetSpecCount
         {
             get { return FacetSpecs.Count; }

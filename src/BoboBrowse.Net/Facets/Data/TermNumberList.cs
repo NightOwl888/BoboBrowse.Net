@@ -4,7 +4,7 @@ namespace BoboBrowse.Net.Facets.Data
 
     public abstract class TermNumberList<T> : TermValueList<T>
     {
-        private const String DEFAULT_FORMATTING_STRING = "0000000000";
+        private const string DEFAULT_FORMATTING_STRING = "0000000000";
 
         protected TermNumberList()
             : base()

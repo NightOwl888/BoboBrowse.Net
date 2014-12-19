@@ -101,7 +101,7 @@ namespace BoboBrowse.Net
             BrowseRequest req, 
             Weight weight, 
             Collector hitCollector, 
-            IDictionary<String, IFacetAccessible> facetMap, 
+            IDictionary<string, IFacetAccessible> facetMap, 
             int start)
         {
             IBrowsable[] browsers = this.GetSubBrowsers();
@@ -123,7 +123,7 @@ namespace BoboBrowse.Net
                     {
                         foreach (var entry in facetColMap)
                         {
-                            String name = entry.Key;
+                            string name = entry.Key;
                             IFacetAccessible facetAccessor = entry.Value;
                             var list = mergedMap.Get(name);
                             if (list == null)
@@ -146,7 +146,7 @@ namespace BoboBrowse.Net
                 //}
                 foreach (var entry in mergedMap)
                 {
-                    String name = entry.Key;
+                    string name = entry.Key;
                     IFacetHandler handler = GetFacetHandler(name);
                     try
                     {
@@ -190,7 +190,7 @@ namespace BoboBrowse.Net
             }
             SortCollector collector = GetSortCollector(req.Sort, req.Query, offset, count, req.FetchStoredFields, req.TermVectorsToFetch, false, req.GroupBy, req.MaxPerGroup, req.CollectDocIdCache);
 
-            var facetCollectors = new Dictionary<String, IFacetAccessible>();
+            var facetCollectors = new Dictionary<string, IFacetAccessible>();
             Browse(req, collector, facetCollectors);
 
             //// TODO: ReduceWrapper not supported
@@ -336,7 +336,7 @@ namespace BoboBrowse.Net
         {
             get
             {
-                var names = new List<String>();
+                var names = new List<string>();
                 IBrowsable[] subBrowsers = GetSubBrowsers();
                 foreach (IBrowsable subBrowser in subBrowsers)
                 {

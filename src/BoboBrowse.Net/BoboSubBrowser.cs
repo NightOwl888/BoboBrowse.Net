@@ -131,7 +131,7 @@ namespace BoboBrowse.Net
         public virtual void Browse(
             BrowseRequest req,
             Collector collector,
-            IDictionary<String, IFacetAccessible> facetMap)
+            IDictionary<string, IFacetAccessible> facetMap)
         {
             Browse(req, collector, facetMap, 0);
         }
@@ -226,7 +226,7 @@ namespace BoboBrowse.Net
             try
             {
       
-                foreach (String name in fields)
+                foreach (string name in fields)
                 {
                     BrowseSelection sel = req.GetSelection(name);
                     FacetSpec ospec = req.GetFacetSpec(name);

@@ -39,7 +39,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 return false;
             }
 
-            public String peek()// bad
+            public string Peek()// bad
             {
                 throw new NotSupportedException();
                 // if(_iterator.hasNext())

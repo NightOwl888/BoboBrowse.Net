@@ -44,7 +44,7 @@ namespace BoboBrowse.Net.Facets.Data
         Type Type { get; }
     }
 
-    /// <summary>This class behaves as List<String> with a few extensions:
+    /// <summary>This class behaves as List<string> with a few extensions:
     /// <ul>
     /// <li> Semi-immutable, e.g. once added, cannot be removed. </li>
     /// <li> Assumes sequence of values added are in sorted order </li>
@@ -90,7 +90,7 @@ namespace BoboBrowse.Net.Facets.Data
         /// <param name="o"></param>
         public abstract void Add(string o); // From IList<string>
 
-        //public virtual void Add(int index, String element)
+        //public virtual void Add(int index, string element)
         //{
         //    throw new NotSupportedException("not supported");
         //}

@@ -8,7 +8,7 @@ namespace BoboBrowse.Net.Facets.Impl
     {
         private int _totalGroups;
 
-        public GroupByFacetCountCollector(String name,
+        public GroupByFacetCountCollector(string name,
                                     IFacetDataCache dataCache,
                                     int docBase,
                                     BrowseSelection sel,

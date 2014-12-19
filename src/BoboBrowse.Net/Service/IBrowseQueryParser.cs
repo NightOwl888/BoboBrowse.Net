@@ -11,14 +11,14 @@ namespace BoboBrowse.Net.Service
 
     public class SelectionNode
     {
-        public String FieldName { get; set; }
+        public string FieldName { get; set; }
         public DocIdSet DocSet { get; set; }
 
         public SelectionNode()
         {
         }
 
-        public SelectionNode(String fieldName, DocIdSet docSet)
+        public SelectionNode(string fieldName, DocIdSet docSet)
         {
             FieldName = fieldName;
             DocSet = docSet;

@@ -59,7 +59,7 @@ namespace BoboBrowse.Net
         ///<summary>Get the field values </summary>
         ///<param name="field"> field name </param>
         ///<returns> field value array </returns>
-        ///<seealso cref= #getField(String) </seealso>
+        ///<seealso cref= #getField(string) </seealso>
         public virtual string[] GetFields(string field)
         {
             return this.FieldValues != null ? this.FieldValues[field] : null;
@@ -78,7 +78,7 @@ namespace BoboBrowse.Net
         ///<summary>Get the field value </summary>
         ///<param name="field"> field name </param>
         ///<returns> field value </returns>
-        ///<seealso cref= #getFields(String) </seealso>
+        ///<seealso cref= #getFields(string) </seealso>
         public virtual string GetField(string field)
         {
             string[] fields = this.GetFields(field);

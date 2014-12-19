@@ -98,7 +98,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 }
                 if (selections != null && selections.Count > 0)
                 {
-                    String[] sels = selections.ToArray();
+                    string[] sels = selections.ToArray();
                     if (selections.Count == 1)
                     {
                         return dependOnFacetHandler.BuildRandomAccessFilter(sels[0], prop);

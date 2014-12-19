@@ -33,7 +33,7 @@ namespace BoboBrowse.Net.Facets.Data
             sanity[width - 1] = -1;
         }
 
-        protected long[] Parse(String s)
+        protected long[] Parse(string s)
         {
             long[] r = new long[width];
 

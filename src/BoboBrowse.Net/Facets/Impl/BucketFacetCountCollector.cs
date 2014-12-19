@@ -12,7 +12,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
     public class BucketFacetCountCollector : IFacetCountCollector
     {
-        private readonly String _name;
+        private readonly string _name;
         private readonly DefaultFacetCountCollector _subCollector;
         private readonly FacetSpec _ospec;
         private readonly IDictionary<string, string[]> _predefinedBuckets;

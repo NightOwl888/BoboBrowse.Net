@@ -78,7 +78,7 @@ namespace BoboBrowse.Net.Impl
         //                relevanceSortAdded = true;
         //            }
         //            else{
-        //                String fieldname = sortSpec[i].Field;
+        //                string fieldname = sortSpec[i].Field;
         //                if (fieldname != null)
         //                {
         //                  SortField sf = null;
@@ -94,7 +94,7 @@ namespace BoboBrowse.Net.Impl
         //                            private static final long serialVersionUID = 1L;
 
         //                            public ScoreDocComparator newComparator(
-        //                                IndexReader reader, String fieldname)
+        //                                IndexReader reader, string fieldname)
         //                                throws IOException 
         //                            {
         //                                return facetHandler.getScoreDocComparator();
@@ -129,7 +129,7 @@ namespace BoboBrowse.Net.Impl
 		
         //    for(int i = 0; i < selections.Length; ++i) 
         //    {
-        //        String fieldName = selections[i].FieldName;
+        //        string fieldName = selections[i].FieldName;
         //        plugin = fConf.getFieldPlugin(fieldName);
         	
         //        if (plugin==null)

@@ -130,7 +130,7 @@ namespace BoboBrowse.Net.Sort
             else
             {
                 IEnumerable<string> facetNames = browser.FacetNames;
-                String sortName = sf.Field;
+                string sortName = sf.Field;
                 if (facetNames.Contains(sortName))
                 {
                     var handler = browser.GetFacetHandler(sortName);

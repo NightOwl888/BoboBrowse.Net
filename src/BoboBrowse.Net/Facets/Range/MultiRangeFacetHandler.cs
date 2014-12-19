@@ -47,7 +47,7 @@ namespace BoboBrowse.Net.Facets.Range
             if (dataCache != null) {
                 return dataCache.NestedArray.GetRawData(id, dataCache.ValArray);
             }
-            return new String[0];
+            return new string[0];
         }
 
         public IMultiValueFacetDataCache GetFacetData(BoboIndexReader reader)

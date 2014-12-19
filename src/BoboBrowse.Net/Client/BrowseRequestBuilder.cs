@@ -9,7 +9,7 @@
     public class BrowseRequestBuilder
     {
         private BrowseRequest _req;
-        private String _qString;
+        private string _qString;
 
         public BrowseRequestBuilder()
         {
@@ -34,12 +34,12 @@
             _req.AddSelection(sel);
         }
 
-        public void ClearSelection(String name)
+        public void ClearSelection(string name)
         {
             _req.RemoveSelection(name);
         }
 
-        public void ApplyFacetSpec(String name, int minHitCount, int maxCount, bool expand, FacetSpec.FacetSortSpec orderBy)
+        public void ApplyFacetSpec(string name, int minHitCount, int maxCount, bool expand, FacetSpec.FacetSortSpec orderBy)
         {
             FacetSpec fspec = new FacetSpec();
             fspec.MinHitCount = minHitCount;
@@ -65,7 +65,7 @@
         {
             _req.FacetSpecs.Clear();
         }
-        public void ClearFacetSpec(String name)
+        public void ClearFacetSpec(string name)
         {
             _req.FacetSpecs.Remove(name);
         }

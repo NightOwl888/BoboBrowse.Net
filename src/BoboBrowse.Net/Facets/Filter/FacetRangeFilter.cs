@@ -290,7 +290,7 @@ namespace BoboBrowse.Net.Facets.Filter
                 lower = rangeString.Substring(index + 1, index2).Trim();
                 upper = rangeString.Substring(index2 + 4, index3).Trim();
 
-                return new String[] { lower, upper, Convert.ToString(incLower).ToLower(), Convert.ToString(incUpper).ToLower() };
+                return new string[] { lower, upper, Convert.ToString(incLower).ToLower(), Convert.ToString(incUpper).ToLower() };
             }
             catch (RuntimeException re)
             {

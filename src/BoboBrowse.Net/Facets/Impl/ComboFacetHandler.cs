@@ -87,7 +87,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 ComboSelection sel = ComboSelection.Parse(val, sep);
                 if (sel != null)
                 {
-                    IList<String> valList = retmap.Get(sel.Name);
+                    IList<string> valList = retmap.Get(sel.Name);
                     if (valList == null)
                     {
                         valList = new List<string>();
@@ -203,7 +203,7 @@ namespace BoboBrowse.Net.Facets.Impl
         public override int GetNumItems(BoboIndexReader reader, int id)
         {
             IEnumerable<string> dependsOn = this.DependsOn;
-            List<String> valueList = new List<String>();
+            List<string> valueList = new List<string>();
             int count = 0;
             foreach (string depends in dependsOn)
             {

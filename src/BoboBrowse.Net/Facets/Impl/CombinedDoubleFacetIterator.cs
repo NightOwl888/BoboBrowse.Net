@@ -39,7 +39,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 return false;
             }
 
-            public String Peek()// bad
+            public string Peek()// bad
             {
                 throw new NotSupportedException();
                 // if(_iterator.hasNext())
@@ -93,18 +93,18 @@ namespace BoboBrowse.Net.Facets.Impl
         /// see com.browseengine.bobo.api.FacetIterator#getFacet()
         /// </summary>
         /// <returns></returns>
-        public String GetFacet()
+        public string GetFacet()
         {
             if (_facet == TermDoubleList.VALUE_MISSING) return null;
             return Format(_facet);
         }
 
-        public override String Format(double val)
+        public override string Format(double val)
         {
             return _iterators[0].Format(val);
         }
 
-        public override String Format(Object val)
+        public override string Format(Object val)
         {
             return _iterators[0].Format(val);
         }
@@ -124,7 +124,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// see com.browseengine.bobo.api.FacetIterator#next()
         /// </summary>
         /// <returns></returns>
-        public override String Next()
+        public override string Next()
         {
             if (!HasNext())
                 throw new IndexOutOfRangeException("No more facets in this iteration");
@@ -159,7 +159,7 @@ namespace BoboBrowse.Net.Facets.Impl
          *          the minHits from the facet spec for CombinedFacetAccessible
          * @return The next facet that obeys the minHits
          */
-        public String Next(int minHits)
+        public string Next(int minHits)
         {
             int qsize = _queue.Size();
             if (qsize == 0)

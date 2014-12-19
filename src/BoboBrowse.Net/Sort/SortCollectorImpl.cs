@@ -138,8 +138,8 @@ namespace BoboBrowse.Net.Sort
             int count,
             bool doScoring,
             bool fetchStoredFields,
-            IEnumerable<String> termVectorsToFetch,
-            String[] groupBy,
+            IEnumerable<string> termVectorsToFetch,
+            string[] groupBy,
             int maxPerGroup,
             bool collectDocIdCache)
             : base(sortFields, fetchStoredFields)
@@ -563,7 +563,7 @@ namespace BoboBrowse.Net.Sort
                         if (tv != null)
                         {
                             int[] freqs = tv.GetTermFrequencies();
-                            String[] terms = tv.GetTerms();
+                            string[] terms = tv.GetTerms();
                             tvMap[field] = new BrowseHit.TermFrequencyVector(terms, freqs);
                         }
                     }
