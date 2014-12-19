@@ -151,7 +151,7 @@ namespace BoboBrowse.Net.Facets
         /// Constructor
         /// </summary>
         /// <param name="name"></param>
-        protected FacetHandler(string name) 
+        public FacetHandler(string name) 
             : this(name, null) 
         { }
 
@@ -391,7 +391,7 @@ namespace BoboBrowse.Net.Facets
         /// <returns>array of field values</returns>
         public abstract string[] GetFieldValues(BoboIndexReader reader, int id);
 
-        public int GetNumItems(BoboIndexReader reader, int id)
+        public virtual int GetNumItems(BoboIndexReader reader, int id)
         {
             throw new NotImplementedException("GetNumItems is not supported for this facet handler: " + this.GetType().FullName);
         }
