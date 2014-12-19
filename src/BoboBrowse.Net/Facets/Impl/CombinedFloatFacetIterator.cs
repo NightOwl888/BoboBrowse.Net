@@ -93,7 +93,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// see com.browseengine.bobo.api.FacetIterator#getFacet()
         /// </summary>
         /// <returns></returns>
-        public string GetFacet()
+        public virtual string GetFacet()
         {
             if (_facet == TermFloatList.VALUE_MISSING) return null;
             return Format(_facet);
@@ -114,7 +114,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// see com.browseengine.bobo.api.FacetIterator#getFacetCount()
         /// </summary>
         /// <returns></returns>
-        public int FacetCount
+        public virtual int FacetCount
         {
             get { return _count; }
         }
@@ -218,7 +218,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// see java.util.Iterator#hasNext()
         /// </summary>
         /// <returns></returns>
-        public bool HasNext()
+        public virtual bool HasNext()
         {
             return (_queue.Size() > 0);
         }
@@ -227,7 +227,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// (non-Javadoc)
         /// see java.util.Iterator#remove()
         /// </summary>
-        public void Remove()
+        public virtual void Remove()
         {
             throw new NotSupportedException("remove() method not supported for Facet Iterators");
         }
