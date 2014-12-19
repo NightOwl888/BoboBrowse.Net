@@ -52,15 +52,15 @@ namespace BoboBrowse.Net
         private const string SPRING_CONFIG = "bobo.spring";
         private static readonly ILog logger = LogManager.GetLogger<BoboIndexReader>();
 
-        protected readonly Dictionary<string, IFacetHandler> _facetHandlerMap;
+        protected IDictionary<string, IFacetHandler> _facetHandlerMap;
 
-        protected readonly IEnumerable<IFacetHandler> _facetHandlers;
-        protected readonly IEnumerable<IRuntimeFacetHandlerFactory> _runtimeFacetHandlerFactories;
-        protected readonly IDictionary<string, IRuntimeFacetHandlerFactory> _runtimeFacetHandlerFactoryMap;
+        protected IEnumerable<IFacetHandler> _facetHandlers;
+        protected IEnumerable<IRuntimeFacetHandlerFactory> _runtimeFacetHandlerFactories;
+        protected IDictionary<string, IRuntimeFacetHandlerFactory> _runtimeFacetHandlerFactoryMap;
 
-        protected readonly WorkArea _workArea;
+        protected WorkArea _workArea;
 
-        protected readonly IndexReader _srcReader;
+        protected IndexReader _srcReader;
         internal readonly BoboIndexReader[] _subReaders = null;
         protected int[] _starts = null;
         private Directory _dir = null;
