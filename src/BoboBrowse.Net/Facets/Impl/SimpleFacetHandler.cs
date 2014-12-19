@@ -274,7 +274,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public sealed class SimpleGroupByFacetCountCollector : GroupByFacetCountCollector
         {
-            protected int _totalGroups;
+            private int _totalGroups;
 
             public SimpleGroupByFacetCountCollector(string name, IFacetDataCache dataCache, int docBase, BrowseSelection sel, FacetSpec ospec)
                 : base(name, dataCache, docBase, sel, ospec)
