@@ -55,7 +55,7 @@ namespace BoboBrowse.Net.Facets.Data
             : this(null, null)
         { }
 
-        public override ITermValueList CreateTermList()
+        public override ITermValueList CreateTermList(int capacity)
         {
             var listType = this.supportedTypes[typeof(TSupported)];
             // we treat char type separate as it does not have a format string
@@ -65,8 +65,14 @@ namespace BoboBrowse.Net.Facets.Data
             }
             else
             {
-                return (ITermValueList)Activator.CreateInstance(listType, this.formatString, this.formatProvider);
+                return (ITermValueList)Activator.CreateInstance(listType, capacity, this.formatString, this.formatProvider);
             }
+        }
+
+        public override ITermValueList CreateTermList()
+        {
+            // In .NET, the initial capacity is 0.
+            return CreateTermList(0);
         }
     }
 }
