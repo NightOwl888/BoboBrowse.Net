@@ -26,7 +26,7 @@ namespace BoboBrowse.Net
         private IDictionary<string, IFacetHandler> _allFacetHandlerMap;
         private IList<IRuntimeFacetHandler> _runtimeFacetHandlers = null;
 
-        public BoboIndexReader IndexReader
+        new public BoboIndexReader IndexReader
         {
             get { return _reader; }
         }
@@ -40,7 +40,7 @@ namespace BoboBrowse.Net
             _allFacetHandlerMap = null;
         }
 
-        private virtual bool IsNoQueryNoFilter(BrowseRequest req)
+        private bool IsNoQueryNoFilter(BrowseRequest req)
         {
             Lucene.Net.Search.Query q = req.Query;
             Filter filter = req.Filter;
@@ -116,10 +116,13 @@ namespace BoboBrowse.Net
         /// Gets a set of facet names
         /// </summary>
         /// <returns>set of facet names</returns>
-        public IEnumerable<string> GetFacetNames()
+        public IEnumerable<string> FacetNames
         {
-            var map = FacetHandlerMap;
-            return map.Keys;
+            get
+            {
+                var map = FacetHandlerMap;
+                return map.Keys;
+            }
         }
 
         /// <summary>
@@ -208,7 +211,7 @@ namespace BoboBrowse.Net
             }
             // done initialize all RuntimeFacetHandlers with data supplied by user at run-time.
 
-            IEnumerable<string> fields = GetFacetNames();
+            IEnumerable<string> fields = FacetNames;
 
             List<Filter> preFilterList = new List<Filter>();
             List<FacetHitCollector> facetHitCollectorList = new List<FacetHitCollector>();
