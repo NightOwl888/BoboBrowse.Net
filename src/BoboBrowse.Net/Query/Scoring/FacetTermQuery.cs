@@ -255,7 +255,7 @@ namespace BoboBrowse.Net.Query.Scoring
                             RandomAccessDocIdSet docset = filter.GetRandomAccessDocIdSet(boboReader);
                             if (docset != null)
                             {
-                                dociter = docset.BuildIterator(docset, termDocs);
+                                dociter = BuildIterator(docset, termDocs);
                             }
                         }
                         if (dociter == null)
