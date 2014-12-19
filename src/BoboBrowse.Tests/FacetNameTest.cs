@@ -23,6 +23,7 @@
  * send mail to owner@browseengine.com.
  */
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Tests
 {
     using BoboBrowse.Net;
@@ -50,22 +51,20 @@ namespace BoboBrowse.Tests
     /// This class is to test the case when facetName is different from the underlying indexingFieldName for simpleFacetHandler
     /// 
     /// author hyan
-    /// 
-    /// Ported from BoboBrowse version 3.1.0
     /// </summary>
     [TestFixture]
     public class FacetNameTest
     {
         private static readonly ILog logger = LogManager.GetLogger<FacetNameTest>();
-        private IEnumerable<FacetHandler> _facetHandlers;
+        private IEnumerable<IFacetHandler> _facetHandlers;
         private int _documentSize;
 
         private class TestDataDigester : DataDigester
         {
-            private IEnumerable<FacetHandler> _facetHandlers;
+            private IEnumerable<IFacetHandler> _facetHandlers;
             private Document[] _data;
 
-            public TestDataDigester(IEnumerable<FacetHandler> facetHandlers, Document[] data)
+            public TestDataDigester(IEnumerable<IFacetHandler> facetHandlers, Document[] data)
             {
                 _facetHandlers = facetHandlers;
                 _data = data;
@@ -132,15 +131,16 @@ namespace BoboBrowse.Tests
             TestDataDigester testDigester = new TestDataDigester(_facetHandlers, data);
             BoboIndexer indexer = new BoboIndexer(testDigester, dir);
             indexer.Index();
-            IndexReader r = IndexReader.Open(dir, false);
-            r.Close();
+            using (var r = IndexReader.Open(dir, false))
+            {
+            }
 
             return dir;
         }
 
-        public static IEnumerable<FacetHandler> CreateFacetHandlers()
+        public static IEnumerable<IFacetHandler> CreateFacetHandlers()
         {
-            var facetHandlers = new List<FacetHandler>();
+            var facetHandlers = new List<IFacetHandler>();
             facetHandlers.Add(new SimpleFacetHandler("id"));
             facetHandlers.Add(new SimpleFacetHandler("make"));
             facetHandlers.Add(new SimpleFacetHandler("mycolor", "color"));
