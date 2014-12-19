@@ -61,32 +61,32 @@ namespace BoboBrowse.Net.Facets.Impl
             _patEnd = 0;
         }
 
-        public int[] GetCountDistribution()
+        public virtual int[] GetCountDistribution()
         {
             return _count;
         }
 
-        public string Name
+        public virtual string Name
         {
             get { return _name; }
         }
 
-        public void Collect(int docid)
+        public virtual void Collect(int docid)
         {
             _count[_orderArray.Get(docid)]++;
         }
 
-        public void CollectAll()
+        public virtual void CollectAll()
         {
             _count = _dataCache.Freqs;
         }
 
-        public BrowseFacet GetFacet(string @value)
+        public virtual BrowseFacet GetFacet(string @value)
         {
             return null;
         }
 
-        public int GetFacetHitsCount(object value)
+        public virtual int GetFacetHitsCount(object value)
         {
             return 0;
         }
@@ -111,7 +111,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return (_patEnd - _patStart);
         }
 
-        public bool SplitString(string input)
+        public virtual bool SplitString(string input)
         {
             _patStart = 0;
             _patEnd = 0;
@@ -374,7 +374,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public IEnumerable<BrowseFacet> GetFacets()
+        public virtual IEnumerable<BrowseFacet> GetFacets()
         {
             Properties props = _sel == null ? null : _sel.SelectionProperties;
             int depth = PathFacetHandler.GetDepth(props);
@@ -409,10 +409,10 @@ namespace BoboBrowse.Net.Facets.Impl
             return finalList;
         }
 
-        public void Close()
+        public virtual void Close()
         { }
 
-        public FacetIterator Iterator()
+        public virtual FacetIterator Iterator()
         {
             Properties props = _sel == null ? null : _sel.SelectionProperties;
             int depth = PathFacetHandler.GetDepth(props);
