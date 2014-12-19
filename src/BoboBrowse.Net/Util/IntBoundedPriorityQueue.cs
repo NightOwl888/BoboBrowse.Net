@@ -161,7 +161,7 @@ namespace BoboBrowse.Net.Util
         /// <summary>
         /// Returns the number of elements in this collection.
         /// </summary>
-        public override int Count
+        public int Count
         {
             get{ return _size; }
         }
