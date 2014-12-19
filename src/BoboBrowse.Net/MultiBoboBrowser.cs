@@ -307,7 +307,7 @@ namespace BoboBrowse.Net
 
         public override Similarity Similarity
         {
-            private get
+            get
             {
                 return base.Similarity;
             }
