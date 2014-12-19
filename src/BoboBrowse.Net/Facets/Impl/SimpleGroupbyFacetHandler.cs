@@ -239,7 +239,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 _maxdoc = maxdoc;
             }
 
-            public sealed void Collect(int docid)
+            public void Collect(int docid)
             {
                 int idx = 0;
                 int i = 0;
