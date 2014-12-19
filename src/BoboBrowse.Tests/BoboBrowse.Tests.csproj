@@ -127,6 +127,7 @@
     <Compile Include="BoboTestCase.cs" />
     <Compile Include="FacetNameTest.cs" />
     <Compile Include="FacetHandlerTest.cs" />
+    <Compile Include="FacetNotValuesTest.cs" />
     <Compile Include="FacetTest.cs" />
     <Compile Include="IndexReaderTestCase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
