@@ -7,6 +7,6 @@ namespace BoboBrowse.Net.Facets
 
     public interface IBitSetBuilder
     {
-        OpenBitSet BitSet<T>(IFacetDataCache dataCache);
+        OpenBitSet BitSet(IFacetDataCache dataCache);
     }
 }
