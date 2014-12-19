@@ -115,6 +115,11 @@ namespace BoboBrowse.Net.Facets.Impl
             return _count;
         }
 
+        public virtual IFacetDataCache FacetDataCache
+        {
+            get { return _dataCache; }
+        }
+
         public static IEnumerable<BrowseFacet> GetFacets(FacetSpec ospec, int[] count, int countlength, ITermValueList valList)
         {
             if (ospec != null)
@@ -207,7 +212,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public IEnumerable<BrowseFacet> GetFacets()
+        public virtual IEnumerable<BrowseFacet> GetFacets()
         {
             if (_closed)
             {
@@ -218,7 +223,7 @@ namespace BoboBrowse.Net.Facets.Impl
         }
 
         // TODO: Implement dispose?
-        public void Close()
+        public virtual void Close()
         {
             if (_closed)
             {
@@ -237,7 +242,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// This function returns an Iterator to visit the facets in value order
         /// </summary>
         /// <returns>The Iterator to iterate over the facets in value order</returns>
-        public FacetIterator Iterator()
+        public virtual FacetIterator Iterator()
         {
             if (_closed)
             {
@@ -266,5 +271,8 @@ namespace BoboBrowse.Net.Facets.Impl
             else
                 return new DefaultFacetIterator(_dataCache.ValArray, _count, _countlength, false);
         }
+
+        // Added to satisfy IFacetAccessible contract (didn't exist in original version, but required by C#).
+        public abstract int GetFacetHitsCount(object value);
     }
 }
