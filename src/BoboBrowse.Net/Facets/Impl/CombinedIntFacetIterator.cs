@@ -9,7 +9,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
     public class CombinedIntFacetIterator : IntFacetIterator
     {
-        private class IntIteratorNode
+        public class IntIteratorNode
         {
             public IntFacetIterator _iterator;
             public int _curFacet;

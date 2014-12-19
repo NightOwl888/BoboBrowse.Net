@@ -12,7 +12,7 @@ namespace BoboBrowse.Net.Facets.Impl
     /// </summary>
     public class CombinedFloatFacetIterator : FloatFacetIterator
     {
-        private class FloatIteratorNode
+        public class FloatIteratorNode
         {
             public FloatFacetIterator _iterator;
             public float _curFacet;

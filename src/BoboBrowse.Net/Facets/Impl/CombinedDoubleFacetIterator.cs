@@ -12,7 +12,7 @@ namespace BoboBrowse.Net.Facets.Impl
     /// </summary>
     public class CombinedDoubleFacetIterator : DoubleFacetIterator
     {
-        private class DoubleIteratorNode
+        public class DoubleIteratorNode
         {
             public DoubleFacetIterator _iterator;
             public double _curFacet;

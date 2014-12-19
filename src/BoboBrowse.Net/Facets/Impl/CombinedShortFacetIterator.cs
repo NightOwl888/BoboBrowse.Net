@@ -12,7 +12,7 @@ namespace BoboBrowse.Net.Facets.Impl
     /// </summary>
     public class CombinedShortFacetIterator : ShortFacetIterator
     {
-        private class ShortIteratorNode
+        public class ShortIteratorNode
         {
             public ShortFacetIterator _iterator;
             public short _curFacet;
