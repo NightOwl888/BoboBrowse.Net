@@ -298,7 +298,7 @@ namespace BoboBrowse.Net.Util
         /// <summary>
         /// Gets or sets maximum number of items per doc.
         /// </summary>
-        public virtual int MaxItems 
+        public int MaxItems 
         {
             get { return _maxItems; }
             set { _maxItems = value; }
@@ -320,9 +320,9 @@ namespace BoboBrowse.Net.Util
             _list = loader.Finish();
         }
 
-        public virtual int Size()
+        public int Size
         {
-            return _size;
+            get { return _size; }
         }
 
         /// <summary>
