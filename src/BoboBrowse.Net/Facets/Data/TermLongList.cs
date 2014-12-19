@@ -135,7 +135,7 @@ namespace BoboBrowse.Net.Facets.Data
             }
         }
 
-        public override int IndexOfWithType(long o)
+        public override int IndexOfWithType(long value)
         {
             if (withDummy)
             {
