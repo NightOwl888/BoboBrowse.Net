@@ -76,7 +76,7 @@ namespace BoboBrowse.Net.Facets.Range
                 this.ospec = ospec;
             }
 
-            public IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
+            public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
             {
                 IMultiValueFacetDataCache dataCache = parent.GetFacetData(reader);
                 BigNestedIntArray _nestedArray = dataCache.NestedArray;
