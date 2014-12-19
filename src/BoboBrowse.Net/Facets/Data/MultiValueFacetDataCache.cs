@@ -46,10 +46,10 @@ namespace BoboBrowse.Net.Facets.Data
     }
 
 
-    public class MultiValueFacetDataCache<T> : FacetDataCache<T>, IMultiValueFacetDataCache
+    public class MultiValueFacetDataCache : FacetDataCache, IMultiValueFacetDataCache
     {
         private static long serialVersionUID = 1L;
-        private static ILog logger = LogManager.GetLogger<MultiValueFacetDataCache<T>>();
+        private static ILog logger = LogManager.GetLogger<MultiValueFacetDataCache>();
 
         public readonly BigNestedIntArray _nestedArray;
         private int _maxItems = BigNestedIntArray.MAX_ITEMS;

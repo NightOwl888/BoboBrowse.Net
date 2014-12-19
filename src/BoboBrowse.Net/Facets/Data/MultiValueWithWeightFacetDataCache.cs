@@ -14,7 +14,12 @@ namespace BoboBrowse.Net.Facets.Data
     using System.Linq;
     using System.Text;
 
-    public class MultiValueWithWeightFacetDataCache<T> : MultiValueFacetDataCache<T>
+    public interface IMultiValueWithWeightFacetDataCache : IMultiValueFacetDataCache
+    {
+        void Load(string fieldName, IndexReader reader, TermListFactory listFactory, BoboIndexReader.WorkArea workArea);
+    }
+
+    public class MultiValueWithWeightFacetDataCache : MultiValueFacetDataCache, BoboBrowse.Net.Facets.Data.IMultiValueWithWeightFacetDataCache
     {
         private static long serialVersionUID = 1L;
 

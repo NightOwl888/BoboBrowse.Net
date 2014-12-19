@@ -34,6 +34,9 @@ namespace BoboBrowse.Net.Facets.Data
     using System.Collections.Generic;
     using System.Linq;
 
+    // TODO: Being that this type doesn't need to be generic, it should probably just be
+    // put back together into an inheritable type with no interface.
+
     public interface IFacetDataCache
     {
         BigSegmentedArray OrderArray { get; }
@@ -100,9 +103,9 @@ namespace BoboBrowse.Net.Facets.Data
     }
 
     [Serializable]
-    public class FacetDataCache<T> : IFacetDataCache
+    public class FacetDataCache : IFacetDataCache
     {
-        private static ILog logger = LogManager.GetLogger<FacetDataCache<T>>();
+        private static ILog logger = LogManager.GetLogger<FacetDataCache>();
 
         private readonly static long serialVersionUID = 1L;
 

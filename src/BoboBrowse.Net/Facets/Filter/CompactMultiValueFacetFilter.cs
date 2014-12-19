@@ -29,7 +29,7 @@ namespace BoboBrowse.Net.Facets.Filter
         public double GetFacetSelectivity(BoboIndexReader reader)
         {
             double selectivity = 0;
-            IFacetDataCache dataCache = (IFacetDataCache)_facetHandler.GetFacetData(reader);
+            IFacetDataCache dataCache = _facetHandler.GetFacetData<IFacetDataCache>(reader);
             int[] idxes = FacetDataCache_Static.Convert(dataCache, _vals);
             if(idxes == null)
             {
@@ -104,7 +104,7 @@ namespace BoboBrowse.Net.Facets.Filter
 
         public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboIndexReader reader)
         {
-            IFacetDataCache dataCache = (IFacetDataCache)_facetHandler.GetFacetData(reader);
+            IFacetDataCache dataCache = _facetHandler.GetFacetData<IFacetDataCache>(reader);
             int[] indexes = FacetDataCache_Static.Convert(dataCache, _vals);
 
             int bits;

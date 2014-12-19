@@ -74,7 +74,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override DocComparatorSource GetDocComparatorSource()
         {
-            return new FacetDataCache.FacetDocComparatorSource(this);
+            return new FacetDocComparatorSource(this);
         }
 
         public override string[] GetFieldValues(BoboIndexReader reader, int id)

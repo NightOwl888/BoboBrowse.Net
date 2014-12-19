@@ -101,7 +101,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override DocComparatorSource GetDocComparatorSource()
         {
-            return new MultiValueFacetDataCache.MultiFacetDocComparatorSource(new MultiDataCacheBuilder(Name, _indexFieldName));
+            return new MultiFacetDocComparatorSource(new MultiDataCacheBuilder(Name, _indexFieldName));
         }
 
         public virtual void SetMaxItems(int maxItems)
