@@ -10,17 +10,17 @@ namespace BoboBrowse.Net.Query.Scoring
     {
         private float _boost = 1.0f;
 
-        public sealed void ClearScores()
+        public void ClearScores()
         {
             _boost = 1.0f;
         }
 
-        public sealed float Score(int df, float boost)
+        public float Score(int df, float boost)
         {
             return boost;
         }
 
-        public sealed void ScoreAndCollect(int df, float boost)
+        public void ScoreAndCollect(int df, float boost)
         {
             if (boost > 0)
             {
@@ -28,12 +28,12 @@ namespace BoboBrowse.Net.Query.Scoring
             }
         }
 
-        public sealed float GetCurrentScore()
+        public float GetCurrentScore()
         {
             return _boost;
         }
 
-        public Explanation Explain(int df, float boost)
+        public virtual Explanation Explain(int df, float boost)
         {
             Explanation expl = new Explanation();
             expl.Value = Score(df, boost);
@@ -41,7 +41,7 @@ namespace BoboBrowse.Net.Query.Scoring
             return expl;
         }
 
-        public Explanation Explain(params float[] scores)
+        public virtual Explanation Explain(params float[] scores)
         {
             Explanation expl = new Explanation();
             float boost = 1.0f;
