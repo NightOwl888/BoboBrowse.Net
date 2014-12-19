@@ -129,7 +129,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return new string[0];
         }
 
-        public FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec ospec)
+        public override FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec fspec)
         {
             return new MultiValueFacetCountCollectorSource(this, _name, sel, ospec);
         }
