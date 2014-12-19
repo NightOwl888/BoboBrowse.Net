@@ -41,10 +41,9 @@ namespace BoboBrowse.Net.Sort
                 return _luceneComparator[doc.Doc];
             }
 
-            public override DocComparator SetScorer(Scorer scorer)
+            public override void SetScorer(Scorer scorer)
             {
                 _luceneComparator.SetScorer(scorer);
-                return this;
             }
         }
     }

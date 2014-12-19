@@ -23,13 +23,12 @@ namespace BoboBrowse.Net.Sort
             return 0;
         }
 
-        public MultiDocIdComparator SetScorer(Scorer scorer)
+        public void SetScorer(Scorer scorer)
         {
             foreach (DocComparator comparator in _comparators)
             {
                 comparator.SetScorer(scorer);
             }
-            return this;
         }
 
         public override IComparable Value(ScoreDoc doc)

@@ -13,9 +13,8 @@ namespace BoboBrowse.Net.Sort
 
         public abstract IComparable Value(ScoreDoc doc);
 
-        public virtual DocComparator SetScorer(Scorer scorer)
+        public virtual void SetScorer(Scorer scorer)
         {
-            return this;
         }
     }
 }
