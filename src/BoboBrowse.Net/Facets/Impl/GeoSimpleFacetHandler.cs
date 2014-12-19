@@ -190,7 +190,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return allValues;
         }
 
-        public override FacetDataNone load(BoboIndexReader reader)
+        public override FacetDataNone Load(BoboIndexReader reader)
         {
             _latFacetHandler = (RangeFacetHandler)GetDependedFacetHandler(_latFacetName);
             _longFacetHandler = (RangeFacetHandler)GetDependedFacetHandler(_longFacetName);
