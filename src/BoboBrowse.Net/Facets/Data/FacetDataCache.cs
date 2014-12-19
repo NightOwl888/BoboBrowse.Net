@@ -398,15 +398,15 @@ namespace BoboBrowse.Net.Facets.Data
             BoboIndexReader boboReader = (BoboIndexReader)reader;
             IFacetDataCache dataCache = _facetHandler.GetFacetData<IFacetDataCache>(boboReader);
             BigSegmentedArray orderArray = dataCache.OrderArray;
-            return new MyDocComparator(dataCache, orderArray);
+            return new FacetDocComparator(dataCache, orderArray);
         }
 
-        public class MyDocComparator : DocComparator
+        public class FacetDocComparator : DocComparator
         {
             private readonly IFacetDataCache _dataCache;
             private readonly BigSegmentedArray _orderArray;
 
-            public MyDocComparator(IFacetDataCache dataCache, BigSegmentedArray orderArray)
+            public FacetDocComparator(IFacetDataCache dataCache, BigSegmentedArray orderArray)
             {
                 _dataCache = dataCache;
                 _orderArray = orderArray;
@@ -416,6 +416,11 @@ namespace BoboBrowse.Net.Facets.Data
             {
                 int index = _orderArray.Get(doc.Doc);
                 return _dataCache.ValArray.GetComparableValue(index);
+            }
+
+            public override int Compare(ScoreDoc doc1, ScoreDoc doc2)
+            {
+                return _orderArray.Get(doc1.Doc) - _orderArray.Get(doc2.Doc);
             }
         }
     }
