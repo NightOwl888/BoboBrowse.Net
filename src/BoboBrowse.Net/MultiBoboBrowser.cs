@@ -61,7 +61,7 @@ namespace BoboBrowse.Net
         ///   <param name="req">BrowseRequest</param>
         ///   <param name="collector">HitCollector for the hits generated during a search</param>
         ///   <param name="facetMap"></param>
-        public virtual void Browse(BrowseRequest req, Collector hitCollector, Dictionary<string, IFacetAccessible> facetMap)
+        public virtual void Browse(BrowseRequest req, Collector hitCollector, IDictionary<string, IFacetAccessible> facetMap)
         {
             Browse(req, hitCollector, facetMap, 0);
         }
