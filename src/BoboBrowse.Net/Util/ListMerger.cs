@@ -255,7 +255,7 @@ namespace BoboBrowse.Net.Util
                         }
                         foreach (BrowseFacet facet in entry.Value.GetFacets())
                         {
-                            object val = facet.Value;
+                            string val = facet.Value;
                             BrowseFacet oldValue = count[val];
                             if (oldValue == null)
                             {
