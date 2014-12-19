@@ -88,7 +88,7 @@ namespace BoboBrowse.Net.Facets
         /// Get or sets the transaction ID.
         /// </summary>
         /// <returns>the transaction ID.</returns>
-        public sealed long Tid 
+        public long Tid 
         { 
             get { return tid; }
             set { this.tid = value; }
