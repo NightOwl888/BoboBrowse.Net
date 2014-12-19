@@ -518,7 +518,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 /// </summary>
                 /// <param name="minHits"></param>
                 /// <returns></returns>
-                public string Next(int minHits)
+                public override string Next(int minHits)
                 {
                     if ((_index >= 0) && !HasNext())
                     {
