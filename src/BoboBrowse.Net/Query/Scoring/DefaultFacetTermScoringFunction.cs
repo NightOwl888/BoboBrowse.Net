@@ -10,22 +10,22 @@ namespace BoboBrowse.Net.Query.Scoring
     {
         private float _sum = 0.0f;
 
-        public sealed void ClearScores()
+        public void ClearScores()
         {
             _sum = 0.0f;
         }
 
-        public sealed float Score(int df, float boost)
+        public float Score(int df, float boost)
         {
             return boost;
         }
 
-        public sealed void ScoreAndCollect(int df, float boost)
+        public void ScoreAndCollect(int df, float boost)
         {
             _sum += boost;
         }
 
-        public sealed float GetCurrentScore()
+        public float GetCurrentScore()
         {
             return _sum;
         }
