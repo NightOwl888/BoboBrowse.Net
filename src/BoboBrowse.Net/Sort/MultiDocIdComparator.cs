@@ -13,7 +13,7 @@ namespace BoboBrowse.Net.Sort
             _comparators = comparators;
         }
 
-        public int Compare(ScoreDoc doc1, ScoreDoc doc2)
+        public override int Compare(ScoreDoc doc1, ScoreDoc doc2)
         {
             for (int i = 0; i < _comparators.Length; ++i)
             {
@@ -23,7 +23,7 @@ namespace BoboBrowse.Net.Sort
             return 0;
         }
 
-        public void SetScorer(Scorer scorer)
+        public override void SetScorer(Scorer scorer)
         {
             foreach (DocComparator comparator in _comparators)
             {
