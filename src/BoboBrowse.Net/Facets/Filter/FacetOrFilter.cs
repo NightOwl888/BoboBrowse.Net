@@ -100,7 +100,7 @@ namespace BoboBrowse.Net.Facets.Filter
 	        private readonly IFacetDataCache _dataCache;
             private readonly int[] _index;
 
-            FacetOrRandomAccessDocIdSet(IFacetHandler facetHandler, BoboIndexReader reader, 
+            internal FacetOrRandomAccessDocIdSet(IFacetHandler facetHandler, BoboIndexReader reader, 
                 string[] vals, IFacetValueConverter valConverter, bool takeCompliment)
             {
 		        _dataCache = facetHandler.GetFacetData<IFacetDataCache>(reader);
