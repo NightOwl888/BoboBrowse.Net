@@ -38,7 +38,7 @@ namespace BoboBrowse.Net.Sort
         /// </summary>
         /// <param name="element"></param>
         /// <returns>the new 'bottom' element in the queue.</returns>
-        public sealed ScoreDoc Add(ScoreDoc element)
+        public ScoreDoc Add(ScoreDoc element)
         {
             size++;
             heap[size] = element;
@@ -46,12 +46,12 @@ namespace BoboBrowse.Net.Sort
             return heap[1];
         }
 
-        public IComparable SortValue(ScoreDoc doc)
+        public virtual IComparable SortValue(ScoreDoc doc)
         {
             return this.comparator.Value(doc);
         }
 
-        private sealed int Compare(ScoreDoc doc1, ScoreDoc doc2)
+        private int Compare(ScoreDoc doc1, ScoreDoc doc2)
         {
             int cmp = comparator.Compare(doc1, doc2);
             if (cmp != 0)
@@ -64,7 +64,7 @@ namespace BoboBrowse.Net.Sort
             }
         }
 
-        public ScoreDoc Replace(ScoreDoc element)
+        public virtual ScoreDoc Replace(ScoreDoc element)
         {
             heap[1] = element;
             DownHeap(1);
@@ -77,7 +77,7 @@ namespace BoboBrowse.Net.Sort
         /// <param name="newEle"></param>
         /// <param name="oldEle"></param>
         /// <returns>the 'bottom' element in the queue.</returns>
-        public ScoreDoc Replace(ScoreDoc newEle, ScoreDoc oldEle)
+        public virtual ScoreDoc Replace(ScoreDoc newEle, ScoreDoc oldEle)
         {
             for (int i = 1; i <= size; ++i)
             {
@@ -96,7 +96,7 @@ namespace BoboBrowse.Net.Sort
         /// Gets the least element of the PriorityQueue in constant time. 
         /// </summary>
         /// <returns></returns>
-        public sealed ScoreDoc Top
+        public ScoreDoc Top
         {
             get
             {
@@ -112,7 +112,7 @@ namespace BoboBrowse.Net.Sort
         /// in log(size) time.
         /// </summary>
         /// <returns></returns>
-        public sealed ScoreDoc Pop()
+        public ScoreDoc Pop()
         {
             if (size > 0)
             {
@@ -145,7 +145,7 @@ namespace BoboBrowse.Net.Sort
         /// </pre>
         /// </summary>
         /// <returns>the new 'top' element.</returns>
-        public sealed ScoreDoc UpdateTop()
+        public ScoreDoc UpdateTop()
         {
             DownHeap(1);
             return heap[1];
@@ -154,7 +154,7 @@ namespace BoboBrowse.Net.Sort
         /// <summary>
         /// Gets the number of elements currently stored in the PriorityQueue.
         /// </summary>
-        public sealed int Size
+        public int Size
         {
             get { return size; }
         }
@@ -162,7 +162,7 @@ namespace BoboBrowse.Net.Sort
         /// <summary>
         /// Removes all entries from the PriorityQueue.
         /// </summary>
-        public sealed void Clear()
+        public void Clear()
         {
             for (int i = 0; i <= size; i++)
             {
@@ -171,7 +171,7 @@ namespace BoboBrowse.Net.Sort
             size = 0;
         }
 
-        private sealed void UpHeap(int i)
+        private void UpHeap(int i)
         {
             ScoreDoc node = heap[i];    // save bottom node
             uint j = (uint)i >> 1;
@@ -184,7 +184,7 @@ namespace BoboBrowse.Net.Sort
             heap[i] = node;             // install saved node
         }
 
-        private sealed void DownHeap(int i)
+        private void DownHeap(int i)
         {
             ScoreDoc node = heap[i];    // save top node
             int j = i << 1;             // find smaller child
