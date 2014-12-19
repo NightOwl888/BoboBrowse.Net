@@ -86,8 +86,8 @@
         public void TestFacetHandlerLoad()
         {
             var reader = IndexReader.Open(_ramDir, true);
-            
-            var list = new List<FacetHandler>();
+
+            var list = new List<IFacetHandler>();
             var h1 = new NoopFacetHandler("A");
             list.Add(h1);
 
@@ -162,7 +162,7 @@
         {
             var reader = IndexReader.Open(_ramDir, true);
 
-            var list = new List<FacetHandler>();
+            var list = new List<IFacetHandler>();
             var s1 = new HashSet<string>();
             s1.Add("C");
             var h1 = new NoopFacetHandler("A", s1);

@@ -23,7 +23,7 @@
     [TestFixture]
     public class IndexReaderTestCase
     {
-        private IEnumerable<FacetHandler> _fconf;
+        private IEnumerable<IFacetHandler> _fconf;
 
         [SetUp]
         public void Init()

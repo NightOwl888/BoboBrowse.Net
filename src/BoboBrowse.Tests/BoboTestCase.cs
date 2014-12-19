@@ -55,15 +55,15 @@ namespace BoboBrowse.Net
     public class BoboTestCase
     {
         private Directory indexDir;
-	    private IEnumerable<FacetHandler> fconf;
+        private IEnumerable<IFacetHandler> fconf;
 	    private static Term tagSizePayloadTerm = new Term("tagSizePayload", "size");
 
         private class TestDataDigester : DataDigester
         {
-            private IEnumerable<FacetHandler> fconf;
+            private IEnumerable<IFacetHandler> fconf;
             private Document[] data;
 
-            public TestDataDigester(IEnumerable<FacetHandler> fConf, Document[] data)
+            public TestDataDigester(IEnumerable<IFacetHandler> fConf, Document[] data)
                 : base()
             {
                 this.fconf = fConf;
@@ -417,16 +417,16 @@ namespace BoboBrowse.Net
             return idxDir;
         }
 
-        public static IEnumerable<FacetHandler> BuildFieldConf()
+        public static IEnumerable<IFacetHandler> BuildFieldConf()
         {
-            List<FacetHandler> facetHandlers = new List<FacetHandler>();
+            List<IFacetHandler> facetHandlers = new List<IFacetHandler>();
 		    facetHandlers.Add(new SimpleFacetHandler("id"));
 		    SimpleFacetHandler colorHandler = new SimpleFacetHandler("color");
-		    colorHandler.TermCountSizeFlag = FacetHandler.TermCountSize.Small;
+		    colorHandler.TermCountSizeFlag = TermCountSize.Small;
 		    facetHandlers.Add(colorHandler);
 
 		    SimpleFacetHandler shapeHandler = new SimpleFacetHandler("shape");
-		    colorHandler.TermCountSizeFlag = FacetHandler.TermCountSize.Medium;
+		    colorHandler.TermCountSizeFlag = TermCountSize.Medium;
 		    facetHandlers.Add(new SimpleFacetHandler("shape"));
 		    facetHandlers.Add(new RangeFacetHandler("size", true));
 		    String[] ranges = new String[]{"[000000 TO 000005]", "[000006 TO 000010]", "[000011 TO 000020]"};
