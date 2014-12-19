@@ -6,7 +6,7 @@ namespace BoboBrowse.Net.Facets
     using System.Linq;
     using System.Text;
 
-    public interface IRuntimeFacetHandler
+    public interface IRuntimeFacetHandler : IFacetHandler
     {
         void Close();
         T GetFacetData<T>(BoboIndexReader reader);
