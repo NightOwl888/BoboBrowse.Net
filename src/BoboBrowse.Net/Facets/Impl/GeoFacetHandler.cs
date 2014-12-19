@@ -210,9 +210,9 @@ namespace BoboBrowse.Net.Facets.Impl
         public override string[] GetFieldValues(BoboIndexReader reader, int id)
         {
             GeoFacetData dataCache = GetFacetData<GeoFacetData>(reader);
-            BigFloatArray xvals = dataCache.get_xValArray();
-            BigFloatArray yvals = dataCache.get_yValArray();
-            BigFloatArray zvals = dataCache.get_zValArray();
+            BigFloatArray xvals = dataCache.xValArray;
+            BigFloatArray yvals = dataCache.yValArray;
+            BigFloatArray zvals = dataCache.zValArray;
 
             float xvalue = xvals.Get(id);
             float yvalue = yvals.Get(id);

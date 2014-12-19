@@ -77,9 +77,9 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             _name = name;
             _dataCache = dataCache;
-            _xvals = dataCache.get_xValArray();
-            _yvals = dataCache.get_yValArray();
-            _zvals = dataCache.get_zValArray();
+            _xvals = dataCache.xValArray;
+            _yvals = dataCache.yValArray;
+            _zvals = dataCache.zValArray;
             _spec = fspec;
             _predefinedRanges = new TermStringList();
             var predefinedTemp = new List<string>(predefinedRanges);
