@@ -16,10 +16,10 @@ namespace BoboBrowse.Net.Facets.Data
 
     public interface IMultiValueWithWeightFacetDataCache : IMultiValueFacetDataCache
     {
-        void Load(string fieldName, IndexReader reader, TermListFactory listFactory, BoboIndexReader.WorkArea workArea);
+        //void Load(string fieldName, IndexReader reader, TermListFactory listFactory, BoboIndexReader.WorkArea workArea);
     }
 
-    public class MultiValueWithWeightFacetDataCache : MultiValueFacetDataCache, BoboBrowse.Net.Facets.Data.IMultiValueWithWeightFacetDataCache
+    public class MultiValueWithWeightFacetDataCache : MultiValueFacetDataCache, IMultiValueWithWeightFacetDataCache
     {
         private static long serialVersionUID = 1L;
 
@@ -70,10 +70,10 @@ namespace BoboBrowse.Net.Facets.Data
                     do
                     {
                         Term term = tenum.Term;
-                        if (term == null || !fieldName.Equals(term.field()))
+                        if (term == null || !fieldName.Equals(term.Field))
                             break;
 
-                        string val = term.text();
+                        string val = term.Text;
 
                         if (val != null)
                         {

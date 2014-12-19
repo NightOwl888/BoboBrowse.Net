@@ -38,8 +38,8 @@ namespace BoboBrowse.Net.Facets.Data
     public interface IMultiValueFacetDataCache : IFacetDataCache
     {
         BigNestedIntArray NestedArray { get; }
-        int GetNumItems(int docid);
-        void Load(string fieldName, IndexReader reader, TermListFactory listFactory);
+        //int GetNumItems(int docid);
+        //void Load(string fieldName, IndexReader reader, TermListFactory listFactory);
         void Load(string fieldName, IndexReader reader, TermListFactory listFactory, BoboIndexReader.WorkArea workArea);
         void Load(string fieldName, IndexReader reader, TermListFactory listFactory, Term sizeTerm);
         void SetMaxItems(int maxItems);
