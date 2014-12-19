@@ -123,9 +123,9 @@ namespace BoboBrowse.Net.Util
             return SHIFT_SIZE;
         }
 
-        public override int MaxValue()
+        public override int MaxValue
         {
-            return short.MaxValue;
+            get { return short.MaxValue; }
         }
     }
 }
