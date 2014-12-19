@@ -44,7 +44,7 @@ namespace BoboBrowse.Net.Facets.Data
 
         protected abstract object ParseString(string o);
 
-        protected abstract double GetDoubleValue(int index);
+        public abstract double GetDoubleValue(int index);
 
         public override string Format(object o)
         {

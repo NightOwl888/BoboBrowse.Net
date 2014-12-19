@@ -145,7 +145,7 @@ namespace BoboBrowse.Net.Facets.Data
             return _elements.BinarySearch(o);
         }
 
-        protected override double GetDoubleValue(int index)
+        public override double GetDoubleValue(int index)
         {
             return _elements[index];
         }

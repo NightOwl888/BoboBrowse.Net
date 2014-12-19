@@ -204,7 +204,7 @@ namespace BoboBrowse.Net.Facets.Data
             get { return _elements.ToArray(); }
         }
 
-        protected override double GetDoubleValue(int index)
+        public override double GetDoubleValue(int index)
         {
             return _elements[index];
         }
