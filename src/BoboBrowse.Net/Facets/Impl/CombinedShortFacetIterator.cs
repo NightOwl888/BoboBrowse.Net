@@ -230,7 +230,7 @@ namespace BoboBrowse.Net.Facets.Impl
             protected ShortIteratorNode[] heap;
 
             /** Subclass constructors must call this. */
-            public sealed void Initialize(int maxSize)
+            public void Initialize(int maxSize)
             {
                 size = 0;
                 int heapSize;
@@ -243,14 +243,14 @@ namespace BoboBrowse.Net.Facets.Impl
                 this.maxSize = maxSize;
             }
 
-            public sealed void Put(ShortIteratorNode element)
+            public void Put(ShortIteratorNode element)
             {
                 size++;
                 heap[size] = element;
                 UpHeap();
             }
 
-            public sealed ShortIteratorNode Add(ShortIteratorNode element)
+            public ShortIteratorNode Add(ShortIteratorNode element)
             {
                 size++;
                 heap[size] = element;
@@ -258,12 +258,12 @@ namespace BoboBrowse.Net.Facets.Impl
                 return heap[1];
             }
 
-            public bool Insert(ShortIteratorNode element)
+            public virtual bool Insert(ShortIteratorNode element)
             {
                 return InsertWithOverflow(element) != element;
             }
 
-            public ShortIteratorNode InsertWithOverflow(ShortIteratorNode element)
+            public virtual ShortIteratorNode InsertWithOverflow(ShortIteratorNode element)
             {
                 if (size < maxSize)
                 {
@@ -284,7 +284,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
 
             /** Returns the least element of the PriorityQueue in constant time. */
-            public sealed ShortIteratorNode Top()
+            public ShortIteratorNode Top()
             {
                 // We don't need to check size here: if maxSize is 0,
                 // then heap is length 2 array with both entries null.
@@ -296,7 +296,7 @@ namespace BoboBrowse.Net.Facets.Impl
              * Removes and returns the least element of the PriorityQueue in log(size)
              * time.
              */
-            public sealed ShortIteratorNode Pop()
+            public ShortIteratorNode Pop()
             {
                 if (size > 0)
                 {
@@ -311,25 +311,25 @@ namespace BoboBrowse.Net.Facets.Impl
                     return null;
             }
 
-            public sealed void AdjustTop()
+            public void AdjustTop()
             {
                 DownHeap();
             }
 
-            public sealed ShortIteratorNode UpdateTop()
+            public ShortIteratorNode UpdateTop()
             {
                 DownHeap();
                 return heap[1];
             }
 
             /** Returns the number of elements currently stored in the PriorityQueue. */
-            public sealed int Size()
+            public int Size()
             {
                 return size;
             }
 
             /** Removes all entries from the PriorityQueue. */
-            public sealed void Clear()
+            public void Clear()
             {
                 for (int i = 0; i <= size; i++)
                 {
@@ -338,7 +338,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 size = 0;
             }
 
-            private sealed void UpHeap()
+            private void UpHeap()
             {
                 int i = size;
                 ShortIteratorNode node = heap[i]; // save bottom node
@@ -352,7 +352,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 heap[i] = node; // install saved node
             }
 
-            private sealed void DownHeap()
+            private void DownHeap()
             {
                 int i = 1;
                 ShortIteratorNode node = heap[i]; // save top node
