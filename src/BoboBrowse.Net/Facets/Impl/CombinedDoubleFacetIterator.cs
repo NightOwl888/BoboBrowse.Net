@@ -93,7 +93,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// see com.browseengine.bobo.api.FacetIterator#getFacet()
         /// </summary>
         /// <returns></returns>
-        public string GetFacet()
+        public virtual string GetFacet()
         {
             if (_facet == TermDoubleList.VALUE_MISSING) return null;
             return Format(_facet);
@@ -114,7 +114,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// see com.browseengine.bobo.api.FacetIterator#getFacetCount()
         /// </summary>
         /// <returns></returns>
-        public int FacetCount
+        public virtual int FacetCount
         {
             get { return _count; }
         }
@@ -159,7 +159,7 @@ namespace BoboBrowse.Net.Facets.Impl
          *          the minHits from the facet spec for CombinedFacetAccessible
          * @return The next facet that obeys the minHits
          */
-        public string Next(int minHits)
+        public override string Next(int minHits)
         {
             int qsize = _queue.Size();
             if (qsize == 0)
@@ -220,7 +220,7 @@ namespace BoboBrowse.Net.Facets.Impl
          * 
          * @see java.util.Iterator#hasNext()
          */
-        public bool HasNext()
+        public virtual bool HasNext()
         {
             return (_queue.Size() > 0);
         }
@@ -230,7 +230,7 @@ namespace BoboBrowse.Net.Facets.Impl
          * 
          * @see java.util.Iterator#remove()
          */
-        public void Remove()
+        public virtual void Remove()
         {
             throw new NotSupportedException("remove() method not supported for Facet Iterators");
         }
