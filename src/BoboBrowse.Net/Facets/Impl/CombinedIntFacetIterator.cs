@@ -90,23 +90,23 @@ namespace BoboBrowse.Net.Facets.Impl
         /// see com.browseengine.bobo.api.FacetIterator#getFacet()
         /// </summary>
         /// <returns></returns>
-        public string GetFacet()
+        public virtual string GetFacet()
         {
             if (_facet == TermIntList.VALUE_MISSING) return null;
             return Format(_facet);
         }
-        public string Format(int val)
+        public override string Format(int val)
         {
             return _iterators[0].Format(val);
         }
-        public string Format(Object val)
+        public override string Format(Object val)
         {
             return _iterators[0].Format(val);
         }
         /* (non-Javadoc)
          * @see com.browseengine.bobo.api.FacetIterator#getFacetCount()
          */
-        public int FacetCount
+        public virtual int FacetCount
         {
             get { return _count; }
         }
@@ -114,7 +114,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /* (non-Javadoc)
          * @see com.browseengine.bobo.api.FacetIterator#next()
          */
-        public string Next()
+        public override string Next()
         {
             if (!HasNext())
                 throw new IndexOutOfRangeException("No more facets in this iteration");
@@ -146,7 +146,7 @@ namespace BoboBrowse.Net.Facets.Impl
          * @param minHits the minHits from the facet spec for CombinedFacetAccessible
          * @return        The next facet that obeys the minHits 
          */
-        public string Next(int minHits)
+        public override string Next(int minHits)
         {
             int qsize = _queue.Size();
             if (qsize == 0)
@@ -205,7 +205,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /* (non-Javadoc)
          * @see java.util.Iterator#hasNext()
          */
-        public bool HasNext()
+        public virtual bool HasNext()
         {
             return (_queue.Size() > 0);
         }
@@ -213,7 +213,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /* (non-Javadoc)
          * @see java.util.Iterator#remove()
          */
-        public void Remove()
+        public virtual void Remove()
         {
             throw new NotSupportedException("remove() method not supported for Facet Iterators");
         }
@@ -407,7 +407,7 @@ namespace BoboBrowse.Net.Facets.Impl
         }
 
 
-        public int NextInt(int minHits)
+        public override int NextInt(int minHits)
         {
             int qsize = _queue.Size();
             if (qsize == 0)
