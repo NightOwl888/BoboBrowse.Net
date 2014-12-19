@@ -439,11 +439,11 @@ namespace BoboBrowse.Net.Facets.Impl
                 return base.GetFacet(value);
             }
 
-            public override int GetFacetsHitCount(object value)
+            public override int GetFacetHitsCount(object value)
             {
                 if (!_aggregated)
                     AggregateCounts();
-                return base.GetFacetsHitCount(value);
+                return base.GetFacetHitsCount(value);
             }
 
             public override int[] GetCountDistribution()

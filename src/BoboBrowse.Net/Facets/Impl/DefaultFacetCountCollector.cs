@@ -93,7 +93,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return facet;
         }
 
-        public virtual int GetFacetsHitCount(object value)
+        public virtual int GetFacetHitsCount(object value)
         {
             if (_closed)
             {
@@ -271,8 +271,5 @@ namespace BoboBrowse.Net.Facets.Impl
             else
                 return new DefaultFacetIterator(_dataCache.ValArray, _count, _countlength, false);
         }
-
-        // Added to satisfy IFacetAccessible contract (didn't exist in original version, but required by C#).
-        public abstract int GetFacetHitsCount(object value);
     }
 }
