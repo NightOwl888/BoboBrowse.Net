@@ -105,17 +105,17 @@ namespace BoboBrowse.Net.Facets.Impl
             return buf.ToString();
         }
 
-        protected internal override string BuildRangeString(string val)
+        protected override string BuildRangeString(string val)
         {
             return _valueToRangeStringMap.Get(val);
         }
 
-        protected internal override IEnumerable<string> BuildAllRangeStrings()
+        protected override IEnumerable<string> BuildAllRangeStrings()
         {
             return _rangeStringList;
         }
 
-        protected internal override string GetValueFromRangeString(string val)
+        protected override string GetValueFromRangeString(string val)
         {
             return _rangeStringToValueMap.Get(val);
         }
