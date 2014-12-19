@@ -193,7 +193,7 @@ namespace BoboBrowse.Net
                         data = FacetHandlerInitializerParam.EMPTY_PARAM;
                     if (data != FacetHandlerInitializerParam.EMPTY_PARAM || !factory.IsLoadLazily)
                     {
-                        var facetHandler =  factory.Get(data);
+                        IRuntimeFacetHandler facetHandler = factory.Get(data);
                         if (facetHandler != null)
                         {
                             _runtimeFacetHandlers.Add(facetHandler); // add to a list so we close them after search
