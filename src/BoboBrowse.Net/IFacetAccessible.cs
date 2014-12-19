@@ -51,7 +51,7 @@ namespace BoboBrowse.Net
         /// does not use a lot of resources,
         /// it does not have to do anything.
         /// </summary>
-        public void Close();
+        void Close();
 
         /// <summary>
         /// Returns an iterator to visit all the facets
