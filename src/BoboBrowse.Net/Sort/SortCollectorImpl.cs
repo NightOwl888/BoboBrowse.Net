@@ -443,6 +443,11 @@ namespace BoboBrowse.Net.Sort
             get { return _totalGroups; }
         }
 
+        public override IFacetAccessible[] GroupAccessibles
+        {
+            get { return _groupAccessibles; }
+        }
+
         public override BrowseHit[] TopDocs
         {
             get
