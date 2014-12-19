@@ -62,9 +62,10 @@ namespace BoboBrowse.Net.Facets.Impl
                         // Initialize.
                         if (val is long[])
                         {
-                            if (_termListFactory == null)
-                                _termListFactory = new TermFixedLengthLongArrayListFactory(
-                                  ((long[])val).Length);
+                            // TODO: put this call back in
+                            //if (_termListFactory == null)
+                            //    _termListFactory = new TermFixedLengthLongArrayListFactory(
+                            //      ((long[])val).Length);
 
                             dataMap = new C5.TreeDictionary<object, List<int>>(new VirtualSimpleFacetHandlerLongArrayComparator());
                         }
