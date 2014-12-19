@@ -303,7 +303,7 @@ namespace BoboBrowse.Net.Sort
                         _tmpScoreDoc.Score = score;
                         if (!_queueFull || _currentComparator.Compare(_bottom, _tmpScoreDoc) > 0)
                         {
-                            int order = ((IFacetDataCache)groupBy.GetFacetData(_currentReader)).OrderArray.Get(doc);
+                            int order = groupBy.GetFacetData<IFacetDataCache>(_currentReader).OrderArray.Get(doc);
                             ScoreDoc pre = _currentValueDocMaps.Get(order);
                             if (pre != null)
                             {
@@ -320,7 +320,7 @@ namespace BoboBrowse.Net.Sort
                                 if (_queueFull)
                                 {
                                     MyScoreDoc tmp = (MyScoreDoc)_bottom;
-                                    _currentValueDocMaps.Remove(((IFacetDataCache)groupBy.GetFacetData(tmp.reader)).OrderArray.Get(tmp.Doc));
+                                    _currentValueDocMaps.Remove(groupBy.GetFacetData<IFacetDataCache>(tmp.reader).OrderArray.Get(tmp.Doc));
                                     _bottom = _currentQueue.Replace(_tmpScoreDoc);
                                     _currentValueDocMaps.Put(order, _tmpScoreDoc);
                                     _tmpScoreDoc = tmp;
