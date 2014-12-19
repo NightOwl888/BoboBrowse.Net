@@ -101,7 +101,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// </summary>
         /// <param name="bucketValue"></param>
         /// <returns></returns>
-        public BrowseFacet GetFacet(string bucketValue)
+        public virtual BrowseFacet GetFacet(string bucketValue)
         {
             int index = _bucketValues.IndexOf(bucketValue);
             if (index < 0)
@@ -114,7 +114,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return new BrowseFacet(bucketValue, counts[index]);
         }
 
-        public int GetFacetHitsCount(object value)
+        public virtual int GetFacetHitsCount(object value)
         {
             int index = _bucketValues.IndexOf(value);
             if (index < 0)
@@ -127,12 +127,12 @@ namespace BoboBrowse.Net.Facets.Impl
             return counts[index];
         }
 
-        public sealed void Collect(int docid)
+        public void Collect(int docid)
         {
             _subCollector.Collect(docid);
         }
 
-        public sealed void CollectAll()
+        public void CollectAll()
         {
             _subCollector.CollectAll();
         }
@@ -143,12 +143,12 @@ namespace BoboBrowse.Net.Facets.Impl
             return DefaultFacetCountCollector.GetFacets(_ospec, counts, counts.Length, _bucketValues);
         }
 
-        public void Close()
+        public virtual void Close()
         {
             _subCollector.Close();
         }
 
-        public FacetIterator Iterator()
+        public virtual FacetIterator Iterator()
         {
             int[] counts = GetCollapsedCounts();
             return new DefaultFacetIterator(_bucketValues, counts, counts.Length, true);
