@@ -15,6 +15,6 @@ namespace BoboBrowse.Net.Facets
             get { return false; }
         }
 
-        public abstract RuntimeFacetHandler Get(FacetHandlerInitializerParam @params);
+        public abstract IRuntimeFacetHandler Get(FacetHandlerInitializerParam @params);
     }
 }

@@ -105,14 +105,14 @@ namespace BoboBrowse.Net.Facets.Filter
 
         public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboIndexReader reader)
         {
-            IFacetDataCache latDataCache = _latFacetHandler.GetFacetData(reader);
-		    IFacetDataCache longDataCache = _longFacetHandler.GetFacetData(reader);
+            IFacetDataCache latDataCache = _latFacetHandler.GetFacetData<IFacetDataCache>(reader);
+		    IFacetDataCache longDataCache = _longFacetHandler.GetFacetData<IFacetDataCache>(reader);
 		
 		    int[] latRange = FacetRangeFilter.Parse(latDataCache, _latRangeString);
 		    int[] longRange = FacetRangeFilter.Parse(longDataCache, _longRangeString);
 		    if((latRange == null) || (longRange == null)) return null;
 
-
+            return new GeoSimpleRandomAccessDocIdSet(latRange, longRange, latDataCache, longDataCache);
         }
 
         private class GeoSimpleRandomAccessDocIdSet : RandomAccessDocIdSet

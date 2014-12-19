@@ -48,8 +48,8 @@ namespace BoboBrowse.Net.Facets.Filter
             }
             else
             {
-                bool multi = dataCache is MultiValueFacetDataCache;
-                MultiValueFacetDataCache multiCache = multi ? (MultiValueFacetDataCache)dataCache : null;
+                bool multi = dataCache is IMultiValueFacetDataCache;
+                IMultiValueFacetDataCache multiCache = multi ? (IMultiValueFacetDataCache)dataCache : null;
                 return new BitSetRandomAccessDocIdSet(multi, multiCache, openBitSet, dataCache);
             }
         }
@@ -57,11 +57,11 @@ namespace BoboBrowse.Net.Facets.Filter
         public class BitSetRandomAccessDocIdSet : RandomAccessDocIdSet
         {
             private readonly bool _multi;
-            private readonly MultiValueFacetDataCache _multiCache;
+            private readonly IMultiValueFacetDataCache _multiCache;
             private readonly OpenBitSet _openBitSet;
             private readonly IFacetDataCache _dataCache;
 
-            public BitSetRandomAccessDocIdSet(bool multi, MultiValueFacetDataCache multiCache, OpenBitSet openBitSet, IFacetDataCache dataCache)
+            public BitSetRandomAccessDocIdSet(bool multi, IMultiValueFacetDataCache multiCache, OpenBitSet openBitSet, IFacetDataCache dataCache)
             {
                 _multi = multi;
                 _multiCache = multiCache;

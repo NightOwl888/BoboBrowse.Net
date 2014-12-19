@@ -38,6 +38,8 @@ namespace BoboBrowse.Net
     ///<summary> * Provides implementation of Browser for multiple Browser instances </summary>
     public class MultiBoboBrowser : MultiSearcher, IBrowsable
     {
+        // TODO: implement dispose
+
         private static ILog logger = LogManager.GetLogger<MultiBoboBrowser>();
 
         protected readonly IBrowsable[] _subBrowsers;

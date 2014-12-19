@@ -52,16 +52,16 @@ namespace BoboBrowse.Net
         private const string SPRING_CONFIG = "bobo.spring";
         private static readonly ILog logger = LogManager.GetLogger<BoboIndexReader>();
 
-        protected virtual Dictionary<string, IFacetHandler> _facetHandlerMap;
+        protected readonly Dictionary<string, IFacetHandler> _facetHandlerMap;
 
-        protected virtual IEnumerable<IFacetHandler> _facetHandlers;
-        protected virtual IEnumerable<IRuntimeFacetHandlerFactory> _runtimeFacetHandlerFactories;
-        protected virtual IDictionary<string, IRuntimeFacetHandlerFactory> _runtimeFacetHandlerFactoryMap;
+        protected readonly IEnumerable<IFacetHandler> _facetHandlers;
+        protected readonly IEnumerable<IRuntimeFacetHandlerFactory> _runtimeFacetHandlerFactories;
+        protected readonly IDictionary<string, IRuntimeFacetHandlerFactory> _runtimeFacetHandlerFactoryMap;
 
-        protected virtual WorkArea _workArea;
+        protected readonly WorkArea _workArea;
 
-        protected virtual IndexReader _srcReader;
-        internal virtual BoboIndexReader[] _subReaders = null;
+        protected readonly IndexReader _srcReader;
+        internal readonly BoboIndexReader[] _subReaders = null;
         protected int[] _starts = null;
         private Directory _dir = null;
 
@@ -74,9 +74,9 @@ namespace BoboBrowse.Net
             });
 
         // TODO: This cannot be used in .NET 3.5
-        private readonly ThreadLocal<IDictionary<string, RuntimeFacetHandler>> _runtimeFacetHandlerMap = new ThreadLocal<IDictionary<string, RuntimeFacetHandler>>(() =>
+        private readonly ThreadLocal<IDictionary<string, IRuntimeFacetHandler>> _runtimeFacetHandlerMap = new ThreadLocal<IDictionary<string, IRuntimeFacetHandler>>(() =>
             {
-                return new Dictionary<string, RuntimeFacetHandler>();
+                return new Dictionary<string, IRuntimeFacetHandler>();
             });
 
         /// <summary>
@@ -326,7 +326,7 @@ namespace BoboBrowse.Net
             _runtimeFacetDataMap.Value = null;
         }
 
-        public RuntimeFacetHandler GetRuntimeFacetHandler(string name)
+        public IRuntimeFacetHandler GetRuntimeFacetHandler(string name)
         {
             var map = _runtimeFacetHandlerMap.Value;
             if (map == null) return null;
@@ -334,12 +334,12 @@ namespace BoboBrowse.Net
             return map.Get(name);
         }
 
-        public void PutRuntimeFacetHandler(string name, RuntimeFacetHandler data)
+        public void PutRuntimeFacetHandler(string name, IRuntimeFacetHandler data)
         {
             var map = _runtimeFacetHandlerMap.Value;
             if (map == null)
             {
-                map = new Dictionary<string, RuntimeFacetHandler>();
+                map = new Dictionary<string, IRuntimeFacetHandler>();
                 _runtimeFacetHandlerMap.Value = map;
             }
             map.Put(name, data);

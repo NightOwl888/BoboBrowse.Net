@@ -2,9 +2,10 @@
 namespace BoboBrowse.Net.Facets.Range
 {
     using BoboBrowse.Net.Facets.Data;
+    using BoboBrowse.Net.Facets.Filter;
     using System;
 
-    public class MultiDataCacheBuilder<T> : FacetDataCacheBuilder
+    public class MultiDataCacheBuilder : IFacetDataCacheBuilder
     {
         private string name;
         private string indexFieldName;
@@ -15,19 +16,19 @@ namespace BoboBrowse.Net.Facets.Range
             this.indexFieldName = indexFieldName;
         }
 
-        public MultiValueFacetDataCache<T> build(BoboIndexReader reader)
+        public IMultiValueFacetDataCache Build(BoboIndexReader reader)
         {
-            return (MultiValueFacetDataCache<T>)reader.GetFacetData(name);
+            return (IMultiValueFacetDataCache)reader.GetFacetData(name);
         }
 
-        public String GetName()
+        public string Name
         {
-            return name;
+            get { return name; }
         }
 
-        public String GetIndexFieldName()
+        public string IndexFieldName
         {
-            return indexFieldName;
+            get { return indexFieldName; }
         }
     }
 }

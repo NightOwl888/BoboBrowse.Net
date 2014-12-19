@@ -12,7 +12,7 @@ namespace BoboBrowse.Net.Facets.Impl
     public class RangeFacetCountCollector : IFacetCountCollector
     {
         private readonly FacetSpec _ospec;
-        private int[] _count;
+        protected int[] _count;
         private int _countLength;
         private readonly BigSegmentedArray _array;
         private readonly IFacetDataCache _dataCache;
@@ -48,7 +48,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 int i = 0;
                 foreach (string range in this._predefinedRanges)
                 {
-                    _predefinedRangeIndexes[i++] = RangeFacetHandler.Parse(this._dataCache, range);
+                    _predefinedRangeIndexes[i++] = FacetRangeFilter.Parse(this._dataCache, range);
                 }
             }
         }
@@ -93,7 +93,7 @@ namespace BoboBrowse.Net.Facets.Impl
         public virtual BrowseFacet GetFacet(string value)
         {
             BrowseFacet facet = null;
-            int[] range = RangeFacetHandler.Parse(_dataCache, value);
+            int[] range = FacetRangeFilter.Parse(_dataCache, value);
             if (range != null)
             {
                 int sum = 0;

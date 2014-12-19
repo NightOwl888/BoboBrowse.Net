@@ -61,7 +61,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
             public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
             {
-                IFacetDataCache dataCache = _innerHandler.GetFacetData(reader);
+                IFacetDataCache dataCache = _innerHandler.GetFacetData<IFacetDataCache>(reader);
                 return new RangeFacetCountCollector(_name, dataCache, docBase, _fspec, _predefinedRanges);
             }
         }

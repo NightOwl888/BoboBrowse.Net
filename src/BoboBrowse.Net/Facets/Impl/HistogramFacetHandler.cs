@@ -10,7 +10,7 @@ namespace BoboBrowse.Net.Facets.Impl
     using System.Linq;
     using System.Text;
 
-    public class HistogramFacetHandler<T> : RuntimeFacetHandler //<FacetDataNone> 
+    public class HistogramFacetHandler<T> : RuntimeFacetHandler<FacetDataNone> 
         where T : struct
     {
         private readonly string _dataHandlerName;
@@ -76,28 +76,27 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             FacetCountCollectorSource baseCollectorSrc = _dataFacetHandler.GetFacetCountCollectorSource(sel, ospec);
 
-            return new HistogramFacetCountCollectorSource<T>(_dataHandlerName, baseCollectorSrc, _name, ospec, _start, _end, _unit);
+            return new HistogramFacetCountCollectorSource(_dataHandlerName, baseCollectorSrc, _name, ospec, _start, _end, _unit);
         }
 
-        public class HistogramFacetCountCollectorSource<T> : FacetCountCollectorSource
-            where T : struct
+        public class HistogramFacetCountCollectorSource : FacetCountCollectorSource
         {
             private readonly string _dataHandlerName;
             private readonly FacetCountCollectorSource _baseCollectorSrc;
             private readonly string _name;
             private readonly FacetSpec _ospec;
-            private readonly HistogramFacetHandler<T> _start;
-            private readonly HistogramFacetHandler<T> _end;
-            private readonly HistogramFacetHandler<T> _unit;
+            private readonly T _start;
+            private readonly T _end;
+            private readonly T _unit;
 
             public HistogramFacetCountCollectorSource(
                 string dataHandlerName,
                 FacetCountCollectorSource baseCollectorSrc,
                 string name,
                 FacetSpec ospec,
-                HistogramFacetHandler<T> start,
-                HistogramFacetHandler<T> end,
-                HistogramFacetHandler<T> unit)
+                T start,
+                T end,
+                T unit)
             {
                 _dataHandlerName = dataHandlerName;
                 _baseCollectorSrc = baseCollectorSrc;
@@ -112,11 +111,11 @@ namespace BoboBrowse.Net.Facets.Impl
             {
                 IFacetDataCache dataCache = (IFacetDataCache)reader.GetFacetData(_dataHandlerName);
                 IFacetCountCollector baseCollector = _baseCollectorSrc.GetFacetCountCollector(reader, docBase);
-                return new HistogramCollector<T>(_name, baseCollector, dataCache, _ospec, _start, _end, _unit);
+                return new HistogramCollector(_name, baseCollector, dataCache, _ospec, _start, _end, _unit);
             }
         }
 
-        public class HistogramCollector<T> : IFacetCountCollector
+        public class HistogramCollector : IFacetCountCollector
         {
             private const string NUMBER_FORMAT = "0000000000";
             private readonly FacetSpec _ospec;
@@ -130,7 +129,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
             private bool _isAggregated;
 
-            protected HistogramCollector(string facetName, IFacetCountCollector baseCollector, IFacetDataCache dataCache, FacetSpec ospec, T start, T end, T unit)
+            public HistogramCollector(string facetName, IFacetCountCollector baseCollector, IFacetDataCache dataCache, FacetSpec ospec, T start, T end, T unit)
             {
                 _facetName = facetName;
                 _baseCollector = baseCollector;

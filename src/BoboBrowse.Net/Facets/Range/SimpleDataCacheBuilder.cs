@@ -5,30 +5,30 @@ namespace BoboBrowse.Net.Facets.Range
     using BoboBrowse.Net.Facets.Filter;
     using System;
 
-    public class SimpleDataCacheBuilder<T> : AdaptiveFacetFilter.FacetDataCacheBuilder
+    public class SimpleDataCacheBuilder : IFacetDataCacheBuilder
     {
-        private String name;
-        private String indexFieldName;
+        private string name;
+        private string indexFieldName;
 
-        public SimpleDataCacheBuilder(String name, String indexFieldName)
+        public SimpleDataCacheBuilder(string name, string indexFieldName)
         {
             this.name = name;
             this.indexFieldName = indexFieldName;
         }
 
-        public FacetDataCache<T> build(BoboIndexReader reader)
+        public IFacetDataCache Build(BoboIndexReader reader)
         {
-            return (FacetDataCache<T>)reader.GetFacetData(name);
+            return (IFacetDataCache)reader.GetFacetData(name);
         }
 
-        public String getName()
+        public string Name
         {
-            return name;
+            get { return name; }
         }
 
-        public String getIndexFieldName()
+        public string IndexFieldName
         {
-            return indexFieldName;
+            get { return indexFieldName; }
         }
     }
 }

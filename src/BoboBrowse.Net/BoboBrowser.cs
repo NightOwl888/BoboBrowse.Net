@@ -37,6 +37,8 @@ namespace BoboBrowse.Net
     ///</summary>
     public class BoboBrowser : MultiBoboBrowser
     {
+        // TODO: implement dispose
+
         private static ILog logger = LogManager.GetLogger<BoboBrowser>();
 
         ///<summary>Constructor.</summary>

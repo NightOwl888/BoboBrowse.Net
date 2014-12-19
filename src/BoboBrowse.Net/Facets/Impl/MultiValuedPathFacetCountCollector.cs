@@ -17,7 +17,7 @@ namespace BoboBrowse.Net.Facets.Impl
             BrowseSelection sel, FacetSpec ospec, IFacetDataCache dataCache)
             : base(name, sep, sel, ospec, dataCache)
         {
-            _array = ((MultiValueFacetDataCache)(dataCache))._nestedArray;
+            _array = ((IMultiValueFacetDataCache)(dataCache)).NestedArray;
         }
 
         public override sealed void Collect(int docid) 

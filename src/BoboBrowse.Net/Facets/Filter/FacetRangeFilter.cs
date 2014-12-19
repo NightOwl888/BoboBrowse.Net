@@ -33,14 +33,14 @@ namespace BoboBrowse.Net.Facets.Filter
     using System;
     using System.Collections.Generic;
 
-    public sealed class FacetRangeFilter<T> : RandomAccessFilter
+    public sealed class FacetRangeFilter : RandomAccessFilter
     {
         private static long serialVersionUID = 1L;
 
-        private readonly FacetHandler<FacetDataCache<T>> _facetHandler;
+        private readonly IFacetHandler _facetHandler;
         private readonly string _rangeString;
 
-        public FacetRangeFilter(FacetHandler<FacetDataCache<T>> facetHandler, string rangeString)
+        public FacetRangeFilter(IFacetHandler facetHandler, string rangeString)
         {
             _facetHandler = facetHandler;
             _rangeString = rangeString;
@@ -49,14 +49,14 @@ namespace BoboBrowse.Net.Facets.Filter
         public override double GetFacetSelectivity(BoboIndexReader reader)
         {
             double selectivity = 0;
-            FacetDataCache<T> dataCache = _facetHandler.GetFacetData(reader);
+            IFacetDataCache dataCache = _facetHandler.GetFacetData<IFacetDataCache>(reader);
             int[] range = Parse(dataCache, _rangeString);
             if (range != null)
             {
                 int accumFreq = 0;
                 for (int idx = range[0]; idx <= range[1]; ++idx)
                 {
-                    accumFreq += dataCache.freqs[idx];
+                    accumFreq += dataCache.Freqs[idx];
                 }
                 int total = reader.MaxDoc;
                 selectivity = (double)accumFreq / (double)total;
@@ -73,23 +73,23 @@ namespace BoboBrowse.Net.Facets.Filter
         {
             private int _doc = -1;
 
-            private int _minID = int.MaxValue; // FIXME : ??? max value 
+            private int _minID = int.MaxValue;
             private int _maxID = -1;
             private readonly int _start;
             private readonly int _end;
             private readonly BigSegmentedArray _orderArray;
 
-            public FacetRangeDocIdSetIterator(int start, int end, FacetDataCache<T> dataCache)
+            public FacetRangeDocIdSetIterator(int start, int end, IFacetDataCache dataCache)
             {
                 _start = start;
                 _end = end;
                 for (int i = start; i <= end; ++i)
                 {
-                    _minID = Math.Min(_minID, dataCache.minIDs[i]);
-                    _maxID = Math.Max(_maxID, dataCache.maxIDs[i]);
+                    _minID = Math.Min(_minID, dataCache.MinIDs[i]);
+                    _maxID = Math.Max(_maxID, dataCache.MaxIDs[i]);
                 }
                 _doc = Math.Max(-1, _minID - 1);
-                _orderArray = dataCache.orderArray;
+                _orderArray = dataCache.OrderArray;
             }
 
             public override int DocID()
@@ -124,17 +124,17 @@ namespace BoboBrowse.Net.Facets.Filter
             private readonly int _end;
             private readonly BigNestedIntArray nestedArray;
 
-            public MultiFacetRangeDocIdSetIterator(int start, int end, MultiValueFacetDataCache dataCache)
+            public MultiFacetRangeDocIdSetIterator(int start, int end, IMultiValueFacetDataCache dataCache)
             {
                 _start = start;
                 _end = end;
                 for (int i = start; i <= end; ++i)
                 {
-                    _minID = Math.Min(_minID, dataCache.minIDs[i]);
-                    _maxID = Math.Max(_maxID, dataCache.maxIDs[i]);
+                    _minID = Math.Min(_minID, dataCache.MinIDs[i]);
+                    _maxID = Math.Max(_maxID, dataCache.MaxIDs[i]);
                 }
                 _doc = Math.Max(-1, _minID - 1);
-                nestedArray = dataCache._nestedArray;
+                nestedArray = dataCache.NestedArray;
             }
 
             public sealed override int DocID()
@@ -159,24 +159,24 @@ namespace BoboBrowse.Net.Facets.Filter
             }
         }
 
-        public class FacetRangeValueConverter : FacetValueConverter
+        public class FacetRangeValueConverter : IFacetValueConverter
         {
             public static FacetRangeValueConverter instance = new FacetRangeValueConverter();
             private FacetRangeValueConverter()
             { }
 
-            public int[] Convert(FacetDataCache<T> dataCache, T[] vals)
+            public int[] Convert(IFacetDataCache dataCache, string[] vals)
             {
                 return ConvertIndexes(dataCache, vals);
             }
         }
 
-        public static int[] ConvertIndexes(FacetDataCache<T> dataCache, T[] vals)
+        public static int[] ConvertIndexes(IFacetDataCache dataCache, string[] vals)
         {
             List<int> list = new List<int>();
-            foreach (T val in vals)
+            foreach (string val in vals)
             {
-                int[] range = Parse(dataCache, Convert.ToString(val));
+                int[] range = Parse(dataCache, val);
                 if (range != null)
                 {
                     for (int i = range[0]; i <= range[1]; ++i)
@@ -188,7 +188,7 @@ namespace BoboBrowse.Net.Facets.Filter
             return list.ToArray();
         }
 
-        public static int[] Parse(FacetDataCache<T> dataCache, string rangeString)
+        public static int[] Parse(IFacetDataCache dataCache, string rangeString)
         {
             string[] ranges = GetRangeStrings(rangeString);
             string lower = ranges[0];
@@ -220,7 +220,7 @@ namespace BoboBrowse.Net.Facets.Filter
             }
             else
             {
-                start = dataCache.valArray.IndexOf(lower);
+                start = dataCache.ValArray.IndexOf(lower);
                 if (start < 0)
                 {
                     start = -(start + 1);
@@ -238,11 +238,11 @@ namespace BoboBrowse.Net.Facets.Filter
 
             if (upper == null)
             {
-                end = dataCache.valArray.Size - 1;
+                end = dataCache.ValArray.Count - 1;
             }
             else
             {
-                end = dataCache.valArray.IndexOf(upper);
+                end = dataCache.ValArray.IndexOf(upper);
                 if (end < 0)
                 {
                     end = -(end + 1);
@@ -300,10 +300,10 @@ namespace BoboBrowse.Net.Facets.Filter
 
         public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboIndexReader reader)
         {
-            FacetDataCache<T> dataCache = _facetHandler.GetFacetData(reader);
+            IFacetDataCache dataCache = _facetHandler.GetFacetData<IFacetDataCache>(reader);
 
-            bool multi = dataCache is MultiValueFacetDataCache<T>;    
-            BigNestedIntArray nestedArray = multi ? ((MultiValueFacetDataCache<T>)dataCache)._nestedArray : null;
+            bool multi = dataCache is IMultiValueFacetDataCache;    
+            BigNestedIntArray nestedArray = multi ? ((IMultiValueFacetDataCache)dataCache).NestedArray : null;
             int[] range = Parse(dataCache, _rangeString);
     
             if (range == null) return null;
@@ -318,18 +318,21 @@ namespace BoboBrowse.Net.Facets.Filter
 	            return EmptyDocIdSet.GetInstance();
             }
 
+            int start = range[0];
+            int end = range[1];
 
+            return new RangeRandomAccessDocIdSet(start, end, dataCache, nestedArray, multi);
         }
 
         private class RangeRandomAccessDocIdSet : RandomAccessDocIdSet
         {
             private readonly int _start;
             private readonly int _end;
-            private readonly FacetDataCache<T> _dataCache;
+            private readonly IFacetDataCache _dataCache;
             private readonly BigNestedIntArray _nestedArray;
             private readonly bool _multi;
 
-            public RangeRandomAccessDocIdSet(int start, int end, FacetDataCache<T> dataCache, BigNestedIntArray nestedArray, bool multi)
+            public RangeRandomAccessDocIdSet(int start, int end, IFacetDataCache dataCache, BigNestedIntArray nestedArray, bool multi)
             {
                 _start = start;
                 _end = end;
@@ -344,7 +347,7 @@ namespace BoboBrowse.Net.Facets.Filter
                 {
                     _nestedArray.ContainsValueInRange(docId, _start, _end);
                 }
-                int index = _dataCache.orderArray.Get(docId);
+                int index = _dataCache.OrderArray.Get(docId);
                 return index >= _start && index <= _end;
             }
 
@@ -352,14 +355,13 @@ namespace BoboBrowse.Net.Facets.Filter
             {
                 if (_multi)
                 {
-                    return new MultiFacetRangeDocIdSetIterator(_start, _end, (MultiValueFacetDataCache<T>)dataCache);
+                    return new MultiFacetRangeDocIdSetIterator(_start, _end, (IMultiValueFacetDataCache)_dataCache);
                 }
                 else
                 {
                     return new FacetRangeDocIdSetIterator(_start, _end, _dataCache);
                 }
             }
-
         }
     }
 }

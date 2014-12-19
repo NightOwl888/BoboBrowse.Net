@@ -107,7 +107,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override int GetNumItems(BoboIndexReader reader, int id)
         {
-            IFacetDataCache dataCache = GetFacetData(reader);
+            IFacetDataCache dataCache = GetFacetData<IFacetDataCache>(reader);
             if (dataCache == null) return 0;
             int encoded = dataCache.OrderArray.Get(id);
             return CountBits(encoded);
@@ -115,7 +115,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override string[] GetFieldValues(BoboIndexReader reader, int id)
         {
-            IFacetDataCache dataCache = GetFacetData(reader);
+            IFacetDataCache dataCache = GetFacetData<IFacetDataCache>(reader);
             if (dataCache == null) return new string[0];
             int encoded = dataCache.OrderArray.Get(id);
             if (encoded == 0)
@@ -142,7 +142,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override object[] GetRawFieldValues(BoboIndexReader reader, int id)
         {
-            IFacetDataCache dataCache = GetFacetData(reader);
+            IFacetDataCache dataCache = GetFacetData<IFacetDataCache>(reader);
             if (dataCache == null) return new string[0];
             int encoded = dataCache.OrderArray.Get(id);
             if (encoded == 0)
@@ -169,7 +169,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec fspec)
         {
-            return new CompactMultiValueFacetCountCollectorSource(this.GetFacetData, _name, sel, fspec);
+            return new CompactMultiValueFacetCountCollectorSource(this.GetFacetData<IFacetDataCache>, _name, sel, fspec);
         }
 
         public class CompactMultiValueFacetCountCollectorSource : FacetCountCollectorSource
@@ -296,7 +296,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 if (!(reader is BoboIndexReader))
                     throw new InvalidOperationException("reader must be instance of BoboIndexReader");
                 var boboReader = (BoboIndexReader)reader;
-                IFacetDataCache dataCache = _facetHandler.GetFacetData(boboReader);
+                IFacetDataCache dataCache = _facetHandler.GetFacetData<IFacetDataCache>(boboReader);
                 return new CompactMultiValueDocComparator(dataCache, _facetHandler, boboReader);
             }
 
@@ -329,7 +329,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public virtual BoboDocScorer GetDocScorer(BoboIndexReader reader, IFacetTermScoringFunctionFactory scoringFunctionFactory, IDictionary<string, float> boostMap)
         {
-            IFacetDataCache dataCache = GetFacetData(reader);
+            IFacetDataCache dataCache = GetFacetData<IFacetDataCache>(reader);
             float[] boostList = BoboDocScorer.BuildBoostList(dataCache.ValArray, boostMap);
             return new CompactMultiValueDocScorer(dataCache, scoringFunctionFactory, boostList);
         }

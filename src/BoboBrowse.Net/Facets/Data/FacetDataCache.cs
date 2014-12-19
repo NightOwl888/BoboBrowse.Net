@@ -377,42 +377,42 @@ namespace BoboBrowse.Net.Facets.Data
         //    }
         //    return list.ToArray();
         //}
+    }
 
-        public class FacetDocComparatorSource : DocComparatorSource
+    public class FacetDocComparatorSource : DocComparatorSource
+    {
+        private IFacetHandler _facetHandler;
+
+        public FacetDocComparatorSource(IFacetHandler facetHandler)
         {
-            private FacetHandler<FacetDataCache<T>> _facetHandler;
+            _facetHandler = facetHandler;
+        }
 
-            public FacetDocComparatorSource(FacetHandler<FacetDataCache<T>> facetHandler)
+        public override DocComparator GetComparator(IndexReader reader, int docbase)
+        {
+            if (!(reader.GetType().Equals(typeof(BoboIndexReader))))
+                throw new ArgumentException("reader not instance of BoboIndexReader");
+            BoboIndexReader boboReader = (BoboIndexReader)reader;
+            IFacetDataCache dataCache = _facetHandler.GetFacetData<IFacetDataCache>(boboReader);
+            BigSegmentedArray orderArray = dataCache.OrderArray;
+            return new MyDocComparator(dataCache, orderArray);
+        }
+
+        public class MyDocComparator : DocComparator
+        {
+            private readonly IFacetDataCache _dataCache;
+            private readonly BigSegmentedArray _orderArray;
+
+            public MyDocComparator(IFacetDataCache dataCache, BigSegmentedArray orderArray)
             {
-                _facetHandler = facetHandler;
+                _dataCache = dataCache;
+                _orderArray = orderArray;
             }
 
-            public override DocComparator GetComparator(IndexReader reader, int docbase)
+            public override IComparable Value(ScoreDoc doc)
             {
-                if (!(reader.GetType().Equals(typeof(BoboIndexReader))))
-                    throw new ArgumentException("reader not instance of BoboIndexReader");
-                BoboIndexReader boboReader = (BoboIndexReader)reader;
-                var dataCache = _facetHandler.GetFacetData(boboReader);
-                var orderArray = dataCache.orderArray;
-                return new MyDocComparator(dataCache, orderArray);
-            }
-
-            public class MyDocComparator : DocComparator
-            {
-                private readonly FacetDataCache<T> _dataCache;
-                private readonly BigSegmentedArray _orderArray;
-
-                public MyDocComparator(FacetDataCache<T> dataCache, BigSegmentedArray orderArray)
-                {
-                    _dataCache = dataCache;
-                    _orderArray = orderArray;
-                }
-
-                public override IComparable Value(ScoreDoc doc)
-                {
-                    int index = _orderArray.Get(doc.Doc);
-                    return _dataCache.ValueArray.GetComparableValue(index);
-                }
+                int index = _orderArray.Get(doc.Doc);
+                return _dataCache.ValArray.GetComparableValue(index);
             }
         }
     }

@@ -22,6 +22,8 @@
 // Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Facets.Data
 {
+    using BoboBrowse.Net.Facets.Data;
+    using BoboBrowse.Net.Facets.Range;
     using BoboBrowse.Net.Sort;
     using BoboBrowse.Net.Support;
     using BoboBrowse.Net.Util;
@@ -33,8 +35,18 @@ namespace BoboBrowse.Net.Facets.Data
     using System.Collections.Generic;
     using System.Linq;
     
+    public interface IMultiValueFacetDataCache : IFacetDataCache
+    {
+        BigNestedIntArray NestedArray { get; }
+        int GetNumItems(int docid);
+        void Load(string fieldName, IndexReader reader, TermListFactory listFactory);
+        void Load(string fieldName, IndexReader reader, TermListFactory listFactory, BoboIndexReader.WorkArea workArea);
+        void Load(string fieldName, IndexReader reader, TermListFactory listFactory, Term sizeTerm);
+        void SetMaxItems(int maxItems);
+    }
 
-    public class MultiValueFacetDataCache<T> : FacetDataCache<T>
+
+    public class MultiValueFacetDataCache<T> : FacetDataCache<T>, IMultiValueFacetDataCache
     {
         private static long serialVersionUID = 1L;
         private static ILog logger = LogManager.GetLogger<MultiValueFacetDataCache<T>>();
@@ -48,11 +60,16 @@ namespace BoboBrowse.Net.Facets.Data
             _nestedArray = new BigNestedIntArray();
         }
 
-        public virtual MultiValueFacetDataCache<T> SetMaxItems(int maxItems)
+        public BigNestedIntArray NestedArray
+        {
+            get { return _nestedArray; }
+        }
+
+        // TODO: change to a property
+        public virtual void SetMaxItems(int maxItems)
         {
             _maxItems = Math.Min(maxItems, BigNestedIntArray.MAX_ITEMS);
             _nestedArray.MaxItems = _maxItems;
-            return this;
         }
 
         public override int GetNumItems(int docid)
@@ -60,7 +77,7 @@ namespace BoboBrowse.Net.Facets.Data
             return _nestedArray.GetNumItems(docid);
         } 
 
-        public override void Load(string fieldName, IndexReader reader, TermListFactory<T> listFactory)
+        public override void Load(string fieldName, IndexReader reader, TermListFactory listFactory)
         {
             this.Load(fieldName, reader, listFactory, new BoboIndexReader.WorkArea());
         }
@@ -73,7 +90,7 @@ namespace BoboBrowse.Net.Facets.Data
         ///   * <param name="workArea"> </param>
         ///   * <exception cref="IOException"> </exception>
         ///   
-        public virtual void Load(string fieldName, IndexReader reader, TermListFactory<T> listFactory, BoboIndexReader.WorkArea workArea)
+        public virtual void Load(string fieldName, IndexReader reader, TermListFactory listFactory, BoboIndexReader.WorkArea workArea)
         {
             long t0 = Environment.TickCount;
             int maxdoc = reader.MaxDoc;
@@ -81,7 +98,7 @@ namespace BoboBrowse.Net.Facets.Data
 
             TermEnum tenum = null;
             TermDocs tdoc = null;
-            TermValueList<T> list = (listFactory == null ? (TermValueList<T>)new TermStringList() : listFactory.CreateTermList());
+            ITermValueList list = (listFactory == null ? (ITermValueList)new TermStringList() : listFactory.CreateTermList());
             List<int> minIDList = new List<int>();
             List<int> maxIDList = new List<int>();
             List<int> freqList = new List<int>();
@@ -216,7 +233,7 @@ namespace BoboBrowse.Net.Facets.Data
         ///   * <param name="listFactory"> </param>
         ///   * <exception cref="IOException"> </exception>
         ///   
-        public virtual void Load(string fieldName, IndexReader reader, TermListFactory<T> listFactory, Term sizeTerm)
+        public virtual void Load(string fieldName, IndexReader reader, TermListFactory listFactory, Term sizeTerm)
         {
             int maxdoc = reader.MaxDoc;
             BigNestedIntArray.Loader loader = new AllocOnlyLoader(_maxItems, sizeTerm, reader);
@@ -236,7 +253,7 @@ namespace BoboBrowse.Net.Facets.Data
 
             TermEnum tenum = null;
             TermDocs tdoc = null;
-            TermValueList<T> list = (listFactory == null ? (TermValueList<T>)new TermStringList() : listFactory.CreateTermList());
+            ITermValueList list = (listFactory == null ? (ITermValueList)new TermStringList() : listFactory.CreateTermList());
             List<int> minIDList = new List<int>();
             List<int> maxIDList = new List<int>();
             List<int> freqList = new List<int>();
@@ -441,43 +458,43 @@ namespace BoboBrowse.Net.Facets.Data
                 return ((bytes[3] & 0xFF) << 24) | ((bytes[2] & 0xFF) << 16) | ((bytes[1] & 0xFF) << 8) | (bytes[0] & 0xFF);
             }
         }
+    }
 
-        public sealed class MultiFacetDocCaomparatorSource : DocComparatorSource
+    public sealed class MultiFacetDocComparatorSource : DocComparatorSource
+    {
+        private MultiDataCacheBuilder cacheBuilder;
+        public MultiFacetDocComparatorSource(MultiDataCacheBuilder multiDataCacheBuilder)
         {
-            private MultiDataCacheBuilder cacheBuilder;
-		    public MultiFacetDocComparatorSource(MultiDataCacheBuilder multiDataCacheBuilder)
-            {
-		        cacheBuilder = multiDataCacheBuilder;
-		    }
+            cacheBuilder = multiDataCacheBuilder;
+        }
 
-            public override GetComparator(IndexReader reader, int docbase)
+        public override DocComparator GetComparator(IndexReader reader, int docbase)
+        {
+            if (!reader.GetType().Equals(typeof(BoboIndexReader)))
+                throw new ArgumentException("reader must be instance of BoboIndexReader");
+            BoboIndexReader boboReader = (BoboIndexReader)reader;
+            IMultiValueFacetDataCache dataCache = cacheBuilder.Build(boboReader);
+            return new MyComparator(dataCache);
+        }
+
+        public sealed class MyComparator : DocComparator
+        {
+            private readonly IMultiValueFacetDataCache _dataCache;
+
+            public MyComparator(IMultiValueFacetDataCache dataCache)
             {
-                if (!reader.GetType().Equals(typeof(BoboIndexReader))) 
-                    throw new ArgumentException("reader must be instance of BoboIndexReader");
-                BoboIndexReader boboReader = (BoboIndexReader)reader;
-                MultiValueFacetDataCache<T> datacache = cacheBuilder.Build(boboReader);
-                return new MyComparator(dataCache);
+                _dataCache = dataCache;
             }
 
-            public sealed class MyComparator : DocComparator
+            public override int Compare(ScoreDoc doc1, ScoreDoc doc2)
             {
-                private readonly MultiValueFacetDataCache<T> _dataCache;
+                return _dataCache.NestedArray.Compare(doc1.Doc, doc2.Doc);
+            }
 
-                public MyComparator(MultiValueFacetDataCache<T> dataCache)
-                {
-                    _dataCache = dataCache;
-                }
-
-                public override int Compare(ScoreDoc doc1, ScoreDoc doc2)
-                {
-                    return _dataCache._nestedArray.Compare(doc1.Doc, doc2.Doc);
-                }
-
-                public override IComparable Value(ScoreDoc doc)
-                {
-                    string[] vals = _dataCache._nestedArray.GetTranslatedData(doc.Doc, _dataCache.valArray);
-                    return new StringArrayComparator(vals);
-                }
+            public override IComparable Value(ScoreDoc doc)
+            {
+                string[] vals = _dataCache.NestedArray.GetTranslatedData(doc.Doc, _dataCache.ValArray);
+                return new StringArrayComparator(vals);
             }
         }
     }

@@ -133,7 +133,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
             list.Seal();
 
-            FacetDataCache dataCache = new FacetDataCache(order, list, freqs, minIDs,
+            IFacetDataCache dataCache = new FacetDataCache(order, list, freqs, minIDs,
               maxIDs, TermCountSize.Large);
             return dataCache;
         }

@@ -41,12 +41,12 @@ namespace BoboBrowse.Net.Facets.Impl
         protected internal readonly BigSegmentedArray _array;
         private int _docBase;
         //protected readonly List<int[]> intarraylist = new List<int[]>();
-        private Iterator _iterator;
+        //private Iterator _iterator;
         private bool _closed = false;
 
         // TODO: Need to determine if the memory manger is necessary
 
-        public DefaultFacetCountCollector(String name, IFacetDataCache dataCache, int docBase, BrowseSelection sel, FacetSpec ospec)
+        public DefaultFacetCountCollector(string name, IFacetDataCache dataCache, int docBase, BrowseSelection sel, FacetSpec ospec)
         {
             _sel = sel;
             _ospec = ospec;
@@ -115,26 +115,26 @@ namespace BoboBrowse.Net.Facets.Impl
             return _count;
         }
 
-        public virtual IEnumerable<BrowseFacet> GetFacets(FacetSpec ospec, int[] count, int countLength, ITermValueList valList)
+        public static IEnumerable<BrowseFacet> GetFacets(FacetSpec ospec, int[] count, int countlength, ITermValueList valList)
         {
-            if (_ospec != null)
+            if (ospec != null)
             {
-                int minCount = _ospec.MinHitCount;
-                int max = _ospec.MaxCount;
-                if (max <= 0) max = _count.Length;
+                int minCount = ospec.MinHitCount;
+                int max = ospec.MaxCount;
+                if (max <= 0) max = countlength;
 
-                IList<BrowseFacet> facetColl;
-                FacetSpec.FacetSortSpec sortspec = _ospec.OrderBy;
+                LinkedList<BrowseFacet> facetColl;
+                FacetSpec.FacetSortSpec sortspec = ospec.OrderBy;
                 if (sortspec == FacetSpec.FacetSortSpec.OrderValueAsc)
                 {
-                    facetColl = new List<BrowseFacet>(max);
-                    for (int i = 1; i < _count.Length; ++i) // exclude zero
+                    facetColl = new LinkedList<BrowseFacet>();
+                    for (int i = 1; i < countlength; ++i) // exclude zero
                     {
-                        int hits = _count[i];
+                        int hits = count[i];
                         if (hits >= minCount)
                         {
-                            BrowseFacet facet = new BrowseFacet(valList[i], hits);
-                            facetColl.Add(facet);
+                            BrowseFacet facet = new BrowseFacet(valList.Get(i), hits);
+                            facetColl.AddLast(facet);
                         }
 
                         if (facetColl.Count >= max)
@@ -150,7 +150,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     }
                     else
                     {
-                        comparatorFactory = _ospec.CustomComparatorFactory;
+                        comparatorFactory = ospec.CustomComparatorFactory;
                     }
 
                     if (comparatorFactory == null)
@@ -159,13 +159,13 @@ namespace BoboBrowse.Net.Facets.Impl
                     }
 
                     IComparer<int> comparator = comparatorFactory.NewComparator(new DefaultFacetCountCollectorFieldAccessor(valList), count);
-                    facetColl = new List<BrowseFacet>();
+                    facetColl = new LinkedList<BrowseFacet>();
                     int forbidden = -1;
                     IntBoundedPriorityQueue pq = new IntBoundedPriorityQueue(comparator, max, forbidden);
 
-                    for (int i = 1; i < countLength; ++i) // exclude zero
+                    for (int i = 1; i < countlength; ++i) // exclude zero
                     {
-                        int hits = _count[i];
+                        int hits = count[i];
                         if (hits >= minCount)
                         {
                             pq.Offer(i);
@@ -175,8 +175,8 @@ namespace BoboBrowse.Net.Facets.Impl
                     int val;
                     while ((val = pq.Poll()) != forbidden)
                     {
-                        BrowseFacet facet = new BrowseFacet(valList[val], _count[val]);
-                        facetColl.Insert(0, facet);
+                        BrowseFacet facet = new BrowseFacet(valList[val], count[val]);
+                        facetColl.AddFirst(facet);
                     }
                 }
                 return facetColl;

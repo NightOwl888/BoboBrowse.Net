@@ -210,7 +210,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 }
             }
 
-            string[] pathParts;
+            //string[] pathParts; // NOT USED
             StringBuilder buf = new StringBuilder();
             for (int i = index; i < _count.Length; ++i)
             {

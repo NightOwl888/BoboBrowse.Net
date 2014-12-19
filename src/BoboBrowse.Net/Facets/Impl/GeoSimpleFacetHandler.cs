@@ -16,7 +16,7 @@ namespace BoboBrowse.Net.Facets.Impl
     /// <summary>
     /// author nnarkhed
     /// </summary>
-    public class GeoSimpleFacetHandler : RuntimeFacetHandler //<FacetDataNone>
+    public class GeoSimpleFacetHandler : RuntimeFacetHandler<FacetDataNone>
     {
         private static ILog logger = LogManager.GetLogger<GeoSimpleFacetHandler>();
 	    protected readonly string _latFacetName;
@@ -150,8 +150,8 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
             {
-                IFacetDataCache latDataCache = _latFacetHandler.GetFacetData(reader);
-                IFacetDataCache longDataCache = _longFacetHandler.GetFacetData(reader);
+                IFacetDataCache latDataCache = _latFacetHandler.GetFacetData<IFacetDataCache>(reader);
+                IFacetDataCache longDataCache = _longFacetHandler.GetFacetData<IFacetDataCache>(reader);
                 return new GeoSimpleFacetCountCollector(_name, latDataCache, longDataCache, docBase, _fspec, _list);
             }
         }
@@ -215,7 +215,7 @@ namespace BoboBrowse.Net.Facets.Impl
             {
                 if (!(reader is BoboIndexReader)) throw new ArgumentException("reader not instance of " + typeof(BoboIndexReader));
                 BoboIndexReader boboReader = (BoboIndexReader)reader;
-                FacetDataNone dataCache = _facetHandler.GetFacetData((BoboIndexReader)reader);
+                FacetDataNone dataCache = _facetHandler.GetFacetData<FacetDataNone>((BoboIndexReader)reader); // TODO: This is not being used
                 return new GeoSimpleFacetHandlerDocComparator();
             }
 

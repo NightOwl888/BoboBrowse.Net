@@ -35,12 +35,12 @@ namespace BoboBrowse.Net.Facets.Impl
     using System.Linq;
     using System.Text.RegularExpressions;
 
-    public class RangeFacetHandler : FacetHandler<FacetDataCache>
+    public class RangeFacetHandler : FacetHandler<IFacetDataCache>
     {
         private static ILog logger = LogManager.GetLogger<RangeFacetHandler>();
-        private readonly string _indexFieldName;
-        private readonly TermListFactory _termListFactory;
-        private readonly IEnumerable<string> _predefinedRanges;
+        protected readonly string _indexFieldName;
+        protected readonly TermListFactory _termListFactory;
+        protected readonly IEnumerable<string> _predefinedRanges;
 
         public RangeFacetHandler(string name, string indexFieldName, TermListFactory termListFactory, IEnumerable<string> predefinedRanges)
             : base(name)
@@ -67,19 +67,19 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override DocComparatorSource GetDocComparatorSource()
         {
-            return new FacetDataCache.FacetDocComparatorSource(this);
+            return new FacetDocComparatorSource(this);
         }
 
         public override int GetNumItems(BoboIndexReader reader, int id)
         {
-            IFacetDataCache data = GetFacetData(reader);
+            IFacetDataCache data = GetFacetData<IFacetDataCache>(reader);
             if (data == null) return 0;
             return data.GetNumItems(id);
         }
 
         public override string[] GetFieldValues(BoboIndexReader reader, int id)
         {
-            IFacetDataCache dataCache = GetFacetData(reader);
+            IFacetDataCache dataCache = GetFacetData<IFacetDataCache>(reader);
             if (dataCache != null)
             {
                 return new string[] { dataCache.ValArray.Get(dataCache.OrderArray.Get(id)) };
@@ -89,7 +89,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override object[] GetRawFieldValues(BoboIndexReader reader, int id)
         {
-            IFacetDataCache dataCache = GetFacetData(reader);
+            IFacetDataCache dataCache = GetFacetData<IFacetDataCache>(reader);
             if (dataCache != null)
             {
                 return new object[] { dataCache.ValArray.GetRawValue(dataCache.OrderArray.Get(id)) };
@@ -106,7 +106,7 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             if (vals.Length > 1)
             {
-                return new BitSetFilter(new ValueConverterBitSetBuilder(FacetRangeValueConverter.Instance, vals, isNot), new SimpleDataCacheBuilder(Name, _indexFieldName));
+                return new BitSetFilter(new ValueConverterBitSetBuilder(FacetRangeFilter.FacetRangeValueConverter.instance, vals, isNot), new SimpleDataCacheBuilder(Name, _indexFieldName));
             }
             else
             {
@@ -143,7 +143,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
             {
-                IFacetDataCache dataCache = _parent.GetFacetData(reader);
+                IFacetDataCache dataCache = _parent.GetFacetData<IFacetDataCache>(reader);
                 return new RangeFacetCountCollector(_name, dataCache, docBase, _ospec, _predefinedRanges);
             }
         }
@@ -164,7 +164,7 @@ namespace BoboBrowse.Net.Facets.Impl
             IFacetTermScoringFunctionFactory scoringFunctionFactory,
             IDictionary<string, float> boostMap)
         {
-            IFacetDataCache dataCache = GetFacetData(reader);
+            IFacetDataCache dataCache = GetFacetData<IFacetDataCache>(reader);
             float[] boostList = BoboDocScorer.BuildBoostList(dataCache.ValArray, boostMap);
             return new RangeBoboDocScorer(dataCache, scoringFunctionFactory, boostList);
         }

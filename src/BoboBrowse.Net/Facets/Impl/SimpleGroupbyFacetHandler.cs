@@ -402,10 +402,10 @@ namespace BoboBrowse.Net.Facets.Impl
                             throw new System.ArgumentException("facet comparator factory not specified");
                         }
 
-                        IComparer<int> comparator = comparatorFactory.NewComparator(new GroupbyFieldValueAccessor(this), _count);
+                        IComparer<int> comparator = comparatorFactory.NewComparator(new GroupbyFieldValueAccessor(this.GetFacetString, this.GetRawFaceValue), _count);
                         facetColl = new List<BrowseFacet>();
                         int forbidden = -1;
-                        BoundedPriorityQueue<int> pq = new BoundedPriorityQueue<int>(comparator, max, forbidden);
+                        IntBoundedPriorityQueue pq = new IntBoundedPriorityQueue(comparator, max, forbidden);
 
                         for (int i = 1; i < _countlength; ++i) // exclude zero
                         {
@@ -432,6 +432,28 @@ namespace BoboBrowse.Net.Facets.Impl
                 else
                 {
                     return IFacetCountCollector_Fields.EMPTY_FACET_LIST;
+                }
+            }
+
+            public class GroupbyFieldValueAccessor : IFieldValueAccessor
+            {
+                private readonly Func<int, string> getFacetString;
+                private readonly Func<int, object> getRawFaceValue;
+
+                public GroupbyFieldValueAccessor(Func<int, string> getFacetString, Func<int, object> getRawFaceValue)
+                {
+                    this.getFacetString = getFacetString;
+                    this.getRawFaceValue = getRawFaceValue;
+                }
+
+                public string GetFormatedValue(int index)
+                {
+                    return getFacetString(index);
+                }
+
+                public object GetRawValue(int index)
+                {
+                    return getRawFaceValue(index);
                 }
             }
 

@@ -29,19 +29,19 @@ namespace BoboBrowse.Net.Facets.Filter
     using Lucene.Net.Util;
     using System;
 
-    public class MultiValueORFacetFilter<T> : RandomAccessFilter
+    public class MultiValueORFacetFilter : RandomAccessFilter
     {
         private static long serialVersionUID = 1L;
-        private readonly FacetHandler<T> _facetHandler;
-        private readonly T[] _vals;
+        private readonly IFacetHandler _facetHandler;
+        private readonly string[] _vals;
         private readonly bool _takeCompliment;
-        private readonly FacetValueConverter _valueConverter;
+        private readonly IFacetValueConverter _valueConverter;
 
-        public MultiValueORFacetFilter(FacetHandler<T> facetHandler, T[] vals, bool takeCompliment)
-            : this(facetHandler, vals, FacetValueConverter.DEFAULT, takeCompliment)
+        public MultiValueORFacetFilter(IFacetHandler facetHandler, string[] vals, bool takeCompliment)
+            : this(facetHandler, vals, FacetValueConverter_Fields.DEFAULT, takeCompliment)
         {}
   
-        public MultiValueORFacetFilter(FacetHandler<T> facetHandler, T[] vals, FacetValueConverter valueConverter, bool takeCompliment)
+        public MultiValueORFacetFilter(IFacetHandler facetHandler, string[] vals, IFacetValueConverter valueConverter, bool takeCompliment)
         {
             _facetHandler = facetHandler;
             _vals = vals;
@@ -52,8 +52,8 @@ namespace BoboBrowse.Net.Facets.Filter
         public override double GetFacetSelectivity(BoboIndexReader reader)
         {
             double selectivity = 0;
-            MultiValueFacetDataCache<T> dataCache = (MultiValueFacetDataCache<T>)_facetHandler.GetFacetData(reader);
-            int[] idxes = _valueConverter.convert(dataCache, _vals);
+            IMultiValueFacetDataCache dataCache = _facetHandler.GetFacetData<IMultiValueFacetDataCache>(reader);
+            int[] idxes = _valueConverter.Convert(dataCache, _vals);
             if (idxes == null)
             {
                 return 0.0;
@@ -61,7 +61,7 @@ namespace BoboBrowse.Net.Facets.Filter
             int accumFreq = 0;
             foreach (int idx in idxes)
             {
-                accumFreq += dataCache.freqs[idx];
+                accumFreq += dataCache.Freqs[idx];
             }
             int total = reader.MaxDoc;
             selectivity = (double)accumFreq / (double)total;
@@ -73,13 +73,13 @@ namespace BoboBrowse.Net.Facets.Filter
         }
 
 
-        private sealed class MultiValueFacetDocIdSetIterator : FacetOrFilter<T>.FacetOrDocIdSetIterator
+        public sealed class MultiValueOrFacetDocIdSetIterator : FacetOrFilter.FacetOrDocIdSetIterator
         {
             private readonly BigNestedIntArray _nestedArray;
-            public MultiValueFacetDocIdSetIterator(MultiValueFacetDataCache<T> dataCache, OpenBitSet bs)
+            public MultiValueOrFacetDocIdSetIterator(IMultiValueFacetDataCache dataCache, OpenBitSet bs)
                 : base(dataCache, bs)
             {
-                _nestedArray = dataCache._nestedArray;
+                _nestedArray = dataCache.NestedArray;
             }           
 
             public override int NextDoc()
@@ -101,10 +101,10 @@ namespace BoboBrowse.Net.Facets.Filter
 
         public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboIndexReader reader)
         {
-            MultiValueFacetDataCache<T> dataCache = (MultiValueFacetDataCache<T>)_facetHandler.GetFacetData(reader);
-            int[] index = _valueConverter.convert(dataCache, _vals);
-            BigNestedIntArray nestedArray = dataCache._nestedArray;
-            OpenBitSet bitset = new OpenBitSet(dataCache.valArray.Size);
+            IMultiValueFacetDataCache dataCache = _facetHandler.GetFacetData<IMultiValueFacetDataCache>(reader);
+            int[] index = _valueConverter.Convert(dataCache, _vals);
+            //BigNestedIntArray nestedArray = dataCache.NestedArray;
+            OpenBitSet bitset = new OpenBitSet(dataCache.ValArray.Count);
 
             foreach (int i in index)
             {
@@ -114,14 +114,14 @@ namespace BoboBrowse.Net.Facets.Filter
             if (_takeCompliment)
             {
                 // flip the bits
-                int size = dataCache.valArray.Size;
+                int size = dataCache.ValArray.Count;
                 for (int i = 0; i < size; ++i)
                 {
                     bitset.FastFlip(i);
                 }
             }
 
-            long count = bitset.cardinality();
+            long count = bitset.Cardinality();
 
             if (count == 0)
             {
@@ -129,7 +129,7 @@ namespace BoboBrowse.Net.Facets.Filter
             }
             else
             {
-
+                return new MultiRandomAccessDocIdSet(dataCache, bitset);
             }
         }
 
@@ -150,15 +150,15 @@ namespace BoboBrowse.Net.Facets.Filter
 
         private class MultiRandomAccessDocIdSet : RandomAccessDocIdSet
         {
-            private readonly FacetDataCache<T> dataCache;
+            private readonly IMultiValueFacetDataCache dataCache;
             private readonly OpenBitSet bitset;
             private readonly BigNestedIntArray nestedArray;
 
-            public MultiRandomAccessDocIdSet(FacetDataCache<T> dataCache, OpenBitSet bitset, BigNestedIntArray nestedArray)
+            public MultiRandomAccessDocIdSet(IMultiValueFacetDataCache dataCache, OpenBitSet bitset)
             {
                 this.dataCache = dataCache;
                 this.bitset = bitset;
-                this.nestedArray = nestedArray;
+                this.nestedArray = dataCache.NestedArray;
             }
 
             public override DocIdSetIterator Iterator()

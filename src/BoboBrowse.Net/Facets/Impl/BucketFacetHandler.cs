@@ -118,7 +118,7 @@ namespace BoboBrowse.Net.Facets.Impl
         public override int GetNumItems(BoboIndexReader reader, int id)
         {
             var dependOnFacetHandler = GetDependedFacetHandler(_dependsOnFacetName);
-            IFacetDataCache data = dependOnFacetHandler.GetFacetData(reader);
+            IFacetDataCache data = dependOnFacetHandler.GetFacetData<IFacetDataCache>(reader);
             return data.GetNumItems(id);
         }
 

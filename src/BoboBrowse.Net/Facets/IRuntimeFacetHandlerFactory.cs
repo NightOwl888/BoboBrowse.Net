@@ -28,6 +28,6 @@ namespace BoboBrowse.Net.Facets
         /// </summary>
         /// <param name="params">the data used to initialize the RuntimeFacetHandler.</param>
         /// <returns>a new instance of </returns>
-        RuntimeFacetHandler Get(FacetHandlerInitializerParam @params);
+        IRuntimeFacetHandler Get(FacetHandlerInitializerParam @params);
     }
 }

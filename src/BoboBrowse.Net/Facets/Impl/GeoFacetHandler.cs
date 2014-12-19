@@ -202,14 +202,14 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
             {
-                GeoFacetData dataCache = (GeoFacetData)_parent.GetFacetData(reader);
+                GeoFacetData dataCache = _parent.GetFacetData<GeoFacetData>(reader);
                 return new GeoFacetCountCollector(_parent._name, dataCache, docBase, _fspec, _ranges, _parent._miles);
             }
         }
 
         public override string[] GetFieldValues(BoboIndexReader reader, int id)
         {
-            GeoFacetData dataCache = GetFacetData(reader);
+            GeoFacetData dataCache = GetFacetData<GeoFacetData>(reader);
             BigFloatArray xvals = dataCache.get_xValArray();
             BigFloatArray yvals = dataCache.get_yValArray();
             BigFloatArray zvals = dataCache.get_zValArray();

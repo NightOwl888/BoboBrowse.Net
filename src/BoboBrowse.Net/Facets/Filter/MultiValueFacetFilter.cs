@@ -24,6 +24,7 @@ namespace BoboBrowse.Net.Facets.Filter
 {
     using BoboBrowse.Net.DocIdSet;
     using BoboBrowse.Net.Facets.Data;
+    using BoboBrowse.Net.Facets.Range;
     using BoboBrowse.Net.Util;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
@@ -45,13 +46,13 @@ namespace BoboBrowse.Net.Facets.Filter
         public double GetFacetSelectivity(BoboIndexReader reader)
         {
             double selectivity = 0;
-            MultiValueFacetDataCache dataCache = MultiDataCacheBuilder.Build(reader);
+            IMultiValueFacetDataCache dataCache = multiDataCacheBuilder.Build(reader);
             int idx = dataCache.ValArray.IndexOf(_val);
             if (idx < 0)
             {
                 return 0.0;
             }
-            int freq = dataCache.freqs[idx];
+            int freq = dataCache.Freqs[idx];
             int total = reader.MaxDoc;
             selectivity = (double)freq / (double)total;
             return selectivity;
@@ -61,7 +62,7 @@ namespace BoboBrowse.Net.Facets.Filter
         {
             private readonly BigNestedIntArray _nestedArray;
 
-            public MultiValueFacetDocIdSetIterator(MultiValueFacetDataCache dataCache, int index)
+            public MultiValueFacetDocIdSetIterator(IMultiValueFacetDataCache dataCache, int index)
                 : base(dataCache, index)
             {
                 _nestedArray = dataCache.NestedArray;
@@ -77,7 +78,8 @@ namespace BoboBrowse.Net.Facets.Filter
             {
                 if (_doc < id)
                 {
-                    doc = (id <= _maxID ? _nestedArray.FindValue(_index, id, _maxID) : NO_MORE_DOCS);
+                    _doc = (id <= _maxID ? _nestedArray.FindValue(_index, id, _maxID) : NO_MORE_DOCS);
+                    return _doc;
                 }
                 return NextDoc();
             }            
@@ -85,30 +87,29 @@ namespace BoboBrowse.Net.Facets.Filter
 
         public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboIndexReader reader)
         {
-            MultiValueFacetDataCache dataCache = multiDataCacheBuilder.Build(reader);
+            IMultiValueFacetDataCache dataCache = multiDataCacheBuilder.Build(reader);
             int index = dataCache.ValArray.IndexOf(_val);
-            BigNestedIntArray nestedArray = dataCache.NestedArray;
             if (index < 0)
             {
                 return EmptyDocIdSet.GetInstance();
             }
             else
             {
-                return new MultiValueRandomAccessDocIdSet(dataCache, index, nestedArray);
+                return new MultiValueRandomAccessDocIdSet(dataCache, index);
             }
         }
 
         private class MultiValueRandomAccessDocIdSet : RandomAccessDocIdSet
         {
-            private readonly MultiValueFacetDataCache _dataCache;
+            private readonly IMultiValueFacetDataCache _dataCache;
             private readonly int _index;
             private readonly BigNestedIntArray _nestedArray;
 
-            public MultiValueRandomAccessDocIdSet(MultiValueFacetDataCache dataCache, int index, BigNestedIntArray nestedArray)
+            public MultiValueRandomAccessDocIdSet(IMultiValueFacetDataCache dataCache, int index)
             {
                 _dataCache = dataCache;
                 _index = index;
-                _nestedArray = nestedArray;
+                _nestedArray = dataCache.NestedArray;
             }
 
             public override DocIdSetIterator Iterator()

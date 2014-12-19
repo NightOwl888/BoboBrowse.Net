@@ -30,7 +30,7 @@ namespace BoboBrowse.Net.Facets.Impl
 	    private int[][] _longPredefinedRangeIndexes;
 	    private int _docBase;
 
-        protected GeoSimpleFacetCountCollector(string name, IFacetDataCache latDataCache, IFacetDataCache longDataCache, int docBase, FacetSpec spec, IEnumerable<string> predefinedRanges)
+        public GeoSimpleFacetCountCollector(string name, IFacetDataCache latDataCache, IFacetDataCache longDataCache, int docBase, FacetSpec spec, IEnumerable<string> predefinedRanges)
         {
             _name = name;
             _latDataCache = latDataCache;

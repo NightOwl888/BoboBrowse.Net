@@ -24,7 +24,7 @@ namespace BoboBrowse.Net
         private readonly IDictionary<string, IRuntimeFacetHandlerFactory> _runtimeFacetHandlerFactoryMap;
         private readonly IDictionary<string, IFacetHandler> _runtimeFacetHandlerMap;
         private IDictionary<string, IFacetHandler> _allFacetHandlerMap;
-        private IList<RuntimeFacetHandler> _runtimeFacetHandlers = null;
+        private IList<IRuntimeFacetHandler> _runtimeFacetHandlers = null;
 
         public BoboIndexReader IndexReader
         {
@@ -172,7 +172,7 @@ namespace BoboBrowse.Net
 
     
             //      initialize all RuntimeFacetHandlers with data supplied by user at run-time.
-            _runtimeFacetHandlers = new List<RuntimeFacetHandler>(_runtimeFacetHandlerFactoryMap.Count());
+            _runtimeFacetHandlers = new List<IRuntimeFacetHandler>(_runtimeFacetHandlerFactoryMap.Count());
 
             IEnumerable<string> runtimeFacetNames = _runtimeFacetHandlerFactoryMap.Keys;
             foreach (string facetName in runtimeFacetNames)

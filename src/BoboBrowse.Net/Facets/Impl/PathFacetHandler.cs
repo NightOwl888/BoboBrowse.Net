@@ -21,7 +21,7 @@ namespace BoboBrowse.Net.Facets.Impl
     using System.Linq;
     using System.Text;
     
-    public class PathFacetHandler : FacetHandler<FacetDataCache>
+    public class PathFacetHandler : FacetHandler<IFacetDataCache>
     {
         private const string DEFAULT_SEP = "/";
 
@@ -83,7 +83,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override int GetNumItems(BoboIndexReader reader, int id)
         {
-            IFacetDataCache data = GetFacetData(reader);
+            IFacetDataCache data = GetFacetData<IFacetDataCache>(reader);
             if (data == null) return 0;
             return data.GetNumItems(id);
         }
@@ -104,21 +104,21 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override DocComparatorSource GetDocComparatorSource()
         {
-            return new FacetDataCache.FacetDocComparatorSource(this);
+            return new FacetDocComparatorSource(this);
         }
 
         public override string[] GetFieldValues(BoboIndexReader reader, int id)
         {
-            FacetDataCache dataCache = GetFacetData(reader);
+            IFacetDataCache dataCache = GetFacetData<IFacetDataCache>(reader);
             if (dataCache == null) return new string[0];
             if (_multiValue)
             {
-                return ((MultiValueFacetDataCache)dataCache).NestedArray.GetTranslatedData(id, dataCache.valArray);
+                return ((IMultiValueFacetDataCache)dataCache).NestedArray.GetTranslatedData(id, dataCache.ValArray);
             }
             else
             {
 
-                return new string[] { dataCache.ValArray.get(dataCache.OrderArray.Get(id)) };
+                return new string[] { dataCache.ValArray.Get(dataCache.OrderArray.Get(id)) };
             }
         }
 
@@ -210,7 +210,13 @@ namespace BoboBrowse.Net.Facets.Impl
             PathValueConverter valConverter = new PathValueConverter(depth, strict, _separator);
             string[] vals = new string[] { value };
 
-            return _multiValue ? new MultiValueORFacetFilter(this, vals, valConverter, false) : new FacetOrFilter(this, vals, false, valConverter);
+            if (_multiValue)
+            {
+                return new MultiValueORFacetFilter(this, vals, valConverter, false);
+            }
+            return new FacetOrFilter(this, vals, false, valConverter);
+
+            //return _multiValue ? new MultiValueORFacetFilter(this, vals, valConverter, false) : new FacetOrFilter(this, vals, false, valConverter);
         }
 
         public override RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, Properties prop)
@@ -242,7 +248,12 @@ namespace BoboBrowse.Net.Facets.Impl
                     int depth = GetDepth(prop);
                     bool strict = IsStrict(prop);
                     PathValueConverter valConverter = new PathValueConverter(depth, strict, _separator);
-                    return _multiValue ? new MultiValueORFacetFilter(this, vals, valConverter, isNot) : new FacetOrFilter(this, vals, isNot, valConverter);
+
+                    if (_multiValue)
+                    {
+                        return new MultiValueORFacetFilter(this, vals, valConverter, isNot);
+                    }
+                    return new FacetOrFilter(this, vals, isNot, valConverter);
                 }
                 else
                 {
@@ -295,7 +306,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
             {
-                IFacetDataCache dataCache = _parent.GetFacetData(reader);
+                IFacetDataCache dataCache = _parent.GetFacetData<IFacetDataCache>(reader);
 				if (_multiValue)
                 {
 					return new MultiValuedPathFacetCountCollector(_name, _separator, _sel, _ospec, dataCache);
@@ -319,7 +330,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
             else
             {
-                MultiValueFacetDataCache dataCache = new MultiValueFacetDataCache();
+                IMultiValueFacetDataCache dataCache = new MultiValueFacetDataCache();
                 dataCache.Load(_indexedName, reader, _termListFactory);
                 return dataCache;
             }

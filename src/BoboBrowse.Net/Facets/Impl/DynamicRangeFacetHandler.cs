@@ -23,9 +23,9 @@ namespace BoboBrowse.Net.Facets.Impl
             this._dataFacetName = dataFacetName;
         }
 
-        protected internal abstract string BuildRangeString(string val);
-        protected internal abstract IEnumerable<string> BuildAllRangeStrings();
-        protected internal abstract string GetValueFromRangeString(string rangeString);
+        protected abstract string BuildRangeString(string val);
+        protected abstract IEnumerable<string> BuildAllRangeStrings();
+        protected abstract string GetValueFromRangeString(string rangeString);
 
         public override RandomAccessFilter BuildRandomAccessFilter(string val, Properties props)
         {
@@ -56,7 +56,7 @@ namespace BoboBrowse.Net.Facets.Impl
         public override FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec fspec)
         {
             var list = BuildAllRangeStrings();
-            return new DynamicRangeFacetCountCollector(this, name, _dataFacetHandler, docBase, fspec, list);
+            return new DynamicRangeFacetCountCollectorSource(this, _dataFacetHandler, Name, fspec, list);
         }
 
         private class DynamicRangeFacetCountCollectorSource : FacetCountCollectorSource
@@ -78,7 +78,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
             {
-                IFacetDataCache dataCache = this._dataFacetHandler.GetFacetData(reader);
+                IFacetDataCache dataCache = this._dataFacetHandler.GetFacetData<IFacetDataCache>(reader);
                 return new DynamicRangeFacetCountCollector(_parent, _name, dataCache, docBase, _fspec, _predefinedList);
             }
 
@@ -143,7 +143,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 while (iter.MoveNext())
                 {
                     BrowseFacet facet = iter.Current;
-                    object val = facet.Value;
+                    string val = facet.Value;
                     string rangeString = parent.GetValueFromRangeString(val);
                     if (rangeString != null)
                     {

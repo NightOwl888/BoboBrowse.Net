@@ -6,6 +6,13 @@ namespace BoboBrowse.Net.Facets
     using System.Linq;
     using System.Text;
 
+    public interface IRuntimeFacetHandler
+    {
+        void Close();
+        T GetFacetData<T>(BoboIndexReader reader);
+        void LoadFacetData(BoboIndexReader reader);
+    }
+
     /// <summary>
     /// Abstract class for RuntimeFacetHandlers. A concrete RuntimeFacetHandler should implement
     /// the FacetHandlerFactory and RuntimeInitializable so that bobo knows how to create new
@@ -14,7 +21,7 @@ namespace BoboBrowse.Net.Facets
     /// author ymatsuda
     /// </summary>
     /// <typeparam name="D">type parameter for FacetData</typeparam>
-    public abstract class RuntimeFacetHandler : FacetHandler
+    public abstract class RuntimeFacetHandler<D> : FacetHandler<D>, IRuntimeFacetHandler
     {
         /// <summary>
         /// Constructor that specifying the dependent facet handlers using names.
@@ -35,15 +42,20 @@ namespace BoboBrowse.Net.Facets
             : base(name)
         { }
 
-        //public override D GetFacetData(BoboIndexReader reader)
+        //public override D GetFacetData<D>(BoboIndexReader reader)
         //{
         //    return (D)reader.GetRuntimeFacetData(_name);
         //}
 
-        public override object GetFacetData(BoboIndexReader reader)
+        public override T GetFacetData<T>(BoboIndexReader reader)
         {
-            return reader.GetRuntimeFacetData(_name);
+            return (T)reader.GetRuntimeFacetData(_name);
         }
+
+        //public override object GetFacetData(BoboIndexReader reader)
+        //{
+        //    return reader.GetRuntimeFacetData(_name);
+        //}
 
         public override void LoadFacetData(BoboIndexReader reader)
         {

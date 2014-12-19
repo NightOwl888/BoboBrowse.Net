@@ -36,7 +36,7 @@ namespace BoboBrowse.Net.Facets
                 throw new InvalidOperationException("This instance of count collector was already closed");
             }
             int sum = -1;
-            String foundValue = null;
+            string foundValue = null;
             if (_list != null)
             {
                 foreach (IFacetAccessible facetAccessor in _list)
@@ -255,7 +255,10 @@ namespace BoboBrowse.Net.Facets
                 {
                     fa.Close();
                 }
-                _list.Clear(); // TODO: See if anything else in this class requires a list, because IEnumerable would be a better choice for the constructor
+                // NOTE: This was done in the original Java source, but
+                // is not necessary in .NET. After disposing all of the child instances,
+                // memory cleanup is left up to the framework.
+                //_list.Clear();
             }
         }
 

@@ -6,24 +6,24 @@ namespace BoboBrowse.Net.Facets.Range
     using Lucene.Net.Util;
     using System;
 
-    public class ValueConverterBitSetBuilder<T> : IBitSetBuilder
+    public class ValueConverterBitSetBuilder : IBitSetBuilder
     {
-        private readonly FacetValueConverter facetValueConverter;
-        private readonly String[] vals;
-        private readonly boolean takeCompliment;
+        private readonly IFacetValueConverter facetValueConverter;
+        private readonly string[] vals;
+        private readonly bool takeCompliment;
 
-        public ValueConverterBitSetBuilder(FacetValueConverter facetValueConverter, String[] vals, bool takeCompliment) 
+        public ValueConverterBitSetBuilder(IFacetValueConverter facetValueConverter, string[] vals, bool takeCompliment) 
         {
             this.facetValueConverter = facetValueConverter;
             this.vals = vals;
             this.takeCompliment = takeCompliment;    
         }
 
-        public override OpenBitSet BitSet(FacetDataCache<T> dataCache)
+        public override OpenBitSet BitSet(IFacetDataCache dataCache)
         {
             int[] index = facetValueConverter.Convert(dataCache, vals);
 
-            OpenBitSet bitset = new OpenBitSet(dataCache.valArray.Size);
+            OpenBitSet bitset = new OpenBitSet(dataCache.ValArray.Count);
             foreach (int i in index)
             {
                 bitset.FastSet(i);

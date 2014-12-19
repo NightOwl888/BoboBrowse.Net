@@ -44,7 +44,7 @@ namespace BoboBrowse.Net.Facets.Filter
         {
             int maxDoc = reader.MaxDoc;
 
-		    GeoFacetHandler.GeoFacetData dataCache = _handler.GetFacetData(reader);
+            GeoFacetHandler.GeoFacetData dataCache = _handler.GetFacetData<GeoFacetHandler.GeoFacetData>(reader);
 		    return new GeoDocIdSet(dataCache.get_xValArray(), dataCache.get_yValArray(), dataCache.get_zValArray(),
 				_lat, _lon, _rad, maxDoc, _miles);
         }

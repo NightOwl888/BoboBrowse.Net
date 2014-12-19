@@ -60,7 +60,7 @@ namespace BoboBrowse.Net.Facets
         FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec ospec, bool groupMode);
 
         //D GetFacetData(BoboIndexReader reader);// Generic
-        object GetFacetData(BoboIndexReader reader);
+        T GetFacetData<T>(BoboIndexReader reader);
 
         string GetFieldValue(BoboIndexReader reader, int id);
         string[] GetFieldValues(BoboIndexReader reader, int id);
@@ -72,8 +72,8 @@ namespace BoboBrowse.Net.Facets
         //D Load(BoboIndexReader reader);// Generic
         //D Load(BoboIndexReader reader, BoboIndexReader.WorkArea workArea);// Generic
 
-        object Load(BoboIndexReader reader); // TODO: Make these pass generic parameters - it appears the classes know what type to expect
-        object Load(BoboIndexReader reader, BoboIndexReader.WorkArea workArea);
+        //object Load(BoboIndexReader reader); // TODO: Make these pass generic parameters - it appears the classes know what type to expect
+        //object Load(BoboIndexReader reader, BoboIndexReader.WorkArea workArea);
 
         void LoadFacetData(BoboIndexReader reader);
         void LoadFacetData(BoboIndexReader reader, BoboIndexReader.WorkArea workArea);
@@ -91,19 +91,19 @@ namespace BoboBrowse.Net.Facets
         //FacetHandler<D> SetTermCountSize(string termCountSize);//Make void
     }
 
+    [Serializable]
+    public class FacetDataNone
+    {
+        private static long serialVersionUID = 1L;
+        public static FacetDataNone instance = new FacetDataNone();
+        private FacetDataNone() { }
+    }
+
     public abstract class FacetHandler<D> : ICloneable, IFacetHandler
     {
-        [Serializable]
-        public class FacetDataNone
-        {
-            private static long serialVersionUID = 1L;
-            public static FacetDataNone instance = new FacetDataNone();
-            private FacetDataNone() { }
-        }
-
         protected readonly string _name;
         private readonly IEnumerable<string> _dependsOn;
-        // TODO: See if there is a way to use another type besides object; original was <string, FacetHandler<?>>
+        // original was <string, FacetHandler<?>>
         private readonly Dictionary<string, IFacetHandler> _dependedFacetHandlers;
         private TermCountSize _termCountSize;
 
@@ -217,17 +217,17 @@ namespace BoboBrowse.Net.Facets
 
 
 
-        ///// <summary>
-        ///// Load information from an index reader, initialized by <see cref="T:BoboBrowse.Net.BoboIndexReader"/>.
-        ///// </summary>
-        ///// <param name="reader"></param>
-        //public abstract D Load(BoboIndexReader reader);
-
         /// <summary>
         /// Load information from an index reader, initialized by <see cref="T:BoboBrowse.Net.BoboIndexReader"/>.
         /// </summary>
         /// <param name="reader"></param>
-        public abstract object Load(BoboIndexReader reader);
+        public abstract D Load(BoboIndexReader reader);
+
+        ///// <summary>
+        ///// Load information from an index reader, initialized by <see cref="T:BoboBrowse.Net.BoboIndexReader"/>.
+        ///// </summary>
+        ///// <param name="reader"></param>
+        //public abstract object Load(BoboIndexReader reader);
 
         public virtual IFacetAccessible Merge(FacetSpec fspec, IEnumerable<IFacetAccessible> facetList)
         {
@@ -239,21 +239,21 @@ namespace BoboBrowse.Net.Facets
         //    return (D)reader.GetFacetData(_name);
         //}
 
-        public virtual object GetFacetData(BoboIndexReader reader)
+        public virtual T GetFacetData<T>(BoboIndexReader reader)
         {
-            return reader.GetFacetData(_name);
+            return (T)reader.GetFacetData(_name);
         }
 
 
-        //public virtual D Load(BoboIndexReader reader, BoboIndexReader.WorkArea workArea)
-        //{
-        //    return Load(reader);
-        //}
-
-        public virtual object Load(BoboIndexReader reader, BoboIndexReader.WorkArea workArea)
+        public virtual D Load(BoboIndexReader reader, BoboIndexReader.WorkArea workArea)
         {
             return Load(reader);
         }
+
+        //public virtual object Load(BoboIndexReader reader, BoboIndexReader.WorkArea workArea)
+        //{
+        //    return Load(reader);
+        //}
 
         public virtual void LoadFacetData(BoboIndexReader reader, BoboIndexReader.WorkArea workArea)
         {
