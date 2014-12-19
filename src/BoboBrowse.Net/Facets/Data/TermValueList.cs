@@ -32,13 +32,14 @@ namespace BoboBrowse.Net.Facets.Data
 
     public interface ITermValueList : IList<string>
     {
-        int Count { get; }
+        new int Count { get; }
         string Get(int index);
         IComparable GetComparableValue(int index);
         object GetRawValue(int index); // TODO: see if we can use the actual type here by either making this method generic, or removing it here and putting it into the generic class.
+        //TRaw GetRawValue<TRaw>(int index);
         string Format(object o);
         int IndexOf(object o);
-        void Add(string o);
+        void Add(string o); // TODO: Add boolean return value here.
         List<string> GetInnerList();
         void Seal();
         Type Type { get; }
@@ -139,6 +140,11 @@ namespace BoboBrowse.Net.Facets.Data
         {
             return _innerList[index];
         }
+
+        //public virtual TRaw GetRawValue<TRaw>(int index)
+        //{
+        //    return (TRaw)_innerList[index];
+        //}
 
         public virtual IComparable GetComparableValue(int index)
         {
