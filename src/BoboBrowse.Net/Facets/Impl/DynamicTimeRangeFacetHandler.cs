@@ -95,7 +95,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        private virtual string BuildRangeString(long currentTime, string dStart, string dEnd)
+        private string BuildRangeString(long currentTime, string dStart, string dEnd)
         {
             // NOTE: The original code used the culture of the current thread for formatting, so that is what we do here.
             string end = GetTime(currentTime, dStart).ToString(NUMBER_FORMAT);
