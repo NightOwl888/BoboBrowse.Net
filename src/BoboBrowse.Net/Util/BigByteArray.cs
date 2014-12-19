@@ -124,12 +124,12 @@ namespace BoboBrowse.Net.Util
             _numrows = newNumrows;
         }
 
-        internal override sealed int GetBlockSize()
+        protected override sealed int GetBlockSize()
         {
             return BLOCK_SIZE;
         }
 
-        internal override sealed int GetShiftSize()
+        protected override sealed int GetShiftSize()
         {
             return SHIFT_SIZE;
         }
