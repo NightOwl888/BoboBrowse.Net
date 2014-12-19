@@ -59,7 +59,7 @@ namespace BoboBrowse.Net.Query.Scoring
             return new FacetTermWeight(this, searcher.Similarity);
         }
 
-        public override void ExtractTerms(IList<Term> terms)
+        public override void ExtractTerms(ISet<Term> terms)
         {
             foreach (string val in _sel.Values)
             {
