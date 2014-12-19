@@ -55,7 +55,6 @@ namespace BoboBrowse.Net.Facets
 
 
         DocComparatorSource GetDocComparatorSource();
-        IFacetCountCollector GetFacetCountCollector(BrowseSelection sel, FacetSpec fspec);
         FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec fspec);
         FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec ospec, bool groupMode);
 
@@ -419,14 +418,6 @@ namespace BoboBrowse.Net.Facets
         /// <returns>a sort comparator</returns>
         public abstract DocComparatorSource GetDocComparatorSource();
 
-
-       /// <summary>
-        /// Gets a FacetCountCollector 
-       /// </summary>
-       /// <param name="sel"></param>
-       /// <param name="fspec"></param>
-       /// <returns></returns>
-        public abstract IFacetCountCollector GetFacetCountCollector(BrowseSelection sel, FacetSpec fspec);
 
         public virtual object Clone()
         {
