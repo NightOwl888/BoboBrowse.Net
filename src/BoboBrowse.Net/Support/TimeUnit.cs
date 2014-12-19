@@ -52,15 +52,15 @@
     public static class TimeUnitExtensions
     {
         // Handy constants for conversion methods
-        static const long C0 = 1L;
-        static const long C1 = C0 * 1000L;
-        static const long C2 = C1 * 1000L;
-        static const long C3 = C2 * 1000L;
-        static const long C4 = C3 * 60L;
-        static const long C5 = C4 * 60L;
-        static const long C6 = C5 * 24L;
+        const long C0 = 1L;
+        const long C1 = C0 * 1000L;
+        const long C2 = C1 * 1000L;
+        const long C3 = C2 * 1000L;
+        const long C4 = C3 * 60L;
+        const long C5 = C4 * 60L;
+        const long C6 = C5 * 24L;
 
-        static const long MAX = long.MaxValue;
+        const long MAX = long.MaxValue;
 
         public static long ToNanos(this TimeUnit timeUnit, long d)
         {
