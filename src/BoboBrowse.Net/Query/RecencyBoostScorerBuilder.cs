@@ -44,10 +44,10 @@ namespace BoboBrowse.Net.Query
             if (reader is BoboIndexReader)
             {
                 BoboIndexReader boboReader = (BoboIndexReader)reader;
-                IFacetDataCache dataObj = boboReader.GetFacetData(_timeFacetName);
-                if (dataObj is FacetDataCache<long>)
+                object dataObj = boboReader.GetFacetData(_timeFacetName);
+                if (dataObj is IFacetDataCache)
                 {
-                    FacetDataCache<long> facetDataCache = (FacetDataCache<long>)(boboReader.GetFacetData(_timeFacetName));
+                    IFacetDataCache facetDataCache = (IFacetDataCache)(boboReader.GetFacetData(_timeFacetName));
                     BigSegmentedArray orderArray = facetDataCache.OrderArray;
                     TermLongList termList = (TermLongList)facetDataCache.ValArray;
                     long now = System.Environment.TickCount;
@@ -77,10 +77,10 @@ namespace BoboBrowse.Net.Query
             if (reader is BoboIndexReader)
             {
                 BoboIndexReader boboReader = (BoboIndexReader)reader;
-                IFacetDataCache dataObj = boboReader.GetFacetData(_timeFacetName);
-                if (dataObj is FacetDataCache<long>)
+                object dataObj = boboReader.GetFacetData(_timeFacetName);
+                if (dataObj is IFacetDataCache)
                 {
-                    FacetDataCache<long> facetDataCache = (FacetDataCache<long>)(boboReader.GetFacetData(_timeFacetName));
+                    IFacetDataCache facetDataCache = (IFacetDataCache)(boboReader.GetFacetData(_timeFacetName));
                     BigSegmentedArray orderArray = facetDataCache.OrderArray;
                     TermLongList termList = (TermLongList)facetDataCache.ValArray;
                     return new RecencyBoostScorer(this, innerScorer, orderArray, termList);
