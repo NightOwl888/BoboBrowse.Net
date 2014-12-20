@@ -1,4 +1,5 @@
-﻿namespace BoboBrowse.Tests
+﻿// Version compatibility level: 3.1.0
+namespace BoboBrowse.Tests
 {
     using BoboBrowse.Net;
     using BoboBrowse.Net.Facets;
@@ -12,7 +13,7 @@
     using Lucene.Net.Search;
     using Lucene.Net.Store;
     using Lucene.Net.Documents;
-    using NUnit.Framework;    
+    using NUnit.Framework;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -20,14 +21,14 @@
 
     [TestFixture]
     public class BasicTests
-    {        
+    {
         private Directory _indexDir;
         private IDictionary<string, int> _categories;
 
         [TestFixtureSetUp]
         public void Init()
         {
-            _categories = new Dictionary<string, int>() { { "JAVA", 1 }, { "C#", 2 }, { "AJAX", 3 }, { "PYTHON", 4 }, { "WEB", 5}, { "JAVASCRIPT",6 } };
+            _categories = new Dictionary<string, int>() { { "JAVA", 1 }, { "C#", 2 }, { "AJAX", 3 }, { "PYTHON", 4 }, { "WEB", 5 }, { "JAVASCRIPT", 6 } };
             _indexDir = new RAMDirectory();
             //build a test index file.            
             var dataSet = new[] {
@@ -81,12 +82,12 @@
                     doc.Add(new Field("category", book.Category.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
                     doc.Add(new NumericField("price", int.MaxValue - 1, Field.Store.YES, true).SetDoubleValue(book.Price));
                     doc.Add(new Field("author", book.Author, Field.Store.YES, Field.Index.ANALYZED));
-                    doc.Add(new Field("path", book.Path, Field.Store.YES, Field.Index.ANALYZED));                  
+                    doc.Add(new Field("path", book.Path, Field.Store.YES, Field.Index.ANALYZED));
                     doc.Add(new Field("year", book.Year.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
                     indexWriter.AddDocument(doc);
                 }
                 indexWriter.Optimize();
-            }            
+            }
         }
 
         [Test]
@@ -98,20 +99,20 @@
             {
                 Count = 10,
                 Offset = 0,
-                Query = query                
+                Query = query
             };
 
-            var prefix = "java";
-            Console.WriteLine(string.Format("prefix:{0}", prefix));
-            Console.WriteLine("=============================");
+            //var prefix = "java"; // NightOwl888: Prefix is no longer a feature
+            //Console.WriteLine(string.Format("prefix:{0}", prefix));
+            //Console.WriteLine("=============================");
 
             var faceHandlers = new IFacetHandler[] { new SimpleFacetHandler("name") };
             var browser = new BoboBrowser(BoboIndexReader.GetInstance(IndexReader.Open(_indexDir, true), faceHandlers));
-            var factSpec = new FacetSpec() {Prefix=prefix, OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc };
+            var factSpec = new FacetSpec() { OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc };
             request.SetFacetSpec("name", factSpec);
 
             var result = browser.Browse(request);
-            
+
             foreach (var facet in result.FacetMap["name"].GetFacets())
             {
                 Console.WriteLine(facet.ToString());
@@ -131,7 +132,7 @@
                 Sort = new Sort(new SortField("year", SortField.INT, false)).GetSort()
             };
 
-            var faceHandlers = new FacetHandler[] { new SimpleFacetHandler("category") };
+            var faceHandlers = new IFacetHandler[] { new SimpleFacetHandler("category") };
             var browser = new BoboBrowser(BoboIndexReader.GetInstance(IndexReader.Open(_indexDir, true), faceHandlers));
             var factSpec = new FacetSpec() { OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc, MinHitCount = 1 };
             request.SetFacetSpec("category", factSpec);
@@ -149,7 +150,7 @@
             {
                 var doc = browser.Doc(result.Hits[i].DocId);
                 var category = _categories.First(k => k.Value == int.Parse(doc.GetField("category").StringValue)).Key;
-                Console.WriteLine(string.Format("{2} - {0}({4}) ${1} by {3}", doc.GetField("name").StringValue, doc.GetField("price").StringValue, category, doc.GetField("author").StringValue,doc.GetField("year").StringValue));
+                Console.WriteLine(string.Format("{2} - {0}({4}) ${1} by {3}", doc.GetField("name").StringValue, doc.GetField("price").StringValue, category, doc.GetField("author").StringValue, doc.GetField("year").StringValue));
             }
         }
 
@@ -162,7 +163,7 @@
             {
                 Count = 10,
                 Offset = 0,
-                Query = query               
+                Query = query
             };
             var authors = new string[] { "kathy", "sierra" };//kathy&sierra
             var sectionFilter = new BrowseSelection("author");
@@ -177,7 +178,7 @@
             {
                 var doc = browser.Doc(result.Hits[i].DocId);
                 var category = _categories.First(k => k.Value == int.Parse(doc.GetField("category").StringValue)).Key;
-                Console.WriteLine(string.Format("{2} - {0} ${1} by {3}", doc.GetField("name").StringValue, doc.GetField("price").StringValue, category,doc.GetField("author").StringValue));
+                Console.WriteLine(string.Format("{2} - {0} ${1} by {3}", doc.GetField("name").StringValue, doc.GetField("price").StringValue, category, doc.GetField("author").StringValue));
             }
         }
 
@@ -204,7 +205,7 @@
             Console.WriteLine("===========================");
             foreach (var facet in result.FacetMap["path"].GetFacets())
             {
-                Console.WriteLine(facet.ToString());               
+                Console.WriteLine(facet.ToString());
             }
             Console.WriteLine("===========================");
             for (var i = 0; i < result.Hits.Length; i++)
@@ -217,14 +218,14 @@
 
         [Test]
         public void TestRangeFacetHandler()
-        {            
+        {
             var query = new MatchAllDocsQuery();
-            Console.WriteLine(string.Format("query: <{0}>", query.ToString()));                       
+            Console.WriteLine(string.Format("query: <{0}>", query.ToString()));
 
-            var testRangeFacetHandlers = new List<FacetHandler>();
-            testRangeFacetHandlers.Add(new RangeFacetHandler("year", true));//auto range
+            var testRangeFacetHandlers = new List<IFacetHandler>();
+            //testRangeFacetHandlers.Add(new RangeFacetHandler("year", true));//auto range // NightOwl888 - Auto range is no longer a feature.
             testRangeFacetHandlers.Add(new RangeFacetHandler("year", new List<string>(new string[] { "[* TO 2000]", "[2000 TO 2005]", "[2006 TO 2010]", "[2011 TO *]" })));
-            testRangeFacetHandlers.Add(new RangeFacetHandler("price","price", new NumberFieldFactory(), true));
+            //testRangeFacetHandlers.Add(new RangeFacetHandler("price", "price", new NumberFieldFactory(), true)); // NightOwl888 - Auto range is no longer a feature.
 
             for (var i = 0; i < testRangeFacetHandlers.Count; i++)
             {
@@ -242,7 +243,7 @@
                 request.AddSelection(sectionFilter);
 
                 var faceHandler = testRangeFacetHandlers[i];
-                var faceHandlers = new FacetHandler[] { faceHandler,new SimpleFacetHandler("category") };
+                var faceHandlers = new IFacetHandler[] { faceHandler, new SimpleFacetHandler("category") };
                 var browser = new BoboBrowser(BoboIndexReader.GetInstance(IndexReader.Open(_indexDir, true), faceHandlers));
                 var factSpec = new FacetSpec() { OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc };
                 request.SetFacetSpec(faceHandler.Name, factSpec);
@@ -261,6 +262,11 @@
     {
 
         public override ITermValueList CreateTermList()
+        {
+            return new PriceValueList();
+        }
+
+        public override ITermValueList CreateTermList(int capacity)
         {
             return new PriceValueList();
         }
