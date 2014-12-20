@@ -1,4 +1,5 @@
-﻿namespace BoboBrowse.Net.Util
+﻿// Version compatibility level: 3.1.0
+namespace BoboBrowse.Net.Util
 {
     using BoboBrowse.Net.Support;
     using NUnit.Framework;
@@ -187,12 +188,12 @@
                 for(int id = 0; id < maxId; id++)
                 {
                     int cnt = id % (maxNumItems[i] + 1);
-                    loader.addSize(id, cnt);
+                    loader.AddSize(id, cnt);
                     count[i, id] = cnt;
                 }
                 nestedArray[i] = new BigNestedIntArray();
                 nestedArray[i].Load(maxId, loader);
-                loader.reset();
+                loader.Reset();
 
                 for(int id = 0; id < maxId; id++)
                 {
@@ -235,12 +236,12 @@
                 _maxNumItems = new int[maxdoc];
             }
 
-            public void addSize(int docid, int size)
+            public void AddSize(int docid, int size)
             {
                 _maxNumItems[docid] = size;
             }
 
-            public void reset()
+            public void Reset()
             {
                 Arrays.Fill(_maxNumItems, 0);
             }
@@ -271,13 +272,13 @@
                 for(int id = 0; id < maxId; id++)
                 {
                     int cnt = id % 2000;
-                    loader.addSize(id, cnt);
+                    loader.AddSize(id, cnt);
                     count[i, id] = cnt;
                 }
                 nestedArray[i] = new BigNestedIntArray();
                 nestedArray[i].MaxItems = maxNumItems[i];
                 nestedArray[i].Load(maxId, loader);
-                loader.reset();
+                loader.Reset();
 
                 for(int id = 0; id < maxId; id++)
                 {
