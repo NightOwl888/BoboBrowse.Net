@@ -963,13 +963,13 @@ namespace BoboBrowse.Net
                 Assert.AreEqual(0, hit.DocId);
                 Object lowDate = hit.GetRawField("date");
                 DateTime date = new DateTime(2000, 1, 1);
-                Assert.True(lowDate.Equals(date.GetTime()));
+                Assert.True(lowDate.Equals(date.ToBinary()));
 
                 hit = result.Hits[6];
                 Assert.AreEqual(5, hit.DocId);
                 Object highDate = hit.GetRawField("date");
                 date = new DateTime(2007, 8, 1);
-                Assert.True(highDate.Equals(date.GetTime()));
+                Assert.True(highDate.Equals(date.ToBinary()));
 
             }
             catch (BrowseException e)
