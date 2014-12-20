@@ -1,4 +1,5 @@
-﻿namespace BoboBrowse.Net.Util
+﻿// Version compatibility level: 3.1.0
+namespace BoboBrowse.Net.Util
 {
     using BoboBrowse.Net.DocIdSet;
     using BoboBrowse.Net.Support;
@@ -29,15 +30,15 @@
                 int n = 10 * i;
                 if (n < 200)
                 {
-                    bs.Set(n, true);
+                    bs.Set(n);
                 }
             }
 
             try
             {
-                while (filteredIter.NextDoc() != DocIdSetIterator.NO_MORE_DOCS)
+                int doc;
+                while ((doc = filteredIter.NextDoc()) != DocIdSetIterator.NO_MORE_DOCS)
                 {
-                    int doc = filteredIter.DocID();
                     if (!bs.Get(doc))
                     {
                         Assert.Fail("failed: " + doc + " not in expected set");
@@ -45,13 +46,12 @@
                     }
                     else
                     {
-                        bs.Set(doc, false);
+                        bs.Clear(doc);
                     }
                 }
-                var cardinality = bs.Cardinality();
-                if (cardinality > 0)
+                if (bs.Cardinality() > 0)
                 {
-                    Assert.Fail("failed: leftover cardinality: " + cardinality);
+                    Assert.Fail("failed: leftover cardinality: " + bs.Cardinality());
                 }
             }
             catch (Exception e)
@@ -67,7 +67,7 @@
             {
             }
 
-            protected internal override bool Match(int doc)
+            protected override bool Match(int doc)
             {
                 return doc % 5 == 0;
             }
