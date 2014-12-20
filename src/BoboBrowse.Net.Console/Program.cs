@@ -1,12 +1,14 @@
 ﻿namespace BoboBrowse.Net.Console
 {
-    using BoboBrowse.Net.Client;
+    // TODO: Find out why the namespace is failing to resolve here.
+    //using BoboBrowse.Net.Client;
 
     class Program
     {
         static int Main(string[] args)
         {
-            return BoboCmdlineApp.Main(args);
+            return 0;
+            //return BoboCmdlineApp.Main(args);
         }
     }
 }
