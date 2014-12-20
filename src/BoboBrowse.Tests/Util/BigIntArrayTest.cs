@@ -1,8 +1,8 @@
-﻿namespace BoboBrowse.Net.Util
+﻿// Version compatibility level: 3.1.0
+namespace BoboBrowse.Net.Util
 {
     using NUnit.Framework;
     using System;
-    using System.Diagnostics;
 
     [TestFixture]
     public class BigIntArrayTest
@@ -25,23 +25,21 @@
             }
 
             int k = 0;
-            var sw = new Stopwatch();
-            sw.Start();
+            long start = System.Environment.TickCount;
             for (int i = 0; i < count; i++)
             {
                 k = test.Get(i);
             }
-            sw.Stop();
-            Console.WriteLine("Big array took: " + sw.ElapsedMilliseconds.ToString());
+            long end = System.Environment.TickCount;
+            Console.WriteLine("Big array took: " + (end - start));
 
-            sw.Reset();
-            sw.Start();
+            start = System.Environment.TickCount;
             for (int i = 0; i < count; i++)
             {
                 k = test2[i];
             }
-            sw.Stop();
-            Console.WriteLine("int[] took: " + sw.ElapsedMilliseconds.ToString());
+            end = System.Environment.TickCount;
+            Console.WriteLine("int[] took: " + (end - start));
         }
     }
 }
