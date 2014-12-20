@@ -1551,32 +1551,21 @@ namespace BoboBrowse.Net
         private BrowseResult DoTest(BoboBrowser boboBrowser, BrowseRequest req, int numHits, IDictionary<string, IEnumerable<BrowseFacet>> choiceMap, string[] ids)
         {
             BrowseResult result;
-            try
+
+            if (boboBrowser == null)
             {
-                if (boboBrowser == null)
-                {
-                    using (boboBrowser = NewBrowser())
-                    {
-                        result = boboBrowser.Browse(req);
-                    }
-                }
-                else
+                using (boboBrowser = NewBrowser())
                 {
                     result = boboBrowser.Browse(req);
                 }
+            }
+            else
+            {
+                result = boboBrowser.Browse(req);
+            }
 
-                DoTest(result, req, numHits, choiceMap, ids);
-                return result;
-            }
-            catch (BrowseException e)
-            {
-                Assert.Fail(e.Message);
-            }
-            catch (System.IO.IOException ioe)
-            {
-                Assert.Fail(ioe.Message);
-            }
-            return null;
+            DoTest(result, req, numHits, choiceMap, ids);
+            return result;
         }
 
         [Test]
