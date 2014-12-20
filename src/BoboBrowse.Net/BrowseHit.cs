@@ -150,14 +150,15 @@ namespace BoboBrowse.Net
         public Document StoredFields { get; set; }
 
 
-        public string ToString(Dictionary<string, string[]> map)
+        public string ToString(IDictionary<string, string[]> map)
         {
             StringBuilder buffer = new StringBuilder();
             foreach (KeyValuePair<string, string[]> e in map)
             {
                 buffer.Append(e.Key);
                 buffer.Append(":");
-                buffer.Append(string.Join(", ", e.Value));
+                var vals = e.Value;
+                buffer.Append(vals == null ? null : string.Join(", ", e.Value));
             }
             return buffer.ToString();
         }
