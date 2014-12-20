@@ -43,7 +43,7 @@ namespace BoboBrowse.Net.Search
             _facetCollectors = new List<FacetHitCollector>();
             var readerList = new List<IndexReader>();
             ReaderUtil.GatherSubReaders(readerList, reader);
-            _subReaders = (BoboIndexReader[])readerList.ToArray();
+            _subReaders = readerList.Cast<BoboIndexReader>().ToArray();
             _docStarts = new int[_subReaders.Length];
             int maxDoc = 0;
             for (int i = 0; i < _subReaders.Length; ++i)
