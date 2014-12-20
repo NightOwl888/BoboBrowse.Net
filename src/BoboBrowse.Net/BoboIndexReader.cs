@@ -353,7 +353,8 @@ namespace BoboBrowse.Net
         protected override void DoClose()
         {
             _facetDataMap.Clear();
-            if (_srcReader != null) _srcReader.Close();
+            // BUG: DoClose() already calls close on the inner reader
+            //if (_srcReader != null) _srcReader.Close();
             base.DoClose();
         }
 
