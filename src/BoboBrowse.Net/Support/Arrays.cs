@@ -15,6 +15,8 @@
 
         public static string ToString<T>(T[] block)
         {
+            if (block == null) 
+                return string.Empty;
             return string.Join(", ", block.Select(x => x.ToString()).ToArray());
         }
 
