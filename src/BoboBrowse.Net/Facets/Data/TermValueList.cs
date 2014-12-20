@@ -280,34 +280,37 @@ namespace BoboBrowse.Net.Facets.Data
         public class TermValueListEnumerator : IEnumerator<string>
         {
             private readonly TermValueList<T> parent;
+            private readonly IEnumerator<T> iter;
 
             public TermValueListEnumerator(TermValueList<T> parent)
             {
                 this.parent = parent;
+                this.iter = parent._innerList.GetEnumerator();
             }
 
             public string Current
             {
-                get { return parent.Format(parent._innerList.GetEnumerator().Current); }
+                get { return parent.Format(iter.Current); }
             }
 
             public void Dispose()
             {
+                iter.Dispose();
             }
 
             object IEnumerator.Current
             {
-                get { return parent.Format(parent._innerList.GetEnumerator().Current); }
+                get { return parent.Format(iter.Current); }
             }
 
             public bool MoveNext()
             {
-                return parent._innerList.GetEnumerator().MoveNext();
+                return iter.MoveNext();
             }
 
             public void Reset()
             {
-                throw new NotSupportedException("not supported");
+                iter.Reset();
             }
         }
     }
