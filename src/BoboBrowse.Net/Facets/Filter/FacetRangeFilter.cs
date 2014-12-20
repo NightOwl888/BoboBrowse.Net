@@ -287,8 +287,8 @@ namespace BoboBrowse.Net.Facets.Filter
             string lower, upper;
             try
             {
-                lower = rangeString.Substring(index + 1, index2).Trim();
-                upper = rangeString.Substring(index2 + 4, index3).Trim();
+                lower = rangeString.Substring(index + 1, index2 - (index + 1)).Trim();
+                upper = rangeString.Substring(index2 + 4, index3 - (index2 + 4)).Trim();
 
                 return new string[] { lower, upper, Convert.ToString(incLower).ToLower(), Convert.ToString(incUpper).ToLower() };
             }

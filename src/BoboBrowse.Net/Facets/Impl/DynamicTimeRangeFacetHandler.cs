@@ -72,18 +72,18 @@ namespace BoboBrowse.Net.Facets.Impl
             {
                 int val;
 
-                val = int.Parse(range.Substring(0, 3));
+                val = int.Parse(range.Substring(0, 3 - 0));
                 time -= val * MILLIS_IN_DAY;
 
-                val = int.Parse(range.Substring(3, 5));
+                val = int.Parse(range.Substring(3, 5 - 3));
                 if (val >= 24) throw new ParseException("invalid range format: " + range);
                 time -= val * MILLIS_IN_HOUR;
 
-                val = int.Parse(range.Substring(5, 7));
+                val = int.Parse(range.Substring(5, 7 - 5));
                 if (val >= 60) throw new ParseException("invalid range format: " + range);
                 time -= val * MILLIS_IN_MIN;
 
-                val = int.Parse(range.Substring(7, 9));
+                val = int.Parse(range.Substring(7, 9 - 7));
                 if (val >= 60) throw new ParseException("invalid range format: " + range);
                 time -= val * MILLIS_IN_SEC;
 

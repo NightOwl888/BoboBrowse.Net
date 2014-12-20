@@ -130,7 +130,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     {
                         EnsureCapacity(_patEnd + 1);
                         tokEnd++;
-                        _stringData[_patEnd++] = input.Substring(tokStart, tokEnd);
+                        _stringData[_patEnd++] = input.Substring(tokStart, tokEnd - tokStart);
                     }
                     tokStart = -1;
                 }
@@ -156,7 +156,7 @@ namespace BoboBrowse.Net.Facets.Impl
             {
                 EnsureCapacity(_patEnd + 1);
                 tokEnd++;
-                _stringData[_patEnd++] = input.Substring(tokStart, tokEnd);
+                _stringData[_patEnd++] = input.Substring(tokStart, tokEnd - tokStart);
             }
 
             // let gc do its job 
