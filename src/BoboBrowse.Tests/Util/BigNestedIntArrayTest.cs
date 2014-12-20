@@ -275,7 +275,7 @@
                     count[i, id] = cnt;
                 }
                 nestedArray[i] = new BigNestedIntArray();
-                nestedArray[i].setMaxItems(maxNumItems[i]);
+                nestedArray[i].MaxItems = maxNumItems[i];
                 nestedArray[i].Load(maxId, loader);
                 loader.reset();
 
