@@ -11,7 +11,7 @@ namespace BoboBrowse.Net.Facets.Data
     public class TermFloatList : TermNumberList<float>
     {
         private static ILog logger = LogManager.GetLogger<TermFloatList>();
-        private List<float> _elements = new List<float>();
+        private float[] _elements;
         public const float VALUE_MISSING = float.MinValue;
 
         private float Parse(string s)
@@ -80,7 +80,7 @@ namespace BoboBrowse.Net.Facets.Data
 
         public float GetPrimitiveValue(int index)
         {
-            if (index < _elements.Count)
+            if (index < _elements.Length)
                 return _elements[index];
             else
                 return VALUE_MISSING;
@@ -99,16 +99,16 @@ namespace BoboBrowse.Net.Facets.Data
 
         public int IndexOf(float o)
         {
-            return _elements.BinarySearch(o);
+            return Array.BinarySearch(_elements, o);
         }
 
         public override void Seal()
         {
             _innerList.TrimExcess();
-            _elements = new List<float>(_innerList);
+            _elements = _innerList.ToArray();
             int negativeIndexCheck = 1;
             //reverse negative elements, because string order and numeric orders are completely opposite
-            if (_elements.Count > negativeIndexCheck && _elements[negativeIndexCheck] < 0)
+            if (_elements.Length > negativeIndexCheck && _elements[negativeIndexCheck] < 0)
             {
                 int endPosition = IndexOfWithType((short)0);
                 if (endPosition < 0)
@@ -132,17 +132,17 @@ namespace BoboBrowse.Net.Facets.Data
 
         public bool Contains(float val)
         {
-            return _elements.BinarySearch(val) >= 0;
+            return Array.BinarySearch(_elements, val) >= 0;
         }
 
         public override bool ContainsWithType(float val)
         {
-            return _elements.BinarySearch(val) >= 0;
+            return Array.BinarySearch(_elements, val) >= 0;
         }
 
         public override int IndexOfWithType(float o)
         {
-            return _elements.BinarySearch(o);
+            return Array.BinarySearch(_elements, o);
         }
 
         public override double GetDoubleValue(int index)

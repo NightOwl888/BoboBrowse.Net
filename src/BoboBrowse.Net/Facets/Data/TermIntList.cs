@@ -11,8 +11,8 @@ namespace BoboBrowse.Net.Facets.Data
     public class TermIntList : TermNumberList<int>
     {
         private static ILog logger = LogManager.GetLogger<TermIntList>();
-        private List<int> _elements = new List<int>();
-        private int sanity = -1;
+        private int[] _elements;
+        //private int sanity = -1; // Not used
         private bool withDummy = true;
         public const int VALUE_MISSING = int.MinValue;
 
@@ -92,7 +92,7 @@ namespace BoboBrowse.Net.Facets.Data
 
         public int GetPrimitiveValue(int index)
         {
-            if (index < _elements.Count)
+            if (index < _elements.Length)
                 return _elements[index];
             else
                 return VALUE_MISSING;
@@ -108,7 +108,7 @@ namespace BoboBrowse.Net.Facets.Data
                     val = Parse((string)o);
                 else
                     val = (int)o;
-                return _elements.Skip(1).ToList().BinarySearch(val);
+                return Array.BinarySearch(_elements, 1, _elements.Length - 1, val);
             }
             else
             {
@@ -117,51 +117,48 @@ namespace BoboBrowse.Net.Facets.Data
                     val = Parse((string)o);
                 else
                     val = (int)o;
-                return _elements.BinarySearch(val);
+                return Array.BinarySearch(_elements, val);
             }
         }
 
         public int IndexOf(int value)
         {
+
             if (withDummy)
-                return _elements.Skip(1).ToList().BinarySearch(value);
+                return Array.BinarySearch(_elements, 1, _elements.Length - 1, value);
             else
-                return _elements.BinarySearch(value);
+                return Array.BinarySearch(_elements, value);
         }
 
         public int IndexOfWithOffset(int value, int offset)
         {
             if (withDummy)
             {
-                if (offset >= _elements.Count)
+                if (offset >= _elements.Length)
                     return -1;
-                return _elements.Skip(offset).ToList().BinarySearch(value);
+                return Array.BinarySearch(_elements, offset, _elements.Length - offset, value);
             }
             else
             {
-                return _elements.Skip(offset).ToList().BinarySearch(value);
+                return Array.BinarySearch(_elements, offset, _elements.Length - offset, value);
             }
         }
 
         public override int IndexOfWithType(int val)
         {
             if (withDummy)
-            {
-                return _elements.Skip(1).ToList().BinarySearch(val);
-            }
+                return Array.BinarySearch(_elements, 1, _elements.Length - 1, val);
             else
-            {
-                return _elements.BinarySearch(val);
-            }
+                return Array.BinarySearch(_elements, val);
         }
 
         public override void Seal()
         {
             _innerList.TrimExcess();
-            _elements = new List<int>(_innerList);
+            _elements = _innerList.ToArray();
             int negativeIndexCheck = withDummy ? 1 : 0;
             //reverse negative elements, because string order and numeric orders are completely opposite
-            if (_elements.Count > negativeIndexCheck && _elements[negativeIndexCheck] < 0)
+            if (_elements.Length > negativeIndexCheck && _elements[negativeIndexCheck] < 0)
             {
                 int endPosition = IndexOfWithType(0);
                 if (endPosition < 0)
@@ -186,22 +183,22 @@ namespace BoboBrowse.Net.Facets.Data
         public bool Contains(int val)
         {
             if (withDummy)
-                return _elements.Skip(1).ToList().BinarySearch(val) >= 0;
+                return Array.BinarySearch(_elements, 1, _elements.Length - 1, val) >= 0;
             else
-                return _elements.BinarySearch(val) >= 0;
+                return Array.BinarySearch(_elements, val) >= 0;
         }
     
         public override bool ContainsWithType(int val)
         {
             if (withDummy)
-                return _elements.Skip(1).ToList().BinarySearch(val) >= 0;
+                return Array.BinarySearch(_elements, 1, _elements.Length - 1, val) >= 0;
             else
-                return _elements.BinarySearch(val) >= 0;
+                return Array.BinarySearch(_elements, val) >= 0;
         }
 
         public int[] Elements
         {
-            get { return _elements.ToArray(); }
+            get { return _elements; }
         }
 
         public override double GetDoubleValue(int index)

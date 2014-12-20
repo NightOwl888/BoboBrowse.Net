@@ -10,8 +10,8 @@ namespace BoboBrowse.Net.Facets.Data
     public class TermShortList : TermNumberList<short>
     {
         private static ILog logger = LogManager.GetLogger<TermShortList>();
-        private List<short> _elements = new List<short>();
-        private short sanity = -1;
+        private short[] _elements;
+        //private short sanity = -1; // Not used
         private bool withDummy = true;
         public const short VALUE_MISSING = short.MinValue;
 
@@ -65,15 +65,20 @@ namespace BoboBrowse.Net.Facets.Data
             {
                 if (index < _innerList.Count)
                 {
+                    short val = _elements[index];
+                    if (withDummy && index == 0)
+                    {
+                        val = 0;
+                    }
                     if (!string.IsNullOrEmpty(this.FormatString))
                     {
                         if (this.FormatProvider != null)
                         {
-                            return _elements[index].ToString(this.FormatString, this.FormatProvider);
+                            return val.ToString(this.FormatString, this.FormatProvider);
                         }
-                        return _elements[index].ToString(this.FormatString);
+                        return val.ToString(this.FormatString);
                     }
-                    return _elements[index].ToString();
+                    return val.ToString();
                 }
                 return "";
             }
@@ -101,7 +106,7 @@ namespace BoboBrowse.Net.Facets.Data
                     val = Parse((string)o);
                 else
                     val = (short)o;
-                return _elements.Skip(1).ToList().BinarySearch(val);
+                return Array.BinarySearch(_elements, 1, _elements.Length - 1, val);
             }
             else
             {
@@ -110,41 +115,37 @@ namespace BoboBrowse.Net.Facets.Data
                     val = Parse((string)o);
                 else
                     val = (short)o;
-                return _elements.BinarySearch(val);
+                return Array.BinarySearch(_elements, val);
             }
         }
 
         public int IndexOf(short val)
         {
             if (withDummy)
-            {
-                return _elements.Skip(1).ToList().BinarySearch(val);
-            }
+                return Array.BinarySearch(_elements, 1, _elements.Length - 1, val);
             else
-            {
-                return _elements.BinarySearch(val);
-            }
+                return Array.BinarySearch(_elements, val);
         }
 
         public override int IndexOfWithType(short val)
         {
             if (withDummy)
             {
-                return _elements.Skip(1).ToList().BinarySearch(val);
+                return Array.BinarySearch(_elements, 1, _elements.Length - 1, val);
             }
             else
             {
-                return _elements.BinarySearch(val);
+                return Array.BinarySearch(_elements, val);
             }
         }
 
         public override void Seal()
         {
             _innerList.TrimExcess();
-            _elements = new List<short>(_innerList);
+            _elements = _innerList.ToArray();
             int negativeIndexCheck = withDummy ? 1 : 0;
             //reverse negative elements, because string order and numeric orders are completely opposite
-            if (_elements.Count > negativeIndexCheck && _elements[negativeIndexCheck] < 0)
+            if (_elements.Length > negativeIndexCheck && _elements[negativeIndexCheck] < 0)
             {
                 int endPosition = IndexOfWithType((short)0);
                 if (endPosition < 0)
@@ -169,26 +170,22 @@ namespace BoboBrowse.Net.Facets.Data
         public bool Contains(short val)
         {
             if (withDummy)
-                return _elements.Skip(1).ToList().BinarySearch(val) >= 0;
+                return Array.BinarySearch(_elements, 1, _elements.Length - 1, val) >= 0;
             else
-                return _elements.BinarySearch(val) >= 0;
+                return Array.BinarySearch(_elements, val) >= 0;
         }
 
         public override bool ContainsWithType(short val)
         {
             if (withDummy)
-            {
-                return _elements.Skip(1).ToList().BinarySearch(val) >= 0;
-            }
+                return Array.BinarySearch(_elements, 1, _elements.Length - 1, val) >= 0;
             else
-            {
-                return _elements.BinarySearch(val) >= 0;
-            }
+                return Array.BinarySearch(_elements, val) >= 0;
         }
 
         public short[] Elements
         {
-            get { return _elements.ToArray(); }
+            get { return _elements; }
         }
 
         public override double GetDoubleValue(int index)
