@@ -249,7 +249,7 @@ namespace BoboBrowse.Net.Facets.Data
 
         public virtual void CopyTo(string[] array, int arrayIndex)// From IList<string>
         {
-            throw new NotImplementedException();
+            _innerList.Select(x => Convert.ToString(x)).ToList().CopyTo(array, arrayIndex);
         }
 
         public virtual int Count// From IList<string>
