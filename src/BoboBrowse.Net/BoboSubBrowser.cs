@@ -121,7 +121,7 @@ namespace BoboBrowse.Net
             get
             {
                 var map = FacetHandlerMap;
-                return map.Keys;
+                return map.Keys.ToArray();
             }
         }
 
