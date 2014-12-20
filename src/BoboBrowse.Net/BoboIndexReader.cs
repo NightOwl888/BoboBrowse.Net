@@ -562,7 +562,7 @@ namespace BoboBrowse.Net
             if (useSubReaders)
             {
                 _dir = reader.Directory();
-                BoboIndexReader[] subReaders = (BoboIndexReader[])this.in_Renamed.GetSequentialSubReaders();
+                BoboIndexReader[] subReaders = this.in_Renamed.GetSequentialSubReaders().Cast<BoboIndexReader>().ToArray();
                 if (subReaders != null && subReaders.Length > 0)
                 {
                     _subReaders = subReaders;
