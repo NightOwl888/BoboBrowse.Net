@@ -1923,7 +1923,7 @@ namespace BoboBrowse.Net
 
             var rawQuery = br.Query;
 
-            long fromTime = new DateTime(2006, 6, 1).GetTime();
+            long fromTime = new DateTime(2006, 6, 1).ToBinary();
 
             RecencyBoostScorerBuilder recencyBuilder = new RecencyBoostScorerBuilder("date", 2.0f, TimeUnit.DAYS.Convert(fromTime, TimeUnit.MILLISECONDS), 30L, TimeUnit.DAYS);
             ScoreAdjusterQuery sq = new ScoreAdjusterQuery(rawQuery, recencyBuilder);
