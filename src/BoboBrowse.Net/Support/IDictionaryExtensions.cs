@@ -18,6 +18,8 @@ namespace BoboBrowse.Net.Support
 
         public static TValue Get<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
         {
+            if (key == null) 
+                return default(TValue);
             TValue value;
             if (dictionary.TryGetValue(key, out value))
                 return value;
