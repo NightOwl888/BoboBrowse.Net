@@ -64,6 +64,8 @@ namespace BoboBrowse.Net.Util
 
         public E Poll()
         {
+            if (this.Count == 0)
+                return default(E);
             return base.DeleteMax();
         }
     }
