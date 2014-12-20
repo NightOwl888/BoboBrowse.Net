@@ -1,14 +1,15 @@
-﻿namespace BoboBrowse.Tests
+﻿// Version compatibility level: 3.1.0
+namespace BoboBrowse.Tests
 {
     using BoboBrowse.Net;
     using BoboBrowse.Net.Facets;
     using BoboBrowse.Net.Facets.Filter;
-    using BoboBrowse.Net.Search;
+    using BoboBrowse.Net.Sort;
     using BoboBrowse.Net.Support;
     using Lucene.Net.Analysis.Standard;
     using Lucene.Net.Index;
-    using Lucene.Net.Search;
     using Lucene.Net.Store;
+    using Lucene.Net.Util;
     using NUnit.Framework;
     using System;
     using System.Collections.Generic;
@@ -18,7 +19,7 @@
     public class FacetHandlerTest
     {
         private Directory _ramDir;
-        private class NoopFacetHandler : FacetHandler
+        private class NoopFacetHandler : FacetHandler<FacetDataNone>
         {
             public NoopFacetHandler(string name)
                 : base(name)
@@ -35,34 +36,28 @@
                 return null;
             }
 
-            public override IFacetCountCollector GetFacetCountCollector(BrowseSelection sel, FacetSpec fspec)
+            public override FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec fspec)
             {
                 return null;
             }
 
-            public override string[] GetFieldValues(int id)
+            public override string[] GetFieldValues(BoboIndexReader reader, int id)
             {
                 return null;
             }
 
-            // TODO: Not implemented
-            //public override ScoreDocComparator GetStoreDocComparator()
-            //{
-            //    return null;
-            //}
-
-            public override FieldComparator GetComparator(int numDocs, SortField field)
+            public override DocComparatorSource GetDocComparatorSource()
             {
                 return null;
             }
 
-            public override void Load(BoboIndexReader reader)
+            public override FacetDataNone Load(BoboIndexReader reader)
             {
+                return null;
             }
 
-            public override object[] GetRawFieldValues(int id)
+            public override object[] GetRawFieldValues(BoboIndexReader reader, int id)
             {
-                // TODO Auto-generated method stub
                 return null;
             }
         }
@@ -100,7 +95,7 @@
 
             var s3 = new HashSet<string>();
             s3.Add("A");
-            s2.Add("D"); // BUG: Should this be s3?
+            s2.Add("D"); // TODO: BUG: Should this be s3?
             var h3 = new NoopFacetHandler("C", s3);
             list.Add(h3);
 
@@ -115,7 +110,7 @@
             list.Add(h5);
 
 
-            using (var boboReader = BoboIndexReader.GetInstance(reader, list))
+            using (var boboReader = BoboIndexReader.GetInstance(reader, list, null))
             {
 
                 using (var browser = new BoboBrowser(boboReader))
@@ -135,7 +130,7 @@
                     expected.Add("E");
                     expected.Add("runtime");
 
-                    var facetsLoaded = browser.GetFacetNames();
+                    var facetsLoaded = browser.FacetNames;
 
                     foreach (var name in facetsLoaded)
                     {
@@ -164,7 +159,7 @@
 
             var list = new List<IFacetHandler>();
             var s1 = new HashSet<string>();
-            s1.Add("C");
+            s1.Add("E");
             var h1 = new NoopFacetHandler("A", s1);
             list.Add(h1);
 
@@ -177,7 +172,7 @@
 
             var s3 = new HashSet<string>();
             s3.Add("A");
-            s2.Add("D"); // BUG: Should this be s3?
+            s2.Add("D"); // TODO: BUG: Should this be s3?
             var h3 = new NoopFacetHandler("C", s3);
             list.Add(h3);
 
@@ -191,7 +186,7 @@
             var h5 = new NoopFacetHandler("E", s5);
             list.Add(h5);
 
-            using (var boboReader = BoboIndexReader.GetInstance(reader, list))
+            using (var boboReader = BoboIndexReader.GetInstance(reader, list, null))
             {
 
                 using (var browser = new BoboBrowser(boboReader))
@@ -203,7 +198,7 @@
                     expected.Add("D");
                     expected.Add("E");
 
-                    var facetsLoaded = browser.GetFacetNames();
+                    var facetsLoaded = browser.FacetNames;
 
                     foreach (var name in facetsLoaded)
                     {
