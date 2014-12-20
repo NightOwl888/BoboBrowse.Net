@@ -250,6 +250,7 @@
     <Compile Include="IBrowsable.cs" />
     <Compile Include="Query\Scoring\IFacetScoreable.cs" />
     <Compile Include="MultiBoboBrowser.cs" />
+    <Compile Include="Support\DateTimeExtensions.cs" />
     <Compile Include="Support\MathUtil.cs" />
     <Compile Include="Support\ParseException.cs" />
     <Compile Include="Support\Properties.cs" />
