@@ -129,6 +129,7 @@
     <Compile Include="FacetNameTest.cs" />
     <Compile Include="FacetHandlerTest.cs" />
     <Compile Include="FacetNotValuesTest.cs" />
+    <Compile Include="Facets\Data\TermLongListTest.cs" />
     <Compile Include="PathMultiValTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\BigIntArrayTest.cs" />
