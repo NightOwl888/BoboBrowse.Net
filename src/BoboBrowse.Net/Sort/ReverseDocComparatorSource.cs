@@ -19,7 +19,7 @@ namespace BoboBrowse.Net.Sort
 
         public override DocComparator GetComparator(IndexReader reader, int docbase)
         {
-            throw new NotImplementedException();
+            return new ReverseDocComparator(_inner.GetComparator(reader, docbase));
         }
 
         public class ReverseDocComparator : DocComparator
