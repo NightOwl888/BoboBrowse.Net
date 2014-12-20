@@ -79,9 +79,11 @@ namespace BoboBrowse.Net.Facets.Impl
                         }
                     }
 
+                    if (dataMap.Contains(val))
+                        docList = dataMap[val];
+                    else
+                        docList = null;
 
-
-                    docList = dataMap[val];
                     if (docList == null)
                     {
                         docList = new List<int>();
