@@ -99,6 +99,11 @@ namespace BoboBrowse.Net.Facets.Impl
             return Next(1);
         }
 
+        /// <summary>
+        /// This version of the next() method applies the minHits from the facet spec before returning the facet and its hitcount
+        /// </summary>
+        /// <param name="minHits">the minHits from the facet spec for CombinedFacetAccessible</param>
+        /// <returns>The next facet that obeys the minHits</returns>
         public override string Next(int minHits)
         {
             if (size == 0)
