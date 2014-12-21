@@ -159,7 +159,7 @@ namespace BoboBrowse.Net.Sort
             var facetHandler = browser.GetFacetHandler(field);
             if (facetHandler != null)
             {
-                browser.GetFacetHandler(field);
+                //browser.GetFacetHandler(field); // BUG? this does nothing with the result.
                 BoboCustomSortField sortField = new BoboCustomSortField(field, sort.Reverse, facetHandler.GetDocComparatorSource());
                 return sortField;
             }

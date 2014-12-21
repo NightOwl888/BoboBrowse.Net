@@ -33,7 +33,7 @@ namespace BoboBrowse.Net.Sort
 
             public override int Compare(ScoreDoc doc1, ScoreDoc doc2)
             {
-                return _comparator.Compare(doc1, doc2);
+                return -_comparator.Compare(doc1, doc2);
             }
 
             public override IComparable Value(ScoreDoc doc)
