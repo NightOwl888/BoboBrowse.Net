@@ -236,8 +236,8 @@ namespace BoboBrowse.Net.Facets.Impl
                     int tmpdepth = 0;
                     if ((startDepth == 0) || (startDepth > 0 && path.StartsWith(selectedPath)))
                     {
-                        //buf.Delete(0, buf.length());
-                        buf.Clear();
+                        buf = new StringBuilder();
+
                         int minDepth = Math.Min(wantedDepth, pathDepth);
                         tmpdepth = 0;
                         for (int k = _patStart; ((k < _patEnd) && (tmpdepth < minDepth)); ++k, tmpdepth++)
