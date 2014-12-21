@@ -697,11 +697,11 @@ namespace BoboBrowse.Net
                 buffer.Append("Result check failed: \n");
                 buffer.Append("expected: \n");
                 buffer.Append(numHits).Append(" hits\n");
-                buffer.Append(choiceMap).Append('\n');
-                buffer.Append(Arrays.ToString(ids)).Append('\n');
+                buffer.Append(choiceMap).Append('\n'); // TODO: Format the choice map using LINQ
+                buffer.Append(Arrays.ToString(ids)).AppendLine().AppendLine();
                 buffer.Append("gotten: \n");
                 buffer.Append(result.NumHits).Append(" hits\n");
-
+                buffer.Append(Arrays.ToString(result.Hits.Select(x => x.GetField("id")).ToArray())).AppendLine();
 
                 var entries = result.FacetMap;
 
