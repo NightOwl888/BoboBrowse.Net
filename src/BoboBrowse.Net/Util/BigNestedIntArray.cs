@@ -334,7 +334,10 @@ namespace BoboBrowse.Net.Util
         /// <returns></returns>
         public int GetData(int id, int idx, int defaultValue)
         {
-            int[] page = _list[id >> PAGEID_SHIFT];
+            // NOTE: Added Get() extension method call because 
+            // the default .NET behavior throws an exception if the
+            // index is out of bounds, rather than returning null.
+            int[] page = _list.Get(id >> PAGEID_SHIFT);
             if (page == null) return defaultValue;
 
             int val = page[id & SLOTID_MASK];
@@ -361,7 +364,10 @@ namespace BoboBrowse.Net.Util
         /// <returns>length</returns>
         public int GetData(int id, int[] buf)
         {
-            int[] page = _list[id >> PAGEID_SHIFT];
+            // NOTE: Added Get() extension method call because 
+            // the default .NET behavior throws an exception if the
+            // index is out of bounds, rather than returning null.
+            int[] page = _list.Get(id >> PAGEID_SHIFT);
             if (page == null) return 0;
 
             int val = page[id & SLOTID_MASK];
@@ -391,7 +397,10 @@ namespace BoboBrowse.Net.Util
         /// <returns></returns>
         public string[] GetTranslatedData(int id, ITermValueList valarray)
         {
-            int[] page = _list[id >> PAGEID_SHIFT];
+            // NOTE: Added Get() extension method call because 
+            // the default .NET behavior throws an exception if the
+            // index is out of bounds, rather than returning null.
+            int[] page = _list.Get(id >> PAGEID_SHIFT);
 
             if (page == null)
             {
@@ -432,7 +441,10 @@ namespace BoboBrowse.Net.Util
         /// <returns></returns>
         public object[] GetRawData(int id, ITermValueList valarray)
         {
-            int[] page = _list[id >> PAGEID_SHIFT];
+            // NOTE: Added Get() extension method call because 
+            // the default .NET behavior throws an exception if the
+            // index is out of bounds, rather than returning null.
+            int[] page = _list.Get(id >> PAGEID_SHIFT);
 
             if (page == null)
             {
@@ -468,7 +480,10 @@ namespace BoboBrowse.Net.Util
         public float GetScores(int id, int[] freqs, float[] boosts, IFacetTermScoringFunction function)
         {
             function.ClearScores();
-            int[] page = _list[id >> PAGEID_SHIFT];
+            // NOTE: Added Get() extension method call because 
+            // the default .NET behavior throws an exception if the
+            // index is out of bounds, rather than returning null.
+            int[] page = _list.Get(id >> PAGEID_SHIFT);
             int val = page[id & SLOTID_MASK];
 
             if (val >= 0)
@@ -491,8 +506,11 @@ namespace BoboBrowse.Net.Util
 
         public int Compare(int i, int j)
         {
-            int[] page1 = _list[i >> PAGEID_SHIFT];
-            int[] page2 = _list[j >> PAGEID_SHIFT];
+            // NOTE: Added Get() extension method call because 
+            // the default .NET behavior throws an exception if the
+            // index is out of bounds, rather than returning null.
+            int[] page1 = _list.Get(i >> PAGEID_SHIFT);
+            int[] page2 = _list.Get(j >> PAGEID_SHIFT);
 
             if (page1 == null)
             {
@@ -581,7 +599,10 @@ namespace BoboBrowse.Net.Util
 
         public bool Contains(int id, int value, bool withMissing)
         {
-            int[] page = _list[id >> PAGEID_SHIFT];
+            // NOTE: Added Get() extension method call because 
+            // the default .NET behavior throws an exception if the
+            // index is out of bounds, rather than returning null.
+            int[] page = _list.Get(id >> PAGEID_SHIFT);
             if (page == null)
             {
                 if (withMissing && value == 0)
@@ -617,7 +638,10 @@ namespace BoboBrowse.Net.Util
 
         public bool Contains(int id, BitVector values)
         {
-            int[] page = _list[id >> PAGEID_SHIFT];
+            // NOTE: Added Get() extension method call because 
+            // the default .NET behavior throws an exception if the
+            // index is out of bounds, rather than returning null.
+            int[] page = _list.Get(id >> PAGEID_SHIFT);
             if (page == null) return false;
 
             int val = page[id & SLOTID_MASK];
@@ -639,7 +663,10 @@ namespace BoboBrowse.Net.Util
 
         public bool ContainsValueInRange(int id, int startValueId, int endValueId)
         {
-            int[] page = _list[id >> PAGEID_SHIFT];
+            // NOTE: Added Get() extension method call because 
+            // the default .NET behavior throws an exception if the
+            // index is out of bounds, rather than returning null.
+            int[] page = _list.Get(id >> PAGEID_SHIFT);
             if (page == null) return false;
 
             int val = page[id & SLOTID_MASK];
@@ -662,7 +689,10 @@ namespace BoboBrowse.Net.Util
 
         public bool Contains(int id, OpenBitSet values)
         {
-            int[] page = _list[id >> PAGEID_SHIFT];
+            // NOTE: Added Get() extension method call because 
+            // the default .NET behavior throws an exception if the
+            // index is out of bounds, rather than returning null.
+            int[] page = _list.Get(id >> PAGEID_SHIFT);
             if (page == null) return false;
 
             int val = page[id & SLOTID_MASK];
@@ -689,7 +719,10 @@ namespace BoboBrowse.Net.Util
 
         public int FindValue(int value, int id, int maxID, bool withMissing)
         {
-            int[] page = _list[id >> PAGEID_SHIFT];
+            // NOTE: Added Get() extension method call because 
+            // the default .NET behavior throws an exception if the
+            // index is out of bounds, rather than returning null.
+            int[] page = _list.Get(id >> PAGEID_SHIFT);
             if (page == null) page = MISSING_PAGE;
 
             while (true)
@@ -716,7 +749,10 @@ namespace BoboBrowse.Net.Util
 
                 if (((++id) & SLOTID_MASK) == 0)
                 {
-                    page = _list[id >> PAGEID_SHIFT];
+                    // NOTE: Added Get() extension method call because 
+                    // the default .NET behavior throws an exception if the
+                    // index is out of bounds, rather than returning null.
+                    page = _list.Get(id >> PAGEID_SHIFT);
                     if (page == null) page = MISSING_PAGE;
                 }
             }
@@ -731,7 +767,10 @@ namespace BoboBrowse.Net.Util
 
         public int FindValues(BitVector values, int id, int maxID, bool withMissing)
         {
-            int[] page = _list[id >> PAGEID_SHIFT];
+            // NOTE: Added Get() extension method call because 
+            // the default .NET behavior throws an exception if the
+            // index is out of bounds, rather than returning null.
+            int[] page = _list.Get(id >> PAGEID_SHIFT);
             if (page == null) page = MISSING_PAGE;
 
             while (true)
@@ -758,7 +797,10 @@ namespace BoboBrowse.Net.Util
 
                 if ((++id & SLOTID_MASK) == 0)
                 {
-                    page = _list[id >> PAGEID_SHIFT];
+                    // NOTE: Added Get() extension method call because 
+                    // the default .NET behavior throws an exception if the
+                    // index is out of bounds, rather than returning null.
+                    page = _list.Get(id >> PAGEID_SHIFT);
                     if (page == null) page = MISSING_PAGE;
                 }
             }
@@ -773,7 +815,10 @@ namespace BoboBrowse.Net.Util
 
         public int FindValues(OpenBitSet values, int id, int maxID, bool withMissing)
         {
-            int[] page = _list[id >> PAGEID_SHIFT];
+            // NOTE: Added Get() extension method call because 
+            // the default .NET behavior throws an exception if the
+            // index is out of bounds, rather than returning null.
+            int[] page = _list.Get(id >> PAGEID_SHIFT);
             if (page == null) page = MISSING_PAGE;
 
             while (true)
@@ -800,7 +845,10 @@ namespace BoboBrowse.Net.Util
 
                 if ((++id & SLOTID_MASK) == 0)
                 {
-                    page = _list[id >> PAGEID_SHIFT];
+                    // NOTE: Added Get() extension method call because 
+                    // the default .NET behavior throws an exception if the
+                    // index is out of bounds, rather than returning null.
+                    page = _list.Get(id >> PAGEID_SHIFT);
                     if (page == null) page = MISSING_PAGE;
                 }
             }
@@ -810,7 +858,10 @@ namespace BoboBrowse.Net.Util
 
         public int FindValuesInRange(int startIndex, int endIndex, int id, int maxID)
         {
-            int[] page = _list[id >> PAGEID_SHIFT];
+            // NOTE: Added Get() extension method call because 
+            // the default .NET behavior throws an exception if the
+            // index is out of bounds, rather than returning null.
+            int[] page = _list.Get(id >> PAGEID_SHIFT);
             if (page == null) page = MISSING_PAGE;
 
             while (true)
@@ -834,7 +885,10 @@ namespace BoboBrowse.Net.Util
 
                 if ((++id & SLOTID_MASK) == 0)
                 {
-                    page = _list[id >> PAGEID_SHIFT];
+                    // NOTE: Added Get() extension method call because 
+                    // the default .NET behavior throws an exception if the
+                    // index is out of bounds, rather than returning null.
+                    page = _list.Get(id >> PAGEID_SHIFT);
                     if (page == null) page = MISSING_PAGE;
                 }
             }
@@ -844,7 +898,10 @@ namespace BoboBrowse.Net.Util
 
         public int Count(int id, int[] count)
         {
-            int[] page = _list[id >> PAGEID_SHIFT];
+            // NOTE: Added Get() extension method call because 
+            // the default .NET behavior throws an exception if the
+            // index is out of bounds, rather than returning null.
+            int[] page = _list.Get(id >> PAGEID_SHIFT);
             if (page == null)
             {
                 count[0]++;
@@ -874,7 +931,10 @@ namespace BoboBrowse.Net.Util
 
         public void CountNoReturn(int id, int[] count)
         {
-            int[] page = _list[id >> PAGEID_SHIFT];
+            // NOTE: Added Get() extension method call because 
+            // the default .NET behavior throws an exception if the
+            // index is out of bounds, rather than returning null.
+            int[] page = _list.Get(id >> PAGEID_SHIFT);
             if (page == null)
             {
                 count[0]++;
@@ -904,7 +964,10 @@ namespace BoboBrowse.Net.Util
 
         public void CountNoReturnWithFilter(int id, int[] count, BitVector filter)
         {
-            int[] page = _list[id >> PAGEID_SHIFT];
+            // NOTE: Added Get() extension method call because 
+            // the default .NET behavior throws an exception if the
+            // index is out of bounds, rather than returning null.
+            int[] page = _list.Get(id >> PAGEID_SHIFT);
             if (page == null)
             {
                 count[0]++;
@@ -941,7 +1004,10 @@ namespace BoboBrowse.Net.Util
 
         public void CountNoReturnWithFilter(int id, int[] count, OpenBitSet filter)
         {
-            int[] page = _list[id >> PAGEID_SHIFT];
+            // NOTE: Added Get() extension method call because 
+            // the default .NET behavior throws an exception if the
+            // index is out of bounds, rather than returning null.
+            int[] page = _list.Get(id >> PAGEID_SHIFT);
             if (page == null)
             {
                 count[0]++;
@@ -983,7 +1049,10 @@ namespace BoboBrowse.Net.Util
         /// <returns></returns>
         public int GetNumItems(int id)
         {
-            int[] page = _list[id >> PAGEID_SHIFT];
+            // NOTE: Added Get() extension method call because 
+            // the default .NET behavior throws an exception if the
+            // index is out of bounds, rather than returning null.
+            int[] page = _list.Get(id >> PAGEID_SHIFT);
             if (page == null) return 0;
 
             int val = page[id & SLOTID_MASK];
@@ -1003,7 +1072,10 @@ namespace BoboBrowse.Net.Util
         /// <returns></returns>
         public bool AddData(int id, int data)
         {
-            int[] page = _list[id >> PAGEID_SHIFT];
+            // NOTE: Added Get() extension method call because 
+            // the default .NET behavior throws an exception if the
+            // index is out of bounds, rather than returning null.
+            int[] page = _list.Get(id >> PAGEID_SHIFT);
             if (page == null) return true;
 
             int slotId = (id & SLOTID_MASK);
