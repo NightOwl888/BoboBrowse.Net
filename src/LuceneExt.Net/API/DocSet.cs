@@ -1,9 +1,12 @@
-﻿
+﻿﻿// Kamikaze version compatibility level: 3.0.6
 namespace LuceneExt
 {
     using System;
     using Lucene.Net.Search;
 
+    /// <summary>
+    /// Represents a sorted integer set
+    /// </summary>
     public abstract class DocSet : DocIdSet
     {        
         /// <summary>
@@ -11,6 +14,21 @@ namespace LuceneExt
         /// </summary>
         /// <param name="docid">The doc id to add.</param>
         public abstract void AddDoc(int docid);
+
+        /// <summary>
+        /// Add an array of sorted docIds to the set
+        /// </summary>
+        /// <param name="docids"></param>
+        /// <param name="start"></param>
+        /// <param name="len"></param>
+        public virtual void AddDocs(int[] docids, int start, int len)
+        {
+            int i = start;
+            while (i < len)
+            {
+                AddDoc(docids[i++]);
+            }
+        }
 
         ///<summary>Return the set size </summary>
         ///<returns>true if present, false otherwise </returns>
