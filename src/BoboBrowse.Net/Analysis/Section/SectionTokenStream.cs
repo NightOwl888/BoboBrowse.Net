@@ -16,7 +16,10 @@ namespace BoboBrowse.Net.Analysis.Section
         public SectionTokenStream(TokenStream tokenStream, int sectionId)
             : base(tokenStream)
         {
-            _payloadAtt = (PayloadAttribute)AddAttribute<PayloadAttribute>();
+            // NOTE: Calling the AddAttribute<T> method failed, so 
+            // switched to using AddAttributeImpl.
+            _payloadAtt = new PayloadAttribute();
+            AddAttributeImpl(_payloadAtt);
             _payload = EncodeIntPayload(sectionId);
         }
 

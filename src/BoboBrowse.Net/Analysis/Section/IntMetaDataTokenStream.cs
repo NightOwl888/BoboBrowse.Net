@@ -17,9 +17,15 @@ namespace BoboBrowse.Net.Analysis.Section
         public IntMetaDataTokenStream(string tokenText)
         {
             _tokenText = tokenText;
-            _termAttribute = (TermAttribute)AddAttribute<TermAttribute>();
-            _offsetAttribute = (OffsetAttribute)AddAttribute<OffsetAttribute>();
-            _payloadAtt = (PayloadAttribute)AddAttribute<PayloadAttribute>();
+
+            // NOTE: Calling the AddAttribute<T> method failed, so 
+            // switched to using AddAttributeImpl.
+            _termAttribute = new TermAttribute();
+            _offsetAttribute = new OffsetAttribute();
+            _payloadAtt = new PayloadAttribute();
+            base.AddAttributeImpl(_termAttribute);
+            base.AddAttributeImpl(_offsetAttribute);
+            base.AddAttributeImpl(_payloadAtt);
         }
 
         /// <summary>
