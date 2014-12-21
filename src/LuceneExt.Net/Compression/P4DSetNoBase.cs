@@ -1,8 +1,9 @@
-﻿
+﻿﻿// Kamikaze version compatibility level: 3.0.6
 namespace LuceneExt
 {
-    using System;
     using Lucene.Net.Util;
+    using LuceneExt.BitSet;
+    using System;
 
     ///
     /// <summary> * Implementation of the p4delta algorithm for sorted integer arrays based on
@@ -30,15 +31,15 @@ namespace LuceneExt
         private const int HEADER_MASK = BYTE_MASK;
 
         // Parameters for the compressed set
-        private int b = INVALID;
+        private int _b = INVALID;
 
-        private int @base = INVALID;
+        private int _base = INVALID;
 
-        private int batchSize = INVALID;
+        private int _batchSize = INVALID;
 
-        private int exceptionCount = INVALID;
+        private int _exceptionCount = INVALID;
 
-        private int exceptionOffset = INVALID;
+        private int _exceptionOffset = INVALID;
 
         //private int[] op = null;
 
@@ -68,25 +69,25 @@ namespace LuceneExt
         // Get the actual value
         public virtual void SetParam(int @base, int b, int batchSize, int exceptionCount)
         {
-            this.@base = @base;
-            this.b = b;
-            this.batchSize = batchSize;
+            this._base = @base;
+            this._b = b;
+            this._batchSize = batchSize;
 
-            this.exceptionCount = exceptionCount;
-            this.exceptionOffset = HEADER_MASK + this.b * this.batchSize;
+            this._exceptionCount = exceptionCount;
+            this._exceptionOffset = HEADER_MASK + _b * _batchSize;
         }
 
         public virtual void UpdateParams(OpenBitSet @set)
         {
-            b = GetBitSlice(@set, 0, BYTE_MASK);
+            _b = GetBitSlice(@set, 0, BYTE_MASK);
 
-            exceptionOffset = HEADER_MASK + b * batchSize;
+            _exceptionOffset = HEADER_MASK + _b * _batchSize;
         }
 
         public virtual void UpdateParams(long[] @set)
         {
-            b = GetBitSlice(@set, 0, BYTE_MASK);
-            exceptionOffset = HEADER_MASK + b * batchSize;
+            _b = GetBitSlice(@set, 0, BYTE_MASK);
+            _exceptionOffset = HEADER_MASK + _b * _batchSize;
         }
 
         ///<summary>Alternate implementation for compress
@@ -96,44 +97,48 @@ namespace LuceneExt
         ///   * <exception cref="ArgumentException"> </exception>
         public virtual OpenBitSet Compress(int[] input)
         {
-            if (@base == INVALID || b == INVALID)
+            if (_base == INVALID || _b == INVALID)
             {
                 throw new ArgumentException(" Codec not initialized correctly ");
             }
 
-            int BATCH_MAX = 1 << (b - 1);
+            int BATCH_MAX = 1 << (_b - 1);
             // int validCount = (_batchSize - _exceptionCount)*_b +SIZE_MASK+BASE_MASK;
 
             // Compression mumbo jumbo
             // Set Size -b+base+compressedSet+exception*BASE_MASK
-            OpenBitSet compressedSet = new OpenBitSet((batchSize) * b + HEADER_MASK + exceptionCount * (BASE_MASK));
+            MyOpenBitSet compressedSet = new MyOpenBitSet((_batchSize) * _b 
+                + HEADER_MASK + _exceptionCount * (BASE_MASK));
+
             // System.out.println("Compressed Set Size : " + compressedSet.capacity());
 
+
+
             // Load the b
-            CopyBits(compressedSet, b, 0, BYTE_MASK);
+            CopyBits(compressedSet, _b, 0, BYTE_MASK);
 
             // copy the base value to BASE_MASK offset
             // copyBits(compressedSet, _base, BYTE_MASK, BASE_MASK);
 
             // Offset is the offset of the next location to place the value
             int offset = HEADER_MASK;
-            int exceptionOffset = this.exceptionOffset;
+            int exceptionOffset = _exceptionOffset;
             int exceptionIndex = 0;
 
             // 1. Walk the list
             // TODO : Optimize this process.
-            for (int i = 0; i < batchSize; i++)
+            for (int i = 0; i < _batchSize; i++)
             {
                 // else copy in the end
                 if (input[i] < BATCH_MAX)
                 {
-                    CopyBits(compressedSet, input[i] << 1, offset, b);
+                    CopyBits(compressedSet, input[i] << 1, offset, _b);
                 }
                 else
                 {
                     // Copy the value to the exception location
                     // Add a bit marker to place
-                    CopyBits(compressedSet, ((exceptionIndex << 1) | 0x1), offset, b);
+                    CopyBits(compressedSet, ((exceptionIndex << 1) | 0x1), offset, _b);
                     // System.out.println("Adding Exception
                     // Marker:"+(BATCH_MAX|(exceptionIndex-1)) + " at offset:"+offset);
 
@@ -145,7 +150,7 @@ namespace LuceneExt
                     exceptionIndex++;
                 }
 
-                offset += b;
+                offset += _b;
             }
 
             return compressedSet;
@@ -158,52 +163,55 @@ namespace LuceneExt
         ///   * <exception cref="ArgumentException"> </exception>
         public virtual long[] CompressAlt(int[] input)
         {
-            if (@base == INVALID || b == INVALID)
-            {
+            if (_base == INVALID || _b == INVALID)
                 throw new ArgumentException(" Codec not initialized correctly ");
-            }
+
+
 
             //    for(int i=0;i<_batchSize;i++)
             //      System.out.print(input[i]+":");
             //    System.out.println("\nB:"+_b)
 
-            int BATCH_MAX = 1 << (b - 1);
+
+
+            int BATCH_MAX = 1 << (_b - 1);
             // int validCount = (_batchSize - _exceptionCount)*_b +SIZE_MASK+BASE_MASK;
+
 
             // Compression mumbo jumbo // 劐溴怵嚯 觐祆屙?
 
             // Set Size _b+base+compressedSet+exception*BASE_MASK bits
-            long[] compressedSet = new long[((((batchSize) * b + HEADER_MASK + exceptionCount * (BASE_MASK))) >> 6) + 1];
+            long[] compressedSet = new long[((((_batchSize) * _b + HEADER_MASK + _exceptionCount * (BASE_MASK))) >> 6) + 1];
 
 
             //new long[((_batchSize) * _b  + HEADER_MASK + _exceptionCount * (BASE_MASK))>>6 + 1];
             // System.out.println("Compressed Set Size : " + compressedSet.capacity());
 
             // Load the b
-            CopyBits(compressedSet, b, 0, BYTE_MASK);
+            CopyBits(compressedSet, _b, 0, BYTE_MASK);
 
             // copy the base value to BASE_MASK offset
             // copyBits(compressedSet, _base, BYTE_MASK, BASE_MASK);
 
             // Offset is the offset of the next location to place the value
             int offset = HEADER_MASK;
-            int exceptionOffset = this.exceptionOffset;
+            int exceptionOffset = _exceptionOffset;
             int exceptionIndex = 0;
 
             // 1. Walk the list
             // TODO : Optimize this process.
-            for (int i = 0; i < batchSize; i++)
+            for (int i = 0; i < _batchSize; i++)
             {
                 // else copy in the end
                 if (input[i] < BATCH_MAX)
                 {
-                    CopyBits(compressedSet, input[i] << 1, offset, b);
+                    CopyBits(compressedSet, input[i] << 1, offset, _b);
                 }
                 else
                 {
                     // Copy the value to the exception location
                     // Add a bit marker to place
-                    CopyBits(compressedSet, ((exceptionIndex << 1) | 0x1), offset, b);
+                    CopyBits(compressedSet, ((exceptionIndex << 1) | 0x1), offset, _b);
                     // System.out.println("Adding Exception
                     // Marker:"+(BATCH_MAX|(exceptionIndex-1)) + " at offset:"+offset);
 
@@ -215,34 +223,34 @@ namespace LuceneExt
                     exceptionIndex++;
                 }
 
-                offset += b;
+                offset += _b;
             }
 
             return compressedSet;
         }
 
-        private static void CopyBits(OpenBitSet compressedSet, int val, int offset, int length)
+        private static void CopyBits(MyOpenBitSet compressedSet, int val, int offset, int length)
         {
             long[] bits = compressedSet.Bits;
-            uint index = (uint)offset >> 6;
+            int index = (int)((uint)offset) >> 6;
             int skip = offset & 0x3f;
-            val &= (int)(0xffffffff >> (32 - length));
+            val &= (int)(((uint)0xffffffff) >> (32 - length));
             bits[index] |= (((long)val) << skip);
             if (64 - skip < length)
             {
-                bits[index + 1] |= ((long)val >> (64 - skip));
+                bits[index + 1] |= (long)(((ulong)val) >> (64 - skip));
             }
         }
 
         private static void CopyBits(long[] bits, int val, int offset, int length)
         {
-            uint index = (uint)offset >> 6;
+            int index = (int)(((uint)offset) >> 6);
             int skip = offset & 0x3f;
-            val &= (int)(0xffffffff >> (32 - length));
+            val &= (int)(((uint)0xffffffff) >> (32 - length));
             bits[index] |= (((long)val) << skip);
             if (64 - skip < length)
             {
-                bits[index + 1] |= ((long)val >> (64 - skip));
+                bits[index + 1] |= (long)(((ulong)val) >> (64 - skip));
             }
 
         }
@@ -250,35 +258,35 @@ namespace LuceneExt
         private static int GetBitSlice(OpenBitSet compressedSet, int offset, int length)
         {
             long[] bits = compressedSet.Bits;
-            int index = (int)(uint)offset >> 6;
+            int index = (int)(((uint)offset) >> 6);
             int skip = offset & 0x3f;
-            int val = (int)(bits[index] >> skip);
+            int val = (int)(((uint)bits[index]) >> skip);
             if (64 - skip < length)
             {
                 val |= (int)bits[index + 1] << (64 - skip);
             }
-            return val & (int)(0xffffffff >> (32 - length));
+            return val & (int)(((uint)0xffffffff) >> (32 - length));
         }
 
         private static int GetBitSlice(long[] bits, int offset, int length)
         {
-            uint index = (uint)offset >> 6;
+            int index = (int)(((uint)offset) >> 6);
             int skip = offset & 0x3f;
-            int val = (int)(bits[index] >> skip);
+            int val = (int)(((uint)bits[index]) >> skip);
             if (64 - skip < length)
             {
                 val |= (int)bits[index + 1] << (64 - skip);
             }
-            return val & (int)(0xffffffff >> (32 - length));
+            return val & (int)(((uint)0xffffffff) >> (32 - length));
         }
 
         // Method to allow iteration in decompressed form
         public int Get(long[] compressedSet, int index)
         {
-            int retVal = GetBitSlice(compressedSet, (index * b + HEADER_MASK), b);
+            int retVal = GetBitSlice(compressedSet, (index * _b + HEADER_MASK), _b);
 
             // fake the function pointer logic
-            return valueproc[retVal & 0x1].Process((int)(uint)retVal >> 1, exceptionOffset, compressedSet);
+            return valueproc[retVal & 0x1].Process((int)(((uint)retVal) >> 1), _exceptionOffset, compressedSet);
         }
 
         //   Method to allow iteration in decompressed form
@@ -305,17 +313,17 @@ namespace LuceneExt
 
         public virtual int[] Decompress(OpenBitSet compressedSet)
         {
-            int[] op = new int[batchSize];
+            int[] op = new int[_batchSize];
             // reuse o/p
-            op[0] = @base;
+            op[0] = _base;
 
             // Offset of the exception list
-            int exceptionOffset = HEADER_MASK + b * batchSize;
+            int exceptionOffset = HEADER_MASK + _b * _batchSize;
 
             // explode and patch
-            for (int i = 1; i < batchSize; i++)
+            for (int i = 1; i < _batchSize; i++)
             {
-                int val = GetBitSlice(compressedSet, i * b + HEADER_MASK, b);
+                int val = GetBitSlice(compressedSet, i * _b + HEADER_MASK, _b);
 
                 if ((val & 0x1) != 0)
                 {
@@ -325,7 +333,7 @@ namespace LuceneExt
                 }
                 else
                 {
-                    op[i] = (int)((uint)val >> 1);
+                    op[i] = (int)(((uint)val) >> 1);
                 }
                 op[i] += op[i - 1];
             }
@@ -334,17 +342,17 @@ namespace LuceneExt
 
         public virtual int[] Decompress(long[] compressedSet)
         {
-            int[] op = new int[batchSize];
+            int[] op = new int[_batchSize];
             // reuse o/p
-            op[0] = @base;
+            op[0] = _base;
 
             // Offset of the exception list
-            int exceptionOffset = HEADER_MASK + b * batchSize;
+            int exceptionOffset = HEADER_MASK + _b * _batchSize;
 
             // explode and patch
-            for (int i = 1; i < batchSize; i++)
+            for (int i = 1; i < _batchSize; i++)
             {
-                int val = GetBitSlice(compressedSet, i * b + HEADER_MASK, b);
+                int val = GetBitSlice(compressedSet, i * _b + HEADER_MASK, _b);
 
                 if ((val & 0x1) != 0)
                 {
@@ -354,16 +362,25 @@ namespace LuceneExt
                 }
                 else
                 {
-                    op[i] = (int)(uint)val >> 1;
+                    op[i] = (int)(((uint)val) >> 1);
                 }
                 op[i] += op[i - 1];
             }
             return op;
         }
 
+        ///**
+        //* Method not supported
+        //* 
+        //*/
+        //public virtual int[] Decompress(BitSet compressedSet) 
+        //{
+        //    return null;
+        //}
+
         public virtual string PrintParams()
         {
-            return "b val:" + b + " exceptionOffset:" + exceptionOffset;
+            return "b val:" + _b + " exceptionOffset:" + _exceptionOffset;
         }
     }
 }

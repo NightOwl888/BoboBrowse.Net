@@ -92,6 +92,7 @@
     </Compile>
     <Compile Include="API\DocSet.cs" />
     <Compile Include="API\StatefulDSIterator.cs" />
+    <Compile Include="BitSet\MyOpenBitSet.cs" />
     <Compile Include="Compression\ICompressedSortedIntegerSegment.cs" />
     <Compile Include="Compression\P4DSetNoBase.cs" />
     <Compile Include="Impl\AbstractDocSet.cs" />
