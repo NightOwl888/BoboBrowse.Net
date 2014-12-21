@@ -153,8 +153,8 @@ namespace BoboBrowse.Net
         {
             StringBuilder buf = new StringBuilder();
             buf.Append("name: ").Append(FieldName);
-            buf.Append("values: " + string.Join(",", values));
-            buf.Append("nots: " + string.Join(",", notValues));
+            buf.Append("values: " + string.Join(",", values.ToArray()));
+            buf.Append("nots: " + string.Join(",", notValues.ToArray()));
             buf.Append("op: " + SelectionOperation.ToString());
             buf.Append("sel props: " + SelectionProperties.ToString());
             return buf.ToString();
