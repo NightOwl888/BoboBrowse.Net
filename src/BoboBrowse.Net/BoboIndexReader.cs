@@ -23,7 +23,6 @@
 
 // Version compatibility level: 3.1.0
 // EXCEPTION: Spring XML Configuration
-// TODO: This class is not compatible with .NET 3.5 as is
 namespace BoboBrowse.Net
 {
     using BoboBrowse.Net.Facets;
@@ -67,17 +66,9 @@ namespace BoboBrowse.Net
 
         private readonly IDictionary<string, object> _facetDataMap = new Dictionary<string, object>();
 
-        // TODO: This cannot be used in .NET 3.5
-        private readonly ThreadLocal<IDictionary<string, object>> _runtimeFacetDataMap = new ThreadLocal<IDictionary<string, object>>(() =>
-            {
-                return new Dictionary<string, object>();
-            });
-
-        // TODO: This cannot be used in .NET 3.5
-        private readonly ThreadLocal<IDictionary<string, IRuntimeFacetHandler>> _runtimeFacetHandlerMap = new ThreadLocal<IDictionary<string, IRuntimeFacetHandler>>(() =>
-            {
-                return new Dictionary<string, IRuntimeFacetHandler>();
-            });
+        private readonly CloseableThreadLocal<IDictionary<string, object>> _runtimeFacetDataMap = new CloseableThreadLocal<IDictionary<string, object>>();
+        
+        private readonly CloseableThreadLocal<IDictionary<string, IRuntimeFacetHandler>> _runtimeFacetHandlerMap = new CloseableThreadLocal<IDictionary<string, IRuntimeFacetHandler>>();
 
         /// <summary>
         /// Constructor
@@ -304,7 +295,7 @@ namespace BoboBrowse.Net
 
         public virtual object GetRuntimeFacetData(string name)
         {
-            var map = _runtimeFacetDataMap.Value;
+            var map = _runtimeFacetDataMap.Get();
             if (map == null) return null;
 
             return map.Get(name);
@@ -312,23 +303,23 @@ namespace BoboBrowse.Net
 
         public virtual void PutRuntimeFacetData(string name, object data)
         {
-            var map = _runtimeFacetDataMap.Value;
+            var map = _runtimeFacetDataMap.Get();
             if (map == null)
             {
                 map = new Dictionary<string, object>();
-                _runtimeFacetDataMap.Value = map;
+                _runtimeFacetDataMap.Set(map);
             }
             map.Put(name, data);
         }
 
         public virtual void ClearRuntimeFacetData()
         {
-            _runtimeFacetDataMap.Value = null;
+            _runtimeFacetDataMap.Set(null);
         }
 
         public IRuntimeFacetHandler GetRuntimeFacetHandler(string name)
         {
-            var map = _runtimeFacetHandlerMap.Value;
+            var map = _runtimeFacetHandlerMap.Get();
             if (map == null) return null;
 
             return map.Get(name);
@@ -336,18 +327,18 @@ namespace BoboBrowse.Net
 
         public void PutRuntimeFacetHandler(string name, IRuntimeFacetHandler data)
         {
-            var map = _runtimeFacetHandlerMap.Value;
+            var map = _runtimeFacetHandlerMap.Get();
             if (map == null)
             {
                 map = new Dictionary<string, IRuntimeFacetHandler>();
-                _runtimeFacetHandlerMap.Value = map;
+                _runtimeFacetHandlerMap.Set(map);
             }
             map.Put(name, data);
         }
 
         public void ClearRuntimeFacetHandler()
         {
-            _runtimeFacetHandlerMap.Value = null;
+            _runtimeFacetHandlerMap.Set(null);
         }
 
         protected override void DoClose()
