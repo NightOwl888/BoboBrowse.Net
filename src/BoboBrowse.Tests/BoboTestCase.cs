@@ -1045,8 +1045,8 @@ namespace BoboBrowse.Net
         public void TestPath()
         {
             BrowseRequest br = new BrowseRequest();
-            br.Count = (10);
-            br.Offset = (0);
+            br.Count = 10;
+            br.Offset = 0;
 
             BrowseSelection sel = new BrowseSelection("path");
             sel.AddValue("a");
@@ -1055,28 +1055,26 @@ namespace BoboBrowse.Net
             br.AddSelection(sel);
 
             FacetSpec pathSpec = new FacetSpec();
-            pathSpec.OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc;
+            pathSpec.OrderBy = FacetSpec.FacetSortSpec.OrderValueAsc;
             br.SetFacetSpec("path", pathSpec);
 
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "path", new BrowseFacet[] { new BrowseFacet("a-b",1),new BrowseFacet("a-c",4),new BrowseFacet("a-e",2) } }
+                { "path", new BrowseFacet[] { new BrowseFacet("a-b", 1) ,new BrowseFacet("a-c", 4), new BrowseFacet("a-e", 2) } }
             };
-
-
             DoTest(br, 7, answer, null);
 
             pathSpec.OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc;
             answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "path", new BrowseFacet[] { new BrowseFacet("a-c",4),new BrowseFacet("a-e",2),new BrowseFacet("a-b",1) } }
+                { "path", new BrowseFacet[] { new BrowseFacet("a-c", 4), new BrowseFacet("a-e", 2), new BrowseFacet("a-b", 1) } }
             };
             DoTest(br, 7, answer, null);
 
-            pathSpec.MaxCount = (2);
+            pathSpec.MaxCount = 2;
             answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "path", new BrowseFacet[] { new BrowseFacet("a-c",4),new BrowseFacet("a-e",2) } }
+                { "path", new BrowseFacet[] { new BrowseFacet("a-c", 4), new BrowseFacet("a-e", 2) } }
             };
             DoTest(br, 7, answer, null);
         }
