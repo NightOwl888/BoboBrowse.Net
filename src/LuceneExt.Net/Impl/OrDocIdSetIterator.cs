@@ -1,26 +1,4 @@
-﻿//* Bobo Browse Engine - High performance faceted/parametric search implementation 
-//* that handles various types of semi-structured data.  Written in Java.
-//* 
-//* Copyright (C) 2005-2006  John Wang
-//*
-//* This library is free software; you can redistribute it and/or
-//* modify it under the terms of the GNU Lesser General Public
-//* License as published by the Free Software Foundation; either
-//* version 2.1 of the License, or (at your option) any later version.
-//*
-//* This library is distributed in the hope that it will be useful,
-//* but WITHOUT ANY WARRANTY; without even the implied warranty of
-//* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//* Lesser General Public License for more details.
-//*
-//* You should have received a copy of the GNU Lesser General Public
-//* License along with this library; if not, write to the Free Software
-//* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
-//* 
-//* To contact the project administrators for the bobo-browse project, 
-//* please go to https://sourceforge.net/projects/bobo-browse/, or 
-//* send mail to owner@browseengine.com.  
-
+﻿﻿// Kamikaze version compatibility level: 3.0.6
 namespace LuceneExt.Impl
 {
     using System;
@@ -41,39 +19,32 @@ namespace LuceneExt.Impl
             }
         }
 
-        private int curDoc;
-        private readonly Item[] heap;
-        private int size;
+        private int _curDoc;
+        private readonly Item[] _heap;
+        private int _size;
 
         internal OrDocIdSetIterator(List<DocIdSet> sets) // throws IOException
         {
-            curDoc = -1;
-            heap = new Item[sets.Count];
-            size = 0;
-
+            _curDoc = -1;
+            _heap = new Item[sets.Count];
+            _size = 0;
             foreach (DocIdSet set in sets)
             {
-                heap[size++] = new Item(set.Iterator());
+                _heap[_size++] = new Item(set.Iterator() == null ? DocIdSet.EMPTY_DOCIDSET.Iterator() : set.Iterator());
             }
-            if (size == 0)
-            {
-                curDoc = DocIdSetIterator.NO_MORE_DOCS;
-            }
+            if (_size == 0) _curDoc = DocIdSetIterator.NO_MORE_DOCS;
         }
 
         public override int DocID()
         {
-            return curDoc;
+            return _curDoc;
         }
 
         public override int NextDoc()
         {
-            if (curDoc == DocIdSetIterator.NO_MORE_DOCS)
-            {
-                return DocIdSetIterator.NO_MORE_DOCS;
-            }
+            if (_curDoc == DocIdSetIterator.NO_MORE_DOCS) return DocIdSetIterator.NO_MORE_DOCS;
 
-            Item top = heap[0];
+            Item top = _heap[0];
             while (true)
             {
                 DocIdSetIterator topIter = top.Iter;
@@ -85,32 +56,25 @@ namespace LuceneExt.Impl
                 }
                 else
                 {
-                    heapRemoveRoot();
-                    if (size == 0)
-                        return (curDoc = DocIdSetIterator.NO_MORE_DOCS);
+                    HeapRemoveRoot();
+                    if (_size == 0) return (_curDoc = DocIdSetIterator.NO_MORE_DOCS);
                 }
-                top = heap[0];
+                top = _heap[0];
                 int topDoc = top.Doc;
-                if (topDoc > curDoc)
+                if (topDoc > _curDoc)
                 {
-                    return (curDoc = topDoc);
+                    return (_curDoc = topDoc);
                 }
             }
         }
 
         public override int Advance(int target) 
         {
-            if (curDoc == DocIdSetIterator.NO_MORE_DOCS)
-            {
-                return DocIdSetIterator.NO_MORE_DOCS;
-            }
+            if (_curDoc == DocIdSetIterator.NO_MORE_DOCS) return DocIdSetIterator.NO_MORE_DOCS;
 
-            if (target <= curDoc)
-            {
-                target = curDoc + 1;
-            }
+            if (target <= _curDoc) target = _curDoc + 1;
 
-            Item top = heap[0];
+            Item top = _heap[0];
             while (true)
             {
                 DocIdSetIterator topIter = top.Iter;
@@ -122,17 +86,14 @@ namespace LuceneExt.Impl
                 }
                 else
                 {
-                    heapRemoveRoot();
-                    if (size == 0)
-                    {
-                        return (curDoc = DocIdSetIterator.NO_MORE_DOCS);
-                    }
+                    HeapRemoveRoot();
+                    if (_size == 0) return (_curDoc = DocIdSetIterator.NO_MORE_DOCS);
                 }
-                top = heap[0];
+                top = _heap[0];
                 int topDoc = top.Doc;
                 if (topDoc >= target)
                 {
-                    return (curDoc = topDoc);
+                    return (_curDoc = topDoc);
                 }
             }
         }
@@ -149,20 +110,17 @@ namespace LuceneExt.Impl
         //   * Bubble the root down as required to make the subtree a heap.
         private void HeapAdjust()
         {
-            Item[] heap = this.heap;
+            Item[] heap = this._heap;
             Item top = heap[0];
             int doc = top.Doc;
-            int size = this.size;
+            int size = this._size;
             int i = 0;
 
             while (true)
             {
                 int lchild = (i << 1) + 1;
 
-                if (lchild >= size)
-                {
-                    break;
-                }
+                if (lchild >= size) break;
 
                 Item left = heap[lchild];
                 int ldoc = left.Doc;
@@ -175,10 +133,7 @@ namespace LuceneExt.Impl
 
                     if (rdoc <= ldoc)
                     {
-                        if (doc <= rdoc)
-                        {
-                            break;
-                        }
+                        if (doc <= rdoc) break;
 
                         heap[i] = right;
                         i = rchild;
@@ -186,10 +141,7 @@ namespace LuceneExt.Impl
                     }
                 }
 
-                if (doc <= ldoc)
-                {
-                    break;
-                }
+                if (doc <= ldoc) break;
 
                 heap[i] = left;
                 i = lchild;
@@ -198,14 +150,14 @@ namespace LuceneExt.Impl
         }
 
         // Remove the root Scorer from subScorers and re-establish it as a heap
-        private void heapRemoveRoot()
+        private void HeapRemoveRoot()
         {
-            size--;
-            if (size > 0)
+            _size--;
+            if (_size > 0)
             {
-                Item tmp = heap[0];
-                heap[0] = heap[size];
-                heap[size] = tmp; // keep the finished iterator at the end for debugging
+                Item tmp = _heap[0];
+                _heap[0] = _heap[_size];
+                _heap[_size] = tmp; // keep the finished iterator at the end for debugging
                 HeapAdjust();
             }
         }
