@@ -103,6 +103,8 @@
     <Compile Include="..\Common\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Analysis\Section\IntMetaDataTokenStream.cs" />
+    <Compile Include="Analysis\Section\SectionTokenStream.cs" />
     <Compile Include="BoboCustomSortField.cs" />
     <Compile Include="BoboIndexReader.cs" />
     <Compile Include="BoboSubBrowser.cs" />
@@ -253,6 +255,21 @@
     <Compile Include="IBrowsable.cs" />
     <Compile Include="Query\Scoring\IFacetScoreable.cs" />
     <Compile Include="MultiBoboBrowser.cs" />
+    <Compile Include="Search\Section\AbstractTerminalNode.cs" />
+    <Compile Include="Search\Section\AndNode.cs" />
+    <Compile Include="Search\Section\AndNotNode.cs" />
+    <Compile Include="Search\Section\IMetaDataCacheProvider.cs" />
+    <Compile Include="Search\Section\IntMetaDataCache.cs" />
+    <Compile Include="Search\Section\IntMetaDataQuery.cs" />
+    <Compile Include="Search\Section\IMetaDataCache.cs" />
+    <Compile Include="Search\Section\MetaDataQuery.cs" />
+    <Compile Include="Search\Section\OrNode.cs" />
+    <Compile Include="Search\Section\PhraseNode.cs" />
+    <Compile Include="Search\Section\SectionSearchQuery.cs" />
+    <Compile Include="Search\Section\SectionSearchQueryPlan.cs" />
+    <Compile Include="Search\Section\SectionSearchQueryPlanBuilder.cs" />
+    <Compile Include="Search\Section\TermNode.cs" />
+    <Compile Include="Search\Section\UnaryNotNode.cs" />
     <Compile Include="Support\AtomicInteger.cs" />
     <Compile Include="Support\DateTimeExtensions.cs" />
     <Compile Include="Support\MathUtil.cs" />

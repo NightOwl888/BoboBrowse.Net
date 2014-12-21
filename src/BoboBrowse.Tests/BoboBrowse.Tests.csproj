@@ -133,9 +133,11 @@
     <Compile Include="Facets\Data\TermLongListTest.cs" />
     <Compile Include="PathMultiValTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Section\SectionSearchTest.cs" />
     <Compile Include="Util\BigIntArrayTest.cs" />
     <Compile Include="Util\BigNestedIntArrayTest.cs" />
     <Compile Include="Util\FilterTest.cs" />
+    <Compile Include="Util\IndexReaderWithMetaDataCache.cs" />
     <Compile Include="Util\MutableSparseFloatArrayTest.cs" />
     <Compile Include="Util\SparseFloatArrayTest.cs" />
   </ItemGroup>
