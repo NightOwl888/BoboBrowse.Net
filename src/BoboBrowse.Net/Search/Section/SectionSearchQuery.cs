@@ -32,7 +32,7 @@ namespace BoboBrowse.Net.Search.Section
 
             public override Query Query
             {
-                get { return _parent; }
+                get { return _parent._query; }
             }
 
             public override float Value
