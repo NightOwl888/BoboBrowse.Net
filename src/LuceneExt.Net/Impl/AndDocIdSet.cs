@@ -1,26 +1,4 @@
-﻿//* Bobo Browse Engine - High performance faceted/parametric search implementation 
-//* that handles various types of semi-structured data.  Written in Java.
-//* 
-//* Copyright (C) 2005-2006  John Wang
-//*
-//* This library is free software; you can redistribute it and/or
-//* modify it under the terms of the GNU Lesser General Public
-//* License as published by the Free Software Foundation; either
-//* version 2.1 of the License, or (at your option) any later version.
-//*
-//* This library is distributed in the hope that it will be useful,
-//* but WITHOUT ANY WARRANTY; without even the implied warranty of
-//* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//* Lesser General Public License for more details.
-//*
-//* You should have received a copy of the GNU Lesser General Public
-//* License along with this library; if not, write to the Free Software
-//* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
-//* 
-//* To contact the project administrators for the bobo-browse project, 
-//* please go to https://sourceforge.net/projects/bobo-browse/, or 
-//* send mail to owner@browseengine.com. 
-
+﻿﻿// Kamikaze version compatibility level: 3.0.6
 namespace LuceneExt.Impl
 {
     using System;
@@ -30,10 +8,15 @@ namespace LuceneExt.Impl
 
     [Serializable]
     public class AndDocIdSet : ImmutableDocSet
-    {       
+    {
+        private static long serialVersionUID = 1L;
+        private List<int> _interSectionResult = new List<int>();
+
         [Serializable]
         public class DescDocIdSetComparator : IComparer<StatefulDSIterator>
         {
+            private static long serialVersionUID = 1L;
+
             public virtual int Compare(StatefulDSIterator o1, StatefulDSIterator o2)
             {
                 return o2.DocID() - o1.DocID();
@@ -58,6 +41,11 @@ namespace LuceneExt.Impl
             nonNullSize = size;
         }
 
+        public virtual IEnumerable<int> Intersection
+        {
+            get { return _interSectionResult; }
+        }
+
         internal class AndDocIdSetIterator : DocIdSetIterator
         {
             internal int lastReturn = -1;
@@ -75,6 +63,8 @@ namespace LuceneExt.Impl
                     if (set != null)
                     {
                         DocIdSetIterator dcit = set.Iterator();
+                        if (dcit == null)
+                            dcit = DocIdSet.EMPTY_DOCIDSET.Iterator();
                         iterators[j++] = dcit;
                     }
                 }
@@ -103,6 +93,7 @@ namespace LuceneExt.Impl
                     {
                         dcit = iterators[i];
                         int docid = dcit.Advance(target);
+
                         if (docid > target)
                         {
                             target = docid;
@@ -118,6 +109,8 @@ namespace LuceneExt.Impl
                     }
                     i++;
                 }
+                //      if(target != DocIdSetIterator.NO_MORE_DOCS)
+                //        _interSectionResult.Add(target);
                 return (lastReturn = target);
             }
 
