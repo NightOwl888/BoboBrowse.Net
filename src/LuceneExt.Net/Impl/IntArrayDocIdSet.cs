@@ -1,27 +1,4 @@
-﻿//*
-//* Bobo Browse Engine - High performance faceted/parametric search implementation 
-//* that handles various types of semi-structured data.  Written in Java.
-//* 
-//* Copyright (C) 2005-2006  John Wang
-//*
-//* This library is free software; you can redistribute it and/or
-//* modify it under the terms of the GNU Lesser General Public
-//* License as published by the Free Software Foundation; either
-//* version 2.1 of the License, or (at your option) any later version.
-//*
-//* This library is distributed in the hope that it will be useful,
-//* but WITHOUT ANY WARRANTY; without even the implied warranty of
-//* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//* Lesser General Public License for more details.
-//*
-//* You should have received a copy of the GNU Lesser General Public
-//* License along with this library; if not, write to the Free Software
-//* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
-//* 
-//* To contact the project administrators for the bobo-browse project, 
-//* please go to https://sourceforge.net/projects/bobo-browse/, or 
-//* send mail to owner@browseengine.com.  
-
+﻿﻿// Kamikaze version compatibility level: 3.0.6
 namespace LuceneExt.Impl
 {
     using System;
@@ -74,20 +51,14 @@ namespace LuceneExt.Impl
             if (midval < val)
             {
                 // Find number equal or greater than the target.
-                if (array.Get(mid + 1) >= val)
-                {
-                    return mid + 1;
-                }
+                if (array.Get(mid + 1) >= val) return mid + 1;
 
                 return BinarySearchForNearest(val, mid + 1, end);
             }
             else
             {
                 // Find number equal or greater than the target.
-                if (midval == val)
-                {
-                    return mid;
-                }
+                if (midval == val) return mid;
 
                 return BinarySearchForNearest(val, begin, mid);
             }
@@ -96,6 +67,7 @@ namespace LuceneExt.Impl
         internal class IntArrayDocIdSetIterator : StatefulDSIterator
         {
             private int lastReturn = -1;
+
             private int cursor = -1;
 
             private readonly IntArrayDocIdSet parent;
@@ -103,10 +75,7 @@ namespace LuceneExt.Impl
             public IntArrayDocIdSetIterator(IntArrayDocIdSet parent)
             {
                 this.parent = parent;
-                if (parent.pos == -1)
-                {
-                    lastReturn = DocIdSetIterator.NO_MORE_DOCS;
-                }
+                if (parent.pos == -1) lastReturn = DocIdSetIterator.NO_MORE_DOCS;
             }
 
             public override int DocID()
@@ -125,15 +94,9 @@ namespace LuceneExt.Impl
 
             public override int Advance(int target)
             {
-                if (lastReturn == DocIdSetIterator.NO_MORE_DOCS)
-                {
-                    return DocIdSetIterator.NO_MORE_DOCS;
-                }
+                if (lastReturn == DocIdSetIterator.NO_MORE_DOCS) return DocIdSetIterator.NO_MORE_DOCS;
 
-                if (target <= lastReturn)
-                {
-                    target = lastReturn + 1;
-                }
+                if (target <= lastReturn) target = lastReturn + 1;
 
                 int end = Math.Min(cursor + (target - lastReturn), parent.pos);
                 int index = parent.BinarySearchForNearest(target, cursor + 1, end);
@@ -173,13 +136,10 @@ namespace LuceneExt.Impl
             {
                 int docid = dcit.Advance(val);
                 if (docid == val)
-                {
                     return dcit.GetCursor();
-                }
             }
             catch (IOException e)
             {
-                //
             }
             return -1;
         }
