@@ -1708,52 +1708,29 @@ namespace BoboBrowse.Net
             DoTest(br, 7, null, new String[] { "5", "4", "6", "3", "2", "1", "7" });
 
             // now test with serialization
-
-            BrowseResult result = null;
-            BoboBrowser boboBrowser = null;
-            try
+            using (BoboBrowser boboBrowser = NewBrowser())
             {
-                boboBrowser = NewBrowser();
-
-                result = boboBrowser.Browse(br);
-
-                BinaryFormatter formatter = new BinaryFormatter();
-                using (var stream = new MemoryStream())
+                BrowseResult result = boboBrowser.Browse(br);
+                try
                 {
-                    // Serialize to a stream
-                    formatter.Serialize(stream, result);
+                    BinaryFormatter formatter = new BinaryFormatter();
+                    using (var stream = new MemoryStream())
+                    {
+                        // Serialize to a stream
+                        formatter.Serialize(stream, result);
 
-                    // Return to the beginning of the stream
-                    stream.Seek(0, SeekOrigin.Begin);
+                        // Return to the beginning of the stream
+                        stream.Seek(0, SeekOrigin.Begin);
 
-                    // Deserialize from the stream
-                    result = (BrowseResult)formatter.Deserialize(stream);
+                        // Deserialize from the stream
+                        result = (BrowseResult)formatter.Deserialize(stream);
+                    }
+
+                    DoTest(result, br, 7, null, new string[] { "5", "4", "6", "3", "2", "1", "7" });
                 }
-
-                DoTest(result, br, 7, null, new string[] { "5", "4", "6", "3", "2", "1", "7" });
-
-            }
-            catch (BrowseException e)
-            {
-                Assert.Fail(e.Message);
-            }
-            catch (Exception ioe)
-            {
-                Assert.Fail(ioe.Message);
-            }
-            finally
-            {
-                if (boboBrowser != null)
+                finally
                 {
-                    try
-                    {
-                        if (result != null) result.Close();
-                        boboBrowser.Close();
-                    }
-                    catch (IOException e)
-                    {
-                        Assert.Fail(e.Message);
-                    }
+                    if (result != null) result.Close();
                 }
             }
         }
