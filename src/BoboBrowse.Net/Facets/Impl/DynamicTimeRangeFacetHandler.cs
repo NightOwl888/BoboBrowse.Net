@@ -23,6 +23,13 @@ namespace BoboBrowse.Net.Facets.Impl
         private readonly IDictionary<string, string> _rangeStringToValueMap;
         private readonly IList<string> _rangeStringList;
 
+        /// <summary>
+        /// the format of range string is dddhhmmss. (ddd: days (000-999), hh : hours (00-23), mm: minutes (00-59), ss: seconds (00-59))
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="dataFacetName"></param>
+        /// <param name="currentTime"></param>
+        /// <param name="ranges"></param>
         public DynamicTimeRangeFacetHandler(string name, string dataFacetName, long currentTime, IEnumerable<string> ranges)
             : base(name, dataFacetName)
         {
