@@ -51,23 +51,20 @@ namespace BoboBrowse.Net.Facets.Impl
             return new FacetHitComparer { counts = counts };
         }
 
-        private class FACETIComparer : IComparer<BrowseFacet>
+        private class DefaultFacetHitsComparer : IComparer<BrowseFacet>
         {
-            // FIXME: we need to reorganize all that stuff with comparators
-            private IComparer valueComparer = new Comparer(System.Globalization.CultureInfo.InvariantCulture);
-
             public int Compare(BrowseFacet f1, BrowseFacet f2)
             {
-                int val = f1.HitCount - f2.HitCount;
+                int val = f2.HitCount - f1.HitCount;
                 if (val == 0)
                 {
-                    val = valueComparer.Compare(f1.Value, f2.Value);
+                    val = f1.Value.CompareTo(f2.Value);
                 }
                 return val;
             }
         }
 
-        public static IComparer<BrowseFacet> FACET_HITS_COMPARATOR = new FACETIComparer();
+        public static IComparer<BrowseFacet> FACET_HITS_COMPARATOR = new DefaultFacetHitsComparer();
 
         public IComparer<BrowseFacet> NewComparator()
         {
