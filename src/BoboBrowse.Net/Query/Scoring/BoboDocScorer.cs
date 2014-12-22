@@ -46,7 +46,13 @@ namespace BoboBrowse.Net.Query.Scoring
 
         public static float[] BuildBoostList(IEnumerable<string> valArray, IDictionary<string, float> boostMap)
         {
-            var valArray2 = new List<string>(valArray);
+            var valArray2 = new List<string>(valArray.Count());
+            // NOTE: we must loop through the list in order to make it format
+            // the values so it can match the formatted values in the boostMap.
+            foreach (var item in valArray)
+            {
+                valArray2.Add(item);
+            }
             float[] boostList = new float[valArray2.Count];
             Arrays.Fill(boostList, 1.0f);
             if (boostMap != null && boostMap.Count > 0)
