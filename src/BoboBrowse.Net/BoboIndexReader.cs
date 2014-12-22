@@ -734,7 +734,7 @@ namespace BoboBrowse.Net
 
             while (hi >= lo)
             {
-                int mid = (int)((uint)(lo + hi) >> 1);
+                int mid = (int)(((uint)(lo + hi)) >> 1);
                 int midValue = starts[mid];
                 if (n < midValue)
                     hi = mid - 1;

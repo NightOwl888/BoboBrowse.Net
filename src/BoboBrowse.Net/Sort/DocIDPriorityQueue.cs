@@ -174,12 +174,12 @@ namespace BoboBrowse.Net.Sort
         private void UpHeap(int i)
         {
             ScoreDoc node = heap[i];    // save bottom node
-            uint j = (uint)i >> 1;
+            int j = (int)(((uint)i) >> 1);
             while (j > 0 && Compare(node, heap[j]) < 0)
             {
                 heap[i] = heap[j];      // shift parents down
-                i = (int)j;
-                j = j >> 1;
+                i = j;
+                j = (int)(((uint)j) >> 1);
             }
             heap[i] = node;             // install saved node
         }

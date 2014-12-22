@@ -424,7 +424,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     while (true)
                     {
                         _combinationCount[(encoded & 0x0F) + offset]++;
-                        encoded = (int)((uint)encoded >> 4);
+                        encoded = (int)(((uint)encoded) >> 4);
                         if (encoded == 0)
                             break;
                         offset += 16;

@@ -41,12 +41,12 @@ namespace BoboBrowse.Net.Facets.Impl
             int i = size;
             FacetIterator node = heap[i];   // save bottom node
             var val = node.Facet;
-            int j = (int)((uint)(i >> 1));
+            int j = (int)(((uint)i) >> 1);
             while (j > 0 && val.CompareTo(heap[j].Facet) < 0)
             {
                 heap[i] = heap[j];          // shift parents down
                 i = j;
-                j = (int)((uint)(j >> 1));
+                j = (int)(((uint)j) >> 1);
             }
             heap[i] = node;                 // install saved node
         }
