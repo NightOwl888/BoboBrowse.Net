@@ -63,7 +63,7 @@ namespace BoboBrowse.Net.Facets.Data
             {
                 //var formatString = "{0:" + this.FormatString + "}";
 
-                if (this.FormatProvider == null)
+                if (this.FormatProvider != null)
                 {
                     //return string.Format(formatString, Convert.ToDecimal(o));
                     return Convert.ToDecimal(o).ToString(this.FormatString, this.FormatProvider);
