@@ -1,6 +1,7 @@
 ﻿namespace BoboBrowse.Net.Support
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
 
     internal static class Arrays
@@ -18,6 +19,26 @@
             if (block == null) 
                 return string.Empty;
             return string.Join(", ", block.Select(x => x.ToString()).ToArray());
+        }
+
+        public static bool Equals<T>(T[] value1, T[] value2)
+        {
+            if (value1 == null)
+                if (value2 == null)
+                    return true;
+                else
+                    return false;
+
+            if (value1.Length != value2.Length)
+                return false;
+
+            for (int i = 0; i < value1.Length; i++)
+            {
+                if (!value1[i].Equals(value2[i]))
+                    return false;
+            }
+
+            return true;
         }
 
         public static int HashCode(long[] array)

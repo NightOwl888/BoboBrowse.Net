@@ -22,7 +22,7 @@ namespace BoboBrowse.Net.Facets.Data
             list.Add("1");
 
             list.Seal();
-            Assert.True(Arrays.Equals(new long[] { 0, -2, -1, 0, 1 }, list.ToArray()));
+            Assert.True(Arrays.Equals(new long[] { 0, -2, -1, 0, 1 }, list.Elements));
         }
 
         [Test]
@@ -37,7 +37,7 @@ namespace BoboBrowse.Net.Facets.Data
             list.Add("1");
 
             list.Seal();
-            Assert.True(Arrays.Equals(new long[] { 0, -3, -2, -1, 0, 1 }, list.ToArray()));
+            Assert.True(Arrays.Equals(new long[] { 0, -3, -2, -1, 0, 1 }, list.Elements));
         }
 
         [Test]
@@ -52,7 +52,7 @@ namespace BoboBrowse.Net.Facets.Data
             list.Add("1");
 
             list.Seal();
-            Assert.True(Arrays.Equals(new int[] { 0, -3, -2, -1, 0, 1 }, list.ToArray()));
+            Assert.True(Arrays.Equals(new int[] { 0, -3, -2, -1, 0, 1 }, list.Elements));
         }
 
         [Test]
@@ -67,7 +67,7 @@ namespace BoboBrowse.Net.Facets.Data
             list.Add("1");
 
             list.Seal();
-            Assert.True(Arrays.Equals(new short[] { 0, -3, -2, -1, 0, 1 }, list.ToArray()));
+            Assert.True(Arrays.Equals(new short[] { 0, -3, -2, -1, 0, 1 }, list.Elements));
         }
 
         public void Test3ThreeNegativeValuesWithoutDummy()
@@ -81,7 +81,7 @@ namespace BoboBrowse.Net.Facets.Data
             list.Add("1");
 
             list.Seal();
-            Assert.True(Arrays.Equals(new long[] { -3, -2, -1, 0, 1 }, list.ToArray()));
+            Assert.True(Arrays.Equals(new long[] { -3, -2, -1, 0, 1 }, list.Elements));
         }
     }
 }
