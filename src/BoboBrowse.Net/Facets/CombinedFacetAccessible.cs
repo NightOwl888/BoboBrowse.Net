@@ -137,7 +137,7 @@ namespace BoboBrowse.Net.Facets
                         BrowseFacet rootFacet = (BrowseFacet)queue.Top();
                         minHits = rootFacet.HitCount + 1;
                         // facet count less than top of min heap, it will never be added 
-                        while (((facet = iter.Next(minHits)) != null))
+                        while (!string.IsNullOrEmpty((facet = iter.Next(minHits))))
                         {
                             rootFacet.Value = facet;
                             rootFacet.HitCount = iter.Count;
