@@ -230,10 +230,6 @@ namespace BoboBrowse.Tests
                             Assert.Fail("incorrect number of left over facets: " + string.Join(", ", expected.ToArray()));
                         }
                     }
-                    else
-                    {
-                        Assert.Fail("some facets should not have been loaded.");
-                    }
                 }
             }
         }
