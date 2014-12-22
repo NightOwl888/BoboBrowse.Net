@@ -41,24 +41,32 @@ namespace BoboBrowse.Net.Util
             private class IteratorNode
             {
                 public IEnumerator<T> iterator;
-                public T CurVal;
+                public T _curVal;
 
                 public IteratorNode(IEnumerator<T> iterator)
                 {
                     this.iterator = iterator;
-                    CurVal = default(T);
+                    _curVal = default(T);
                 }
 
                 public bool Fetch()
                 {
                     if (iterator.MoveNext())
                     {
-                        CurVal = iterator.Current;
+                        _curVal = iterator.Current;
                         return true;
                     }
-                    CurVal = default(T);
+                    _curVal = default(T);
                     return false;
                 }
+            }
+
+            private readonly MergedQueue _queue;
+            private T _current;
+
+            private MergedIterator(int length, IComparer<T> comparator)
+            {
+                _queue = new MergedQueue(length, comparator);
             }
 
             private class MergedQueue : PriorityQueue<IteratorNode>
@@ -73,16 +81,8 @@ namespace BoboBrowse.Net.Util
 
                 public override bool LessThan(IteratorNode a, IteratorNode b)
                 {
-                    return (comparator.Compare(a.CurVal, b.CurVal) < 0);
+                    return (comparator.Compare(a._curVal, b._curVal) < 0);
                 }
-            }
-
-            private readonly MergedQueue _queue;
-            private T _current;
-
-            private MergedIterator(int length, IComparer<T> comparator)
-            {
-                _queue = new MergedQueue(length, comparator);
             }
 
             public MergedIterator(IEnumerable<IEnumerator<T>> iterators, IComparer<T> comparator)
@@ -91,10 +91,7 @@ namespace BoboBrowse.Net.Util
                 foreach (IEnumerator<T> iterator in iterators)
                 {
                     IteratorNode ctx = new IteratorNode(iterator);
-                    if (ctx.Fetch())
-                    {
-                        _queue.Add(ctx); // NOTE: This was InsertWithOverflow in codeplex version
-                    }
+                    if (ctx.Fetch()) _queue.Add(ctx); // NOTE: This was InsertWithOverflow in codeplex version
                 }
             }
 
@@ -104,10 +101,7 @@ namespace BoboBrowse.Net.Util
                 foreach (IEnumerator<T> iterator in iterators)
                 {
                     IteratorNode ctx = new IteratorNode(iterator);
-                    if (ctx.Fetch())
-                    {
-                        _queue.Add(ctx); // NOTE: This was InsertWithOverflow in codeplex version
-                    }
+                    if (ctx.Fetch()) _queue.Add(ctx); // NOTE: This was InsertWithOverflow in codeplex version
                 }
             }
 
@@ -155,7 +149,7 @@ namespace BoboBrowse.Net.Util
                 if (_queue.Size() > 0)
                 {
                     IteratorNode ctx = (IteratorNode)_queue.Top();
-                    T val = ctx.CurVal;
+                    T val = ctx._curVal;
                     if (ctx.Fetch())
                     {
                         _queue.UpdateTop();
