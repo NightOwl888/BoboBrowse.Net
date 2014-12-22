@@ -111,7 +111,7 @@ namespace BoboBrowse.Net.Facets
             IComparer<BrowseFacet> comparator;
             if (FacetSpec.FacetSortSpec.OrderValueAsc.Equals(_fspec.OrderBy))
             {
-                while ((facet = iter.Next(minHits)) != null)
+                while (!string.IsNullOrEmpty((facet = iter.Next(minHits))))
                 {
                     // find the next facet whose combined hit count obeys minHits
                     list.Add(new BrowseFacet(Convert.ToString(facet), iter.Count));
@@ -127,7 +127,7 @@ namespace BoboBrowse.Net.Facets
                     // Order by hits in descending order and max count is supplied
                     var queue = CreatePQ(maxCnt, comparator);
                     int qsize = 0;
-                    while ((qsize < maxCnt) && ((facet = iter.Next(minHits)) != null))
+                    while ((qsize < maxCnt) && !string.IsNullOrEmpty((facet = iter.Next(minHits))))
                     {
                         queue.Add(new BrowseFacet(facet, iter.Count));
                         qsize++;
@@ -155,7 +155,7 @@ namespace BoboBrowse.Net.Facets
                 else
                 {
                     // no maxCnt specified. So fetch all facets according to minHits and sort them later
-                    while ((facet = iter.Next(minHits)) != null)
+                    while (!string.IsNullOrEmpty((facet = iter.Next(minHits))))
                     {
                         list.Add(new BrowseFacet(facet, iter.Count));
                     }
@@ -170,14 +170,14 @@ namespace BoboBrowse.Net.Facets
                     var queue = CreatePQ(maxCnt, comparator);
                     BrowseFacet browseFacet = new BrowseFacet();
                     int qsize = 0;
-                    while ((qsize < maxCnt) && ((facet = iter.Next(minHits)) != null))
+                    while ((qsize < maxCnt) && !string.IsNullOrEmpty((facet = iter.Next(minHits))))
                     {
                         queue.Add(new BrowseFacet(facet, iter.Count));
                         qsize++;
                     }
                     if (facet != null)
                     {
-                        while ((facet = iter.Next(minHits)) != null)
+                        while (!string.IsNullOrEmpty((facet = iter.Next(minHits))))
                         {
                             // check with the top of min heap
                             browseFacet.HitCount = iter.Count;
@@ -194,7 +194,7 @@ namespace BoboBrowse.Net.Facets
                 else
                 {
                     // order by custom but no max count supplied
-                    while ((facet = iter.Next(minHits)) != null)
+                    while (!string.IsNullOrEmpty((facet = iter.Next(minHits))))
                     {
                         list.Add(new BrowseFacet(facet, iter.Count));
                     }
