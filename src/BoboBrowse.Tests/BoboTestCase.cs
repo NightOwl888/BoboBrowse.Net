@@ -2585,9 +2585,9 @@ namespace BoboBrowse.Net
             FacetTermQuery numberQ = new FacetTermQuery(sel, map);
 
             BrowseRequest br = new BrowseRequest();
-            br.Query = (numberQ);
-            br.Offset = (0);
-            br.Count = (10);
+            br.Query = numberQ;
+            br.Offset = 0;
+            br.Count = 10;
 
             DoTest(br, 4, null, new string[] { "5", "2", "1", "6" });
         }
@@ -2610,10 +2610,10 @@ namespace BoboBrowse.Net
             var q = new ScoreAdjusterQuery(new MatchAllDocsQuery(), new FacetBasedBoostScorerBuilder(boostMaps));
 
             BrowseRequest br = new BrowseRequest();
-            br.Query = (q);
-            br.Offset = (0);
-            br.Count = (10);
-            br.Sort = (new SortField[] { SortField.FIELD_SCORE });
+            br.Query = q;
+            br.Offset = 0;
+            br.Count = 10;
+            br.Sort = new SortField[] { SortField.FIELD_SCORE };
             BoboBrowser b = NewBrowser();
 
             BrowseResult r = b.Browse(br);
