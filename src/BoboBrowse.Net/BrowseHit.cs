@@ -52,6 +52,9 @@ namespace BoboBrowse.Net
             }
         }
 
+        [NonSerialized]
+        private IComparable _comparable;
+
         /// <summary>
         /// Gets or sets the score
         /// </summary>
@@ -127,7 +130,11 @@ namespace BoboBrowse.Net
 
         public virtual Explanation Explanation { get; set; }
 
-        public virtual IComparable Comparable { get; set; }
+        public virtual IComparable Comparable 
+        {
+            get { return _comparable; }
+            set { _comparable = value; }
+        }
 
         /// <summary>
         /// Gets or sets the internal document id

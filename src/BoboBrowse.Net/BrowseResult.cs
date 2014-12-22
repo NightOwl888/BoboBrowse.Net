@@ -55,6 +55,8 @@ namespace BoboBrowse.Net
 	    private int numGroups;
 	    private int totalDocs;
 
+        [NonSerialized]
+        private SortCollector _sortCollector;
         //private int totalGroups;
 	    private IDictionary<string, IFacetAccessible> _facetMap;
 	    private BrowseHit[] hits;
@@ -79,7 +81,11 @@ namespace BoboBrowse.Net
         /// <summary>
         /// Get or sets the sort collector.
         /// </summary>
-        public virtual SortCollector SortCollector { get; set; }
+        public virtual SortCollector SortCollector 
+        {
+            get { return _sortCollector; }
+            set { _sortCollector = value; }
+        }
 
         /// <summary>
         /// Get the facets by name
