@@ -2715,10 +2715,10 @@ namespace BoboBrowse.Net
                 {
                     int v1 = Convert.ToInt32(o1.Value);
                     int v2 = Convert.ToInt32(o2.Value);
-                    int val = v1 - v2;
+                    int val = v2 - v1;
                     if (val == 0)
                     {
-                        val = o1.FacetValueHitCount - o2.FacetValueHitCount;
+                        val = o2.FacetValueHitCount - o1.FacetValueHitCount;
                     }
                     return val;
                 }
