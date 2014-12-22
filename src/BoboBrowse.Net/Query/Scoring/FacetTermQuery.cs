@@ -26,7 +26,7 @@ namespace BoboBrowse.Net.Query.Scoring
         private readonly IFacetTermScoringFunctionFactory _scoringFactory;
         private readonly IDictionary<string, float> _boostMap;
 
-        public FacetTermQuery(BrowseSelection sel, Dictionary<string, float> boostMap)
+        public FacetTermQuery(BrowseSelection sel, IDictionary<string, float> boostMap)
             : this(sel, boostMap, new DefaultFacetTermScoringFunctionFactory())
         {
         }
@@ -155,7 +155,7 @@ namespace BoboBrowse.Net.Query.Scoring
 
             public override float Value
             {
-                get { return 0; }
+                get { return value; }
             }
 
             public override void Normalize(float score)
