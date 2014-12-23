@@ -193,13 +193,12 @@ namespace BoboBrowse.Net.Facets.Data
                     // store term text
                     // we expect that there is at most one term per document
 
-                    // Alexey: well, we could get now more than one term per document. Effectively, we could build facet againsts tokenized field
-                    // NightOwl888: This check was commented by Alexey, but was replaced to align with the 3.1.0 source.
-                    if (t >= length)
-                    {
-                        throw new RuntimeException("there are more terms than " + "documents in field \"" + field 
-                            + "\", but it's impossible to sort on " + "tokenized fields");
-                    }
+                    // Alexey: well, we could get now more than one term per document. Effectively, we could build facet against tokenized field
+                    //if (t >= length)
+                    //{
+                    //    throw new RuntimeException("there are more terms than " + "documents in field \"" + field 
+                    //        + "\", but it's impossible to sort on " + "tokenized fields");
+                    //}
                     list.Add(term.Text);
                     termDocs.Seek(termEnum);
                     // freqList.add(termEnum.docFreq()); // doesn't take into account deldocs
