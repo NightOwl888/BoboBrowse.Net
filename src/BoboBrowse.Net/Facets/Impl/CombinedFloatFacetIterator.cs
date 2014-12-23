@@ -232,12 +232,10 @@ namespace BoboBrowse.Net.Facets.Impl
             throw new NotSupportedException("remove() method not supported for Facet Iterators");
         }
 
-        // TODO: Not sure why the lucene priority queue is not inherited here
-
         /// <summary>
         /// Lucene PriorityQueue
         /// </summary>
-        public class FloatFacetPriorityQueue //: Lucene.Net.Util.PriorityQueue<float>
+        public class FloatFacetPriorityQueue
         {
             private int size;
             private int maxSize;

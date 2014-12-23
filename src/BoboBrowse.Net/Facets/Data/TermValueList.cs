@@ -35,8 +35,7 @@ namespace BoboBrowse.Net.Facets.Data
         new int Count { get; }
         string Get(int index);
         IComparable GetComparableValue(int index);
-        object GetRawValue(int index); // TODO: see if we can use the actual type here by either making this method generic, or removing it here and putting it into the generic class.
-        //TRaw GetRawValue<TRaw>(int index);
+        object GetRawValue(int index);
         string Format(object o);
         int IndexOf(object o);
         void Add(string o); // TODO: Add boolean return value here.

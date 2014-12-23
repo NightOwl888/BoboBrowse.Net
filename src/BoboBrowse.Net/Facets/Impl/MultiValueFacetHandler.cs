@@ -262,9 +262,7 @@ namespace BoboBrowse.Net.Facets.Impl
             {
                 string[] vals = _array.GetTranslatedData(doc, _dataCache.ValArray);
 
-                // TODO: Do we really need C5 here?
-                C5.ArrayList<float> scoreList = new C5.ArrayList<float>(_dataCache.ValArray.Count);
-                //List<float> scoreList = new List<float>(_dataCache.ValArray.Count);
+                List<float> scoreList = new List<float>(_dataCache.ValArray.Count);
                 List<Explanation> explList = new List<Explanation>(scoreList.Count);
                 foreach (string val in vals)
                 {

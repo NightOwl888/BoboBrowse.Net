@@ -40,7 +40,6 @@ namespace BoboBrowse.Net.Facets.Data
                 val = Parse((string)o);
             else
                 val = (char)o;
-            // TODO: This doesn't look right - the other types do the binary search on _elements
             return _innerList.BinarySearch(val);
         }
 

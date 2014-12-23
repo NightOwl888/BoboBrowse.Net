@@ -214,8 +214,8 @@ namespace BoboBrowse.Net.Facets.Impl
             public override DocComparator GetComparator(IndexReader reader, int docbase)
             {
                 if (!(reader is BoboIndexReader)) throw new ArgumentException("reader not instance of " + typeof(BoboIndexReader));
-                BoboIndexReader boboReader = (BoboIndexReader)reader;
-                FacetDataNone dataCache = _facetHandler.GetFacetData<FacetDataNone>((BoboIndexReader)reader); // TODO: This is not being used
+                //BoboIndexReader boboReader = (BoboIndexReader)reader;  // NOT USED
+                //FacetDataNone dataCache = _facetHandler.GetFacetData<FacetDataNone>((BoboIndexReader)reader);  // NOT USED
                 return new GeoSimpleFacetHandlerDocComparator();
             }
 

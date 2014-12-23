@@ -318,8 +318,6 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        // TODO: Possibly need to create a factory of some kind to create the
-        // cache instances.
         public override FacetDataCache Load(BoboIndexReader reader)
         {
             if (!_multiValue)
