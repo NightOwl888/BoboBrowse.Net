@@ -107,8 +107,8 @@ namespace BoboBrowse.Net.Facets.Impl
             {
                 if (reader == null) throw new ArgumentNullException("reader object is null");
 
-                IFacetDataCache latCache = (IFacetDataCache)reader.GetFacetData(latFieldName);
-                IFacetDataCache lonCache = (IFacetDataCache)reader.GetFacetData(lonFieldName);
+                FacetDataCache latCache = (FacetDataCache)reader.GetFacetData(latFieldName);
+                FacetDataCache lonCache = (FacetDataCache)reader.GetFacetData(lonFieldName);
 
                 int maxDoc = reader.MaxDoc;
 

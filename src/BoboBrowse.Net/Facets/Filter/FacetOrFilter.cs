@@ -57,7 +57,7 @@ namespace BoboBrowse.Net.Facets.Filter
         public override double GetFacetSelectivity(BoboIndexReader reader)
         {
             double selectivity = 0;
-            IFacetDataCache dataCache = _facetHandler.GetFacetData<IFacetDataCache>(reader);
+            FacetDataCache dataCache = _facetHandler.GetFacetData<FacetDataCache>(reader);
             int accumFreq = 0;
             foreach (string val in _vals)
             {
@@ -97,13 +97,13 @@ namespace BoboBrowse.Net.Facets.Filter
         {
             private OpenBitSet _bitset;
 	        private readonly BigSegmentedArray _orderArray;
-	        private readonly IFacetDataCache _dataCache;
+	        private readonly FacetDataCache _dataCache;
             private readonly int[] _index;
 
             internal FacetOrRandomAccessDocIdSet(IFacetHandler facetHandler, BoboIndexReader reader, 
                 string[] vals, IFacetValueConverter valConverter, bool takeCompliment)
             {
-		        _dataCache = facetHandler.GetFacetData<IFacetDataCache>(reader);
+		        _dataCache = facetHandler.GetFacetData<FacetDataCache>(reader);
 		        _orderArray = _dataCache.OrderArray;
 	            _index = valConverter.Convert(_dataCache, vals);
 	    
@@ -137,12 +137,12 @@ namespace BoboBrowse.Net.Facets.Filter
         public class FacetOrDocIdSetIterator : DocIdSetIterator
         {
             protected internal int _doc;
-            protected internal readonly IFacetDataCache _dataCache;
+            protected internal readonly FacetDataCache _dataCache;
             protected internal int _maxID;
             protected internal readonly OpenBitSet _bitset;
             protected internal readonly BigSegmentedArray _orderArray;
 
-            public FacetOrDocIdSetIterator(IFacetDataCache dataCache, OpenBitSet bitset)
+            public FacetOrDocIdSetIterator(FacetDataCache dataCache, OpenBitSet bitset)
             {
                 _dataCache = dataCache;
                 _orderArray = dataCache.OrderArray;

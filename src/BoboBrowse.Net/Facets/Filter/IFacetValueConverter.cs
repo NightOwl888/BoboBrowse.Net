@@ -10,14 +10,14 @@ namespace BoboBrowse.Net.Facets.Filter
 
         public class DefaultFacetDataCacheConverter : IFacetValueConverter
         {		
-		    public int[] Convert(IFacetDataCache dataCache, string[] vals){
-			    return FacetDataCache_Static.Convert(dataCache, vals);
+		    public int[] Convert(FacetDataCache dataCache, string[] vals){
+			    return FacetDataCache.Convert(dataCache, vals);
 		    }
 	    }
     }
 
     public interface IFacetValueConverter
     {
-        int[] Convert(IFacetDataCache dataCache, string[] vals);
+        int[] Convert(FacetDataCache dataCache, string[] vals);
     }
 }

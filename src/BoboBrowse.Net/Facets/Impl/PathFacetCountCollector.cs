@@ -20,7 +20,7 @@ namespace BoboBrowse.Net.Facets.Impl
         private readonly string _name;
         private readonly string _sep;
         private readonly BigSegmentedArray _orderArray;
-        protected readonly IFacetDataCache _dataCache;
+        protected readonly FacetDataCache _dataCache;
         private readonly IComparatorFactory _comparatorFactory;
         private readonly int _minHitCount;
 	    private int _maxCount;
@@ -30,7 +30,7 @@ namespace BoboBrowse.Net.Facets.Impl
 	    private int _patStart;
 	    private int _patEnd;
 
-        internal PathFacetCountCollector(string name, string sep, BrowseSelection sel, FacetSpec ospec, IFacetDataCache dataCache)
+        internal PathFacetCountCollector(string name, string sep, BrowseSelection sel, FacetSpec ospec, FacetDataCache dataCache)
         {
             _sel = sel;
             _ospec = ospec;

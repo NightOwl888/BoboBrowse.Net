@@ -52,7 +52,7 @@ namespace BoboBrowse.Net.Facets.Filter
         public override double GetFacetSelectivity(BoboIndexReader reader)
         {
             double selectivity = 0;
-            IMultiValueFacetDataCache dataCache = _facetHandler.GetFacetData<IMultiValueFacetDataCache>(reader);
+            MultiValueFacetDataCache dataCache = _facetHandler.GetFacetData<MultiValueFacetDataCache>(reader);
             int[] idxes = _valueConverter.Convert(dataCache, _vals);
             if (idxes == null)
             {
@@ -76,7 +76,7 @@ namespace BoboBrowse.Net.Facets.Filter
         public sealed class MultiValueOrFacetDocIdSetIterator : FacetOrFilter.FacetOrDocIdSetIterator
         {
             private readonly BigNestedIntArray _nestedArray;
-            public MultiValueOrFacetDocIdSetIterator(IMultiValueFacetDataCache dataCache, OpenBitSet bs)
+            public MultiValueOrFacetDocIdSetIterator(MultiValueFacetDataCache dataCache, OpenBitSet bs)
                 : base(dataCache, bs)
             {
                 _nestedArray = dataCache.NestedArray;
@@ -101,7 +101,7 @@ namespace BoboBrowse.Net.Facets.Filter
 
         public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboIndexReader reader)
         {
-            IMultiValueFacetDataCache dataCache = _facetHandler.GetFacetData<IMultiValueFacetDataCache>(reader);
+            MultiValueFacetDataCache dataCache = _facetHandler.GetFacetData<MultiValueFacetDataCache>(reader);
             int[] index = _valueConverter.Convert(dataCache, _vals);
             //BigNestedIntArray nestedArray = dataCache.NestedArray;
             OpenBitSet bitset = new OpenBitSet(dataCache.ValArray.Count);
@@ -150,11 +150,11 @@ namespace BoboBrowse.Net.Facets.Filter
 
         private class MultiRandomAccessDocIdSet : RandomAccessDocIdSet
         {
-            private readonly IMultiValueFacetDataCache dataCache;
+            private readonly MultiValueFacetDataCache dataCache;
             private readonly OpenBitSet bitset;
             private readonly BigNestedIntArray nestedArray;
 
-            public MultiRandomAccessDocIdSet(IMultiValueFacetDataCache dataCache, OpenBitSet bitset)
+            public MultiRandomAccessDocIdSet(MultiValueFacetDataCache dataCache, OpenBitSet bitset)
             {
                 this.dataCache = dataCache;
                 this.bitset = bitset;

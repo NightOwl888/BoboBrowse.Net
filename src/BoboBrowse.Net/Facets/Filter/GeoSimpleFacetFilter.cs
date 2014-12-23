@@ -17,12 +17,12 @@ namespace BoboBrowse.Net.Facets.Filter
     public class GeoSimpleFacetFilter : RandomAccessFilter
     {
         private static long serialVersionUID = 1L;
-	    private readonly FacetHandler<IFacetDataCache> _latFacetHandler;
-	    private readonly FacetHandler<IFacetDataCache> _longFacetHandler;
+	    private readonly FacetHandler<FacetDataCache> _latFacetHandler;
+	    private readonly FacetHandler<FacetDataCache> _longFacetHandler;
 	    private readonly string _latRangeString;
         private readonly string _longRangeString;
 
-        public GeoSimpleFacetFilter(FacetHandler<IFacetDataCache> latHandler, FacetHandler<IFacetDataCache> longHandler, string latRangeString, string longRangeString)
+        public GeoSimpleFacetFilter(FacetHandler<FacetDataCache> latHandler, FacetHandler<FacetDataCache> longHandler, string latRangeString, string longRangeString)
         {
             _latFacetHandler = latHandler;
             _longFacetHandler = longHandler;
@@ -43,7 +43,7 @@ namespace BoboBrowse.Net.Facets.Filter
 		    private readonly BigSegmentedArray _latOrderArray;
 		    private readonly BigSegmentedArray _longOrderArray;
 
-            internal GeoSimpleDocIdSetIterator(int latStart, int latEnd, int longStart, int longEnd, IFacetDataCache latDataCache, IFacetDataCache longDataCache)
+            internal GeoSimpleDocIdSetIterator(int latStart, int latEnd, int longStart, int longEnd, FacetDataCache latDataCache, FacetDataCache longDataCache)
             {
                 _totalFreq = 0;
                 _latStart = latStart;
@@ -105,8 +105,8 @@ namespace BoboBrowse.Net.Facets.Filter
 
         public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboIndexReader reader)
         {
-            IFacetDataCache latDataCache = _latFacetHandler.GetFacetData<IFacetDataCache>(reader);
-		    IFacetDataCache longDataCache = _longFacetHandler.GetFacetData<IFacetDataCache>(reader);
+            FacetDataCache latDataCache = _latFacetHandler.GetFacetData<FacetDataCache>(reader);
+		    FacetDataCache longDataCache = _longFacetHandler.GetFacetData<FacetDataCache>(reader);
 		
 		    int[] latRange = FacetRangeFilter.Parse(latDataCache, _latRangeString);
 		    int[] longRange = FacetRangeFilter.Parse(longDataCache, _longRangeString);
@@ -121,10 +121,10 @@ namespace BoboBrowse.Net.Facets.Filter
             private readonly int _latEnd;
             private readonly int _longStart;
             private readonly int _longEnd;
-            private readonly IFacetDataCache _latDataCache;
-            private readonly IFacetDataCache _longDataCache;
+            private readonly FacetDataCache _latDataCache;
+            private readonly FacetDataCache _longDataCache;
 
-            public GeoSimpleRandomAccessDocIdSet(int[] latRange, int[] longRange, IFacetDataCache latDataCache, IFacetDataCache longDataCache)
+            public GeoSimpleRandomAccessDocIdSet(int[] latRange, int[] longRange, FacetDataCache latDataCache, FacetDataCache longDataCache)
             {
                 _latStart = latRange[0];
                 _latEnd = latRange[1];
@@ -147,7 +147,7 @@ namespace BoboBrowse.Net.Facets.Filter
             }
         }
 
-        public static int[] Parse(IFacetDataCache latDataCache, IFacetDataCache longDataCache, string rangeString)
+        public static int[] Parse(FacetDataCache latDataCache, FacetDataCache longDataCache, string rangeString)
         {
             GeoSimpleFacetHandler.GeoLatLonRange range = GeoSimpleFacetHandler.GeoLatLonRange.Parse(rangeString);
             // ranges[0] is latRangeStart, ranges[1] is latRangeEnd, ranges[2] is longRangeStart, ranges[3] is longRangeEnd

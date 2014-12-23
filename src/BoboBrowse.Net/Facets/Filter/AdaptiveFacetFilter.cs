@@ -14,7 +14,7 @@ namespace BoboBrowse.Net.Facets.Filter
 
     public interface IFacetDataCacheBuilder
     {
-        IFacetDataCache Build(BoboIndexReader reader);
+        FacetDataCache Build(BoboIndexReader reader);
         string Name { get; }
         string IndexFieldName { get; }
     }
@@ -63,7 +63,7 @@ namespace BoboBrowse.Net.Facets.Filter
                 return innerDocSet;
             }
 
-            IFacetDataCache dataCache = _facetDataCacheBuilder.Build(reader);
+            FacetDataCache dataCache = _facetDataCacheBuilder.Build(reader);
             int totalCount = reader.MaxDoc;
             ITermValueList valArray = dataCache.ValArray;
             int freqCount = 0;

@@ -18,7 +18,7 @@ namespace BoboBrowse.Net.Facets.Filter
         protected readonly IFacetDataCacheBuilder facetDataCacheBuilder;
         protected readonly IBitSetBuilder bitSetBuilder;
         private volatile OpenBitSet bitSet;
-        private volatile IFacetDataCache lastCache;
+        private volatile FacetDataCache lastCache;
 
         public BitSetFilter(IBitSetBuilder bitSetBuilder, IFacetDataCacheBuilder facetDataCacheBuilder)
         {
@@ -26,7 +26,7 @@ namespace BoboBrowse.Net.Facets.Filter
             this.facetDataCacheBuilder = facetDataCacheBuilder;
         }
 
-        public OpenBitSet GetBitSet(IFacetDataCache dataCache)
+        public OpenBitSet GetBitSet(FacetDataCache dataCache)
         {
             if (lastCache == dataCache)
             {
@@ -39,7 +39,7 @@ namespace BoboBrowse.Net.Facets.Filter
 
         public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboIndexReader reader)
         {
-            IFacetDataCache dataCache = facetDataCacheBuilder.Build(reader);
+            FacetDataCache dataCache = facetDataCacheBuilder.Build(reader);
             OpenBitSet openBitSet = GetBitSet(dataCache);
             long count = openBitSet.Cardinality();
             if (count == 0)
@@ -48,8 +48,8 @@ namespace BoboBrowse.Net.Facets.Filter
             }
             else
             {
-                bool multi = dataCache is IMultiValueFacetDataCache;
-                IMultiValueFacetDataCache multiCache = multi ? (IMultiValueFacetDataCache)dataCache : null;
+                bool multi = dataCache is MultiValueFacetDataCache;
+                MultiValueFacetDataCache multiCache = multi ? (MultiValueFacetDataCache)dataCache : null;
                 return new BitSetRandomAccessDocIdSet(multi, multiCache, openBitSet, dataCache);
             }
         }
@@ -57,11 +57,11 @@ namespace BoboBrowse.Net.Facets.Filter
         public class BitSetRandomAccessDocIdSet : RandomAccessDocIdSet
         {
             private readonly bool _multi;
-            private readonly IMultiValueFacetDataCache _multiCache;
+            private readonly MultiValueFacetDataCache _multiCache;
             private readonly OpenBitSet _openBitSet;
-            private readonly IFacetDataCache _dataCache;
+            private readonly FacetDataCache _dataCache;
 
-            public BitSetRandomAccessDocIdSet(bool multi, IMultiValueFacetDataCache multiCache, OpenBitSet openBitSet, IFacetDataCache dataCache)
+            public BitSetRandomAccessDocIdSet(bool multi, MultiValueFacetDataCache multiCache, OpenBitSet openBitSet, FacetDataCache dataCache)
             {
                 _multi = multi;
                 _multiCache = multiCache;
@@ -96,7 +96,7 @@ namespace BoboBrowse.Net.Facets.Filter
 
         public override double GetFacetSelectivity(BoboIndexReader reader)
         {
-            IFacetDataCache dataCache = facetDataCacheBuilder.Build(reader);
+            FacetDataCache dataCache = facetDataCacheBuilder.Build(reader);
             OpenBitSet openBitSet = GetBitSet(dataCache);
             int[] frequencies = dataCache.Freqs;
             double selectivity = 0;

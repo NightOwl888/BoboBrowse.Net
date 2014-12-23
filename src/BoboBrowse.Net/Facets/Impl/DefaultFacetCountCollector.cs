@@ -35,7 +35,7 @@ namespace BoboBrowse.Net.Facets.Impl
         protected internal readonly FacetSpec _ospec;
         protected internal int[] _count;
         protected internal int _countlength;
-        protected internal readonly IFacetDataCache _dataCache;
+        protected internal readonly FacetDataCache _dataCache;
         private readonly string _name;
         protected internal readonly BrowseSelection _sel;
         protected internal readonly BigSegmentedArray _array;
@@ -46,7 +46,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         // TODO: Need to determine if the memory manger is necessary
 
-        public DefaultFacetCountCollector(string name, IFacetDataCache dataCache, int docBase, BrowseSelection sel, FacetSpec ospec)
+        public DefaultFacetCountCollector(string name, FacetDataCache dataCache, int docBase, BrowseSelection sel, FacetSpec ospec)
         {
             _sel = sel;
             _ospec = ospec;
@@ -115,7 +115,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return _count;
         }
 
-        public virtual IFacetDataCache FacetDataCache
+        public virtual FacetDataCache FacetDataCache
         {
             get { return _dataCache; }
         }

@@ -22,15 +22,15 @@ namespace BoboBrowse.Net.Facets.Impl
 	    private int[] _latCount;
 	    private int[] _longCount;
 	    private readonly BigSegmentedArray _latOrderArray;
-	    private IFacetDataCache _latDataCache;
+	    private FacetDataCache _latDataCache;
 	    private readonly TermStringList _predefinedRanges;
 	    private int[][] _latPredefinedRangeIndexes;
         private readonly BigSegmentedArray _longOrderArray;
-	    private IFacetDataCache _longDataCache;
+	    private FacetDataCache _longDataCache;
 	    private int[][] _longPredefinedRangeIndexes;
 	    private int _docBase;
 
-        public GeoSimpleFacetCountCollector(string name, IFacetDataCache latDataCache, IFacetDataCache longDataCache, int docBase, FacetSpec spec, IEnumerable<string> predefinedRanges)
+        public GeoSimpleFacetCountCollector(string name, FacetDataCache latDataCache, FacetDataCache longDataCache, int docBase, FacetSpec spec, IEnumerable<string> predefinedRanges)
         {
             _name = name;
             _latDataCache = latDataCache;

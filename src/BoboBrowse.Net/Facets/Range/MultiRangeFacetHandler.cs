@@ -33,7 +33,7 @@ namespace BoboBrowse.Net.Facets.Range
 
         public override string[] GetFieldValues(BoboIndexReader reader, int id)
         {
-            IMultiValueFacetDataCache dataCache = GetFacetData(reader);
+            MultiValueFacetDataCache dataCache = GetFacetData(reader);
             if (dataCache != null)
             {
                 return dataCache.NestedArray.GetTranslatedData(id, dataCache.ValArray);
@@ -43,16 +43,16 @@ namespace BoboBrowse.Net.Facets.Range
 
         public override object[] GetRawFieldValues(BoboIndexReader reader, int id)
         {
- 	        IMultiValueFacetDataCache dataCache = GetFacetData(reader);
+ 	        MultiValueFacetDataCache dataCache = GetFacetData(reader);
             if (dataCache != null) {
                 return dataCache.NestedArray.GetRawData(id, dataCache.ValArray);
             }
             return new string[0];
         }
 
-        public IMultiValueFacetDataCache GetFacetData(BoboIndexReader reader)
+        public MultiValueFacetDataCache GetFacetData(BoboIndexReader reader)
         {
-            return (IMultiValueFacetDataCache)reader.GetFacetData(_name);
+            return (MultiValueFacetDataCache)reader.GetFacetData(_name);
         }
 
         public override RandomAccessFilter BuildRandomAccessFilter(string value, Properties prop)
@@ -78,7 +78,7 @@ namespace BoboBrowse.Net.Facets.Range
 
             public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
             {
-                IMultiValueFacetDataCache dataCache = parent.GetFacetData(reader);
+                MultiValueFacetDataCache dataCache = parent.GetFacetData(reader);
                 BigNestedIntArray _nestedArray = dataCache.NestedArray;
                 return new MultiRangeFacetCountCollector(parent.Name, dataCache, docBase, this.ospec, parent._predefinedRanges, _nestedArray);
             }
@@ -87,7 +87,7 @@ namespace BoboBrowse.Net.Facets.Range
             {
                 private readonly BigNestedIntArray _nestedArray;
 
-                public MultiRangeFacetCountCollector(string name, IMultiValueFacetDataCache dataCache, 
+                public MultiRangeFacetCountCollector(string name, MultiValueFacetDataCache dataCache, 
                     int docBase, FacetSpec ospec, IEnumerable<string> predefinedRanges, BigNestedIntArray nestedArray)
                     : base(name, dataCache, docBase, ospec, predefinedRanges)
                 {
@@ -104,19 +104,19 @@ namespace BoboBrowse.Net.Facets.Range
         public override BoboDocScorer GetDocScorer(BoboIndexReader reader, IFacetTermScoringFunctionFactory scoringFunctionFactory,
             IDictionary<string, float> boostMap)
         {
-            IMultiValueFacetDataCache dataCache = GetFacetData(reader);
+            MultiValueFacetDataCache dataCache = GetFacetData(reader);
             float[] boostList = BoboDocScorer.BuildBoostList(dataCache.ValArray, boostMap);
             return new MultiValueFacetHandler.MultiValueDocScorer(dataCache, scoringFunctionFactory, boostList);
         }
 
-        public override IFacetDataCache Load(BoboIndexReader reader)
+        public override FacetDataCache Load(BoboIndexReader reader)
         {
  	         return Load(reader, new BoboIndexReader.WorkArea());
         }
 
-        public override IFacetDataCache Load(BoboIndexReader reader, BoboIndexReader.WorkArea workArea)
+        public override FacetDataCache Load(BoboIndexReader reader, BoboIndexReader.WorkArea workArea)
         {
-            IMultiValueFacetDataCache dataCache = new MultiValueFacetDataCache();
+            MultiValueFacetDataCache dataCache = new MultiValueFacetDataCache();
             dataCache.SetMaxItems(maxItems);
             if (sizePayloadTerm == null)
             {

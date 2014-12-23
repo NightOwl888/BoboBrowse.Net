@@ -9,7 +9,7 @@ namespace BoboBrowse.Net.Facets.Impl
         private int _totalGroups;
 
         public GroupByFacetCountCollector(string name,
-                                    IFacetDataCache dataCache,
+                                    FacetDataCache dataCache,
                                     int docBase,
                                     BrowseSelection sel,
                                     FacetSpec ospec)

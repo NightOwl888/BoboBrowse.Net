@@ -47,7 +47,7 @@ namespace BoboBrowse.Net.Facets.Impl
             if (_collapsedCounts == null)
             {
                 _collapsedCounts = new int[_bucketValues.Count];
-                IFacetDataCache dataCache = _subCollector._dataCache;
+                FacetDataCache dataCache = _subCollector._dataCache;
                 ITermValueList subList = dataCache.ValArray;
                 int[] subcounts = _subCollector._count;
                 BitVector indexSet = new BitVector(subcounts.Length);

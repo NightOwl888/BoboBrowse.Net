@@ -14,10 +14,10 @@ namespace BoboBrowse.Net.Facets.Impl
         private readonly BigNestedIntArray _array;
 
         public MultiValuedPathFacetCountCollector(string name, string sep,
-            BrowseSelection sel, FacetSpec ospec, IFacetDataCache dataCache)
+            BrowseSelection sel, FacetSpec ospec, FacetDataCache dataCache)
             : base(name, sep, sel, ospec, dataCache)
         {
-            _array = ((IMultiValueFacetDataCache)(dataCache)).NestedArray;
+            _array = ((MultiValueFacetDataCache)(dataCache)).NestedArray;
         }
 
         public override sealed void Collect(int docid) 

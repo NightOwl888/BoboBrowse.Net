@@ -34,76 +34,8 @@ namespace BoboBrowse.Net.Facets.Data
     using System.Collections.Generic;
     using System.Linq;
 
-    // TODO: Being that this type doesn't need to be generic, it should probably just be
-    // put back together into an inheritable type with no interface.
-
-    public interface IFacetDataCache
-    {
-        BigSegmentedArray OrderArray { get; }
-        ITermValueList ValArray { get; }
-        int[] Freqs { get; }
-        int[] MinIDs { get; }
-        int[] MaxIDs { get; }
-        int GetNumItems(int docid);
-        void Load(string fieldName, IndexReader reader, TermListFactory listFactory);
-    }
-
-    public class FacetDataCache_Static
-    {
-        private static int[] ConvertString(IFacetDataCache dataCache, string[] vals)
-        {
-            var list = new List<int>(vals.Length);
-            for (int i = 0; i < vals.Length; ++i)
-            {
-                int index = dataCache.ValArray.IndexOf(vals[i]);
-                if (index >= 0)
-                {
-                    list.Add(index);
-                }
-            }
-            return list.ToArray();
-        }
-
-        /// <summary>
-        /// Same as ConvertString(FacetDataCache dataCache,string[] vals) except that the
-        /// values are supplied in raw form so that we can take advantage of the type
-        /// information to find index faster.
-        /// </summary>
-        /// <param name="dataCache"></param>
-        /// <param name="vals"></param>
-        /// <returns>the array of order indices of the values.</returns>
-        public static int[] Convert<T>(IFacetDataCache dataCache, T[] vals)
-        {
-            if (vals != null && (typeof(T) == typeof(string)))
-            {
-                var valsString = vals.Cast<string>().ToArray();
-                return ConvertString(dataCache, valsString);
-            }
-            var list = new List<int>(vals.Length);
-            for (int i = 0; i < vals.Length; ++i)
-            {
-                int index = -1;
-                var valArrayTyped = dataCache.ValArray as TermValueList<T>;
-                if (valArrayTyped != null)
-                {
-                    index = valArrayTyped.IndexOfWithType(vals[i]);
-                }
-                else
-                {
-                    index = dataCache.ValArray.IndexOf(vals[i]);
-                }
-                if (index >= 0)
-                {
-                    list.Add(index);
-                }
-
-            }
-            return list.ToArray();
-        }
-    }
-
     [Serializable]
-    public class FacetDataCache : IFacetDataCache
+    public class FacetDataCache
     {
         private static ILog logger = LogManager.GetLogger<FacetDataCache>();
 
@@ -330,56 +262,56 @@ namespace BoboBrowse.Net.Facets.Data
             this.freqs[0] = maxDoc + 1 - totalFreq;
         }
 
-        //private static int[] ConvertString(IFacetDataCache dataCache, string[] vals)
-        //{
-        //    var list = new List<int>(vals.Length);
-        //    for (int i = 0; i < vals.Length; ++i)
-        //    {
-        //        int index = dataCache.ValueArray.IndexOf(vals[i]);
-        //        if (index >= 0)
-        //        {
-        //            list.Add(index);
-        //        }
-        //    }
-        //    return list.ToArray();
-        //}
+        private static int[] ConvertString(FacetDataCache dataCache, string[] vals)
+        {
+            var list = new List<int>(vals.Length);
+            for (int i = 0; i < vals.Length; ++i)
+            {
+                int index = dataCache.ValArray.IndexOf(vals[i]);
+                if (index >= 0)
+                {
+                    list.Add(index);
+                }
+            }
+            return list.ToArray();
+        }
 
-        ///// <summary>
-        ///// Same as ConvertString(FacetDataCache dataCache,string[] vals) except that the
-        ///// values are supplied in raw form so that we can take advantage of the type
-        ///// information to find index faster.
-        ///// </summary>
-        ///// <param name="dataCache"></param>
-        ///// <param name="vals"></param>
-        ///// <returns>the array of order indices of the values.</returns>
-        //public static int[] Convert(IFacetDataCache dataCache, T[] vals) 
-        //{
-        //    if (vals != null && (typeof(T) == typeof(string)))
-        //    {
-        //        var valsString = vals.Cast<string>().ToArray();
-        //        return ConvertString(dataCache, valsString);
-        //    }
-        //    var list = new List<int>(vals.Length);
-        //    for (int i = 0; i < vals.Length; ++i) 
-        //    {
-        //        int index = -1;
-        //        var valArrayTyped = dataCache.ValueArray as TermValueList<T>;
-        //        if (valArrayTyped != null)
-        //        {
-        //            index = valArrayTyped.IndexOfWithType(vals[i]);
-        //        }
-        //        else
-        //        {
-        //            index = dataCache.ValueArray.IndexOf(vals[i]);
-        //        }
-        //        if (index >= 0)
-        //        {
-        //            list.Add(index);
-        //        }
-                
-        //    }
-        //    return list.ToArray();
-        //}
+        /// <summary>
+        /// Same as ConvertString(FacetDataCache dataCache,string[] vals) except that the
+        /// values are supplied in raw form so that we can take advantage of the type
+        /// information to find index faster.
+        /// </summary>
+        /// <param name="dataCache"></param>
+        /// <param name="vals"></param>
+        /// <returns>the array of order indices of the values.</returns>
+        public static int[] Convert<T>(FacetDataCache dataCache, T[] vals)
+        {
+            if (vals != null && (typeof(T) == typeof(string)))
+            {
+                var valsString = vals.Cast<string>().ToArray();
+                return ConvertString(dataCache, valsString);
+            }
+            var list = new List<int>(vals.Length);
+            for (int i = 0; i < vals.Length; ++i)
+            {
+                int index = -1;
+                var valArrayTyped = dataCache.ValArray as TermValueList<T>;
+                if (valArrayTyped != null)
+                {
+                    index = valArrayTyped.IndexOfWithType(vals[i]);
+                }
+                else
+                {
+                    index = dataCache.ValArray.IndexOf(vals[i]);
+                }
+                if (index >= 0)
+                {
+                    list.Add(index);
+                }
+
+            }
+            return list.ToArray();
+        }
     }
 
     public class FacetDocComparatorSource : DocComparatorSource
@@ -396,17 +328,17 @@ namespace BoboBrowse.Net.Facets.Data
             if (!(reader.GetType().Equals(typeof(BoboIndexReader))))
                 throw new ArgumentException("reader not instance of BoboIndexReader");
             BoboIndexReader boboReader = (BoboIndexReader)reader;
-            IFacetDataCache dataCache = _facetHandler.GetFacetData<IFacetDataCache>(boboReader);
+            FacetDataCache dataCache = _facetHandler.GetFacetData<FacetDataCache>(boboReader);
             BigSegmentedArray orderArray = dataCache.OrderArray;
             return new FacetDocComparator(dataCache, orderArray);
         }
 
         public class FacetDocComparator : DocComparator
         {
-            private readonly IFacetDataCache _dataCache;
+            private readonly FacetDataCache _dataCache;
             private readonly BigSegmentedArray _orderArray;
 
-            public FacetDocComparator(IFacetDataCache dataCache, BigSegmentedArray orderArray)
+            public FacetDocComparator(FacetDataCache dataCache, BigSegmentedArray orderArray)
             {
                 _dataCache = dataCache;
                 _orderArray = orderArray;

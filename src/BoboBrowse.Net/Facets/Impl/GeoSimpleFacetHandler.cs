@@ -150,8 +150,8 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
             {
-                IFacetDataCache latDataCache = _latFacetHandler.GetFacetData<IFacetDataCache>(reader);
-                IFacetDataCache longDataCache = _longFacetHandler.GetFacetData<IFacetDataCache>(reader);
+                FacetDataCache latDataCache = _latFacetHandler.GetFacetData<FacetDataCache>(reader);
+                FacetDataCache longDataCache = _longFacetHandler.GetFacetData<FacetDataCache>(reader);
                 return new GeoSimpleFacetCountCollector(_name, latDataCache, longDataCache, docBase, _fspec, _list);
             }
         }

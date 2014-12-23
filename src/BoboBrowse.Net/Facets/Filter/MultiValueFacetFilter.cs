@@ -46,7 +46,7 @@ namespace BoboBrowse.Net.Facets.Filter
         public override double GetFacetSelectivity(BoboIndexReader reader)
         {
             double selectivity = 0;
-            IFacetDataCache dataCache = multiDataCacheBuilder.Build(reader);
+            FacetDataCache dataCache = multiDataCacheBuilder.Build(reader);
             int idx = dataCache.ValArray.IndexOf(_val);
             if (idx < 0)
             {
@@ -62,7 +62,7 @@ namespace BoboBrowse.Net.Facets.Filter
         {
             private readonly BigNestedIntArray _nestedArray;
 
-            public MultiValueFacetDocIdSetIterator(IMultiValueFacetDataCache dataCache, int index)
+            public MultiValueFacetDocIdSetIterator(MultiValueFacetDataCache dataCache, int index)
                 : base(dataCache, index)
             {
                 _nestedArray = dataCache.NestedArray;
@@ -87,7 +87,7 @@ namespace BoboBrowse.Net.Facets.Filter
 
         public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboIndexReader reader)
         {
-            IMultiValueFacetDataCache dataCache = (IMultiValueFacetDataCache)multiDataCacheBuilder.Build(reader);
+            MultiValueFacetDataCache dataCache = (MultiValueFacetDataCache)multiDataCacheBuilder.Build(reader);
             int index = dataCache.ValArray.IndexOf(_val);
             if (index < 0)
             {
@@ -101,11 +101,11 @@ namespace BoboBrowse.Net.Facets.Filter
 
         private class MultiValueRandomAccessDocIdSet : RandomAccessDocIdSet
         {
-            private readonly IMultiValueFacetDataCache _dataCache;
+            private readonly MultiValueFacetDataCache _dataCache;
             private readonly int _index;
             private readonly BigNestedIntArray _nestedArray;
 
-            public MultiValueRandomAccessDocIdSet(IMultiValueFacetDataCache dataCache, int index)
+            public MultiValueRandomAccessDocIdSet(MultiValueFacetDataCache dataCache, int index)
             {
                 _dataCache = dataCache;
                 _index = index;

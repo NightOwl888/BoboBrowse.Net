@@ -46,7 +46,7 @@ namespace BoboBrowse.Net.Facets.Filter
         public override double GetFacetSelectivity(BoboIndexReader reader)
         {
             double selectivity = 0;
-            IFacetDataCache dataCache = _facetHandler.GetFacetData<IFacetDataCache>(reader);
+            FacetDataCache dataCache = _facetHandler.GetFacetData<FacetDataCache>(reader);
             int idx = dataCache.ValArray.IndexOf(_value);
             if (idx < 0)
             {
@@ -65,7 +65,7 @@ namespace BoboBrowse.Net.Facets.Filter
             protected internal readonly int _maxID;
             protected internal readonly BigSegmentedArray _orderArray;
 
-            public FacetDocIdSetIterator(IFacetDataCache dataCache, int index)
+            public FacetDocIdSetIterator(FacetDataCache dataCache, int index)
             {
                 _index = index;
                 _doc = Math.Max(-1, dataCache.MinIDs[_index] - 1);
@@ -97,7 +97,7 @@ namespace BoboBrowse.Net.Facets.Filter
 
         public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboIndexReader reader)
         {
-            IFacetDataCache dataCache = _facetHandler.GetFacetData<IFacetDataCache>(reader);
+            FacetDataCache dataCache = _facetHandler.GetFacetData<FacetDataCache>(reader);
             int index = dataCache.ValArray.IndexOf(_value);
             if (index < 0)
             {
@@ -111,11 +111,11 @@ namespace BoboBrowse.Net.Facets.Filter
 
         private class FacetDataRandomAccessDocIdSet : RandomAccessDocIdSet
         {
-            private readonly IFacetDataCache _dataCache;
+            private readonly FacetDataCache _dataCache;
 	        private readonly BigSegmentedArray _orderArray;
 	        private readonly int _index;
 
-            public FacetDataRandomAccessDocIdSet(IFacetDataCache dataCache, int index)
+            public FacetDataRandomAccessDocIdSet(FacetDataCache dataCache, int index)
             {
                 _dataCache = dataCache;
                 _orderArray = dataCache.OrderArray;

@@ -21,7 +21,7 @@ namespace BoboBrowse.Net.Facets.Impl
     using System.Linq;
     using System.Text;
     
-    public class PathFacetHandler : FacetHandler<IFacetDataCache>
+    public class PathFacetHandler : FacetHandler<FacetDataCache>
     {
         private const string DEFAULT_SEP = "/";
 
@@ -83,7 +83,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override int GetNumItems(BoboIndexReader reader, int id)
         {
-            IFacetDataCache data = GetFacetData<IFacetDataCache>(reader);
+            FacetDataCache data = GetFacetData<FacetDataCache>(reader);
             if (data == null) return 0;
             return data.GetNumItems(id);
         }
@@ -109,11 +109,11 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override string[] GetFieldValues(BoboIndexReader reader, int id)
         {
-            IFacetDataCache dataCache = GetFacetData<IFacetDataCache>(reader);
+            FacetDataCache dataCache = GetFacetData<FacetDataCache>(reader);
             if (dataCache == null) return new string[0];
             if (_multiValue)
             {
-                return ((IMultiValueFacetDataCache)dataCache).NestedArray.GetTranslatedData(id, dataCache.ValArray);
+                return ((MultiValueFacetDataCache)dataCache).NestedArray.GetTranslatedData(id, dataCache.ValArray);
             }
             else
             {
@@ -145,7 +145,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 _depth = depth;
             }
 
-            private void GetFilters(IFacetDataCache dataCache, IList<int> intSet, string[] vals, int depth, bool strict)
+            private void GetFilters(FacetDataCache dataCache, IList<int> intSet, string[] vals, int depth, bool strict)
             {
                 foreach (string val in vals)
                 {
@@ -153,7 +153,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 }
             }
 
-            private void GetFilters(IFacetDataCache dataCache, IList<int> intSet, string val, int depth, bool strict)
+            private void GetFilters(FacetDataCache dataCache, IList<int> intSet, string val, int depth, bool strict)
             {
                 IList<string> termList = dataCache.ValArray;
                 int index = termList.IndexOf(val);
@@ -188,7 +188,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 }
             }
 
-            public int[] Convert(IFacetDataCache dataCache, string[] vals)
+            public int[] Convert(FacetDataCache dataCache, string[] vals)
             {
                 IList<int> intSet = new List<int>();
                 GetFilters(dataCache, intSet, vals, _depth, _strict);
@@ -306,7 +306,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
             {
-                IFacetDataCache dataCache = _parent.GetFacetData<IFacetDataCache>(reader);
+                FacetDataCache dataCache = _parent.GetFacetData<FacetDataCache>(reader);
 				if (_multiValue)
                 {
 					return new MultiValuedPathFacetCountCollector(_name, _separator, _sel, _ospec, dataCache);
@@ -320,17 +320,17 @@ namespace BoboBrowse.Net.Facets.Impl
 
         // TODO: Possibly need to create a factory of some kind to create the
         // cache instances.
-        public override IFacetDataCache Load(BoboIndexReader reader)
+        public override FacetDataCache Load(BoboIndexReader reader)
         {
             if (!_multiValue)
             {
-                IFacetDataCache dataCache = new FacetDataCache();
+                FacetDataCache dataCache = new FacetDataCache();
                 dataCache.Load(_indexedName, reader, _termListFactory);
                 return dataCache;
             }
             else
             {
-                IMultiValueFacetDataCache dataCache = new MultiValueFacetDataCache();
+                MultiValueFacetDataCache dataCache = new MultiValueFacetDataCache();
                 dataCache.Load(_indexedName, reader, _termListFactory);
                 return dataCache;
             }

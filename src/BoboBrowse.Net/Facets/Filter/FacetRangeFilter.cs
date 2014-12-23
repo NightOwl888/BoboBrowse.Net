@@ -49,7 +49,7 @@ namespace BoboBrowse.Net.Facets.Filter
         public override double GetFacetSelectivity(BoboIndexReader reader)
         {
             double selectivity = 0;
-            IFacetDataCache dataCache = _facetHandler.GetFacetData<IFacetDataCache>(reader);
+            FacetDataCache dataCache = _facetHandler.GetFacetData<FacetDataCache>(reader);
             int[] range = Parse(dataCache, _rangeString);
             if (range != null)
             {
@@ -79,7 +79,7 @@ namespace BoboBrowse.Net.Facets.Filter
             private readonly int _end;
             private readonly BigSegmentedArray _orderArray;
 
-            public FacetRangeDocIdSetIterator(int start, int end, IFacetDataCache dataCache)
+            public FacetRangeDocIdSetIterator(int start, int end, FacetDataCache dataCache)
             {
                 _start = start;
                 _end = end;
@@ -124,7 +124,7 @@ namespace BoboBrowse.Net.Facets.Filter
             private readonly int _end;
             private readonly BigNestedIntArray nestedArray;
 
-            public MultiFacetRangeDocIdSetIterator(int start, int end, IMultiValueFacetDataCache dataCache)
+            public MultiFacetRangeDocIdSetIterator(int start, int end, MultiValueFacetDataCache dataCache)
             {
                 _start = start;
                 _end = end;
@@ -165,13 +165,13 @@ namespace BoboBrowse.Net.Facets.Filter
             private FacetRangeValueConverter()
             { }
 
-            public int[] Convert(IFacetDataCache dataCache, string[] vals)
+            public int[] Convert(FacetDataCache dataCache, string[] vals)
             {
                 return ConvertIndexes(dataCache, vals);
             }
         }
 
-        public static int[] ConvertIndexes(IFacetDataCache dataCache, string[] vals)
+        public static int[] ConvertIndexes(FacetDataCache dataCache, string[] vals)
         {
             List<int> list = new List<int>();
             foreach (string val in vals)
@@ -188,7 +188,7 @@ namespace BoboBrowse.Net.Facets.Filter
             return list.ToArray();
         }
 
-        public static int[] Parse(IFacetDataCache dataCache, string rangeString)
+        public static int[] Parse(FacetDataCache dataCache, string rangeString)
         {
             string[] ranges = GetRangeStrings(rangeString);
             string lower = ranges[0];
@@ -300,10 +300,10 @@ namespace BoboBrowse.Net.Facets.Filter
 
         public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboIndexReader reader)
         {
-            IFacetDataCache dataCache = _facetHandler.GetFacetData<IFacetDataCache>(reader);
+            FacetDataCache dataCache = _facetHandler.GetFacetData<FacetDataCache>(reader);
 
-            bool multi = dataCache is IMultiValueFacetDataCache;    
-            BigNestedIntArray nestedArray = multi ? ((IMultiValueFacetDataCache)dataCache).NestedArray : null;
+            bool multi = dataCache is MultiValueFacetDataCache;    
+            BigNestedIntArray nestedArray = multi ? ((MultiValueFacetDataCache)dataCache).NestedArray : null;
             int[] range = Parse(dataCache, _rangeString);
     
             if (range == null) return null;
@@ -328,11 +328,11 @@ namespace BoboBrowse.Net.Facets.Filter
         {
             private readonly int _start;
             private readonly int _end;
-            private readonly IFacetDataCache _dataCache;
+            private readonly FacetDataCache _dataCache;
             private readonly BigNestedIntArray _nestedArray;
             private readonly bool _multi;
 
-            public RangeRandomAccessDocIdSet(int start, int end, IFacetDataCache dataCache, BigNestedIntArray nestedArray, bool multi)
+            public RangeRandomAccessDocIdSet(int start, int end, FacetDataCache dataCache, BigNestedIntArray nestedArray, bool multi)
             {
                 _start = start;
                 _end = end;
@@ -355,7 +355,7 @@ namespace BoboBrowse.Net.Facets.Filter
             {
                 if (_multi)
                 {
-                    return new MultiFacetRangeDocIdSetIterator(_start, _end, (IMultiValueFacetDataCache)_dataCache);
+                    return new MultiFacetRangeDocIdSetIterator(_start, _end, (MultiValueFacetDataCache)_dataCache);
                 }
                 else
                 {

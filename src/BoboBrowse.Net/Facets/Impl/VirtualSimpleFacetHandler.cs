@@ -32,7 +32,7 @@ namespace BoboBrowse.Net.Facets.Impl
         {
         }
 
-        public override IFacetDataCache Load(BoboIndexReader reader)
+        public override FacetDataCache Load(BoboIndexReader reader)
         {
             int doc = -1;
             C5.TreeDictionary<object, List<int>> dataMap = null;
@@ -136,7 +136,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
             list.Seal();
 
-            IFacetDataCache dataCache = new FacetDataCache(order, list, freqs, minIDs,
+            FacetDataCache dataCache = new FacetDataCache(order, list, freqs, minIDs,
               maxIDs, TermCountSize.Large);
             return dataCache;
         }

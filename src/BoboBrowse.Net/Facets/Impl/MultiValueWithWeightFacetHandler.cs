@@ -36,9 +36,9 @@ namespace BoboBrowse.Net.Facets.Impl
             return f;
         }
 
-        public override IMultiValueFacetDataCache Load(BoboIndexReader reader, BoboIndexReader.WorkArea workArea)
+        public override MultiValueFacetDataCache Load(BoboIndexReader reader, BoboIndexReader.WorkArea workArea)
         {
-            IMultiValueWithWeightFacetDataCache dataCache = new MultiValueWithWeightFacetDataCache();
+            MultiValueWithWeightFacetDataCache dataCache = new MultiValueWithWeightFacetDataCache();
 
             dataCache.SetMaxItems(_maxItems);
 

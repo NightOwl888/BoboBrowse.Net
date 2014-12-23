@@ -11,16 +11,16 @@ namespace BoboBrowse.Net.Facets.Filter
     public class CompactMultiValueFacetFilter : RandomAccessFilter
     {
         private static long serialVersionUID = 1L;
-        private FacetHandler<IFacetDataCache> _facetHandler;
+        private FacetHandler<FacetDataCache> _facetHandler;
 
         private readonly string[] _vals;
 
-        public CompactMultiValueFacetFilter(FacetHandler<IFacetDataCache> facetHandler, string val)
+        public CompactMultiValueFacetFilter(FacetHandler<FacetDataCache> facetHandler, string val)
             : this(facetHandler, new string[] { val })
         {
         }
 
-        public CompactMultiValueFacetFilter(FacetHandler<IFacetDataCache> facetHandler, string[] vals)
+        public CompactMultiValueFacetFilter(FacetHandler<FacetDataCache> facetHandler, string[] vals)
         {
             _facetHandler = facetHandler;
             _vals = vals;
@@ -29,8 +29,8 @@ namespace BoboBrowse.Net.Facets.Filter
         public double GetFacetSelectivity(BoboIndexReader reader)
         {
             double selectivity = 0;
-            IFacetDataCache dataCache = _facetHandler.GetFacetData<IFacetDataCache>(reader);
-            int[] idxes = FacetDataCache_Static.Convert(dataCache, _vals);
+            FacetDataCache dataCache = _facetHandler.GetFacetData<FacetDataCache>(reader);
+            int[] idxes = FacetDataCache.Convert(dataCache, _vals);
             if(idxes == null)
             {
                 return 0.0;
@@ -56,7 +56,7 @@ namespace BoboBrowse.Net.Facets.Filter
             private readonly int _maxID;
             private readonly BigSegmentedArray _orderArray;
 
-            public CompactMultiValueFacetDocIdSetIterator(IFacetDataCache dataCache, int[] index, int bits)
+            public CompactMultiValueFacetDocIdSetIterator(FacetDataCache dataCache, int[] index, int bits)
             {
                 _bits = bits;
                 _doc = int.MaxValue;
@@ -104,8 +104,8 @@ namespace BoboBrowse.Net.Facets.Filter
 
         public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboIndexReader reader)
         {
-            IFacetDataCache dataCache = _facetHandler.GetFacetData<IFacetDataCache>(reader);
-            int[] indexes = FacetDataCache_Static.Convert(dataCache, _vals);
+            FacetDataCache dataCache = _facetHandler.GetFacetData<FacetDataCache>(reader);
+            int[] indexes = FacetDataCache.Convert(dataCache, _vals);
 
             int bits;
 
@@ -131,12 +131,12 @@ namespace BoboBrowse.Net.Facets.Filter
 
         private class CompactMultiValueFacetFilterDocIdSet : RandomAccessDocIdSet
         {
-            private readonly IFacetDataCache dataCache;
+            private readonly FacetDataCache dataCache;
             private readonly int[] indexes;
             private readonly int finalBits;
             private readonly BigSegmentedArray orderArray;
 
-            public CompactMultiValueFacetFilterDocIdSet(IFacetDataCache dataCache, int[] indexes, int finalBits, BigSegmentedArray orderArray)
+            public CompactMultiValueFacetFilterDocIdSet(FacetDataCache dataCache, int[] indexes, int finalBits, BigSegmentedArray orderArray)
             {
                 this.dataCache = dataCache;
                 this.indexes = indexes;

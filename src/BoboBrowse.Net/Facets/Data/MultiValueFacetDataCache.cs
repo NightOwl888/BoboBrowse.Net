@@ -35,18 +35,7 @@ namespace BoboBrowse.Net.Facets.Data
     using System.Collections.Generic;
     using System.Linq;
     
-    public interface IMultiValueFacetDataCache : IFacetDataCache
-    {
-        BigNestedIntArray NestedArray { get; }
-        //int GetNumItems(int docid);
-        //void Load(string fieldName, IndexReader reader, TermListFactory listFactory);
-        void Load(string fieldName, IndexReader reader, TermListFactory listFactory, BoboIndexReader.WorkArea workArea);
-        void Load(string fieldName, IndexReader reader, TermListFactory listFactory, Term sizeTerm);
-        void SetMaxItems(int maxItems);
-    }
-
-
-    public class MultiValueFacetDataCache : FacetDataCache, IMultiValueFacetDataCache
+    public class MultiValueFacetDataCache : FacetDataCache
     {
         private static long serialVersionUID = 1L;
         private static ILog logger = LogManager.GetLogger<MultiValueFacetDataCache>();
@@ -473,15 +462,15 @@ namespace BoboBrowse.Net.Facets.Data
             if (!reader.GetType().Equals(typeof(BoboIndexReader)))
                 throw new ArgumentException("reader must be instance of BoboIndexReader");
             BoboIndexReader boboReader = (BoboIndexReader)reader;
-            IMultiValueFacetDataCache dataCache = (IMultiValueFacetDataCache)cacheBuilder.Build(boboReader);
+            MultiValueFacetDataCache dataCache = (MultiValueFacetDataCache)cacheBuilder.Build(boboReader);
             return new MyComparator(dataCache);
         }
 
         public sealed class MyComparator : DocComparator
         {
-            private readonly IMultiValueFacetDataCache _dataCache;
+            private readonly MultiValueFacetDataCache _dataCache;
 
-            public MyComparator(IMultiValueFacetDataCache dataCache)
+            public MyComparator(MultiValueFacetDataCache dataCache)
             {
                 _dataCache = dataCache;
             }
