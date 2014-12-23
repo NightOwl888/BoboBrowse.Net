@@ -47,47 +47,23 @@ namespace BoboBrowse.Net.Facets
         RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, Properties prop);
         RandomAccessFilter BuildRandomAccessFilter(string value, Properties selectionProperty);
         RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, Properties prop, bool isNot);
-        object Clone();
         IEnumerable<string> DependsOn { get; }
-
-
-        IFacetHandler GetDependedFacetHandler(string name); // Generic - IFacetHandler
-
-
+        IFacetHandler GetDependedFacetHandler(string name);
         DocComparatorSource GetDocComparatorSource();
         FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec fspec);
         FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec ospec, bool groupMode);
-
-        //D GetFacetData(BoboIndexReader reader);// Generic
         T GetFacetData<T>(BoboIndexReader reader);
-
         string GetFieldValue(BoboIndexReader reader, int id);
         string[] GetFieldValues(BoboIndexReader reader, int id);
         int GetNumItems(BoboIndexReader reader, int id);
         object[] GetRawFieldValues(BoboIndexReader reader, int id);
-
-        //TermCountSize GetTermCountSize();
-
-        //D Load(BoboIndexReader reader);// Generic
-        //D Load(BoboIndexReader reader, BoboIndexReader.WorkArea workArea);// Generic
-
-        //object Load(BoboIndexReader reader); // TODO: Make these pass generic parameters - it appears the classes know what type to expect
-        //object Load(BoboIndexReader reader, BoboIndexReader.WorkArea workArea);
-
         void LoadFacetData(BoboIndexReader reader);
         void LoadFacetData(BoboIndexReader reader, BoboIndexReader.WorkArea workArea);
-
         IFacetAccessible Merge(FacetSpec fspec, IEnumerable<IFacetAccessible> facetList);
         string Name { get; }
-
-        //void PutDependedFacetHandler<T>(FacetHandler<T> facetHandler); // Generic - IFacetHandler
         void PutDependedFacetHandler(IFacetHandler facetHandler);
-
         void SetTermCountSize(string termCountSize);
         TermCountSize TermCountSize { get; set; }
-
-        //FacetHandler<D> SetTermCountSize(TermCountSize termCountSize);//Make void
-        //FacetHandler<D> SetTermCountSize(string termCountSize);//Make void
     }
 
     [Serializable]
@@ -118,23 +94,6 @@ namespace BoboBrowse.Net.Facets
             _dependedFacetHandlers = new Dictionary<string, IFacetHandler>();
             _termCountSize = TermCountSize.Large;
         }
-
-        //public FacetHandler<D> SetTermCountSize(string termCountSize)
-        //{
-        //    this.SetTermCountSize((TermCountSize)Enum.Parse(typeof(TermCountSize), termCountSize, true));
-        //    return this;
-        //}
-
-        //public FacetHandler<D> SetTermCountSize(TermCountSize termCountSize)
-        //{
-        //    _termCountSize = termCountSize;
-        //    return this;
-        //}
-
-        //public TermCountSize GetTermCountSize()
-        //{
-        //    return _termCountSize;
-        //}
 
         public virtual void SetTermCountSize(string termCountSize)
         {
@@ -171,29 +130,6 @@ namespace BoboBrowse.Net.Facets
             get { return _dependsOn; }
         }
 
-        // TODO: Need to revisit this design later to see if there is a better alternative
-        // to using FacetHandler<T>. In Java, they used FacetHandler<?>.
-
-        ///// <summary>
-        ///// Adds a list of depended facet handlers
-        ///// </summary>
-        ///// <param name="name">Name of handler depended facet handler</param>
-        ///// <param name="facetHandler">Handler depended facet handler</param>
-        //public void PutDependedFacetHandler<T>(FacetHandler<T> facetHandler)
-        //{
-        //    _dependedFacetHandlers.Put(facetHandler._name, facetHandler);
-        //}
-
-        ///// <summary>
-        ///// Gets a depended facet handler
-        ///// </summary>
-        ///// <param name="name">facet handler name</param>
-        ///// <returns>facet handler instance</returns>
-        //public object GetDependedFacetHandler(string name)
-        //{
-        //    return _dependedFacetHandlers.Get(name);
-        //}
-
         /// <summary>
         /// Adds a list of depended facet handlers
         /// </summary>
@@ -214,45 +150,26 @@ namespace BoboBrowse.Net.Facets
             return _dependedFacetHandlers.Get(name);
         }
 
-
-
         /// <summary>
         /// Load information from an index reader, initialized by <see cref="T:BoboBrowse.Net.BoboIndexReader"/>.
         /// </summary>
         /// <param name="reader"></param>
         public abstract D Load(BoboIndexReader reader);
 
-        ///// <summary>
-        ///// Load information from an index reader, initialized by <see cref="T:BoboBrowse.Net.BoboIndexReader"/>.
-        ///// </summary>
-        ///// <param name="reader"></param>
-        //public abstract object Load(BoboIndexReader reader);
-
         public virtual IFacetAccessible Merge(FacetSpec fspec, IEnumerable<IFacetAccessible> facetList)
         {
             return new CombinedFacetAccessible(fspec, facetList);
         }
-
-        //public virtual D GetFacetData(BoboIndexReader reader)
-        //{
-        //    return (D)reader.GetFacetData(_name);
-        //}
 
         public virtual T GetFacetData<T>(BoboIndexReader reader)
         {
             return (T)reader.GetFacetData(_name);
         }
 
-
         public virtual D Load(BoboIndexReader reader, BoboIndexReader.WorkArea workArea)
         {
             return Load(reader);
         }
-
-        //public virtual object Load(BoboIndexReader reader, BoboIndexReader.WorkArea workArea)
-        //{
-        //    return Load(reader);
-        //}
 
         public virtual void LoadFacetData(BoboIndexReader reader, BoboIndexReader.WorkArea workArea)
         {
@@ -418,10 +335,9 @@ namespace BoboBrowse.Net.Facets
         /// <returns>a sort comparator</returns>
         public abstract DocComparatorSource GetDocComparatorSource();
 
-
         public virtual object Clone()
         {
-            return base.MemberwiseClone();
+            return ObjectCopier.Clone(this);
         }
     }
 }
