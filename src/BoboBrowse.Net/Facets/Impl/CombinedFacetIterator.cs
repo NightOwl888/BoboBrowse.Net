@@ -119,7 +119,9 @@ namespace BoboBrowse.Net.Facets.Impl
             int min = (minHits > 0 ? 1 : 0);
             while (true)
             {
-                if (node.Next(min) != null)
+                // NOTE: In the original version, we were just comparing against
+                // a null string, but the Format method could return an empty string.
+                if (!string.IsNullOrEmpty(node.Next(min)))
                 {
                     DownHeap();
                     node = heap[1];
