@@ -34,7 +34,7 @@
         {
             if (_svc != null)
             {
-                _svc.Close();
+                _svc.Dispose();
             }
         }
 

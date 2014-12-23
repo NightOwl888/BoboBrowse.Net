@@ -25,10 +25,11 @@
 
 namespace BoboBrowse.Net.Service
 {
-    public interface IBrowseService
+    using System;
+
+    public interface IBrowseService : IDisposable
     {
-        BrowseResult Browse(BrowseRequest req); // throws BrowseException;
-        void Close();// throws BrowseException;
+        BrowseResult Browse(BrowseRequest req);
     }
 
     public static class BrowseService_Fields

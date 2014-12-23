@@ -17,7 +17,7 @@ namespace BoboBrowse.Net
     using System.Linq;
     using System.Text;
 
-    public class BoboSubBrowser : BoboSearcher2, IBrowsable
+    public class BoboSubBrowser : BoboSearcher2, IBrowsable, IDisposable
     {
         private static ILog logger = LogManager.GetLogger<BoboSubBrowser>();
         private readonly BoboIndexReader _reader;
@@ -535,22 +535,24 @@ namespace BoboBrowse.Net
             }
         }
 
-        // TODO: Should this be dispose?
-        public void Close()
+        protected override void Dispose(bool disposing)
         {
-            if (_runtimeFacetHandlers != null)
+            if (disposing)
             {
-                foreach (var handler in _runtimeFacetHandlers)
+                if (_runtimeFacetHandlers != null)
                 {
-                    handler.Close();
+                    foreach (var handler in _runtimeFacetHandlers)
+                    {
+                        handler.Dispose();
+                    }
+                }
+                if (_reader != null)
+                {
+                    _reader.ClearRuntimeFacetData();
+                    _reader.ClearRuntimeFacetHandler();
                 }
             }
-            if (_reader != null)
-            {
-                _reader.ClearRuntimeFacetData();
-                _reader.ClearRuntimeFacetHandler();
-            }
-            base.Close();
+            base.Dispose(disposing);
         }
     }
 }

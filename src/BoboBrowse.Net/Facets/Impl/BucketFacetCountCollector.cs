@@ -143,9 +143,17 @@ namespace BoboBrowse.Net.Facets.Impl
             return DefaultFacetCountCollector.GetFacets(_ospec, counts, counts.Length, _bucketValues);
         }
 
-        public virtual void Close()
+        public virtual void Dispose()
         {
-            _subCollector.Close();
+            this.Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _subCollector.Dispose();
+            }
         }
 
         public virtual FacetIterator Iterator()

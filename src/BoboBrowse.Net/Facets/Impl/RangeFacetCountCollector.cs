@@ -372,7 +372,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public void Close()
+        public virtual void Dispose()
         { }
 
         public FacetIterator Iterator()

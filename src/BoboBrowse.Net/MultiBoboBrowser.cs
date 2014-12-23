@@ -393,14 +393,18 @@ namespace BoboBrowse.Net
             return SortCollector.BuildSortCollector(this, q, sort, offset, count, forceScoring, fetchStoredFields, termVectorsToFetch, groupBy, maxPerGroup, collectDocIdCache);
         }
 
-        // TODO: Implement Dispose?
-        public virtual void Close()
+        protected override void Dispose(bool disposing)
         {
-            IBrowsable[] subBrowsers = GetSubBrowsers();
-            foreach (IBrowsable subBrowser in subBrowsers)
+            if (disposing)
             {
-                subBrowser.Close();
+                IBrowsable[] subBrowsers = GetSubBrowsers();
+                foreach (IBrowsable subBrowser in subBrowsers)
+                {
+                    subBrowser.Dispose();
+                }
             }
+
+            base.Dispose(disposing);
         }
     }
 }

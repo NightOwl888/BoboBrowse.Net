@@ -756,48 +756,21 @@ namespace BoboBrowse.Net
             br.AddSelection(colorSel);
             br.FetchStoredFields = true;
 
-            BrowseResult result = null;
-            BoboBrowser boboBrowser = null;
-            try
+            using (BoboBrowser boboBrowser = NewBrowser())
             {
-                boboBrowser = NewBrowser();
-
-                result = boboBrowser.Browse(br);
-                Assert.AreEqual(1, result.NumHits);
-                BrowseHit hit = result.Hits[0];
-                Document storedFields = hit.StoredFields;
-                Assert.NotNull(storedFields);
-
-                string[] values = storedFields.GetValues("testStored");
-                Assert.NotNull(values);
-                Assert.AreEqual(1, values.Length);
-                Assert.True("stored".Equals(values[0]));
-
-            }
-            catch (BrowseException e)
-            {
-                Assert.Fail(e.Message);
-            }
-            catch (Exception ioe)
-            {
-                Assert.Fail(ioe.Message);
-            }
-            finally
-            {
-                if (boboBrowser != null)
+                using (BrowseResult result = boboBrowser.Browse(br))
                 {
-                    try
-                    {
-                        if (result != null) result.Close();
-                        boboBrowser.Close();
-                    }
-                    catch (Exception e)
-                    {
-                        Assert.Fail(e.Message);
-                    }
+                    Assert.AreEqual(1, result.NumHits);
+                    BrowseHit hit = result.Hits[0];
+                    Document storedFields = hit.StoredFields;
+                    Assert.NotNull(storedFields);
+
+                    string[] values = storedFields.GetValues("testStored");
+                    Assert.NotNull(values);
+                    Assert.AreEqual(1, values.Length);
+                    Assert.True("stored".Equals(values[0]));
                 }
             }
-
         }
 
         [Test]
@@ -819,60 +792,35 @@ namespace BoboBrowse.Net
             sizeSel.AddValue("[4 TO 4]");
             br.AddSelection(sizeSel);
 
-            BrowseResult result = null;
-            BoboBrowser boboBrowser = null;
-            try
-            {
-                boboBrowser = NewBrowser();
 
-                result = boboBrowser.Browse(br);
-                Assert.AreEqual(1, result.NumHits);
-                BrowseHit hit = result.Hits[0];
-                Assert.Null(hit.StoredFields);
-
-                br.FetchStoredFields = (true);
-                result = boboBrowser.Browse(br);
-                Assert.AreEqual(1, result.NumHits);
-                hit = result.Hits[0];
-                Document storedFields = hit.StoredFields;
-                Assert.NotNull(storedFields);
-
-                string stored = storedFields.Get("testStored");
-                Assert.True("stored".Equals(stored));
-
-            }
-            catch (BrowseException e)
+            using (BoboBrowser boboBrowser = NewBrowser())
             {
-                Assert.Fail(e.Message);
-            }
-            catch (Exception ioe)
-            {
-                Assert.Fail(ioe.Message);
-            }
-            finally
-            {
-                if (boboBrowser != null)
+                using (BrowseResult result = boboBrowser.Browse(br))
                 {
-                    try
-                    {
-                        if (result != null) result.Close();
-                        boboBrowser.Close();
-                    }
-                    catch (Exception e)
-                    {
-                        Assert.Fail(e.Message);
-                    }
+                    Assert.AreEqual(1, result.NumHits);
+                    BrowseHit hit = result.Hits[0];
+                    Assert.Null(hit.StoredFields);
+                }
+                br.FetchStoredFields = true;
+                using (BrowseResult result = boboBrowser.Browse(br))
+                {
+                    Assert.AreEqual(1, result.NumHits);
+                    BrowseHit hit = result.Hits[0];
+                    Document storedFields = hit.StoredFields;
+                    Assert.NotNull(storedFields);
+
+                    string stored = storedFields.Get("testStored");
+                    Assert.True("stored".Equals(stored));
                 }
             }
-
         }
 
         [Test]
         public void TestRetrieveTermVector()
         {
             BrowseRequest br = new BrowseRequest();
-            br.Count = (10);
-            br.Offset = (0);
+            br.Count = 10;
+            br.Offset = 0;
 
             BrowseSelection colorSel = new BrowseSelection("color");
             colorSel.AddValue("red");
@@ -888,117 +836,66 @@ namespace BoboBrowse.Net
 
             br.TermVectorsToFetch = new string[] { "tv" };
 
-            BrowseResult result = null;
-            BoboBrowser boboBrowser = null;
-            try
+
+            using (BoboBrowser boboBrowser = NewBrowser())
             {
-                boboBrowser = NewBrowser();
-
-                result = boboBrowser.Browse(br);
-                Assert.AreEqual(1, result.NumHits);
-                BrowseHit hit = result.Hits[0];
-                Assert.Null(hit.StoredFields);
-
-                br.FetchStoredFields = (true);
-                result = boboBrowser.Browse(br);
-                Assert.AreEqual(1, result.NumHits);
-                hit = result.Hits[0];
-                var tvMap = hit.TermFreqMap;
-                Assert.NotNull(tvMap);
-
-                Assert.AreEqual(1, tvMap.Count);
-
-                BrowseHit.TermFrequencyVector tv = tvMap.Get("tv");
-                Assert.NotNull(tv);
-
-                Assert.AreEqual("bobo", tv.terms[0]);
-                Assert.AreEqual(2, tv.freqs[0]);
-
-                Assert.AreEqual("lucene", tv.terms[1]);
-                Assert.AreEqual(3, tv.freqs[1]);
-
-                Assert.AreEqual("test", tv.terms[2]);
-                Assert.AreEqual(1, tv.freqs[2]);
-
-            }
-            catch (BrowseException e)
-            {
-                Assert.Fail(e.Message);
-            }
-            catch (Exception ioe)
-            {
-                Assert.Fail(ioe.Message);
-            }
-            finally
-            {
-                if (boboBrowser != null)
+                using (BrowseResult result = boboBrowser.Browse(br))
                 {
-                    try
-                    {
-                        if (result != null) result.Close();
-                        boboBrowser.Close();
-                    }
-                    catch (Exception e)
-                    {
-                        Assert.Fail(e.Message);
-                    }
+                    Assert.AreEqual(1, result.NumHits);
+                    BrowseHit hit = result.Hits[0];
+                    Assert.Null(hit.StoredFields);
+                }
+                br.FetchStoredFields = true;
+                using (BrowseResult result = boboBrowser.Browse(br))
+                {
+                    Assert.AreEqual(1, result.NumHits);
+                    BrowseHit hit = result.Hits[0];
+                    var tvMap = hit.TermFreqMap;
+                    Assert.NotNull(tvMap);
+
+                    Assert.AreEqual(1, tvMap.Count);
+
+                    BrowseHit.TermFrequencyVector tv = tvMap.Get("tv");
+                    Assert.NotNull(tv);
+
+                    Assert.AreEqual("bobo", tv.terms[0]);
+                    Assert.AreEqual(2, tv.freqs[0]);
+
+                    Assert.AreEqual("lucene", tv.terms[1]);
+                    Assert.AreEqual(3, tv.freqs[1]);
+
+                    Assert.AreEqual("test", tv.terms[2]);
+                    Assert.AreEqual(1, tv.freqs[2]);
                 }
             }
-
         }
 
         [Test]
         public void TestRawDataRetrieval()
         {
             BrowseRequest br = new BrowseRequest();
-            br.Count = (10);
-            br.Offset = (0);
+            br.Count = 10;
+            br.Offset = 0;
             br.Sort = new SortField[] { new SortField("date", SortField.CUSTOM, false) };
-            BrowseResult result = null;
-            BoboBrowser boboBrowser = null;
-            try
-            {
-                boboBrowser = NewBrowser();
 
-                result = boboBrowser.Browse(br);
-                Assert.AreEqual(7, result.NumHits);
-                BrowseHit hit = result.Hits[0];
-                Assert.AreEqual(0, hit.DocId);
-                Object lowDate = hit.GetRawField("date");
-                DateTime date = new DateTime(2000, 1, 1);
-                Assert.True(lowDate.Equals(date.ToBinary()));
-
-                hit = result.Hits[6];
-                Assert.AreEqual(5, hit.DocId);
-                Object highDate = hit.GetRawField("date");
-                date = new DateTime(2007, 8, 1);
-                Assert.True(highDate.Equals(date.ToBinary()));
-
-            }
-            catch (BrowseException e)
+            using (BoboBrowser boboBrowser = NewBrowser())
             {
-                Assert.Fail(e.Message);
-            }
-            catch (Exception ioe)
-            {
-                Assert.Fail(ioe.Message);
-            }
-            finally
-            {
-                if (boboBrowser != null)
+                using (BrowseResult result = boboBrowser.Browse(br))
                 {
-                    try
-                    {
-                        if (result != null) result.Close();
-                        boboBrowser.Close();
-                    }
-                    catch (Exception e)
-                    {
-                        Assert.Fail(e.Message);
-                    }
+                    Assert.AreEqual(7, result.NumHits);
+                    BrowseHit hit = result.Hits[0];
+                    Assert.AreEqual(0, hit.DocId);
+                    Object lowDate = hit.GetRawField("date");
+                    DateTime date = new DateTime(2000, 1, 1);
+                    Assert.True(lowDate.Equals(date.ToBinary()));
+
+                    hit = result.Hits[6];
+                    Assert.AreEqual(5, hit.DocId);
+                    Object highDate = hit.GetRawField("date");
+                    date = new DateTime(2007, 8, 1);
+                    Assert.True(highDate.Equals(date.ToBinary()));
                 }
             }
-
         }
 
 
@@ -1730,7 +1627,7 @@ namespace BoboBrowse.Net
                 }
                 finally
                 {
-                    if (result != null) result.Close();
+                    if (result != null) result.Dispose();
                 }
             }
         }
@@ -1863,13 +1760,14 @@ namespace BoboBrowse.Net
 
             BoboBrowser browser = NewBrowser();
 
-            BrowseResult res = browser.Browse(br);
-            IFacetAccessible facetAccessor = res.GetFacetAccessor("number");
-            BrowseFacet facet = facetAccessor.GetFacet("5");
+            using (BrowseResult res = browser.Browse(br))
+            {
+                IFacetAccessible facetAccessor = res.GetFacetAccessor("number");
+                BrowseFacet facet = facetAccessor.GetFacet("5");
 
-            Assert.AreEqual(facet.Value, "0005");
-            Assert.AreEqual(facet.FacetValueHitCount, 1);
-            res.Close();
+                Assert.AreEqual(facet.Value, "0005");
+                Assert.AreEqual(facet.FacetValueHitCount, 1);
+            }
         }
 
         [Test]
@@ -2439,24 +2337,27 @@ namespace BoboBrowse.Net
 
             browseRequest.Sort = new SortField[] { new SortField("compactnum", SortField.CUSTOM, true) };
 
-            MultiBoboBrowser multiBoboBrowser = new MultiBoboBrowser(new IBrowsable[] { boboBrowser, boboBrowser });
-            BrowseResult mergedResult = multiBoboBrowser.Browse(browseRequest);
-
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            using (MultiBoboBrowser multiBoboBrowser = new MultiBoboBrowser(new IBrowsable[] { boboBrowser, boboBrowser }))
             {
-                { "color", new BrowseFacet[] {  new BrowseFacet("red", 4), new BrowseFacet("green", 2) } },
-                { "tag", new BrowseFacet[] { new BrowseFacet("animal", 2), new BrowseFacet("dog", 2), new BrowseFacet("humane", 2), new BrowseFacet("pet", 2), new BrowseFacet("rabbit", 4) } },
-                { "shape", new BrowseFacet[] {  new BrowseFacet("square", 4) } },
-                { "date", new BrowseFacet[] { new BrowseFacet("[2000/01/01 TO 2003/05/05]", 2) } }              
-            };
+                var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+                {
+                    { "color", new BrowseFacet[] {  new BrowseFacet("red", 4), new BrowseFacet("green", 2) } },
+                    { "tag", new BrowseFacet[] { new BrowseFacet("animal", 2), new BrowseFacet("dog", 2), new BrowseFacet("humane", 2), new BrowseFacet("pet", 2), new BrowseFacet("rabbit", 4) } },
+                    { "shape", new BrowseFacet[] {  new BrowseFacet("square", 4) } },
+                    { "date", new BrowseFacet[] { new BrowseFacet("[2000/01/01 TO 2003/05/05]", 2) } }              
+                };
 
-            DoTest(mergedResult, browseRequest, 4, answer, new string[] { "7", "7", "1", "1" });
+                using (BrowseResult mergedResult = multiBoboBrowser.Browse(browseRequest))
+                {
+                    DoTest(mergedResult, browseRequest, 4, answer, new string[] { "7", "7", "1", "1" });
+                }
 
-            browseRequest.Sort = new SortField[] { new SortField("multinum", SortField.CUSTOM, true) };
-            mergedResult = multiBoboBrowser.Browse(browseRequest);
-            DoTest(mergedResult, browseRequest, 4, answer, new string[] { "7", "7", "1", "1" });
-            mergedResult.Close();
-            multiBoboBrowser.Close();
+                browseRequest.Sort = new SortField[] { new SortField("multinum", SortField.CUSTOM, true) };
+                using (BrowseResult mergedResult = multiBoboBrowser.Browse(browseRequest))
+                {
+                    DoTest(mergedResult, browseRequest, 4, answer, new string[] { "7", "7", "1", "1" });
+                }
+            }
         }
 
         [Test]

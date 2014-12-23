@@ -315,9 +315,8 @@ namespace BoboBrowse.Net.Facets.Impl
                 get { return _facetName; }
             }
 
-            public virtual void Close()
-            {
-            } 
+            public virtual void Dispose()
+            { }
         }
 
         public class HistogramFacetIterator : IntFacetIterator

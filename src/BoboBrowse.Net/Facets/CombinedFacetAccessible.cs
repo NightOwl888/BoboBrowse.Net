@@ -240,25 +240,32 @@ namespace BoboBrowse.Net.Facets
             }
         }
 
-        // TODO: Implement dispose?
-        public void Close()
+        public void Dispose()
         {
-            if (_closed)
+            this.Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
             {
-                log.Warn("This instance of count collector was already closed. This operation is no-op.");
-                return;
-            }
-            _closed = true;
-            if (_list != null)
-            {
-                foreach (IFacetAccessible fa in _list)
+                if (_closed)
                 {
-                    fa.Close();
+                    log.Warn("This instance of count collector was already closed. This operation is no-op.");
+                    return;
                 }
-                // NOTE: This was done in the original Java source, but
-                // is not necessary in .NET. After disposing all of the child instances,
-                // memory cleanup is left up to the framework.
-                //_list.Clear();
+                _closed = true;
+                if (_list != null)
+                {
+                    foreach (IFacetAccessible fa in _list)
+                    {
+                        fa.Dispose();
+                    }
+                    // NOTE: This was done in the original Java source, but
+                    // is not necessary in .NET. After disposing all of the child instances,
+                    // memory cleanup is left up to the framework.
+                    //_list.Clear();
+                }
             }
         }
 

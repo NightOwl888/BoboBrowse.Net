@@ -6,9 +6,8 @@ namespace BoboBrowse.Net.Facets
     using System.Linq;
     using System.Text;
 
-    public interface IRuntimeFacetHandler : IFacetHandler
+    public interface IRuntimeFacetHandler : IFacetHandler, IDisposable
     {
-        void Close();
         T GetFacetData<T>(BoboIndexReader reader);
         void LoadFacetData(BoboIndexReader reader);
     }
@@ -63,7 +62,7 @@ namespace BoboBrowse.Net.Facets
             reader.PutRuntimeFacetData(_name, this);
         }
 
-        public virtual void Close()
+        public virtual void Dispose()
         {
         }
     }

@@ -101,20 +101,20 @@ namespace BoboBrowse.Net.Impl
             return reader;
         }
 
-        // TODO: Implement dispose?
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public virtual void Close() // throws BrowseException
+        public virtual void Dispose()
         {
-            try
+            this.Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
             {
                 if (_reader != null)
                 {
-                    _reader.Close();
+                    _reader.Dispose();
                 }
-            }
-            catch (IOException e)
-            {
-                throw new BrowseException(e.Message, e);
             }
         }
 

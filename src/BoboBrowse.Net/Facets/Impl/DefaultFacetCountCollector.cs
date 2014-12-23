@@ -222,20 +222,27 @@ namespace BoboBrowse.Net.Facets.Impl
             return GetFacets(_ospec, _count, _countlength, _dataCache.ValArray);
         }
 
-        // TODO: Implement dispose?
-        public virtual void Close()
+        public virtual void Dispose()
         {
-            if (_closed)
+            this.Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
             {
-                log.Warn("This instance of count collector for '" + _name + "' was already closed. This operation is no-op.");
-                return;
+                if (_closed)
+                {
+                    log.Warn("This instance of count collector for '" + _name + "' was already closed. This operation is no-op.");
+                    return;
+                }
+                _closed = true;
+                // TODO: memory manager implmentation
+                //while (!intarraylist.isEmpty())
+                //{
+                //    intarraymgr.release(intarraylist.poll());
+                //}
             }
-            _closed = true;
-            // TODO: memory manager implmentation
-            //while (!intarraylist.isEmpty())
-            //{
-            //    intarraymgr.release(intarraylist.poll());
-            //}
         }
 
         /// <summary>

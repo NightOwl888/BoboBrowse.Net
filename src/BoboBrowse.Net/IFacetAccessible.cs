@@ -27,7 +27,7 @@ namespace BoboBrowse.Net
     using System;
     using System.Collections.Generic;
 
-    public interface IFacetAccessible
+    public interface IFacetAccessible : IDisposable
     {
         ///<summary>Gets gathered top facets </summary>
         ///<returns>list of facets </returns>
@@ -45,13 +45,6 @@ namespace BoboBrowse.Net
         /// <param name="value">Facet value</param>
         /// <returns></returns>
         int GetFacetHitsCount(object value);
-
-        /// <summary>
-        /// Responsible for release resources used. If the implementing class
-        /// does not use a lot of resources,
-        /// it does not have to do anything.
-        /// </summary>
-        void Close();
 
         /// <summary>
         /// Returns an iterator to visit all the facets

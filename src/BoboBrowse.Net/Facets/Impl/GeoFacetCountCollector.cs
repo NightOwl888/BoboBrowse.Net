@@ -291,13 +291,8 @@ namespace BoboBrowse.Net.Facets.Impl
             return new GeoRange(lat, lon, rad);
         }
 
-        /// <summary>
-        /// (non-Javadoc)
-        /// see com.browseengine.bobo.api.FacetAccessible#close()
-        /// </summary>
-        public virtual void Close()
-        {
-        }
+        public virtual void Dispose()
+        { }
 
         public FacetIterator Iterator()
         {

@@ -12,7 +12,7 @@ namespace BoboBrowse.Net.Sort
     using System.Linq;
     using System.Text;
 
-    public abstract class SortCollector : Collector
+    public abstract class SortCollector : Collector, IDisposable
     {
         private static readonly ILog logger = LogManager.GetLogger<SortCollector>();
 
@@ -226,28 +226,36 @@ namespace BoboBrowse.Net.Sort
             get { return _collector; }
         }
 
-        public virtual void Close()
+        public virtual void Dispose()
         {
-            if (!_closed)
-            {
-                _closed = true;
+            this.Dispose(true);
+        }
 
-                // NightOwl888: The _collectDocIdCache setting seems to put arrays into
-                // memory, but then do nothing with the arrays. Seems wasteful and unnecessary.
-                //if (docidarraylist != null)
-                //{
-                //    while (!(docidarraylist.Count == 0))
-                //    {
-                //        intarraymgr.Release(docidarraylist.Poll());
-                //    }
-                //}
-                //if (scorearraylist != null)
-                //{
-                //    while (!(scorearraylist.Count == 0))
-                //    {
-                //        floatarraymgr.Release(scorearraylist.Poll());
-                //    }
-                //}
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (!_closed)
+                {
+                    _closed = true;
+
+                    // NightOwl888: The _collectDocIdCache setting seems to put arrays into
+                    // memory, but then do nothing with the arrays. Seems wasteful and unnecessary.
+                    //if (docidarraylist != null)
+                    //{
+                    //    while (!(docidarraylist.Count == 0))
+                    //    {
+                    //        intarraymgr.Release(docidarraylist.Poll());
+                    //    }
+                    //}
+                    //if (scorearraylist != null)
+                    //{
+                    //    while (!(scorearraylist.Count == 0))
+                    //    {
+                    //        floatarraymgr.Release(scorearraylist.Poll());
+                    //    }
+                    //}
+                }
             }
         }
     }

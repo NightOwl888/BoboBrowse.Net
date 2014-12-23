@@ -67,7 +67,7 @@ namespace BoboBrowse.Net
             return _facets.ToList();
         }
 
-        public virtual void Close()
+        public virtual void Dispose()
         { }
 
         public FacetIterator Iterator()

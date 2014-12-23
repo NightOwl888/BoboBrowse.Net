@@ -70,22 +70,30 @@ namespace BoboBrowse.Net.Impl
             return result;
         }
 
-        public virtual void Close() // throws BrowseException
+        public virtual void Dispose()
         {
-            if (_closeReader)
+            this.Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
             {
-                lock (this)
+                if (_closeReader)
                 {
-                    if (_reader != null)
+                    lock (this)
                     {
-                        try
+                        if (_reader != null)
                         {
-                            _reader.Dispose();
-                            _reader = null;
-                        }
-                        catch (Exception ioe)
-                        {
-                            throw new BrowseException(ioe.Message, ioe);
+                            try
+                            {
+                                _reader.Dispose();
+                                _reader = null;
+                            }
+                            catch (Exception ioe)
+                            {
+                                throw new BrowseException(ioe.Message, ioe);
+                            }
                         }
                     }
                 }

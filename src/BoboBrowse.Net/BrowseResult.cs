@@ -33,7 +33,7 @@ namespace BoboBrowse.Net
     using System.Text;
     
     [Serializable]
-    public class BrowseResult
+    public class BrowseResult : IDisposable
     {
         private static long serialVersionUID = -8620935391852879446L;
 
@@ -177,23 +177,30 @@ namespace BoboBrowse.Net
             return buf.ToString();
         }
 
-        // TODO: implement dispose?
-        public virtual void Close()
+        public void Dispose()
         {
-            if (GroupAccessibles != null)
+            this.Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
             {
-                foreach (var accessible in this.GroupAccessibles)
+                if (GroupAccessibles != null)
                 {
-                    if (accessible != null)
-                        accessible.Close();
+                    foreach (var accessible in this.GroupAccessibles)
+                    {
+                        if (accessible != null)
+                            accessible.Dispose();
+                    }
                 }
-            }
-            if (this.SortCollector != null)
-                this.SortCollector.Close();
-            if (this.FacetMap == null) return;
-            foreach (var fa in this.FacetMap.Values)
-            {
-                fa.Close();
+                if (this.SortCollector != null)
+                    this.SortCollector.Dispose();
+                if (this.FacetMap == null) return;
+                foreach (var fa in this.FacetMap.Values)
+                {
+                    fa.Dispose();
+                }
             }
         }
 
