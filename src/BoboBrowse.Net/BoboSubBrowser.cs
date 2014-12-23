@@ -552,7 +552,6 @@ namespace BoboBrowse.Net
                     _reader.ClearRuntimeFacetHandler();
                 }
             }
-            base.Dispose(disposing);
         }
     }
 }

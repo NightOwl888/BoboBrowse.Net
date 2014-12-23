@@ -341,12 +341,23 @@ namespace BoboBrowse.Net
             _runtimeFacetHandlerMap.Set(null);
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            _facetDataMap.Clear();
+            // We don't want to close the underlying reader here - that should
+            // be up to the caller.
+        }
+
         protected override void DoClose()
         {
             _facetDataMap.Clear();
             // BUG: DoClose() already calls close on the inner reader
             //if (_srcReader != null) _srcReader.Close();
-            base.DoClose();
+
+            // BUG: We don't want to close the underlying index reader
+            // because it should be closed in its own try block or using statement
+            // and closing it twice causes an exception.
+            //base.DoClose();
         }
 
         protected override void DoCommit(IDictionary<string, string> commitUserData)
