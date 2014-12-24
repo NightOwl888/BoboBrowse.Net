@@ -282,12 +282,9 @@ namespace BoboBrowse.Net
         /// </summary>
         public class BrowseFacetValueComparator : IComparer<BrowseFacet>
         {
-            // TODO: we need to reorganize all that stuff with comparators
-            private IComparer valueComparer = new Comparer(System.Globalization.CultureInfo.InvariantCulture);
-
             public int Compare(BrowseFacet o1, BrowseFacet o2)
             {
-                return valueComparer.Compare(o1.Value, o2.Value);
+                return string.CompareOrdinal(o1.Value, o2.Value);
             }
         }
 
