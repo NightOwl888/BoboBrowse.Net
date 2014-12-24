@@ -3,7 +3,6 @@ namespace BoboBrowse.Net.Facets.Data
 {
     using BoboBrowse.Net.Support;
     using System;
-    using System.Collections.Generic;
 
     public class TermStringList : TermValueList<string>
     {
@@ -22,7 +21,7 @@ namespace BoboBrowse.Net.Facets.Data
         {
             if (_innerList.Count == 0 && o != null) withDummy = false; // the first value added is not null
             if (o == null) o = "";
-            if (sanity != null && sanity.CompareTo(o) >= 0) 
+            if (sanity != null && string.CompareOrdinal(sanity, o) >= 0)
                 throw new RuntimeException("Values need to be added in ascending order. Previous value: " + sanity + " adding value: " + o);
             if (_innerList.Count > 0 || !withDummy) sanity = o;
             _innerList.Add(o);
@@ -102,5 +101,15 @@ namespace BoboBrowse.Net.Facets.Data
                 return _innerList.BinarySearch((string)o);
             }
         }
+
+        //public override void Seal()
+        //{
+        //    _innerList.TrimExcess();
+        //    if (withDummy)
+        //        _innerList.Remove("");
+        //    _innerList.Sort();
+        //    if (withDummy)
+        //        _innerList.Add("");
+        //}
     }
 }

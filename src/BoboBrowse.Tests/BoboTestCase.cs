@@ -473,10 +473,7 @@ namespace BoboBrowse.Net
             facetHandlers.Add(new SimpleFacetHandler("storenum", new PredefinedTermListFactory<long>(null)));
             /* New FacetHandler for geographic locations. Depends on two RangeFacetHandlers on latitude and longitude */
             facetHandlers.Add(new RangeFacetHandler("latitude", new string[] { "[* TO 30]", "[35 TO 60]", "[70 TO 120]" }));
-            // TODO: Original version used the overload that gets a TermStringList and was able to add the numbers in the correct order.
-            // There is a bug somewhere, but this workaround works for getting the tests up and running.
-            //facetHandlers.Add(new RangeFacetHandler("longitude", new string[] { "[* TO 30]", "[35 TO 60]", "[70 TO 120]" }));
-            facetHandlers.Add(new RangeFacetHandler("longitude", new PredefinedTermListFactory<int>(), new string[] { "[* TO 30]", "[35 TO 60]", "[70 TO 120]" }));
+            facetHandlers.Add(new RangeFacetHandler("longitude", new string[] { "[* TO 30]", "[35 TO 60]", "[70 TO 120]" }));
             facetHandlers.Add(new GeoSimpleFacetHandler("distance", "latitude", "longitude"));
             facetHandlers.Add(new GeoFacetHandler("correctDistance", "latitude", "longitude"));
             /* Underlying time facet for DynamicTimeRangeFacetHandler */
