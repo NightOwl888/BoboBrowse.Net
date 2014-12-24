@@ -335,9 +335,7 @@ namespace BoboBrowse.Net
                         }
                         weight = CreateWeight(q);
                     }
-                    // TODO: Reduce wrapper not supported
-                    //Search(weight, finalFilter, collector, start, req.GetMapReduceWrapper());
-                    Search(weight, finalFilter, collector, start);
+                    Search(weight, finalFilter, collector, start, req.MapReduceWrapper);
                 }
                 finally
                 {

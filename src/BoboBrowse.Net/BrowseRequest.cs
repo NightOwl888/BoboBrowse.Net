@@ -22,10 +22,10 @@
 //* send mail to owner@browseengine.com. 
 
 ﻿// Version compatibility level: 3.1.0
-// EXCEPTION: MapReduceResult
 namespace BoboBrowse.Net
 {
     using BoboBrowse.Net.Facets;
+    using BoboBrowse.Net.MapRed;
     using BoboBrowse.Net.Support;
     using BoboBrowse.Net.Util;
     using Lucene.Net.Search;
@@ -230,9 +230,7 @@ namespace BoboBrowse.Net
             _selections.PutAll(map);
         }
 
-        //// Not implemented, because there is no clear purpose
-        //// and the Java implementation is unclear.
-        //public BoboMapFunctionWrapper MapReduceWrapper { get; set; }
+        public IBoboMapFunctionWrapper MapReduceWrapper { get; set; }
 
         ///	 <summary> Add a sort spec </summary>
         ///	 <param name="sortSpec"> sort spec </param>

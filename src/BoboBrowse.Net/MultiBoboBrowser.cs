@@ -137,11 +137,10 @@ namespace BoboBrowse.Net
             }
             finally
             {
-                // TODO: ReduceWrapper not supported
-                //if (req.GetMapReduceWrapper() != null)
-                //{
-                //    req.GetMapReduceWrapper().FinalizePartition();
-                //}
+                if (req.MapReduceWrapper != null)
+                {
+                    req.MapReduceWrapper.FinalizePartition();
+                }
                 foreach (var entry in mergedMap)
                 {
                     string name = entry.Key;
@@ -191,11 +190,10 @@ namespace BoboBrowse.Net
             var facetCollectors = new Dictionary<string, IFacetAccessible>();
             Browse(req, collector, facetCollectors);
 
-            //// TODO: ReduceWrapper not supported
-            //if (req.GetMapReduceWrapper() != null) 
-            //{
-            //    result.SetMapReduceResult(req.GetMapReduceWrapper().Result);
-            //}
+            if (req.MapReduceWrapper != null)
+            {
+                result.MapReduceResult = req.MapReduceWrapper.Result;
+            }
             BrowseHit[] hits = null;
             try
             {

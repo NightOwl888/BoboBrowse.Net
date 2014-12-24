@@ -24,6 +24,7 @@ namespace BoboBrowse.Net.Search
 {
     using BoboBrowse.Net.DocIdSet;
     using BoboBrowse.Net.Facets;
+    using BoboBrowse.Net.MapRed;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
     using Lucene.Net.Util;
@@ -301,12 +302,10 @@ namespace BoboBrowse.Net.Search
 
         public override void Search(Weight weight, Filter filter, Collector collector)
         {
-            //base.Search(weight, filter, collector, 0, null);
-            this.Search(weight, filter, collector, 0);
+            this.Search(weight, filter, collector, 0, null);
         }
 
-        //public virtual void Search(Weight weight, Filter filter, Collector collector, int start, BoboMapFunctionWrapper mapReduceWrapper)
-        public virtual void Search(Weight weight, Filter filter, Collector collector, int start)
+        public virtual void Search(Weight weight, Filter filter, Collector collector, int start, IBoboMapFunctionWrapper mapReduceWrapper)
         {
             FacetValidator validator = CreateFacetValidator();
             int target = 0;
@@ -340,11 +339,10 @@ namespace BoboBrowse.Net.Search
                             }
                         }
                     }
-                    //// TODO: Reduce wrapper not supported
-                    //if (mapReduceWrapper != null)
-                    //{
-                    //    mapReduceWrapper.mapFullIndexReader(_subReaders[i], validator.getCountCollectors());
-                    //}
+                    if (mapReduceWrapper != null)
+                    {
+                        mapReduceWrapper.MapFullIndexReader(_subReaders[i], validator.GetCountCollectors());
+                    }
                 }
                 return;
             }
@@ -367,9 +365,8 @@ namespace BoboBrowse.Net.Search
 
                     int doc = -1;
                     target = filterDocIdIterator.NextDoc();
-                    //// TODO: Reduce wrapper not supported in .NET
-                    //if (mapReduceWrapper == null)
-                    //{
+                    if (mapReduceWrapper == null)
+                    {
                         while (target < DocIdSetIterator.NO_MORE_DOCS)
                         {
                             if (doc < target)
@@ -398,42 +395,41 @@ namespace BoboBrowse.Net.Search
                                 target = filterDocIdIterator.Advance(doc);
                             }
                         }
-                    //// TODO: Reduce wrapper not supported in .NET
-                    //}
-                    //else
-                    //{
-                    //    //MapReduce wrapper is not null
-                    //    while (target < DocIdSetIterator.NO_MORE_DOCS)
-                    //    {
-                    //        if (doc < target)
-                    //        {
-                    //            doc = scorer.Advance(target);
-                    //        }
+                    }
+                    else
+                    {
+                        //MapReduce wrapper is not null
+                        while (target < DocIdSetIterator.NO_MORE_DOCS)
+                        {
+                            if (doc < target)
+                            {
+                                doc = scorer.Advance(target);
+                            }
 
-                    //        if (doc == target) // permitted by filter
-                    //        {
-                    //            if (validator.Validate(doc))
-                    //            {
-                    //                mapReduceWrapper.MapSingleDocument(doc, _subReaders[i]);
-                    //                collector.Collect(doc);
+                            if (doc == target) // permitted by filter
+                            {
+                                if (validator.Validate(doc))
+                                {
+                                    mapReduceWrapper.MapSingleDocument(doc, _subReaders[i]);
+                                    collector.Collect(doc);
 
-                    //                target = filterDocIdIterator.NextDoc();
-                    //            }
-                    //            else
-                    //            {
-                    //                // skip to the next possible docid
-                    //                target = filterDocIdIterator.Advance(validator._nextTarget);
-                    //            }
-                    //        }
-                    //        else // doc > target
-                    //        {
-                    //            if (doc == DocIdSetIterator.NO_MORE_DOCS)
-                    //                break;
-                    //            target = filterDocIdIterator.Advance(doc);
-                    //        }
-                    //    }
-                    //    mapReduceWrapper.FinalizeSegment(_subReaders[i], validator.GetCountCollectors());
-                    //}
+                                    target = filterDocIdIterator.NextDoc();
+                                }
+                                else
+                                {
+                                    // skip to the next possible docid
+                                    target = filterDocIdIterator.Advance(validator._nextTarget);
+                                }
+                            }
+                            else // doc > target
+                            {
+                                if (doc == DocIdSetIterator.NO_MORE_DOCS)
+                                    break;
+                                target = filterDocIdIterator.Advance(doc);
+                            }
+                        }
+                        mapReduceWrapper.FinalizeSegment(_subReaders[i], validator.GetCountCollectors());
+                    }
                 }
             }     
         }

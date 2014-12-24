@@ -22,9 +22,9 @@
 //* send mail to owner@browseengine.com. 
 
 ﻿// Version compatibility level: 3.1.0
-// EXCEPTION: MapReduceResult
 namespace BoboBrowse.Net
 {
+    using BoboBrowse.Net.MapRed;
     using BoboBrowse.Net.Sort;
     using BoboBrowse.Net.Support;
     using BoboBrowse.Net.Util;
@@ -61,7 +61,6 @@ namespace BoboBrowse.Net
 	    private IDictionary<string, IFacetAccessible> _facetMap;
 	    private BrowseHit[] hits;
 	    private long time;
-	    //private MapReduceResult mapReduceResult; // TODO: Work out how to replace this
         private IList<string> errors = new List<string>();
 	    private static BrowseHit[] NO_HITS = new BrowseHit[0];
 
@@ -147,9 +146,7 @@ namespace BoboBrowse.Net
             get { return _facetMap; }
         }
 
-        //// Not implemented, because there is no clear purpose
-        //// and the Java implementation is unclear.
-        //public MapReduceResult MapReduceResult { get; set; }
+        public MapReduceResult MapReduceResult { get; set; }
 
         public static string ToString(IDictionary<string, IFacetAccessible> map)
         {
