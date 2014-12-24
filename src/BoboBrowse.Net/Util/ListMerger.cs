@@ -218,20 +218,14 @@ namespace BoboBrowse.Net.Util
 
         private class FacetValComparator : IComparer<BrowseFacet>
         {
-            // FIXME: we need to reorganize all that stuff with comparators
-            private IComparer valueComparer = new Comparer(CultureInfo.InvariantCulture);
-
             public int Compare(BrowseFacet o1, BrowseFacet o2)
             {
-                return valueComparer.Compare(o1.Value, o2.Value);
-
-                //// NOTE: In this version we don't have to do it this way because the
-                //// values are stored in type object in the BrowseFacet.
-                //int ret = o1.Value.CompareTo(o2.Value);
-                //if (o1.getValue().startsWith("-") && o2.getValue().startsWith("-")) {
-                //    ret =-ret;
-                //}
-                //return ret;
+                int ret = string.CompareOrdinal(o1.Value, o2.Value);
+                if (o1.Value.StartsWith("-") && o2.Value.StartsWith("-"))
+                {
+                    ret = -ret;
+                }
+                return ret;
             }
 
             public static IDictionary<string, IFacetAccessible> MergeSimpleFacetContainers(IEnumerable<IDictionary<string, IFacetAccessible>> subMaps, BrowseRequest req)

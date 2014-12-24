@@ -172,7 +172,7 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             public int Compare(object big, object small)
             {
-                return Convert.ToString(big).CompareTo(Convert.ToString(small));
+                return string.CompareOrdinal(Convert.ToString(big), Convert.ToString(small));
             }
         }
     }

@@ -57,7 +57,8 @@ namespace BoboBrowse.Net.Util
                 {
                     return 1;
                 }
-                int compVal = vals[i].CompareTo(o[i]);
+                //int compVal = vals[i].CompareTo(o[i]);
+                int compVal = string.CompareOrdinal(vals[i], o[i]);
                 if (vals[i].StartsWith("-") && o[i].StartsWith("-"))
                 {
                     compVal *= -1;

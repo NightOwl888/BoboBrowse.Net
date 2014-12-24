@@ -165,7 +165,7 @@ namespace BoboBrowse.Net.Sort
                     {
                         return 1;
                     }
-                    return values[doc1.Doc].CompareTo(values[doc2.Doc]);
+                    return string.CompareOrdinal(values[doc1.Doc], values[doc2.Doc]);
                 }
 
                 public override IComparable Value(ScoreDoc doc)

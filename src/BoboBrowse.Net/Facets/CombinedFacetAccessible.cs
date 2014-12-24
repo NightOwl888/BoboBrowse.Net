@@ -211,7 +211,7 @@ namespace BoboBrowse.Net.Facets
  	            int val = f2.FacetValueHitCount - f1.FacetValueHitCount;
                 if (val==0)
                 {
-                    val = (f1.Value.CompareTo(f2.Value));
+                    val = string.CompareOrdinal(f1.Value, f2.Value);
                 }
                 return val;
             }

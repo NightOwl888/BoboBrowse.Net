@@ -29,7 +29,7 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             public int Compare(BrowseFacet o1, BrowseFacet o2)
             {
-                return o1.Value.CompareTo(o2.Value);
+                return string.CompareOrdinal(o1.Value, o2.Value);
             }
         }
     }

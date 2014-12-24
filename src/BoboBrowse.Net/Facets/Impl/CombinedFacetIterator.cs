@@ -42,7 +42,8 @@ namespace BoboBrowse.Net.Facets.Impl
             FacetIterator node = heap[i];   // save bottom node
             var val = node.Facet;
             int j = (int)(((uint)i) >> 1);
-            while (j > 0 && val.CompareTo(heap[j].Facet) < 0)
+            //while (j > 0 && val.CompareTo(heap[j].Facet) < 0)
+            while (j > 0 && string.CompareOrdinal(val, heap[j].Facet) < 0)
             {
                 heap[i] = heap[j];          // shift parents down
                 i = j;
@@ -58,17 +59,17 @@ namespace BoboBrowse.Net.Facets.Impl
             var val = node.Facet;
             int j = i << 1;                 // find smaller child
             int k = j + 1;
-            if (k <= size && heap[k].Facet.CompareTo(heap[j].Facet) < 0)
+            if (k <= size && string.CompareOrdinal(heap[k].Facet, heap[j].Facet) < 0)
             {
                 j = k;
             }
-            while (j <= size && heap[j].Facet.CompareTo(val) < 0)
+            while (j <= size && string.CompareOrdinal(heap[j].Facet, val) < 0)
             {
                 heap[i] = heap[j];          // shift up child
                 i = j;
                 j = i << 1;
                 k = j + 1;
-                if (k <= size && heap[k].Facet.CompareTo(heap[j].Facet) < 0)
+                if (k <= size && string.CompareOrdinal(heap[k].Facet, heap[j].Facet) < 0)
                 {
                     j = k;
                 }
