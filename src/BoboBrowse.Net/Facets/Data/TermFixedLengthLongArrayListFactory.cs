@@ -1,33 +1,25 @@
-﻿// TODO: Finish implementation
+﻿// Version compatibility level: 3.1.0
+namespace BoboBrowse.Net.Facets.Data
+{
+    using System;
 
-//// Version compatibility level: 3.1.0
-//namespace BoboBrowse.Net.Facets.Data
-//{
-//    using System;
+    public class TermFixedLengthLongArrayListFactory : TermListFactory
+    {
+        protected int width;
 
-//    public class TermFixedLengthLongArrayListFactory : TermListFactory
-//    {
-//        protected int width;
+        public TermFixedLengthLongArrayListFactory(int width)
+        {
+            this.width = width;
+        }
 
-//        public TermFixedLengthLongArrayListFactory(int width)
-//        {
-//            this.width = width;
-//        }
+        public override ITermValueList CreateTermList()
+        {
+            return new TermFixedLengthLongArrayList(width);
+        }
 
-//        public override ITermValueList CreateTermList()
-//        {
-//            return new TermFixedLengthLongArrayList(width);
-//        }
-
-//        public override ITermValueList CreateTermList(int capacity)
-//        {
-//            return new TermFixedLengthLongArrayList(width, capacity);
-//        }
-
-//        //// TODO: Do we need the GetType method?
-//        //public Class<?> getType()
-//        //{
-//        //return long[].class;
-//        //}
-//    }
-//}
+        public override ITermValueList CreateTermList(int capacity)
+        {
+            return new TermFixedLengthLongArrayList(width, capacity);
+        }
+    }
+}

@@ -43,5 +43,20 @@ namespace BoboBrowse.Net.Support
                 list.RemoveAt(0);
             return value;
         }
+
+        /// <summary>
+        /// Removes elements of this type-specific list
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="from">the start index (inclusive).</param>
+        /// <param name="to">the end index (exclusive).</param>
+        public static void RemoveElements<T>(this IList<T> list, int from, int to)
+        {
+            for (int i = (to - 1); i >= from; i--)
+            {
+                list.RemoveAt(i);
+            }
+        }
     }
 }
