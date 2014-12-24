@@ -375,7 +375,7 @@ namespace BoboBrowse.Net.Facets.Impl
         public virtual void Dispose()
         { }
 
-        public FacetIterator Iterator()
+        public virtual FacetIterator Iterator()
         {
             if (_predefinedRanges != null)
             {

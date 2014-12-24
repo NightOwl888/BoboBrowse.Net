@@ -15,12 +15,12 @@ namespace BoboBrowse.Net.Facets.Attribute
             this.facets = facets;
         }
 
-        public virtual bool HasNext()
+        public override bool HasNext()
         {
             return iterator.MoveNext();
         }
 
-        public virtual bool Remove()
+        public override void Remove()
         {
             throw new NotSupportedException();
         }

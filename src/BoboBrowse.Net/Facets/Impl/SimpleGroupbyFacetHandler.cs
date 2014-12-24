@@ -499,7 +499,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 /// see java.util.Iterator#hasNext()
                 /// </summary>
                 /// <returns></returns>
-                public bool HasNext()
+                public override bool HasNext()
                 {
                     return (_index < (_parent._countlength - 1));
                 }
@@ -508,7 +508,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 /// (non-Javadoc)
                 /// see java.util.Iterator#remove()
                 /// </summary>
-                public void Remove()
+                public override void Remove()
                 {
                     throw new NotSupportedException("remove() method not supported for Facet Iterators");
                 }

@@ -1,6 +1,7 @@
 ﻿// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net
 {
+    using BoboBrowse.Net.Support;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -10,7 +11,7 @@ namespace BoboBrowse.Net
     /// Iterator to iterate over facets
     /// author nnarkhed
     /// </summary>
-    public abstract class FacetIterator
+    public abstract class FacetIterator : IIterator<string>
     {
         protected int _count;
         protected string _stringFacet;
@@ -41,5 +42,12 @@ namespace BoboBrowse.Net
         public abstract string Next(int minHits);
 
         public abstract string Format(object val);
+
+
+        // From IIterator<E>
+
+        public abstract bool HasNext();
+
+        public abstract void Remove();
     }
 }

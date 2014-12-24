@@ -380,12 +380,12 @@ namespace BoboBrowse.Net.Facets.Impl
                 return TermIntList.VALUE_MISSING; 
             }
 
-            public virtual bool HasNext()
+            public override bool HasNext()
             {
                 return (_idx < _maxMinusOne);
             }
 
-            public virtual void Remove()
+            public override void Remove()
             {
                 throw new NotSupportedException();
             }

@@ -272,6 +272,7 @@
     <Compile Include="Search\Section\UnaryNotNode.cs" />
     <Compile Include="Support\AtomicInteger.cs" />
     <Compile Include="Support\DateTimeExtensions.cs" />
+    <Compile Include="Support\IIterator.cs" />
     <Compile Include="Support\MathUtil.cs" />
     <Compile Include="Support\ParseException.cs" />
     <Compile Include="Support\Properties.cs" />

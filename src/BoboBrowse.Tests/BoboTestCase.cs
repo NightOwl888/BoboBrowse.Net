@@ -2729,7 +2729,10 @@ namespace BoboBrowse.Net
             Lucene.Net.Store.Directory idxDir = new RAMDirectory();
             IndexWriter writer = new IndexWriter(idxDir, new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_CURRENT), IndexWriter.MaxFieldLength.UNLIMITED);
 
-            long now = System.Environment.TickCount;
+            // This method returns the difference, measured in milliseconds, between the current 
+            // time and midnight, January 1, 1970 UTC(coordinated universal time).
+            // long now = System.currentTimeMillis();
+            long now = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
             for (long l = 0; l < 53; l++)
             {
                 Document d = new Document();

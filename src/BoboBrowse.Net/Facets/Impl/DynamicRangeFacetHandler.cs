@@ -153,6 +153,21 @@ namespace BoboBrowse.Net.Facets.Impl
                 }
                 return retList;
             }
+
+            public override FacetIterator Iterator()
+            {
+                FacetIterator iter = base.Iterator();
+
+                List<BrowseFacet> facets = new List<BrowseFacet>();
+                while (iter.HasNext())
+                {
+                    string facet = iter.Next();
+                    int count = iter.Count;
+                    facets.Add(new BrowseFacet(parent.GetValueFromRangeString(facet), count));
+                }
+                facets.Sort(ListMerger.FACET_VAL_COMPARATOR);
+                return new PathFacetIterator(facets);
+            }
         }
     }
 }
