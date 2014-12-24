@@ -2029,8 +2029,6 @@ namespace BoboBrowse.Net
         [Test]
         public void TestBrowseWithDeletes()
         {
-            BoboIndexReader reader = null;
-
             BrowseRequest br = new BrowseRequest();
             br.Count = 10;
             br.Offset = 0;
@@ -2044,39 +2042,23 @@ namespace BoboBrowse.Net
             DoTest(br, 3, answer, new string[] { "1", "2", "7" });
 
 
-            try
+            using (IndexReader srcReader = IndexReader.Open(_indexDir, false))
             {
-                reader = NewIndexReader(false);
-                reader.DeleteDocuments(new Term("id", "1"));
-                reader.DeleteDocuments(new Term("id", "2"));
-
-                br = new BrowseRequest();
-                br.Count = 10;
-                br.Offset = 0;
-
-                sel = new BrowseSelection("color");
-                sel.AddValue("red");
-                br.AddSelection(sel);
-                answer = new Dictionary<string, IEnumerable<BrowseFacet>>();
-
-                DoTest(new BoboBrowser(reader), br, 1, answer, null);
-            }
-            catch (System.IO.IOException ioe)
-            {
-                Assert.Fail(ioe.Message);
-            }
-            finally
-            {
-                if (reader != null)
+                using (BoboIndexReader reader = BoboIndexReader.GetInstance(srcReader, this._fconf))
                 {
-                    try
-                    {
-                        reader.Close();
-                    }
-                    catch (System.IO.IOException e)
-                    {
-                        Assert.Fail(e.Message);
-                    }
+                    reader.DeleteDocuments(new Term("id", "1"));
+                    reader.DeleteDocuments(new Term("id", "2"));
+
+                    br = new BrowseRequest();
+                    br.Count = 10;
+                    br.Offset = 0;
+
+                    sel = new BrowseSelection("color");
+                    sel.AddValue("red");
+                    br.AddSelection(sel);
+                    answer = new Dictionary<string, IEnumerable<BrowseFacet>>();
+
+                    DoTest(new BoboBrowser(reader), br, 1, answer, null);
                 }
             }
 
