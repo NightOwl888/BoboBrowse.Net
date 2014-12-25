@@ -186,7 +186,7 @@ function Build-BoboBrowse-Spring-Framework-Version ([string] $target_framework) 
 			/property:EnableNuGetPackageRestore=true
 	}
 	
-	dir $outdir | ?{ -not($_.Name -match 'BoboBrowse.Net|LuceneExt.Net') } | %{ del $_.FullName }
+	dir $outdir | ?{ -not($_.Name -match 'BoboBrowse.Net.Spring') } | %{ del $_.FullName }
 }
 
 function Ensure-Directory-Exists([string] $path)
