@@ -1,35 +1,27 @@
 namespace BoboBrowse.Net.Facets.Data
 {
     using System;
+    using System.Globalization;
 
     public abstract class TermNumberList<T> : TermValueList<T>
     {
         private const string DEFAULT_FORMATTING_STRING = "0000000000";
 
         protected TermNumberList()
-            : base()
-        {
-            this.FormatString = DEFAULT_FORMATTING_STRING;
-        }
+            : this(DEFAULT_FORMATTING_STRING)
+        { }
 
         protected TermNumberList(string formatString)
-            : base()
-        {
-            this.FormatString = formatString;
-        }
+            : this(0, formatString)
+        { }
 
         protected TermNumberList(string formatString, IFormatProvider formatProvider)
-            : base()
-        {
-            this.FormatString = formatString;
-            this.FormatProvider = formatProvider;
-        }
+            : this(0, formatString, formatProvider)
+        { }
 
         protected TermNumberList(int capacity, string formatString)
-            : base(capacity)
-        {
-            this.FormatString = formatString;
-        }
+            : this(capacity, formatString, CultureInfo.InvariantCulture)
+        { }
 
         protected TermNumberList(int capacity, string formatString, IFormatProvider formatProvider)
             : base(capacity)
@@ -61,15 +53,11 @@ namespace BoboBrowse.Net.Facets.Data
             }
             else
             {
-                //var formatString = "{0:" + this.FormatString + "}";
-
                 if (this.FormatProvider != null)
                 {
-                    //return string.Format(formatString, Convert.ToDecimal(o));
                     return Convert.ToDecimal(o).ToString(this.FormatString, this.FormatProvider);
                 }
 
-                //return string.Format(this.FormatProvider, formatString, Convert.ToDecimal(o));
                 return Convert.ToDecimal(o).ToString(this.FormatString);
             }
         }

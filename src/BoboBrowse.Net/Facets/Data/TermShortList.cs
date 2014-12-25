@@ -23,7 +23,7 @@ namespace BoboBrowse.Net.Facets.Data
             }
             else
             {
-                return Convert.ToInt16(s);
+                return Convert.ToInt16(s, this.FormatProvider);
             }
         }
 

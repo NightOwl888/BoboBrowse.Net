@@ -22,8 +22,7 @@ namespace BoboBrowse.Net.Facets.Data
             }
             else
             {
-                // TODO: Should we be using a format provider?
-                return Convert.ToSingle(s);
+                return Convert.ToSingle(s, this.FormatProvider);
             }
         }
 

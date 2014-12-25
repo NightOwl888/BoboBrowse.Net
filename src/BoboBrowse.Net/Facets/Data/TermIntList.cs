@@ -24,7 +24,7 @@ namespace BoboBrowse.Net.Facets.Data
             }
             else
             {
-                return Convert.ToInt32(s);
+                return Convert.ToInt32(s, this.FormatProvider);
             }
         }
 
