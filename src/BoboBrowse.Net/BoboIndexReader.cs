@@ -22,14 +22,10 @@
 //* send mail to owner@browseengine.com. 
 
 // Version compatibility level: 3.1.0
-// EXCEPTION: Spring XML Configuration
 namespace BoboBrowse.Net
 {
     using BoboBrowse.Net.Facets;
-    using BoboBrowse.Net.Query;
-    using BoboBrowse.Net.Search;
     using BoboBrowse.Net.Support;
-    using BoboBrowse.Net.Util;
     using Common.Logging;
     using Lucene.Net.Documents;
     using Lucene.Net.Index;
@@ -39,17 +35,17 @@ namespace BoboBrowse.Net
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
     using System.Runtime.CompilerServices;
     using System.Text;
-    using System.Threading;
 
     /// <summary>
     /// bobo browse index reader
     /// </summary>
     public class BoboIndexReader : FilterIndexReader
-    {        
+    {
         private const string SPRING_CONFIG = "bobo.spring";
-        private static readonly ILog logger = LogManager.GetLogger<BoboIndexReader>();
+        private static readonly ILog logger = LogManager.GetLogger(typeof(BoboIndexReader));
 
         protected IDictionary<string, IFacetHandler> _facetHandlerMap;
 
@@ -462,42 +458,6 @@ namespace BoboBrowse.Net
             return (_subReaders != null) ? _subReaders[0].Directory() : base.Directory();
         }
 
-        private static IEnumerable<IFacetHandler> LoadFromIndex(System.IO.DirectoryInfo file, WorkArea workArea)
-        {
-            // File springFile = new File(file, SPRING_CONFIG);
-            // FileSystemXmlApplicationContext appCtx =
-            //   new FileSystemXmlApplicationContext("file:" + springFile.getAbsolutePath());
-            //return (Collection<FacetHandler<?>>) appCtx.getBean("handlers");
-
-            // TODO: Use Spring.Net.Core to configure this. It would be best to use DI to inject
-            // a loader for the configuration so there doesn't have to be a dependency on Spring.Net,
-            // but instead make it an optional NuGet package.
-            //var entries = workArea.map.Values;
-            //FileSystemXmlApplicationContext appCtx = new FileSystemXmlApplicationContext();
-            //foreach (var entry in entries)
-            //{
-            //    object obj = entry;
-            //    if (obj is ClassLoader)
-            //    {
-            //        appCtx.SetClassLoader((ClassLoader)obj);
-            //        break;
-            //    }
-            //}
-
-            //string absolutePath = file.GetAbsolutePath();
-            //string partOne = absolutePath.substring(0, absolutePath.lastIndexOf(File.separator));
-            //string partTwo = URLEncoder.encode(absolutePath.substring(absolutePath.lastIndexOf(File.separator) + 1), "UTF-8");
-            //absolutePath = partOne + File.separator + partTwo;
-
-            //File springFile = new File(new File(absolutePath), SPRING_CONFIG);
-            //appCtx.setConfigLocation("file:" + springFile.getAbsolutePath());
-            //appCtx.refresh();
-      
-            //return (Collection<FacetHandler<?>>) appCtx.getBean("handlers");
-
-            throw new NotImplementedException("file configuration support has not yet been added");
-        }
-
         private void Initialize(ref IEnumerable<IFacetHandler> facetHandlers)
         {
             if (facetHandlers == null)
@@ -505,15 +465,29 @@ namespace BoboBrowse.Net
                 var idxDir = Directory();
                 if (idxDir != null && idxDir is FSDirectory)
                 {
-                    var fsDir = (FSDirectory)idxDir;
-                    var file = fsDir.Directory;
-                    var springFile = System.IO.Path.Combine(file.FullName, SPRING_CONFIG);
-                    if (System.IO.File.Exists(springFile))
+                    // Look for the bobo.spring file in the same directory as the Lucene index
+                    var dir = ((FSDirectory)idxDir).Directory;
+                    var springConfigFile = System.IO.Path.Combine(dir.FullName, SPRING_CONFIG);
+                    Type loaderType = Type.GetType("BoboBrowse.Net.Spring.FacetHandlerLoader, BoboBrowse.Net.Spring");
+
+                    if (loaderType != null)
                     {
-                        facetHandlers = LoadFromIndex(file, _workArea);
+                        var loaderInstance = Activator.CreateInstance(loaderType);
+                        
+                        MethodInfo methodInfo = loaderType.GetMethod("LoadFacetHandlers");
+                        facetHandlers = (IEnumerable<IFacetHandler>)methodInfo.Invoke(loaderInstance, new object[] { springConfigFile, _workArea });
                     }
                     else
                     {
+                        if (System.IO.File.Exists(springConfigFile))
+                        {
+                            throw new RuntimeException(string.Format(
+                                "There is a file named '{0}' in the Lucene.Net index directory '{1}', but you don't have " + 
+                                "the BoboBrowse.Net.Spring assembly in your project to resolve the references. You can " + 
+                                "download BoboBrowse.Net.Spring as a separate optional package from NuGet or you can provide " +
+								"facet handlers using an alternate BoboBrowseIndex.GetInstance overload", SPRING_CONFIG, dir));
+                        }
+
                         facetHandlers = new List<IFacetHandler>();
                     }
                 }

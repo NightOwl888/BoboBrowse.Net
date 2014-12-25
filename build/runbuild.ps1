@@ -96,6 +96,7 @@ task Package -depends Compile -description "This tasks makes creates the NuGet p
 	Ensure-Directory-Exists "$output_directory"
 
 	Create-BoboBrowse-Package
+	Create-BoboBrowse-Spring-Package
 }
 
 task Finalize -depends Package -description "This tasks finalizes the build" {  
@@ -117,14 +118,38 @@ function Create-BoboBrowse-Package {
 	}
 }
 
-function Build-Framework-Versions ([string[]] $target_frameworks) {
-	#create the build for each version of the framework
-	foreach ($target_framework in $target_frameworks) {
-		Build-Framework-Version $target_framework
+function Create-BoboBrowse-Spring-Package {
+	$output_nuspec_file = "$release_directory\BoboBrowse.Net.Spring\BoboBrowse.Net.Spring.nuspec"
+	Copy-Item "$template_directory\BoboBrowse.Net.Spring\BoboBrowse.Net.Spring.nuspec" "$output_nuspec_file.template"
+	
+	$prerelease = Get-Prerelease-Text
+	$prerelease = ".0$prerelease"
+
+	#replace the tokens
+	(cat "$output_nuspec_file.template") `
+		-replace '#prerelease#', "$prerelease" `
+		> $output_nuspec_file 
+
+	#delete the template file
+	Remove-Item "$output_nuspec_file.template" -Force -ErrorAction SilentlyContinue
+
+	#copy sources for symbols package
+	Copy-Item -Recurse -Filter *.cs -Force "$source_directory\BoboBrowse.Net.Spring" "$release_directory\BoboBrowse.Net\src\BoboBrowse.Net.Spring"
+	
+	exec { 
+		&"$tools_directory\nuget\NuGet.exe" pack $output_nuspec_file -Symbols -Version $packageVersion -OutputDirectory $output_directory
 	}
 }
 
-function Build-Framework-Version ([string] $target_framework) {
+function Build-Framework-Versions ([string[]] $target_frameworks) {
+	#create the build for each version of the framework
+	foreach ($target_framework in $target_frameworks) {
+		Build-BoboBrowse-Framework-Version $target_framework
+		Build-BoboBrowse-Spring-Framework-Version $target_framework
+	}
+}
+
+function Build-BoboBrowse-Framework-Version ([string] $target_framework) {
 	$target_framework_upper = $target_framework.toUpper()
 	$msbuild_configuration = "$target_framework_upper-$configuration"
 	$outdir = "$release_directory\bobobrowse.net\lib\$target_framework\"
@@ -133,6 +158,26 @@ function Build-Framework-Version ([string] $target_framework) {
 
 	exec { 
 		msbuild "$source_directory\BoboBrowse.Net\BoboBrowse.Net.csproj" `
+			/property:outdir=$outdir `
+			/verbosity:quiet `
+			/property:Configuration=$msbuild_configuration `
+			"/t:Clean;Rebuild" `
+			/property:WarningLevel=3 `
+			/property:EnableNuGetPackageRestore=true
+	}
+	
+	dir $outdir | ?{ -not($_.Name -match 'BoboBrowse.Net|LuceneExt.Net') } | %{ del $_.FullName }
+}
+
+function Build-BoboBrowse-Spring-Framework-Version ([string] $target_framework) {
+	$target_framework_upper = $target_framework.toUpper()
+	$msbuild_configuration = "$target_framework_upper-$configuration"
+	$outdir = "$release_directory\bobobrowse.net.spring\lib\$target_framework\"
+	
+	Write-Host "Compiling BoboBrowse.Net for $target_framework_upper" -ForegroundColor Blue
+
+	exec { 
+		msbuild "$source_directory\BoboBrowse.Net.Spring\BoboBrowse.Net.Spring.csproj" `
 			/property:outdir=$outdir `
 			/verbosity:quiet `
 			/property:Configuration=$msbuild_configuration `
@@ -204,4 +249,12 @@ function Is-Prerelease {
 		return $true
 	}
 	return $false
+}
+
+function Get-Prerelease-Text {
+	if ($packageVersion.Contains("-")) {
+		$prerelease = $packageVersion.SubString($packageVersion.IndexOf("-")) -replace "\d+", ""
+		return "$prerelease"
+	}
+	return ""
 }
