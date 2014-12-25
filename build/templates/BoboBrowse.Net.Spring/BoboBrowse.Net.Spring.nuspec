@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!-- BoboBrowse.NET shared Nuget specification file; all packages share this -->
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata>
+		<id>BoboBrowse.Net.Spring</id>
+		<title>BoboBrowse.Net.Spring</title>
+		<version>$version$</version>
+		<authors>NightOwl888</authors>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<summary>Provides Spring.Net configuration support for FacetHandlers in BoboBrowse.Net.</summary>
+		<description>This is an add-on NuGet package for BoboBrowse.Net. It provides the ability to configure FacetHandlers using XML in each Lucene.Net index directory so the facet handlers don't need to be configured in code.</description>
+		<language>en-US</language>
+		<tags>faceted search engine lucene lucene.net nosql text information retrieval apache drill down</tags>
+		<projectUrl>https://github.com/NightOwl888/BoboBrowse.Net</projectUrl>
+		<iconUrl>https://download-codeplex.sec.s-msft.com/Download?ProjectName=bobo&amp;DownloadId=230239&amp;Build=20885</iconUrl>
+		<dependencies>
+			<group targetFramework="net35">
+				<dependency id="BoboBrowse.Net" version="3.1#prerelease#" />
+				<dependency id="Spring.Core" version="1.3.2" />
+			</group>
+			<group targetFramework="net40">
+				<dependency id="BoboBrowse.Net" version="3.1#prerelease#" />
+				<dependency id="Spring.Core" version="1.3.2" />
+			</group>
+			<group targetFramework="net45">
+				<dependency id="BoboBrowse.Net" version="3.1#prerelease#" />
+				<dependency id="Spring.Core" version="1.3.2" />
+			</group>
+		</dependencies>
+	</metadata>
+</package>
