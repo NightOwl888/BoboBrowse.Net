@@ -133,7 +133,7 @@ namespace BoboBrowse.Net.Facets.Data
                                 if (!loader.Add(docid, valId))
                                     LogOverflow(fieldName);
                                 minID = docid;
-                                bitset.FastSet(docid);
+                                bitset.Set(docid);
                                 while (tdoc.Next())
                                 {
                                     df++;
@@ -141,7 +141,7 @@ namespace BoboBrowse.Net.Facets.Data
 
                                     if (!loader.Add(docid, valId))
                                         LogOverflow(fieldName);
-                                    bitset.FastSet(docid);
+                                    bitset.Set(docid);
                                 }
                                 maxID = docid;
                             }
