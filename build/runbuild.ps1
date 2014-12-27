@@ -1,7 +1,7 @@
 properties {
 	[string]$base_directory   = resolve-path "..\."
 	[string]$release_directory  = "$base_directory\release" #was build_directory
-	[string]$source_directory = "$base_directory\src"
+	[string]$source_directory = "$base_directory\src\BoboBrowse.Net"
 	[string]$tools_directory  = "$base_directory\tools"
 	[string]$output_directory = "$release_directory\packagesource"
 	[string]$template_directory = "$base_directory\build\templates"

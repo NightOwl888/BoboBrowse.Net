@@ -9,27 +9,27 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoboBrowse.Tests", "BoboBro
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{74606D3E-1C8F-401F-95E1-F4F78C5CBD18}"
 	ProjectSection(SolutionItems) = preProject
-		..\Build.bat = ..\Build.bat
-		..\build\psake.ps1 = ..\build\psake.ps1
-		..\build\psake.psm1 = ..\build\psake.psm1
-		..\build\runbuild.ps1 = ..\build\runbuild.ps1
+		..\..\Build.bat = ..\..\Build.bat
+		..\..\build\psake.ps1 = ..\..\build\psake.ps1
+		..\..\build\psake.psm1 = ..\..\build\psake.psm1
+		..\..\build\runbuild.ps1 = ..\..\build\runbuild.ps1
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{DE47437D-6FE7-49BC-94F2-FA5E6B431711}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BoboBrowse.Net", "BoboBrowse.Net", "{12CE3745-8162-4885-B294-F9810B213C23}"
 	ProjectSection(SolutionItems) = preProject
-		..\build\templates\BoboBrowse.Net\BoboBrowse.Net.nuspec = ..\build\templates\BoboBrowse.Net\BoboBrowse.Net.nuspec
+		..\..\build\templates\BoboBrowse.Net\BoboBrowse.Net.nuspec = ..\..\build\templates\BoboBrowse.Net\BoboBrowse.Net.nuspec
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BoboBrowse.Net.Spring", "BoboBrowse.Net.Spring", "{40240A3C-18F1-4BD0-85EC-CDD00081155D}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\build\templates\BoboBrowse.Net.Spring\BoboBrowse.Net.Spring.nuspec = ..\..\build\templates\BoboBrowse.Net.Spring\BoboBrowse.Net.Spring.nuspec
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoboBrowse.Net.Console", "BoboBrowse.Net.Console\BoboBrowse.Net.Console.csproj", "{D9E0A4B8-B902-4E92-9C6F-01109AB6FF8B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoboBrowse.Net.Spring", "BoboBrowse.Net.Spring\BoboBrowse.Net.Spring.csproj", "{C152867D-CE16-4BC3-9AEC-A0C6A49DA621}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BoboBrowse.Net.Spring", "BoboBrowse.Net.Spring", "{40240A3C-18F1-4BD0-85EC-CDD00081155D}"
-	ProjectSection(SolutionItems) = preProject
-		..\build\templates\BoboBrowse.Net.Spring\BoboBrowse.Net.Spring.nuspec = ..\build\templates\BoboBrowse.Net.Spring\BoboBrowse.Net.Spring.nuspec
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
