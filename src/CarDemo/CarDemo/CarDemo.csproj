@@ -41,10 +41,10 @@
   <ItemGroup>
     <Reference Include="BoboBrowse.Net, Version=3.1.0.0, Culture=neutral, PublicKeyToken=080dc64b6ee374ea, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\BoboBrowse.Net.3.1.0-alpha-00002\lib\net40\BoboBrowse.Net.dll</HintPath>
+      <HintPath>..\packages\BoboBrowse.Net.3.1.0-alpha-00001\lib\net40\BoboBrowse.Net.dll</HintPath>
     </Reference>
     <Reference Include="BoboBrowse.Net.Spring">
-      <HintPath>..\packages\BoboBrowse.Net.Spring.3.1.0-alpha-00002\lib\net40\BoboBrowse.Net.Spring.dll</HintPath>
+      <HintPath>..\packages\BoboBrowse.Net.Spring.3.1.0-alpha-00001\lib\net40\BoboBrowse.Net.Spring.dll</HintPath>
     </Reference>
     <Reference Include="C5, Version=2.2.5073.27396, Culture=neutral, PublicKeyToken=282361b99ded7e8e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
