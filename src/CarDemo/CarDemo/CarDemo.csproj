@@ -236,6 +236,7 @@
     <Content Include="LuceneIndex\deletable" />
     <Content Include="LuceneIndex\segments" />
     <Content Include="LuceneIndex\_cuy.cfs" />
+    <Content Include="LuceneIndex\bobo.spring" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
     <Content Include="Scripts\bobo\application.js" />
     <Content Include="Scripts\bobo\bobobase.js" />

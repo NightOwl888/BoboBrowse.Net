@@ -1,0 +1,98 @@
+﻿<objects xmlns="http://www.springframework.net"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.springframework.net http://www.springframework.net/xsd/spring-objects.xsd" >
+  
+  <!-- This is an example of how facet handlers can be configured using an XML file via the Spring.Net 
+       dependency injection container. This requires the BoboBrowse.Net.Spring package, and you must 
+       call an overload of BoboIndexReader.GetInstance that does not accept an IEnumerable<IFacetHandler> 
+       as an argument. Additionally, you must name the configuration file "bobo.spring" and it must reside 
+       in the same directory as a Lucene.Net index. If you have multiple Lucene.Net indexes, you can use
+       multiple "bobo.spring" configuration files.
+       
+       IFacetHandler is the only interface that can be injected automatically into BoboBrowse.Net. 
+       
+       Consult the Spring.Net documentation at http://www.springframework.net/doc-latest/reference/html/objects.html
+       for complete examples of how you can wire up types, specify constructor arguments, and initialize property values.
+       -->
+  
+  <object id="color" type="BoboBrowse.Net.Facets.Impl.SimpleFacetHandler, BoboBrowse.Net">
+    <constructor-arg value="color"/>
+    <property name="TermCountSize" value="Small"/>
+  </object>
+
+  <object id="category" type="BoboBrowse.Net.Facets.Impl.SimpleFacetHandler, BoboBrowse.Net">
+    <constructor-arg value="category"/>
+    <property name="TermCountSize" value="Medium"/>
+  </object>
+
+  <object id="city" type="BoboBrowse.Net.Facets.Impl.PathFacetHandler, BoboBrowse.Net">
+    <constructor-arg value="city"/>
+    <property name="Separator" value="/" />
+  </object>
+
+  <object id="makemodel" type="BoboBrowse.Net.Facets.Impl.PathFacetHandler, BoboBrowse.Net">
+    <constructor-arg value="makemodel"/>
+    <property name="Separator" value="/" />
+  </object>
+
+  <object id="year" type="BoboBrowse.Net.Facets.Impl.RangeFacetHandler, BoboBrowse.Net">
+    <constructor-arg name="name" value="year"/>
+    <constructor-arg name="termListFactory">
+      <object type="BoboBrowse.Net.Facets.Data.PredefinedTermListFactory, BoboBrowse.Net">
+        <constructor-arg value="System.Int32"/>
+        <constructor-arg value="00000000000000000000" />
+      </object>
+    </constructor-arg>
+    <constructor-arg name="predefinedRanges">
+      <list element-type="string">
+        <value>[1993 TO 1994]</value>
+        <value>[1995 TO 1996]</value>
+        <value>[1997 TO 1998]</value>
+        <value>[1999 TO 2000]</value>
+        <value>[2001 TO 2002]</value>
+      </list>
+    </constructor-arg>
+  </object>
+
+  <object id="price" type="BoboBrowse.Net.Facets.Impl.RangeFacetHandler, BoboBrowse.Net">
+    <constructor-arg name="name" value="price"/>
+    <constructor-arg name="termListFactory">
+      <object type="BoboBrowse.Net.Facets.Data.PredefinedTermListFactory, BoboBrowse.Net">
+        <constructor-arg value="System.Single"/>
+        <constructor-arg value="00000000000000000000" />
+      </object>
+    </constructor-arg>
+    <constructor-arg name="predefinedRanges">
+      <list element-type="string">
+        <value>[2001 TO 6700]</value>
+        <value>[6800 TO 9900]</value>
+        <value>[10000 TO 13100]</value>
+        <value>[13200 TO 17300]</value>
+        <value>[17400 TO 19500]</value>
+      </list>
+    </constructor-arg>
+  </object>
+
+  <object id="mileage" type="BoboBrowse.Net.Facets.Impl.RangeFacetHandler, BoboBrowse.Net">
+    <constructor-arg name="name" value="mileage"/>
+    <constructor-arg name="termListFactory">
+      <object type="BoboBrowse.Net.Facets.Data.PredefinedTermListFactory, BoboBrowse.Net">
+        <constructor-arg value="System.Int32"/>
+        <constructor-arg value="00000000000000000000" />
+      </object>
+    </constructor-arg>
+    <constructor-arg name="predefinedRanges">
+      <list element-type="string">
+        <value>[* TO 12500]</value>
+        <value>[12501 TO 15000]</value>
+        <value>[15001 TO 17500]</value>
+        <value>[17501 TO *]</value>
+      </list>
+    </constructor-arg>
+  </object>
+
+  <object id="tags" type="BoboBrowse.Net.Facets.Impl.MultiValueFacetHandler, BoboBrowse.Net">
+    <constructor-arg value="tags" />
+  </object>
+  
+</objects>
