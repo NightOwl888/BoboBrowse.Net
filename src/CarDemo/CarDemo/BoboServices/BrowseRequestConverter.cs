@@ -8,23 +8,29 @@ namespace CarDemo.BoboServices
 {
     public class BrowseRequestConverter
     {
+        private readonly BoboDefaultQueryBuilder queryBuilder;
+
+        public BrowseRequestConverter()
+        {
+            this.queryBuilder = new BoboDefaultQueryBuilder();
+        }
+
         public BrowseRequest ConvertBrowseRequest(BoboRequest boboRequest)
         {
-            BoboDefaultQueryBuilder qbuilder = new BoboDefaultQueryBuilder();
-            Query query = QueryProducer.Convert(boboRequest.Query, boboRequest.Df);
-            Sort sort = qbuilder.ParseSort(boboRequest.Sort);
+            Query query = this.queryBuilder.ParseQuery(boboRequest.Query, boboRequest.Df);
+            Sort sort = this.queryBuilder.ParseSort(boboRequest.Sort);
 
-            var br = new BrowseRequest();
-            br.Offset = boboRequest.Start;
-            br.Count = boboRequest.Rows;
-            br.Query = query;
+            var browseRequest = new BrowseRequest();
+            browseRequest.Offset = boboRequest.Start;
+            browseRequest.Count = boboRequest.Rows;
+            browseRequest.Query = query;
 
             if (sort != null)
             {
                 SortField[] sortFields = sort.GetSort();
                 if (sortFields != null && sortFields.Length > 0)
                 {
-                    br.Sort = sortFields;
+                    browseRequest.Sort = sortFields;
                 }
             }
 
@@ -52,7 +58,7 @@ namespace CarDemo.BoboServices
                 var sels = selMap.Values;
                 foreach (var sel in sels)
                 {
-                    br.AddSelection(sel);
+                    browseRequest.AddSelection(sel);
                 }
             }
 
@@ -61,7 +67,7 @@ namespace CarDemo.BoboServices
                 foreach (var facet in boboRequest.Facets)
                 {
                     FacetSpec fspec = new FacetSpec();
-                    br.SetFacetSpec(facet.Name, fspec);
+                    browseRequest.SetFacetSpec(facet.Name, fspec);
 
                     fspec.MinHitCount = facet.MinCount == int.MinValue ? 0 : facet.MinCount;
                     fspec.MaxCount = facet.Limit == int.MinValue ? 100 : facet.Limit;
@@ -70,7 +76,7 @@ namespace CarDemo.BoboServices
                 }
             }
 
-            return br;
+            return browseRequest;
         }
 
         private FacetSpec.FacetSortSpec ParseFacetSort(string facetSortString, FacetSpec.FacetSortSpec defaultSort)
