@@ -160,6 +160,9 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="BoboServices\BoboDefaultQueryBuilder.cs" />
+    <Compile Include="BoboServices\BrowseRequestConverter.cs" />
+    <Compile Include="BoboServices\BrowseService.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -168,14 +171,9 @@
     <Compile Include="Models\BoboResult.cs" />
     <Compile Include="Models\Choice.cs" />
     <Compile Include="Models\Facet.cs" />
-    <Compile Include="Models\FacetQuery.cs" />
     <Compile Include="Models\FacetResult.cs" />
-    <Compile Include="Models\Field.cs" />
     <Compile Include="Models\Hit.cs" />
     <Compile Include="Models\Selection.cs" />
-    <Compile Include="Models\SelectionOperation.cs" />
-    <Compile Include="Models\SelectionProperty.cs" />
-    <Compile Include="Models\SortField.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -235,7 +233,6 @@
     <Content Include="Content\themes\base\minified\jquery.ui.tabs.min.css" />
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
     <Content Include="Global.asax" />
-    <Content Include="Content\Site.css" />
     <Content Include="LuceneIndex\deletable" />
     <Content Include="LuceneIndex\segments" />
     <Content Include="LuceneIndex\_cuy.cfs" />
@@ -243,7 +240,6 @@
     <Content Include="Scripts\bobo\application.js" />
     <Content Include="Scripts\bobo\bobobase.js" />
     <Content Include="Scripts\bobo\browse.js" />
-    <Content Include="Scripts\bobo\json.js" />
     <Content Include="Scripts\bobo\remote.js" />
     <Content Include="Scripts\bobo\widgets.js" />
     <Content Include="Scripts\jquery-1.8.2.js" />
@@ -272,7 +268,6 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\Browse.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>

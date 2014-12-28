@@ -160,7 +160,6 @@ function handleSortChange(sortBy){
 
 function handleSearch(){
     var elem = document.getElementById("search");
-    //alert(elem.value);
 	request.queryString=elem.value;
 	api.browse(request,handleResponse);	
 }
@@ -194,16 +193,14 @@ function handlePaging(action){
 }
 
 function handleRemoveTag(field,tag){
-
-        var tagSel=request.selections[field];
-		var localHash=toHash(tagSel.values);
-		delete localHash[tag];
-		tagSel.values=toArray(localHash);		
-		api.browse(request,handleResponse);
+    var tagSel=request.selections[field];
+	var localHash=toHash(tagSel.values);
+	delete localHash[tag];
+	tagSel.values=toArray(localHash);		
+	api.browse(request,handleResponse);
 }
 
 function tagselected(field,tag){
-//alert(tag);
     var tagSel=request.selections[field];
 	var localHash=toHash(tagSel.values);
 	localHash[tag]=tag;
@@ -213,30 +210,13 @@ function tagselected(field,tag){
 
 function handleResponse(response) {
 	// populate stats
-
-    //alert(response);
-	    //var browseResponse=JSON.parse(response);    
-
     updateSearchStat(response);
 	    
     //populate widgets
-    
     var choices = response.Choices;
-    //alert('starting loop');
-
-    
-    
-
-    
 	for (var i = 0; i < widgets.length; ++i) {
-	   	//alert('in loop');
-	   	//alert(widgets[i]);
-
-	   	//alert(choices["tags"]);
-
 		widgets[i].update(request.selections, choices);		
 	}
-    
 	resultslist.update(response.Hits, request.offset);
 }
 

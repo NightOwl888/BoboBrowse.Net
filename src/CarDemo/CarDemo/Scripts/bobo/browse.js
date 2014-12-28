@@ -94,7 +94,6 @@ function OutputSpec(){
 	}
 
 	this.toJSON = function (name) {
-	    //alert('ospec.toJSON called');
 	    var data = {
 	        name: name,
 	        limit: this.max,
@@ -102,7 +101,6 @@ function OutputSpec(){
 	        expand: this.expandSelection,
 	        sort: (this.order == OutputSpec_Order_Value) ? "index" : "count"
 	    };
-	    //alert('returning data');
 	    return data;
 	};
 }
@@ -196,7 +194,6 @@ function BrowseRequest(numPerPage){
 
     // Added to support MVC
 	this.toJSON = function () {
-	    //alert('toJSON called');
 	    var data = {
 	        query: this.queryString,
 	        df: "contents",
@@ -207,12 +204,10 @@ function BrowseRequest(numPerPage){
             facet: true,
 	        sort: ""
 	    };
-	    //alert('placeholder 1');
 	    for (var i in this.selections) {
 	        sel = this.selections[i];
 	        data.selections.push(sel.toJSON(i));
 	    }
-	    //alert('placeholder 2');
 	    for (var i in this.ospecs) {
 	        ospec = this.ospecs[i];
 	        data.facets.push(ospec.toJSON(i));
@@ -229,7 +224,6 @@ function BrowseRequest(numPerPage){
 	        data.sort = dir;
 	    }
 
-	    //alert('returning');
 	    return data;
 	}
 }

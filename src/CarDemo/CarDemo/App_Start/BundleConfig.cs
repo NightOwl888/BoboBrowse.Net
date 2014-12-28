@@ -26,14 +26,11 @@ namespace CarDemo
             // Bobo bundle
             bundles.Add(new ScriptBundle("~/bundles/bobo").Include(
                         "~/Scripts/bobo/browse.js",
-                        "~/Scripts/bobo/json.js",
                         "~/Scripts/bobo/remote.js",
                         "~/Scripts/bobo/bobobase.js",
                         "~/Scripts/bobo/widgets.js",
                         "~/Scripts/bobo/application.js"));
 
-
-            //bundles.Add(new StyleBundle("~/Content/css").Include("~/Content/site.css"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include("~/Content/style.css"));
 
