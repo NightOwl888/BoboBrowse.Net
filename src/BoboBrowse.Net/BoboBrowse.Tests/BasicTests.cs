@@ -256,6 +256,41 @@ namespace BoboBrowse.Tests
                 Console.WriteLine("");
             }
         }
+
+        [Test]
+        public void TestSimpleBrowser()
+        {
+            var query = new TermQuery(new Term("name", "asp.net"));
+            Console.WriteLine(string.Format("query: <{0}>", query.ToString()));
+            var request = new BrowseRequest()
+            {
+                Count = 10,
+                Offset = 0,
+                Query = query,
+                Sort = new Sort(new SortField("price", SortField.DOUBLE, false)).GetSort()
+            };
+
+            var facetHandlers = new IFacetHandler[] { new SimpleFacetHandler("category") };
+            var browser = new BoboBrowser(BoboIndexReader.GetInstance(IndexReader.Open(_indexDir, true), facetHandlers));
+            var facetSpec = new FacetSpec() { OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc, MinHitCount = 1 };
+            request.SetFacetSpec("category", facetSpec);
+
+            var result = browser.Browse(request);
+            Console.WriteLine(string.Format("total hits:{0}", result.NumHits));
+            Console.WriteLine("===========================");
+            foreach (var facet in result.FacetMap["category"].GetFacets())
+            {
+                var category = _categories.First(k => k.Value == int.Parse(facet.Value.ToString()));
+                Console.WriteLine("{0}:({1})", category.Key, facet.FacetValueHitCount);
+            }
+            Console.WriteLine("===========================");
+            for (var i = 0; i < result.Hits.Length; i++)
+            {
+                var doc = browser.Doc(result.Hits[i].DocId);
+                var category = _categories.First(k => k.Value == int.Parse(doc.GetField("category").StringValue)).Key;
+                Console.WriteLine(string.Format("{2} - {0} ${1} by {3}", doc.GetField("name").StringValue, doc.GetField("price").StringValue, category, doc.GetField("author").StringValue));
+            }
+        }
     }
 
     public class NumberFieldFactory : TermListFactory
