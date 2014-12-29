@@ -1,11 +1,36 @@
-Bobo-Browse.Net
+BoboBrowse.Net
 ===============
 
-This Bobo-Browse.Net is build for Lucene.Net 3.x.
+Bobo-Browse is a powerful and extensible faceted search engine library built on top of Lucene.Net. It is a C# port of the [original Bobo-Browse project](https://github.com/senseidb/bobo) written in Java by John Wang.
 
-if you still use Lucene.Net 2.x,you can see this project BoboBrowse.Net(https://bobo.codeplex.com/).
+This project is based on earlier work from [here](https://bobo.codeplex.com/) and [here](https://github.com/zhengchun/Bobo-Browse.Net), but both of those versions are based on Bobo-Browse.Net 2.x. This is a complete port of [Bobo-Browse 3.1.0](https://github.com/senseidb/bobo/releases), which is fully compatible with [Lucene.Net 3.0.3](https://www.nuget.org/packages/Lucene.Net/).
+
+Features Not Implemented:
+
+1. bobo-contrib
+2. bobo-solr
+
+###Status###
+
+All tests are now passing. We now in an incubation period to evaluate stability.
+
+###Documentation###
+
+Read the documentation on the wiki: https://github.com/NightOwl888/BoboBrowse/wiki
+
+###License###
+
+[GNU General Public License](https://github.com/NightOwl888/BoboBrowse.Net/blob/master/LICENSE.md)
+
+###Install Via NuGet###
+
+    PM> Install-Package BoboBrowse.Net -Pre
+
+See [our page on the NuGet gallery](https://www.nuget.org/packages/BoboBrowse.Net/).
 
 ###Building the Source###
+
+You only need to build the source if you plan to customize the source, but these instructions are provided in case you need to do so.
 
 Prerequisites:
 
@@ -23,16 +48,16 @@ Set-ExecutionPolicy RemoteSigned
 To build the source, run the following command from the root directory of the Git project (the same directory that contains the .git folder):
 
 ```
-build.bat -v:1.1.1 -pv:1.1.1-alpha00006
+build.bat -v:3.1.0 -pv:3.1.0-alpha00002
 ```
 
 The -v parameter is the file version number, and the -pv parameter is the NuGet package version number. The package version number can contain a pre-release tag as shown in the example, but is not required.
 
 Once the source has been built, you can install Bobo-Browse.Net into your project using NuGet. In Visual Studio, open the Options dialog from the Tools menu. In the left pane, choose NuGet Package Manager > Package Sources. Click the "+" button. Name the package source "Local Bobo-Browse.Net Feed", and add a Windows file path to `[Bobo-Browse Project Directory]\packages\packagesource\`. You can then use either the UI or Package Manager Console to install Bobo-Browse.Net into your project by selecting the "Local Bobo-Browse.Net Feed" as the package source.
 
-###Performance###
+###Sample Usage###
 
-we recommend use a  **singleton pattern** to create one instance of BoboBrowser in the application and interval update  object in the background-thread.that can avoid frequency reload entity index file and reduce a memory usage.
+Here is a quick demonstration showing how easy it is to create a 
 
 ```cs
 public void TestSimpleBrowser()
@@ -44,13 +69,13 @@ public void TestSimpleBrowser()
 		Count = 10,
 		Offset = 0,
 		Query = query,
-		Sort = new Sort(new SortField("price", SortField.DOUBLE,false)).GetSort()
+		Sort = new Sort(new SortField("price", SortField.DOUBLE, false)).GetSort()
 	};
 
-	var faceHandlers = new FacetHandler[] { new SimpleFacetHandler("category") };
-	var browser = new BoboBrowser(BoboIndexReader.GetInstance(IndexReader.Open(_indexDir, true), faceHandlers));
-	var factSpec = new FacetSpec() { OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc, MinHitCount = 1 };
-	request.SetFacetSpec("category", factSpec);
+	var facetHandlers = new IFacetHandler[] { new SimpleFacetHandler("category") };
+	var browser = new BoboBrowser(BoboIndexReader.GetInstance(IndexReader.Open(_indexDir, true), facetHandlers));
+	var facetSpec = new FacetSpec() { OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc, MinHitCount = 1 };
+	request.SetFacetSpec("category", facetSpec);
 
 	var result = browser.Browse(request);
 	Console.WriteLine(string.Format("total hits:{0}", result.NumHits));
@@ -58,7 +83,7 @@ public void TestSimpleBrowser()
 	foreach (var facet in result.FacetMap["category"].GetFacets())
 	{
 		var category = _categories.First(k => k.Value == int.Parse(facet.Value.ToString()));
-		Console.WriteLine("{0}:({1})", category.Key, facet.HitCount);
+		Console.WriteLine("{0}:({1})", category.Key, facet.FacetValueHitCount);
 	}
 	Console.WriteLine("===========================");
 	for (var i = 0; i < result.Hits.Length; i++)
@@ -85,3 +110,7 @@ C# - Pro ASP.NET MVC 5 $27.49 by Adam Freeman
 AJAX - Professional ASP.NET 3.5 AJAX $33.29 by Bill Evjen
 C# - Designing Evolvable Web APIs with ASP.NET $33.34 by Pablo Cibraro
 ```
+
+###Demo###
+
+See the Car Demo in the source code for an ASP.NET MVC based example how Bobo-Browse.Net can be used to provide faceted drill-down search capability.
