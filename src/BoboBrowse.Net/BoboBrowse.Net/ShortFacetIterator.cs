@@ -10,7 +10,7 @@ namespace BoboBrowse.Net
     {
         public short _facet;
 
-        new public short Facet
+        new public virtual short Facet
         {
             get { return _facet; }
         }
