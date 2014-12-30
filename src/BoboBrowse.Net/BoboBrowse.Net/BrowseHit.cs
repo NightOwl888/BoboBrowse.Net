@@ -58,7 +58,7 @@ namespace BoboBrowse.Net
         /// <summary>
         /// Gets or sets the score
         /// </summary>
-        public float Score { get; set; }
+        public virtual float Score { get; set; }
 
         ///<summary>Get the field values </summary>
         ///<param name="field"> field name </param>
@@ -139,22 +139,22 @@ namespace BoboBrowse.Net
         /// <summary>
         /// Gets or sets the internal document id
         /// </summary>
-        public int DocId { get; set; }
+        public virtual int DocId { get; set; }
 
         /// <summary>
         /// Gets or sets the field values
         /// </summary>
-        public Dictionary<string, string[]> FieldValues { get; set; }
+        public virtual Dictionary<string, string[]> FieldValues { get; set; }
 
         /// <summary>
         /// Gets or sets the raw field value map
         /// </summary>
-        public Dictionary<string, object[]> RawFieldValues { get; set; }
+        public virtual Dictionary<string, object[]> RawFieldValues { get; set; }
 
         /// <summary>
         /// Gets or sets the stored fields
         /// </summary>
-        public Document StoredFields { get; set; }
+        public virtual Document StoredFields { get; set; }
 
 
         public string ToString(IDictionary<string, string[]> map)
