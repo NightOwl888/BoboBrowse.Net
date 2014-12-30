@@ -13,13 +13,13 @@ namespace BoboBrowse.Net.Facets.Attribute
     public class AttributesFacetCountCollector : DefaultFacetCountCollector
     {
         private readonly AttributesFacetHandler attributesFacetHandler;
-        public readonly BigNestedIntArray _array;
-        private int[] buffer;   
+        //public readonly BigNestedIntArray _array; // NOT USED
+        //private int[] buffer;    // NOT USED
         private IEnumerable<BrowseFacet> cachedFacets;
         private readonly int numFacetsPerKey;
         private readonly char separator;
-        private OpenBitSet excludes;
-        private OpenBitSet includes;
+        //private OpenBitSet excludes; // NOT USED
+        //private OpenBitSet includes; // NOT USED
         private readonly MultiValueFacetDataCache dataCache;
         private string[] values;
 
@@ -30,7 +30,7 @@ namespace BoboBrowse.Net.Facets.Attribute
             this.dataCache = dataCache;
             this.numFacetsPerKey = numFacetsPerKey;
             this.separator = separator;
-            _array = dataCache.NestedArray;
+            //_array = dataCache.NestedArray; // NOT USED
             if (browseSelection != null)
             {
                 values = browseSelection.Values;

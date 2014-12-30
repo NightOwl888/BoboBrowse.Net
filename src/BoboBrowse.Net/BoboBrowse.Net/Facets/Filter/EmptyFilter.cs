@@ -30,7 +30,7 @@ namespace BoboBrowse.Net.Facets.Filter
     
     public class EmptyFilter : RandomAccessFilter
     {
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
         private readonly static EmptyFilter instance = new EmptyFilter();
 
         private EmptyFilter()

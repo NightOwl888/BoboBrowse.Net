@@ -185,7 +185,7 @@ namespace LuceneExt.Impl
 
                     current_size++;
                 }
-                catch (IndexOutOfRangeException w)
+                catch
                 {
                     Console.Error.WriteLine("Error inserting DOC:" + docid);
 

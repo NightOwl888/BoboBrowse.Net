@@ -14,7 +14,7 @@ namespace BoboBrowse.Net.Facets
     /// </summary>
     public class DefaultFacetHandlerInitializerParam : FacetHandlerInitializerParam
     {
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
         private readonly IDictionary<string, bool[]> _boolMap;
         private readonly IDictionary<string, int[]> _intMap;
         private readonly IDictionary<string, long[]> _longMap;

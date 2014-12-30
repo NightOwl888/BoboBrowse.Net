@@ -266,14 +266,14 @@ namespace BoboBrowse.Net.Facets.Impl
                 {
                     if (termDocs != null)
                     {
-                        termDocs.Close();
+                        termDocs.Dispose();
                     }
                 }
                 finally
                 {
                     if (termEnum != null)
                     {
-                        termEnum.Close();
+                        termEnum.Dispose();
                     }
                 }
             }

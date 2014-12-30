@@ -10,11 +10,11 @@ namespace BoboBrowse.Net.Query
 
     public class ScoreAdjusterQuery : Query
     {
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
 
         private class ScoreAdjusterWeight : Weight
         {
-            private static long serialVersionUID = 1L;
+            //private static long serialVersionUID = 1L; // NOT USED
 
             Weight _innerWeight;
             private readonly ScoreAdjusterQuery _parent;

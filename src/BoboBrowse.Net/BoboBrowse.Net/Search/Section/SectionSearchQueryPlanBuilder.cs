@@ -13,7 +13,7 @@ namespace BoboBrowse.Net.Search.Section
         [Serializable]
         public class TranslationException : RuntimeException
         {
-            private static long serialVersionUID = 1L;
+            //private static long serialVersionUID = 1L; // NOT USED
 
             public TranslationException(String message)
                 : base(message)

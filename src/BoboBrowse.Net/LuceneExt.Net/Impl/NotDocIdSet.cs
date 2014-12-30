@@ -40,7 +40,7 @@ namespace LuceneExt.Impl
                 {
                     if ((innerDocid = it1.NextDoc()) == DocIdSetIterator.NO_MORE_DOCS) it1 = null;
                 }
-                catch (IOException e)
+                catch
                 {                 
                 }
             }
@@ -122,7 +122,7 @@ namespace LuceneExt.Impl
 
                 }
             }
-            catch (IOException e)
+            catch
             {
                 return -1;
             }

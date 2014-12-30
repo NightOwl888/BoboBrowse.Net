@@ -7,7 +7,7 @@ namespace BoboBrowse.Net.Search.Section
 
     public class IntMetaDataQuery : MetaDataQuery
     {
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
   
         private Validator _validator;
 
@@ -18,7 +18,7 @@ namespace BoboBrowse.Net.Search.Section
 
         public class SimpleValueValidator : Validator
         {
-            private static long serialVersionUID = 1L;
+            //private static long serialVersionUID = 1L; // NOT USED
 
             private readonly int _val;
 
@@ -40,7 +40,7 @@ namespace BoboBrowse.Net.Search.Section
 
         public class SimpleRangeValidator : Validator
         {
-            private static long serialVersionUID = 1L;
+            //private static long serialVersionUID = 1L; // NOT USED
 
             private readonly int _lower;
             private readonly int _upper;

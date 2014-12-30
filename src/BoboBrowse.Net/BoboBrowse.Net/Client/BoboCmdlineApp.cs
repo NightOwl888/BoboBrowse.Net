@@ -179,22 +179,28 @@
 						    int maxCount = 5;
 						    bool expand = false;
 						    FacetSpec.FacetSortSpec sort = FacetSpec.FacetSortSpec.OrderHitsDesc;
-						    try{
+						    try
+                            {
 						   	    minHitCount = int.Parse(valParts[0]);
 						    }
-						    catch(Exception e){
+						    catch
+                            {
 							    Console.WriteLine("default min hitcount = 1 is applied.");
 						    }
-						    try{
+						    try
+                            {
 							    maxCount = int.Parse(valParts[1]);
 						    }
-						    catch(Exception e){
+						    catch
+                            {
 							    Console.WriteLine("default maxCount = 5 is applied.");
 						    }
-						    try{
+						    try
+                            {
 							    expand = bool.Parse(valParts[2]);
 						    }
-						    catch(Exception e){
+						    catch
+                            {
 							    Console.WriteLine("default expand=false is applied.");
 						    }
 

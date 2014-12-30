@@ -13,7 +13,7 @@ namespace BoboBrowse.Net.Facets.Filter
 
     public class BitSetFilter : RandomAccessFilter
     {
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
     
         protected readonly IFacetDataCacheBuilder facetDataCacheBuilder;
         protected readonly IBitSetBuilder bitSetBuilder;

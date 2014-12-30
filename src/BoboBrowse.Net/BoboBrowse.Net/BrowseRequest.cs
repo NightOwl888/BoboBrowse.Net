@@ -41,7 +41,7 @@ namespace BoboBrowse.Net
     [Serializable]
     public class BrowseRequest
     {
-        private static long serialVersionUID = 3172092238778154933L;
+        //private static long serialVersionUID = 3172092238778154933L; // NOT USED
 
         /// <summary>
         /// The transaction ID

@@ -194,7 +194,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 if ((index = _predefinedRanges.IndexOf(value)) != -1)
                 {
                     BrowseFacet choice = new BrowseFacet();
-                    choice.HitCount = _count[index];
+                    choice.FacetValueHitCount = _count[index];
                     choice.Value = value;
                     return choice;
                 }
@@ -251,7 +251,7 @@ namespace BoboBrowse.Net.Facets.Impl
                         if (_count[countIndex] >= minHitCount)
                         {
                             BrowseFacet choice = new BrowseFacet();
-                            choice.HitCount = _count[countIndex];
+                            choice.FacetValueHitCount = _count[countIndex];
                             choice.Value = value;
                             facets.Add(choice);
                         }

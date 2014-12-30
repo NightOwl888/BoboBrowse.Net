@@ -16,7 +16,7 @@ namespace BoboBrowse.Net.Facets.Data
 
     public class MultiValueWithWeightFacetDataCache : MultiValueFacetDataCache
     {
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
 
         public readonly BigNestedIntArray _weightArray;
 
@@ -140,14 +140,14 @@ namespace BoboBrowse.Net.Facets.Data
                 {
                     if (tdoc != null)
                     {
-                        tdoc.Close();
+                        tdoc.Dispose();
                     }
                 }
                 finally
                 {
                     if (tenum != null)
                     {
-                        tenum.Close();
+                        tenum.Dispose();
                     }
                 }
             }

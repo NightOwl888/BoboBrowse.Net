@@ -60,7 +60,7 @@ namespace BoboBrowse.Net
             }
             catch (Exception e)
             {
-                Assert.Fail("There should NOT be an exception and the message contains ascending order");
+                Assert.False(e.Message.Contains("ascending order"), "There should NOT be an exception and the message contains ascending order");
                 return;
             }
             tsl1.Seal();
@@ -81,7 +81,7 @@ namespace BoboBrowse.Net
             }
             catch (Exception e)
             {
-                Assert.Fail("There should NOT be an exception and the message contains ascending order");
+                Assert.False(e.Message.Contains("ascending order"), "There should NOT be an exception and the message contains ascending order");
                 return;
             }
             tsl1.Seal();

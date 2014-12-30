@@ -37,7 +37,7 @@ namespace BoboBrowse.Net.Facets.Data
     
     public class MultiValueFacetDataCache : FacetDataCache
     {
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
         private static ILog logger = LogManager.GetLogger<MultiValueFacetDataCache>();
 
         public readonly BigNestedIntArray _nestedArray;
@@ -161,14 +161,14 @@ namespace BoboBrowse.Net.Facets.Data
                 {
                     if (tdoc != null)
                     {
-                        tdoc.Close();
+                        tdoc.Dispose();
                     }
                 }
                 finally
                 {
                     if (tenum != null)
                     {
-                        tenum.Close();
+                        tenum.Dispose();
                     }
                 }
             }
@@ -314,14 +314,14 @@ namespace BoboBrowse.Net.Facets.Data
                 {
                     if (tdoc != null)
                     {
-                        tdoc.Close();
+                        tdoc.Dispose();
                     }
                 }
                 finally
                 {
                     if (tenum != null)
                     {
-                        tenum.Close();
+                        tenum.Dispose();
                     }
                 }
             }
@@ -438,7 +438,7 @@ namespace BoboBrowse.Net.Facets.Data
                 finally
                 {
                     if (tp != null)
-                        tp.Close();
+                        tp.Dispose();
                 }
             }
 

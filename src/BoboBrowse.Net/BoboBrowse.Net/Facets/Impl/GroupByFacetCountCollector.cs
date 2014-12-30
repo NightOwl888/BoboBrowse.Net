@@ -6,7 +6,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
     public abstract class GroupByFacetCountCollector : DefaultFacetCountCollector
     {
-        private int _totalGroups;
+        //private int _totalGroups; // NOT USED
 
         public GroupByFacetCountCollector(string name,
                                     FacetDataCache dataCache,

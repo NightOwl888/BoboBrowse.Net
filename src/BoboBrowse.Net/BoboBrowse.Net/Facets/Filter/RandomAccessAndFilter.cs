@@ -34,7 +34,7 @@ namespace BoboBrowse.Net.Facets.Filter
 
     public class RandomAccessAndFilter : RandomAccessFilter
     {
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
 
         protected IEnumerable<RandomAccessFilter> _filters;
 

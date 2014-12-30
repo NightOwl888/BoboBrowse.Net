@@ -42,9 +42,9 @@ namespace BoboBrowse.Net.Search.Section
         [TearDown]
         public void Dispose()
         {
-            searcher.Close();
-            writer.Close();
-            directory.Close();
+            searcher.Dispose();
+            writer.Dispose();
+            directory.Dispose();
             analyzer = null;
         }
 

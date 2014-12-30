@@ -93,7 +93,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
             finally
             {
-                termDocs.Close();
+                termDocs.Dispose();
             }
             _facetDataFetcher.Cleanup(reader);
 

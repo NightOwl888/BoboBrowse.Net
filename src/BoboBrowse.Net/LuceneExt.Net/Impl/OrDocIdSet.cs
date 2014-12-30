@@ -74,7 +74,7 @@ namespace LuceneExt.Impl
 
                 }
             }
-            catch (IOException e)
+            catch
             {
                 return -1;
             }
@@ -93,7 +93,7 @@ namespace LuceneExt.Impl
                     while (it.NextDoc() != DocIdSetIterator.NO_MORE_DOCS)
                         _size++;
                 }
-                catch (IOException e)
+                catch
                 {                    
                     _size = INVALID;
                 }

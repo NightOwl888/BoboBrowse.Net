@@ -8,7 +8,7 @@ namespace BoboBrowse.Net.Util
     
     public class BigShortArray : BigSegmentedArray
     {
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
 
         private short[][] _array;
 

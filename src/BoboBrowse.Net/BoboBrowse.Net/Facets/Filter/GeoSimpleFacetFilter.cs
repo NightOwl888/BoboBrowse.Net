@@ -16,7 +16,7 @@ namespace BoboBrowse.Net.Facets.Filter
     /// </summary>
     public class GeoSimpleFacetFilter : RandomAccessFilter
     {
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
 	    private readonly FacetHandler<FacetDataCache> _latFacetHandler;
 	    private readonly FacetHandler<FacetDataCache> _longFacetHandler;
 	    private readonly string _latRangeString;
@@ -33,7 +33,7 @@ namespace BoboBrowse.Net.Facets.Filter
         private sealed class GeoSimpleDocIdSetIterator : DocIdSetIterator
         {
             private int _doc = -1;
-		    private int _totalFreq;
+            //private int _totalFreq; // NOT USED
 		    private int _minID = int.MaxValue;
 		    private int _maxID = -1;
 		    private readonly int _latStart;
@@ -45,7 +45,7 @@ namespace BoboBrowse.Net.Facets.Filter
 
             internal GeoSimpleDocIdSetIterator(int latStart, int latEnd, int longStart, int longEnd, FacetDataCache latDataCache, FacetDataCache longDataCache)
             {
-                _totalFreq = 0;
+                //_totalFreq = 0; // NOT USED
                 _latStart = latStart;
                 _longStart = longStart;
                 _latEnd = latEnd;

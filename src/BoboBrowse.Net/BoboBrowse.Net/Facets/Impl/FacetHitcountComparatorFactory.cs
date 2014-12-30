@@ -55,7 +55,7 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             public int Compare(BrowseFacet f1, BrowseFacet f2)
             {
-                int val = f2.HitCount - f1.HitCount;
+                int val = f2.FacetValueHitCount - f1.FacetValueHitCount;
                 if (val == 0)
                 {
                     val = string.CompareOrdinal(f1.Value, f2.Value);

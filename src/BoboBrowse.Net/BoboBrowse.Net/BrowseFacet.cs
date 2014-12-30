@@ -33,7 +33,7 @@ namespace BoboBrowse.Net
     [Serializable]
     public class BrowseFacet
     {
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
 
         private string _value;
         private int _hitcount;

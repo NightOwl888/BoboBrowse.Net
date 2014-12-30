@@ -40,7 +40,7 @@ namespace BoboBrowse.Net
             ValueOperationAnd
         }
 
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
 
         private readonly List<string> values;
         private readonly List<string> notValues;

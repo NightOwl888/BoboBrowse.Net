@@ -58,7 +58,7 @@ namespace BoboBrowse.Net
         {
             BrowseFacet facet = _facetMap.Get(value);
             if (facet != null)
-                return facet.HitCount;
+                return facet.FacetValueHitCount;
             return 0;
         }
 

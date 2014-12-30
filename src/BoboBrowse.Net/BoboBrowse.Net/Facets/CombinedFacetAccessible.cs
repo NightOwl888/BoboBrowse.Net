@@ -135,14 +135,14 @@ namespace BoboBrowse.Net.Facets
                     if (facet != null)
                     {
                         BrowseFacet rootFacet = (BrowseFacet)queue.Top();
-                        minHits = rootFacet.HitCount + 1;
+                        minHits = rootFacet.FacetValueHitCount + 1;
                         // facet count less than top of min heap, it will never be added 
                         while (!string.IsNullOrEmpty((facet = iter.Next(minHits))))
                         {
                             rootFacet.Value = facet;
-                            rootFacet.HitCount = iter.Count;
+                            rootFacet.FacetValueHitCount = iter.Count;
                             rootFacet = (BrowseFacet)queue.UpdateTop();
-                            minHits = rootFacet.HitCount + 1;
+                            minHits = rootFacet.FacetValueHitCount + 1;
                         }
                     }
                     // at this point, queue contains top maxCnt facets that have hitcount >= minHits
@@ -180,7 +180,7 @@ namespace BoboBrowse.Net.Facets
                         while (!string.IsNullOrEmpty((facet = iter.Next(minHits))))
                         {
                             // check with the top of min heap
-                            browseFacet.HitCount = iter.Count;
+                            browseFacet.FacetValueHitCount = iter.Count;
                             browseFacet.Value = facet;
                             browseFacet = (BrowseFacet)queue.InsertWithOverflow(browseFacet);
                         }

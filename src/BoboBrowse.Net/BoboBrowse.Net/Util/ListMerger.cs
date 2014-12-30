@@ -247,11 +247,11 @@ namespace BoboBrowse.Net.Util
                             BrowseFacet oldValue = count[val];
                             if (oldValue == null)
                             {
-                                count.Add(val, new BrowseFacet(val, facet.HitCount));
+                                count.Add(val, new BrowseFacet(val, facet.FacetValueHitCount));
                             }
                             else
                             {
-                                oldValue.HitCount = oldValue.HitCount + facet.HitCount;
+                                oldValue.FacetValueHitCount = oldValue.FacetValueHitCount + facet.FacetValueHitCount;
                             }
                         }
                     }

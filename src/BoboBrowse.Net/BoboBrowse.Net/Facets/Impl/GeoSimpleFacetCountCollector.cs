@@ -221,7 +221,7 @@ namespace BoboBrowse.Net.Facets.Impl
                         if (rangeCounts[i] >= minCount)
                         {
                             BrowseFacet choice = new BrowseFacet();
-                            choice.HitCount = rangeCounts[i];
+                            choice.FacetValueHitCount = rangeCounts[i];
                             choice.Value = _predefinedRanges.Get(i);
                             list.Add(choice);
                         }

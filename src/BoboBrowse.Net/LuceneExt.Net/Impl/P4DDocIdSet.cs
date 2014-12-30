@@ -360,7 +360,7 @@ namespace LuceneExt.Impl
                         Console.Write(localBase + ",");
                     }
                 }
-                catch (Exception e)
+                catch
                 {                    
                     int localBase = @base;
                     int[] testint = localCompressedSet.Decompress(test);

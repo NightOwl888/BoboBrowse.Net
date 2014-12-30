@@ -7,7 +7,7 @@ namespace BoboBrowse.Net.Util
     
     public class BoundedPriorityQueue<E> : IntervalHeap<E>
     {
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
 
         private readonly int _maxSize;
         public BoundedPriorityQueue(int maxSize)

@@ -512,7 +512,7 @@ namespace BoboBrowse.Net
 
         private class BoboSubBrowserFieldSelector : Lucene.Net.Documents.FieldSelector
         {
-            private static long serialVersionUID = 1L;
+            //private static long serialVersionUID = 1L; // NOT USED
             private readonly string _field;
 
             public BoboSubBrowserFieldSelector(string fieldName)

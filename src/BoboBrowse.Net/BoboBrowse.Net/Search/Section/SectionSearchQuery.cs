@@ -7,13 +7,13 @@ namespace BoboBrowse.Net.Search.Section
 
     public class SectionSearchQuery : Query
     {
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
   
         private Query _query;
 
         private class SectionSearchWeight : Weight
         {
-            private static long serialVersionUID = 1L;
+            //private static long serialVersionUID = 1L; // NOT USED
 
             float _weight;
             Similarity _similarity;
@@ -77,7 +77,7 @@ namespace BoboBrowse.Net.Search.Section
         {
             private int _curDoc = -1;
             private float _curScr;
-            private bool _more = true; // more hits
+            //private bool _more = true; // more hits // NOT USED
             private SectionSearchQueryPlan _plan;
 
             public SectionSearchScorer(Query query, Similarity similarity, float score, IndexReader reader)
@@ -90,12 +90,12 @@ namespace BoboBrowse.Net.Search.Section
                 if (_plan != null)
                 {
                     _curDoc = -1;
-                    _more = true;
+                    //_more = true; // NOT USED
                 }
                 else
                 {
                     _curDoc = DocIdSetIterator.NO_MORE_DOCS;
-                    _more = false; ;
+                    //_more = false;  // NOT USED
                 }
             }
 

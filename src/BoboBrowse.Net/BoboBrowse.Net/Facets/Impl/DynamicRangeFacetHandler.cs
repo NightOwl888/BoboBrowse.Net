@@ -121,7 +121,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 BrowseFacet facet = base.GetFacet(rangeString);
                 if (facet != null)
                 {
-                    return new BrowseFacet(value, facet.HitCount);
+                    return new BrowseFacet(value, facet.FacetValueHitCount);
                 }
                 else
                 {
@@ -147,7 +147,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     string rangeString = parent.GetValueFromRangeString(val);
                     if (rangeString != null)
                     {
-                        BrowseFacet convertedFacet = new BrowseFacet(rangeString, facet.HitCount);
+                        BrowseFacet convertedFacet = new BrowseFacet(rangeString, facet.FacetValueHitCount);
                         retList.Add(convertedFacet);
                     }
                 }

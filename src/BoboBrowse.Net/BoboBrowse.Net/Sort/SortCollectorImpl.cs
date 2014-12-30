@@ -86,12 +86,11 @@ namespace BoboBrowse.Net.Sort
         //private readonly bool _collectDocIdCache;
         private CombinedFacetAccessible[] _groupAccessibles;
         private readonly List<IFacetAccessible>[] _facetAccessibleLists;
-        //private readonly Int2ObjectOpenHashMap<ScoreDoc> _currentValueDocMaps;
         private readonly IDictionary<int, ScoreDoc> _currentValueDocMaps;
 
         protected class MyScoreDoc : ScoreDoc
         {
-            private static long serialVersionUID = 1L;
+            //private static long serialVersionUID = 1L; // NOT USED
 
             public DocIDPriorityQueue queue;
             public BoboIndexReader reader;
@@ -124,10 +123,10 @@ namespace BoboBrowse.Net.Sort
         // NightOwl888: The _collectDocIdCache setting seems to put arrays into
         // memory, but then do nothing with the arrays. Seems wasteful and unnecessary.
         //private CollectorContext _currentContext;
-        private int[] _currentDocIdArray;
-        private float[] _currentScoreArray;
-        private int _docIdArrayCursor = 0;
-        private int _docIdCacheCapacity = 0;
+        //private int[] _currentDocIdArray; // NOT USED
+        //private float[] _currentScoreArray; // NOT USED
+        //private int _docIdArrayCursor = 0; // NOT USED
+        //private int _docIdCacheCapacity = 0; // NOT USED
         private IEnumerable<string> _termVectorsToFetch;
 
         public SortCollectorImpl(

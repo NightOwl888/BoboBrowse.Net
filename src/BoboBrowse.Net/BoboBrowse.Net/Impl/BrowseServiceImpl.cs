@@ -83,7 +83,7 @@ namespace BoboBrowse.Net.Impl
             {
                 try
                 {
-                    ir.Close();
+                    ir.Dispose();
                 }
                 catch
                 {

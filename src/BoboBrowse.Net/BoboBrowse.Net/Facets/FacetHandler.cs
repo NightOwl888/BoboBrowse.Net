@@ -69,7 +69,7 @@ namespace BoboBrowse.Net.Facets
     [Serializable]
     public class FacetDataNone
     {
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
         public static FacetDataNone instance = new FacetDataNone();
         private FacetDataNone() { }
     }

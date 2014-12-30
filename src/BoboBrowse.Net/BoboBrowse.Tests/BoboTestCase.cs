@@ -414,15 +414,10 @@ namespace BoboBrowse.Net
             TestDataDigester testDigester = new TestDataDigester(this._fconf, data);
             BoboIndexer indexer = new BoboIndexer(testDigester, idxDir);
             indexer.Index();
-            IndexReader r = IndexReader.Open(idxDir, false);
-            try
+            using (IndexReader r = IndexReader.Open(idxDir, false))
             {
                 r.DeleteDocument(r.MaxDoc - 1);
                 //r.Flush();
-            }
-            finally
-            {
-                r.Close();
             }
 
             return idxDir;
@@ -609,7 +604,7 @@ namespace BoboBrowse.Net
                             if (!ids[i].Equals(id)) return false;
                         }
                     }
-                    catch (Exception e)
+                    catch
                     {
                         return false;
                     }
@@ -667,7 +662,7 @@ namespace BoboBrowse.Net
                             if (!ids[i].Equals(id)) return false;
                         }
                     }
-                    catch (Exception e)
+                    catch
                     {
                         return false;
                     }
@@ -1280,7 +1275,7 @@ namespace BoboBrowse.Net
         {
             public int Compare(BrowseFacet f1, BrowseFacet f2)
             {
-                int val = f2.HitCount - f1.HitCount;
+                int val = f2.FacetValueHitCount - f1.FacetValueHitCount;
                 if (val == 0)
                 {
                     val = string.CompareOrdinal(f1.Value, f2.Value);
@@ -1466,8 +1461,7 @@ namespace BoboBrowse.Net
         [Test]
         public void TestLuceneSort()
         {
-            IndexReader srcReader = IndexReader.Open(_indexDir, true);
-            try
+            using (IndexReader srcReader = IndexReader.Open(_indexDir, true))
             {
                 var facetHandlers = new List<IFacetHandler>();
                 facetHandlers.Add(new SimpleFacetHandler("id"));
@@ -1482,14 +1476,6 @@ namespace BoboBrowse.Net
 
 
                 DoTest(browser, browseRequest, 7, null, new string[] { "1", "3", "5", "2", "4", "7", "6" });
-
-            }
-            finally
-            {
-                if (srcReader != null)
-                {
-                    srcReader.Close();
-                }
             }
         }
 
@@ -1679,7 +1665,7 @@ namespace BoboBrowse.Net
 
             public class CustomSortDocComparator : DocComparator
             {
-                private static long serialVersionUID = 1L;
+                //private static long serialVersionUID = 1L; // NOT USED
 
                 public override int Compare(ScoreDoc doc1, ScoreDoc doc2)
                 {
@@ -2676,7 +2662,7 @@ namespace BoboBrowse.Net
                 IndexWriter subWriter = new IndexWriter(tmpDir, new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_CURRENT), IndexWriter.MaxFieldLength.UNLIMITED);
                 subWriter.AddDocument(doc);
                 subWriter.Optimize();
-                subWriter.Close();
+                subWriter.Dispose();
                 writer.AddIndexesNoOptimize(new Lucene.Net.Store.Directory[] { tmpDir });
                 writer.Commit();
                 reader = (BoboIndexReader)boboReader.Reopen();
@@ -2692,11 +2678,11 @@ namespace BoboBrowse.Net
             int numDocs2 = newReader.NumDocs();
             if (boboReader != newReader)
             {
-                boboReader.Close();
+                boboReader.Dispose();
                 boboReader = newReader;
             }
             Assert.AreEqual(numDocs - 1, numDocs2);
-            boboReader.Close();
+            boboReader.Dispose();
         }
 
         [Test]

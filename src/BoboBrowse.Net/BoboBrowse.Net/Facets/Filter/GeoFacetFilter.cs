@@ -15,7 +15,7 @@ namespace BoboBrowse.Net.Facets.Filter
     /// </summary>
     public class GeoFacetFilter : RandomAccessFilter
     {
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
 	    private readonly FacetHandler<GeoFacetHandler.GeoFacetData> _handler;
 	    private readonly float _lat;
 	    private readonly float _lon;

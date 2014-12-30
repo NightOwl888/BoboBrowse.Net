@@ -7,7 +7,7 @@ namespace BoboBrowse.Net
 
     public class BoboCustomSortField : SortField
     {
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
 
 	    private readonly DocComparatorSource _factory;
 

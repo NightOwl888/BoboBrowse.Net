@@ -17,7 +17,7 @@ namespace BoboBrowse.Net.Query.Scoring
 
     public class FacetTermQuery : Query
     {
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
 
         private static ILog logger = LogManager.GetLogger<FacetTermQuery>();
 
@@ -110,7 +110,7 @@ namespace BoboBrowse.Net.Query.Scoring
 
         private class FacetTermWeight : Weight
         {
-            private static long serialVersionUID = 1L;
+            //private static long serialVersionUID = 1L; // NOT USED
             internal Similarity _similarity;
             private float value;
             private FacetTermQuery parent;

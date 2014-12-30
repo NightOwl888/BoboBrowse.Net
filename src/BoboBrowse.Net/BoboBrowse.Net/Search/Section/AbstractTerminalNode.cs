@@ -40,7 +40,7 @@ namespace BoboBrowse.Net.Search.Section
             else
             {
                 _curDoc = DocIdSetIterator.NO_MORE_DOCS;
-                _tp.Close();
+                _tp.Dispose();
                 return _curDoc;
             }
         }

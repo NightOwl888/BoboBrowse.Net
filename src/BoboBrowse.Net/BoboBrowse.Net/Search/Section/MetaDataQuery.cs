@@ -6,7 +6,7 @@ namespace BoboBrowse.Net.Search.Section
 
     public abstract class MetaDataQuery : Query
     {
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
 
         protected Term _term;
 

@@ -33,7 +33,7 @@ namespace BoboBrowse.Net.Facets.Filter
 
     public class AndFilter : Filter
     {
-        private static long SerialVersionUID = 1L;
+        //private static long SerialVersionUID = 1L; // NOT USED
 
         private readonly IEnumerable<Filter> _filters;
 

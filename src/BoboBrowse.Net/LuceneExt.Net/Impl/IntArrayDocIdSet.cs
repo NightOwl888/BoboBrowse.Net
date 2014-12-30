@@ -138,7 +138,7 @@ namespace LuceneExt.Impl
                 if (docid == val)
                     return dcit.GetCursor();
             }
-            catch (IOException e)
+            catch
             {
             }
             return -1;

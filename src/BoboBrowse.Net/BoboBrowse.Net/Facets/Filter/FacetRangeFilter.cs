@@ -35,7 +35,7 @@ namespace BoboBrowse.Net.Facets.Filter
 
     public sealed class FacetRangeFilter : RandomAccessFilter
     {
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
 
         private readonly IFacetHandler _facetHandler;
         private readonly string _rangeString;

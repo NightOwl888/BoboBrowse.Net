@@ -138,7 +138,7 @@ namespace BoboBrowse.Net
                     sinfos.Read(_dir);
                     return sinfos.Version;
                 }
-                catch (Exception e)
+                catch
                 {
                     return 0L;
                 }

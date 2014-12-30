@@ -32,7 +32,7 @@ namespace BoboBrowse.Net
     [Serializable]
     public class FacetSpec : ICloneable
     {
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
 
         ///<summary>Sort options for facets </summary>
         public enum FacetSortSpec

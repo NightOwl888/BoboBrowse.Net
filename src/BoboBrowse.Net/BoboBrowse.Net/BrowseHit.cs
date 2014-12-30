@@ -36,12 +36,12 @@ namespace BoboBrowse.Net
     [Serializable]
     public class BrowseHit
     {
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
 
         [Serializable]
         public class TermFrequencyVector
         {
-            private static long serialVersionUID = 1L;
+            //private static long serialVersionUID = 1L; // NOT USED
             public readonly string[] terms;
             public readonly int[] freqs;
 

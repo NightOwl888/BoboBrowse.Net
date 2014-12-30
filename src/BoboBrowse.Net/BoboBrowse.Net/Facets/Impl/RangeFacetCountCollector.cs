@@ -136,11 +136,11 @@ namespace BoboBrowse.Net.Facets.Impl
             int i = 0;
             foreach (BrowseFacet facet in facets)
             {
-                int hit = facet.HitCount;
+                int hit = facet.FacetValueHitCount;
                 string val = facet.Value;
                 RangeFacet rangeFacet = new RangeFacet();
                 rangeFacet.SetValues(val, val);
-                rangeFacet.HitCount = hit;
+                rangeFacet.FacetValueHitCount = hit;
                 facets[i++] = rangeFacet;
             }
         }
@@ -163,12 +163,12 @@ namespace BoboBrowse.Net.Facets.Impl
                         string val1 = rChoices[i].Lower;
                         string val2 = rChoices[i + 1].Upper;
                         rangeChoice.SetValues(val1, val2);
-                        rangeChoice.HitCount = choices[i].HitCount + choices[i + 1].HitCount;
+                        rangeChoice.FacetValueHitCount = choices[i].FacetValueHitCount + choices[i + 1].FacetValueHitCount;
                     }
                     else
                     {
                         rangeChoice.SetValues(choices[i].Value, choices[i + 1].Value);
-                        rangeChoice.HitCount = choices[i].HitCount + choices[i + 1].HitCount;
+                        rangeChoice.FacetValueHitCount = choices[i].FacetValueHitCount + choices[i + 1].FacetValueHitCount;
                     }
 
                 }
@@ -183,7 +183,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     {
                         rangeChoice.SetValues(choices[i].Value, choices[i].Value);
                     }
-                    rangeChoice.HitCount = choices[i].HitCount;
+                    rangeChoice.FacetValueHitCount = choices[i].FacetValueHitCount;
                 }
                 list.Add(rangeChoice);
             }
@@ -346,7 +346,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         private class RangeFacet : BrowseFacet
         {
-            private static long serialVersionUID = 1L;
+            //private static long serialVersionUID = 1L; // NOT USED
 
             private string _lower;
             private string _upper;

@@ -5,7 +5,7 @@ namespace BoboBrowse.Net.Util
 
     public class BigFloatArray
     {
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
 
         private float[][] _array;
         private int _numrows;

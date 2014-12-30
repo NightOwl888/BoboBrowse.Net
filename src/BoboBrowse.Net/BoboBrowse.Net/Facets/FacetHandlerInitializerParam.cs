@@ -77,7 +77,7 @@ namespace BoboBrowse.Net.Facets
             }
         }
 
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
 
         /// <summary>
         /// The transaction ID

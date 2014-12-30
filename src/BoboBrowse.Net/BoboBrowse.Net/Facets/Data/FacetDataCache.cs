@@ -39,7 +39,7 @@ namespace BoboBrowse.Net.Facets.Data
     {
         private static ILog logger = LogManager.GetLogger<FacetDataCache>();
 
-        private readonly static long serialVersionUID = 1L;
+        //private readonly static long serialVersionUID = 1L; // NOT USED
 
         protected BigSegmentedArray orderArray;
         protected ITermValueList valArray;
@@ -119,10 +119,8 @@ namespace BoboBrowse.Net.Facets.Data
         protected int GetNegativeValueCount(IndexReader reader, string field)
         {
             int ret = 0;
-            TermEnum termEnum = null;
-            try
+            using (TermEnum termEnum = reader.Terms(new Term(field, "")))
             {
-                termEnum = reader.Terms(new Term(field, ""));
                 do
                 {
                     Term term = termEnum.Term;
@@ -134,10 +132,6 @@ namespace BoboBrowse.Net.Facets.Data
                     }
                     ret++;
                 } while (termEnum.Next());
-            }
-            finally
-            {
-                termEnum.Close();
             }
             return ret;
         }
@@ -230,8 +224,8 @@ namespace BoboBrowse.Net.Facets.Data
             }
             finally
             {
-                termDocs.Close();
-                termEnum.Close();
+                termDocs.Dispose();
+                termEnum.Dispose();
             }
             list.Seal();
             this.valArray = list;

@@ -6,7 +6,7 @@ namespace BoboBrowse.Net
     [Serializable]
     public class BrowseException : Exception
     {
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
 
         public BrowseException(string msg)
             : this(msg, null)

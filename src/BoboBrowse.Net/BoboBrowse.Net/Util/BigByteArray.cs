@@ -19,7 +19,7 @@ namespace BoboBrowse.Net.Util
     [Serializable]
     public class BigByteArray : BigSegmentedArray
     {
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
 
         private sbyte[][] _array;
 

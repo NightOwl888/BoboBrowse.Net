@@ -21,7 +21,7 @@ namespace BoboBrowse.Net.Facets.Filter
 
     public class AdaptiveFacetFilter : RandomAccessFilter
     {
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
 
         private static ILog logger = LogManager.GetLogger<AdaptiveFacetFilter>();
 
@@ -152,7 +152,7 @@ namespace BoboBrowse.Net.Facets.Filter
                         }
                         else
                         {
-                            _td.Close();
+                            _td.Dispose();
                             _doc = DocIdSetIterator.NO_MORE_DOCS;
                         }
                         return _doc;
@@ -171,7 +171,7 @@ namespace BoboBrowse.Net.Facets.Filter
                         }
                         else
                         {
-                            _td.Close();
+                            _td.Dispose();
                             _doc = DocIdSetIterator.NO_MORE_DOCS;
                         }
                         return _doc;

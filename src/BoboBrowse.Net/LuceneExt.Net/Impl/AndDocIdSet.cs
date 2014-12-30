@@ -182,7 +182,7 @@ namespace LuceneExt.Impl
 
                 }
             }
-            catch (IOException e)
+            catch
             {
                 return -1;
             }
@@ -201,7 +201,7 @@ namespace LuceneExt.Impl
                 else
                     return false;
             }
-            catch (IOException e)
+            catch
             {
                 return false;
             }

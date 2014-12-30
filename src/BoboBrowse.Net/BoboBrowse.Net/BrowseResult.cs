@@ -35,7 +35,7 @@ namespace BoboBrowse.Net
     [Serializable]
     public class BrowseResult : IDisposable
     {
-        private static long serialVersionUID = -8620935391852879446L;
+        //private static long serialVersionUID = -8620935391852879446L; // NOT USED
 
         /// <summary>
         /// The transaction ID
@@ -51,16 +51,11 @@ namespace BoboBrowse.Net
             set { tid = value; }
         }
 
-        private int numHits;
-	    private int numGroups;
-	    private int totalDocs;
-
         [NonSerialized]
         private SortCollector _sortCollector;
         //private int totalGroups;
 	    private IDictionary<string, IFacetAccessible> _facetMap;
 	    private BrowseHit[] hits;
-	    private long time;
         private IList<string> errors = new List<string>();
 	    private static BrowseHit[] NO_HITS = new BrowseHit[0];
 

@@ -143,7 +143,7 @@ namespace BoboBrowse.Tests
             foreach (var facet in result.FacetMap["category"].GetFacets())
             {
                 var category = _categories.First(k => k.Value == int.Parse(facet.Value.ToString()));
-                Console.WriteLine("{0}:({1})", category.Key, facet.HitCount);
+                Console.WriteLine("{0}:({1})", category.Key, facet.FacetValueHitCount);
             }
             Console.WriteLine("===========================");
             for (var i = 0; i < result.Hits.Length; i++)

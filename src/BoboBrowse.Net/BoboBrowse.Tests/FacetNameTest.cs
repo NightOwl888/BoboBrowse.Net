@@ -172,37 +172,20 @@ namespace BoboBrowse.Tests
             br.SetFacetSpec("id", spec);
             br.SetFacetSpec("make", spec);
 
-            BrowseResult result = null;
-            BoboBrowser boboBrowser = null;
             int expectedHitNum = 3;
-            try
-            {
-                Directory ramIndexDir = CreateIndex();
-                IndexReader srcReader = IndexReader.Open(ramIndexDir, true);
-                boboBrowser = new BoboBrowser(BoboIndexReader.GetInstance(srcReader, _facetHandlers, null));
-                result = boboBrowser.Browse(br);
 
-                Assert.AreEqual(expectedHitNum, result.NumHits);
-            }
-            catch (BrowseException e)
+            Directory ramIndexDir = CreateIndex();
+            using (IndexReader srcReader = IndexReader.Open(ramIndexDir, true))
             {
-                Assert.Fail(e.Message);
-            }
-            catch (System.IO.IOException ioe)
-            {
-                Assert.Fail(ioe.Message);
-            }
-            finally
-            {
-                if (boboBrowser != null)
+                using (BoboIndexReader boboReader = BoboIndexReader.GetInstance(srcReader, _facetHandlers, null))
                 {
-                    try
+                    using (BoboBrowser boboBrowser = new BoboBrowser(boboReader))
                     {
-                        boboBrowser.Close();
-                    }
-                    catch (System.IO.IOException e)
-                    {
-                        Assert.Fail(e.Message);
+                        using (BrowseResult result = boboBrowser.Browse(br))
+                        {
+
+                            Assert.AreEqual(expectedHitNum, result.NumHits);
+                        }
                     }
                 }
             }

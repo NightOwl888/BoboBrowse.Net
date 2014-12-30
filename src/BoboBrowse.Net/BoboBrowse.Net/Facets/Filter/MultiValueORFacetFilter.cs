@@ -31,7 +31,7 @@ namespace BoboBrowse.Net.Facets.Filter
 
     public class MultiValueORFacetFilter : RandomAccessFilter
     {
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
         private readonly IFacetHandler _facetHandler;
         private readonly string[] _vals;
         private readonly bool _takeCompliment;

@@ -76,21 +76,12 @@ namespace BoboBrowse.Net.Index
 
 	    public void Index() 
         {
-		    _writer=null;
-		    try
+            using (_writer = new IndexWriter(_index, this.Analyzer, IndexWriter.MaxFieldLength.UNLIMITED))
             {
-			    _writer = new IndexWriter(_index, this.Analyzer, IndexWriter.MaxFieldLength.UNLIMITED);
-			    MyDataHandler handler = new MyDataHandler(_writer);
-			    _digester.Digest(handler);
-			    _writer.Optimize();
-		    }
-		    finally
-            {
-			    if (_writer != null)
-                {
-				    _writer.Close();
-			    }
-		    }
+                MyDataHandler handler = new MyDataHandler(_writer);
+                _digester.Digest(handler);
+                _writer.Optimize();
+            }
 	    }	
     }
 }

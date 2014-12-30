@@ -18,7 +18,7 @@ namespace BoboBrowse.Net.Facets.Filter
     
     public abstract class RandomAccessFilter : Filter
     {
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
 
         public override DocIdSet GetDocIdSet(IndexReader reader)
         {

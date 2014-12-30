@@ -44,7 +44,7 @@ namespace BoboBrowse.Net.Sort
             [Serializable]
             public class ReverseComparable : IComparable
             {
-                private static long serialVersionUID = 1L;
+                //private static long serialVersionUID = 1L; // NOT USED
 
                 private readonly IComparable _inner;
 
