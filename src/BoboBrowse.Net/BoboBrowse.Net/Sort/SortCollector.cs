@@ -149,7 +149,7 @@ namespace BoboBrowse.Net.Sort
             {
                 compSource = new ReverseDocComparatorSource(compSource);
             }
-            compSource.SetReverse(reverse);
+            compSource.IsReverse = reverse;
             return compSource;
         }
 

@@ -12,18 +12,7 @@ namespace BoboBrowse.Net.Sort
 
     public abstract class DocComparatorSource
     {
-        bool _reverse = false;
-
-        public DocComparatorSource SetReverse(bool reverse)
-        {
-            _reverse = reverse;
-            return this;
-        }
-
-        public bool IsReverse()
-        {
-            return _reverse;
-        }
+        public virtual bool IsReverse { get; set; }
 
         public abstract DocComparator GetComparator(IndexReader reader, int docbase);
 
