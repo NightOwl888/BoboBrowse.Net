@@ -63,6 +63,18 @@ namespace BoboBrowse.Net.Facets.Filter
 	        // variable to specify if the geo distance calculations are in miles. Default is miles
 	        private bool _miles;
 
+            /// <summary>
+            /// Constructor
+            /// </summary>
+            /// <param name="xvals">array of x coordinate values for docid</param>
+            /// <param name="yvals">array of y coordinate values for docid</param>
+            /// <param name="zvals">array of z coordinate values for docid</param>
+            /// <param name="lat">target latitude</param>
+            /// <param name="lon">target longitude</param>
+            /// <param name="radius">target radius</param>
+            /// <param name="maxdoc">max doc in the docid set</param>
+            /// <param name="miles">variable to specify if the geo distance calculations are in miles. 
+            /// False indicates distance calculation is in kilometers</param>
             internal GeoDocIdSet(BigFloatArray xvals, BigFloatArray yvals, BigFloatArray zvals, float lat, float lon,
                 float radius, int maxdoc, bool miles)
             {
