@@ -21,13 +21,14 @@
  //* please go to https://sourceforge.net/projects/bobo-browse/, or 
  //* send mail to owner@browseengine.com. 
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Service
 {
-    using System.IO;
     using BoboBrowse.Net.Impl;
     using Common.Logging;
     using Lucene.Net.Index;
-    using Lucene.Net.Store;
+    using System;
+    using System.IO;
     using Directory = Lucene.Net.Store.Directory;
 
     public class BrowseServiceFactory
@@ -57,7 +58,7 @@ namespace BoboBrowse.Net.Service
                     throw new BrowseException("Index does not exist at: " + idxDir);
                 }
             }
-            catch (IOException ioe)
+            catch (Exception ioe)
             {
                 throw new BrowseException(ioe.Message, ioe);
             }
@@ -67,7 +68,7 @@ namespace BoboBrowse.Net.Service
             {
                 reader = IndexReader.Open(idxDir, true);
             }
-            catch (IOException ioe)
+            catch (Exception ioe)
             {
                 throw new BrowseException(ioe.Message, ioe);
             }
@@ -77,7 +78,7 @@ namespace BoboBrowse.Net.Service
             {
                 bReader = BoboIndexReader.GetInstance(reader);
             }
-            catch (IOException ioe)
+            catch (Exception ioe)
             {
                 if (reader != null)
                 {
@@ -85,7 +86,7 @@ namespace BoboBrowse.Net.Service
                     {
                         reader.Dispose();
                     }
-                    catch (IOException e)
+                    catch (Exception e)
                     {
                         logger.Error(e.Message, e);
                     }
