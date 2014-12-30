@@ -1,3 +1,4 @@
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Facets.Statistics
 {
     public class ChiSquaredFacetCountStatisticsGenerator : FacetCountStatisicsGenerator

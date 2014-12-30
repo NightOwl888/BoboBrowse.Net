@@ -1,3 +1,4 @@
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Facets.Statistics
 {
     using System;
@@ -54,8 +55,7 @@ namespace BoboBrowse.Net.Facets.Statistics
                 }
                 else
                 {
-                    if (sorted)
-                        break;
+                    if (sorted) break;
                 }
             }
 

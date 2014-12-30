@@ -1,3 +1,4 @@
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Facets.Statistics
 {
     using System;
@@ -27,7 +28,10 @@ namespace BoboBrowse.Net.Facets.Statistics
             if (o is FacetCountStatistics)
             {
                 FacetCountStatistics stat = (FacetCountStatistics)o;
-                if (this.CollectedSampleCount == stat.CollectedSampleCount && this.NumSamplesCollected == stat.NumSamplesCollected && this.TotalSampleCount == stat.TotalSampleCount && this.Distribution == stat.Distribution)
+                if (this.CollectedSampleCount == stat.CollectedSampleCount && 
+                    this.NumSamplesCollected == stat.NumSamplesCollected && 
+                    this.TotalSampleCount == stat.TotalSampleCount && 
+                    this.Distribution == stat.Distribution)
                 {
                     ret = true;
                 }
