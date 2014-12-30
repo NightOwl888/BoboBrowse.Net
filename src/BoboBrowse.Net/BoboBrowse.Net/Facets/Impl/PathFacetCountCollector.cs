@@ -368,7 +368,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 _comparator = comparator;
             }
 
-            public int Compare(BrowseFacet o1, BrowseFacet o2)
+            public virtual int Compare(BrowseFacet o1, BrowseFacet o2)
             {
                 return -_comparator.Compare(o1, o2);
             }
