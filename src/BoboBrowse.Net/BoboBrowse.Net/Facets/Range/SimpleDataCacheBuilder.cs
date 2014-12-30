@@ -16,17 +16,17 @@ namespace BoboBrowse.Net.Facets.Range
             this.indexFieldName = indexFieldName;
         }
 
-        public FacetDataCache Build(BoboIndexReader reader)
+        public virtual FacetDataCache Build(BoboIndexReader reader)
         {
             return (FacetDataCache)reader.GetFacetData(name);
         }
 
-        public string Name
+        public virtual string Name
         {
             get { return name; }
         }
 
-        public string IndexFieldName
+        public virtual string IndexFieldName
         {
             get { return indexFieldName; }
         }
