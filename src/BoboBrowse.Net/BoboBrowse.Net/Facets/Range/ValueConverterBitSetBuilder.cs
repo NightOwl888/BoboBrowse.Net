@@ -19,7 +19,7 @@ namespace BoboBrowse.Net.Facets.Range
             this.takeCompliment = takeCompliment;    
         }
 
-        public OpenBitSet BitSet(FacetDataCache dataCache)
+        public virtual OpenBitSet BitSet(FacetDataCache dataCache)
         {
             int[] index = facetValueConverter.Convert(dataCache, vals);
 
