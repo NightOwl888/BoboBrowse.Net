@@ -54,7 +54,7 @@ namespace BoboBrowse.Net.Search
             }
         }
 
-        public IEnumerable<FacetHitCollector> FacetHitCollectorList
+        public virtual IEnumerable<FacetHitCollector> FacetHitCollectorList
         {
             set
             {
@@ -87,7 +87,7 @@ namespace BoboBrowse.Net.Search
                     this.reader = reader;
                 }
 
-                public int Compare(FacetHitCollector fhc1, FacetHitCollector fhc2)
+                public virtual int Compare(FacetHitCollector fhc1, FacetHitCollector fhc2)
                 {
                     double selectivity1 = fhc1._filter.GetFacetSelectivity(reader);
                     double selectivity2 = fhc2._filter.GetFacetSelectivity(reader);
@@ -155,7 +155,7 @@ namespace BoboBrowse.Net.Search
             ///<summary>This method validates the doc against any multi-select enabled fields. </summary>
             ///<param name="docid"> </param>
             ///<returns>true if all fields matched </returns>
-            public override bool Validate(int docid)
+            public override sealed bool Validate(int docid)
             {
                 FacetHitCollector.CurrentPointers miss = null;
 
@@ -217,7 +217,7 @@ namespace BoboBrowse.Net.Search
                 _firsttime = _collectors[0];
             }
 
-            public override bool Validate(int docid)
+            public override sealed bool Validate(int docid)
             {
                 FacetHitCollector.CurrentPointers miss = null;
 
@@ -251,7 +251,7 @@ namespace BoboBrowse.Net.Search
             {
             }
 
-            public override bool Validate(int docid)
+            public override sealed bool Validate(int docid)
             {
                 foreach (IFacetCountCollector collector in _countCollectors)
                 {
@@ -261,7 +261,7 @@ namespace BoboBrowse.Net.Search
             }
         }
 
-        protected FacetValidator CreateFacetValidator()
+        protected virtual FacetValidator CreateFacetValidator()
         {
             FacetHitCollector[] collectors = new FacetHitCollector[_facetCollectors.Count()];
             FacetCountCollectorSource[] countCollectors = new FacetCountCollectorSource[collectors.Length];
