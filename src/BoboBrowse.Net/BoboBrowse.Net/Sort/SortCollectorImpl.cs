@@ -454,7 +454,7 @@ namespace BoboBrowse.Net.Sort
                 var iterList = new List<IEnumerator<MyScoreDoc>>(_pqList.Count);
                 foreach (DocIDPriorityQueue pq in _pqList)
                 {
-                    int count = pq.Size;
+                    int count = pq.Size();
                     MyScoreDoc[] resList = new MyScoreDoc[count];
                     for (int i = count - 1; i >= 0; i--)
                     {
