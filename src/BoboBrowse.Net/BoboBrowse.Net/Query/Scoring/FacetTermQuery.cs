@@ -39,12 +39,12 @@ namespace BoboBrowse.Net.Query.Scoring
             _boostMap = boostMap;
         }
 
-        public string Name
+        public virtual string Name
         {
             get { return _name; }
         }
 
-        public IDictionary<string, float> BoostMap
+        public virtual IDictionary<string, float> BoostMap
         {
             get { return _boostMap; }
         }
