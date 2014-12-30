@@ -101,15 +101,5 @@ namespace BoboBrowse.Net.Facets.Data
                 return _innerList.BinarySearch((string)o);
             }
         }
-
-        //public override void Seal()
-        //{
-        //    _innerList.TrimExcess();
-        //    if (withDummy)
-        //        _innerList.Remove("");
-        //    _innerList.Sort();
-        //    if (withDummy)
-        //        _innerList.Add("");
-        //}
     }
 }
