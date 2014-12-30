@@ -36,7 +36,7 @@ namespace BoboBrowse.Net.DocIdSet
             {
                 throw new ArgumentNullException("null iterator");
             }
-            this._innerIter = innerIter;
+            _innerIter = innerIter;
             _currentDoc = -1;
         }
 
