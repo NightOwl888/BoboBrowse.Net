@@ -20,7 +20,7 @@ namespace BoboBrowse.Net.Search.Section
             _positionInPhrase = positionInPhrase; // relative position in a phrase
         }
 
-        public virtual int PositionInPhrase
+        internal virtual int PositionInPhrase
         {
             get { return _positionInPhrase; }
         }
