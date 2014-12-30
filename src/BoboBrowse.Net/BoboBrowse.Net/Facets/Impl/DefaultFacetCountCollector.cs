@@ -201,12 +201,12 @@ namespace BoboBrowse.Net.Facets.Impl
                 this.valList = valList;
             }
 
-            public string GetFormatedValue(int index)
+            public virtual string GetFormatedValue(int index)
             {
                 return valList.Get(index);
             }
 
-            public object GetRawValue(int index)
+            public virtual object GetRawValue(int index)
             {
                 return valList.GetRawValue(index);
             }
@@ -237,7 +237,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     return;
                 }
                 _closed = true;
-                // TODO: memory manager implmentation
+                // TODO: memory manager implementation
                 //while (!intarraylist.isEmpty())
                 //{
                 //    intarraymgr.release(intarraylist.poll());
