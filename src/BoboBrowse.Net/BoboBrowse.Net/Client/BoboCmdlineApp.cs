@@ -146,7 +146,7 @@
                         try
                         {
                             q = qparser.Parse(queryString);
-                            _reqBuilder.GetRequest().Query = q;
+                            _reqBuilder.Request.Query = q;
                         }
                         catch (Exception e)
                         {
@@ -263,8 +263,8 @@
                 {
                     string pageString = parsed[1];
                     string[] parts = pageString.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
-                    _reqBuilder.SetOffset(int.Parse(parts[0]));
-                    _reqBuilder.SetCount(int.Parse(parts[1]));
+                    _reqBuilder.Offset = int.Parse(parts[0]);
+                    _reqBuilder.Count = int.Parse(parts[1]);
                 }
                 catch (Exception e)
                 {
@@ -309,7 +309,7 @@
             }
             else if ("showReq".Equals(cmd, StringComparison.OrdinalIgnoreCase))
             {
-                BrowseRequest req = _reqBuilder.GetRequest();
+                BrowseRequest req = _reqBuilder.Request;
 			    Console.WriteLine(req.ToString());
             }
             else if ("sort".Equals(cmd, StringComparison.OrdinalIgnoreCase))
@@ -349,7 +349,7 @@
             }
             else if ("browse".Equals(cmd, StringComparison.OrdinalIgnoreCase))
             {
-                BrowseRequest req = _reqBuilder.GetRequest();
+                BrowseRequest req = _reqBuilder.Request;
 			
 			    BrowseResult res = _svc.Browse(req);
 			    string output = BrowseResultFormatter.FormatResults(res);

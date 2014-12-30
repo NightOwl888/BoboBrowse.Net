@@ -70,21 +70,19 @@
             _req.FacetSpecs.Remove(name);
         }
 
-        // TODO: Make into property?
-        public void SetOffset(int offset)
+        public int Offset
         {
-            _req.Offset = offset;
+            set { _req.Offset = value; }
         }
 
-        // TODO: Make into property?
-        public void SetCount(int count)
+        public int Count
         {
-            _req.Count = count;
+            set { _req.Count = value; }
         }
 
-        public void SetQuery(string qString)
+        public string Query
         {
-            _qString = qString;
+            set { _qString = value; }
         }
 
         public void Clear()
@@ -101,16 +99,14 @@
             _req.ClearSelections();
         }
 
-        // TODO: Make into property?
-        public BrowseRequest GetRequest()
+        public BrowseRequest Request
         {
-            return _req;
+            get { return _req; }
         }
 
-        // TODO: Make into property?
-        public string GetQueryString()
+        public string QueryString
         {
-            return _qString;
+            get { return _qString; }
         }
     }
 }
