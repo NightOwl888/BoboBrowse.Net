@@ -10,7 +10,7 @@ namespace BoboBrowse.Net
     {
         protected float _facet;
 
-        new public float Facet
+        new public virtual float Facet
         {
             get { return _facet; }
         }
