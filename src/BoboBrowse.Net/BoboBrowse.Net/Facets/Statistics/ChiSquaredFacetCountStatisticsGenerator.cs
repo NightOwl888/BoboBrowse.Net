@@ -2,7 +2,7 @@ namespace BoboBrowse.Net.Facets.Statistics
 {
     public class ChiSquaredFacetCountStatisticsGenerator : FacetCountStatisicsGenerator
     {
-        public override double calculateDistributionScore(int[] distribution, int collectedSampleCount, int numSamplesCollected, int totalSamplesCount)
+        public override double CalculateDistributionScore(int[] distribution, int collectedSampleCount, int numSamplesCollected, int totalSamplesCount)
         {
             double expected = (double)collectedSampleCount / (double)numSamplesCollected;
 

@@ -108,6 +108,48 @@ namespace BoboBrowse.Net.Query.Scoring
             return true;
         }
 
+        // Required by .NET because Equals() was overridden.
+        // Source: http://stackoverflow.com/questions/70303/how-do-you-implement-gethashcode-for-structure-with-two-string#21604191
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hashCode = 0;
+
+                // String properties
+                hashCode = (hashCode * 397) ^ (_name != null ? _name.GetHashCode() : string.Empty.GetHashCode());
+
+                // Since any of the dictionary values could change at any time, we need to
+                // rely on the default implementation of GetHashCode for Contains.
+                hashCode = (hashCode * 397) ^ base.GetHashCode();
+
+                return hashCode;
+            }
+
+
+            //unchecked
+            //{
+            //    int hashCode = 0;
+
+            //    // String properties
+            //    hashCode = (hashCode * 397) ^ (_name != null ? _name.GetHashCode() : string.Empty.GetHashCode());
+
+            //    // dictionary properties
+            //    var it_map = this._boostMap.GetEnumerator();
+            //    while (it_map.MoveNext())
+            //    {
+            //        var element = it_map.Current;
+            //        var key = element.Key;
+            //        var value = element.Value;
+
+            //        hashCode = (hashCode * 397) ^ (key != null ? key.GetHashCode() : string.Empty.GetHashCode());
+            //        hashCode = (hashCode * 397) ^ value.GetHashCode();
+            //    }
+
+            //    return hashCode;
+            //}
+        }
+
         private class FacetTermWeight : Weight
         {
             //private static long serialVersionUID = 1L; // NOT USED

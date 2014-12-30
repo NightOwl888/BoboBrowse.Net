@@ -6,58 +6,18 @@ namespace BoboBrowse.Net.Facets.Statistics
     [Serializable]
     public class FacetCountStatistics
     {
-        private double _distribution;
-        private int _totalSampleCount;
-        private int _collectedSampleCount;
-        private int _numSamplesCollected;
-
-        public virtual double getDistribution()
-        {
-            return _distribution;
-        }
-
-        public virtual void setDistribution(double distribution)
-        {
-            _distribution = distribution;
-        }
-
-        public virtual int getTotalSampleCount()
-        {
-            return _totalSampleCount;
-        }
-
-        public virtual void setTotalSampleCount(int totalSampleCount)
-        {
-            _totalSampleCount = totalSampleCount;
-        }
-
-        public virtual int getCollectedSampleCount()
-        {
-            return _collectedSampleCount;
-        }
-
-        public virtual void setCollectedSampleCount(int collectedSampleCount)
-        {
-            _collectedSampleCount = collectedSampleCount;
-        }
-
-        public virtual int getNumSamplesCollected()
-        {
-            return _numSamplesCollected;
-        }
-
-        public virtual void setNumSamplesCollected(int numSamplesCollected)
-        {
-            _numSamplesCollected = numSamplesCollected;
-        }
+        public virtual double Distribution { get; set; }
+        public virtual int TotalSampleCount { get; set; }
+        public virtual int CollectedSampleCount { get; set; }
+        public virtual int NumSamplesCollected { get; set; }
 
         public override string ToString()
         {
             StringBuilder buf = new StringBuilder();
-            buf.Append("num samples collected: ").Append(_numSamplesCollected);
-            buf.Append("\ncollected sample count: ").Append(_collectedSampleCount);
-            buf.Append("\ntotal samples count: ").Append(_totalSampleCount);
-            buf.Append("\ndistribution score: ").Append(_distribution);
+            buf.Append("num samples collected: ").Append(this.NumSamplesCollected);
+            buf.Append("\ncollected sample count: ").Append(this.CollectedSampleCount);
+            buf.Append("\ntotal samples count: ").Append(this.TotalSampleCount);
+            buf.Append("\ndistribution score: ").Append(this.Distribution);
             return buf.ToString();
         }
 
@@ -67,12 +27,36 @@ namespace BoboBrowse.Net.Facets.Statistics
             if (o is FacetCountStatistics)
             {
                 FacetCountStatistics stat = (FacetCountStatistics)o;
-                if (_collectedSampleCount == stat._collectedSampleCount && _numSamplesCollected == stat._numSamplesCollected && _totalSampleCount == stat._totalSampleCount && _distribution == stat._distribution)
+                if (this.CollectedSampleCount == stat.CollectedSampleCount && this.NumSamplesCollected == stat.NumSamplesCollected && this.TotalSampleCount == stat.TotalSampleCount && this.Distribution == stat.Distribution)
                 {
                     ret = true;
                 }
             }
             return ret;
+        }
+
+        // Required by .NET because Equals() was overridden.
+        // Source: http://stackoverflow.com/questions/70303/how-do-you-implement-gethashcode-for-structure-with-two-string#21604191
+        public override int GetHashCode()
+        {
+            // Since any of the properties could change at any time, we need to
+            // rely on the default implementation of GetHashCode for Contains.
+            return base.GetHashCode();
+
+            //unchecked
+            //{
+            //    int hashCode = 0;
+
+            //    // int properties
+            //    hashCode = (hashCode * 397) ^ this.CollectedSampleCount;
+            //    hashCode = (hashCode * 397) ^ this.NumSamplesCollected;
+            //    hashCode = (hashCode * 397) ^ this.TotalSampleCount;
+
+            //    // double properties
+            //    hashCode = (hashCode * 397) ^ this.Distribution.GetHashCode();
+
+            //    return hashCode;
+            //}
         }
     }
 }

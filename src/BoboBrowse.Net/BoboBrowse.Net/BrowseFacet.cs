@@ -94,6 +94,28 @@ namespace BoboBrowse.Net
             return equals;
         }
 
+        // Required by .NET because Equals() was overridden.
+        // Source: http://stackoverflow.com/questions/70303/how-do-you-implement-gethashcode-for-structure-with-two-string#21604191
+        public override int GetHashCode()
+        {
+            // Since any of the properties could change at any time, we need to
+            // rely on the default implementation of GetHashCode for Contains.
+            return base.GetHashCode();
+
+            //unchecked
+            //{
+            //    int hashCode = 0;
+
+            //    // String properties
+            //    hashCode = (hashCode * 397) ^ (_value != null ? _value.GetHashCode() : string.Empty.GetHashCode());
+
+            //    // int properties
+            //    hashCode = (hashCode * 397) ^ _hitcount;
+
+            //    return hashCode;
+            //}
+        }
+
         public virtual IEnumerable<BrowseFacet> Merge(IEnumerable<BrowseFacet> v, IComparer<BrowseFacet> comparator)
         {
             int i = 0;

@@ -15,19 +15,15 @@ namespace BoboBrowse.Net.Facets.Statistics
     {
         private int _minCount = 1;
 
-        public virtual int getMinCount()
+        public virtual int MinCount
         {
-            return _minCount;
+            get { return _minCount; }
+            set { _minCount = value; }
         }
 
-        public virtual void setMinCount(int minCount)
-        {
-            _minCount = minCount;
-        }
+        public abstract double CalculateDistributionScore(int[] distribution, int collectedSampleCount, int numSamplesCollected, int totalSamplesCount);
 
-        public abstract double calculateDistributionScore(int[] distribution, int collectedSampleCount, int numSamplesCollected, int totalSamplesCount);
-
-        public virtual FacetCountStatistics generateStatistic(int[] distribution, int n)
+        public virtual FacetCountStatistics GenerateStatistic(int[] distribution, int n)
         {
             int[] tmp = distribution;
             int totalSampleCount = distribution.Length;
@@ -63,20 +59,20 @@ namespace BoboBrowse.Net.Facets.Statistics
                 }
             }
 
-            double distScore = calculateDistributionScore(tmp, collectedSampleCount, numSamplesCollected, totalSampleCount);
+            double distScore = CalculateDistributionScore(tmp, collectedSampleCount, numSamplesCollected, totalSampleCount);
 
             FacetCountStatistics stats = new FacetCountStatistics();
 
-            stats.setDistribution(distScore);
-            stats.setNumSamplesCollected(numSamplesCollected);
-            stats.setCollectedSampleCount(collectedSampleCount);
-            stats.setTotalSampleCount(totalSampleCount);
+            stats.Distribution = distScore;
+            stats.NumSamplesCollected = numSamplesCollected;
+            stats.CollectedSampleCount = collectedSampleCount;
+            stats.TotalSampleCount = totalSampleCount;
             return stats;
         }
 
-        public virtual FacetCountStatistics generateStatistic(IFacetCountCollector countHitCollector, int n)
+        public virtual FacetCountStatistics GenerateStatistic(IFacetCountCollector countHitCollector, int n)
         {
-            return generateStatistic(countHitCollector.GetCountDistribution(), n);
+            return GenerateStatistic(countHitCollector.GetCountDistribution(), n);
         }
 
         //// FIXME : this is a kind of test
