@@ -22,7 +22,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 _curFacetCount = 0;
             }
 
-            public bool Fetch(int minHits)
+            public virtual bool Fetch(int minHits)
             {
                 if (minHits > 0)
                     minHits = 1;
@@ -36,7 +36,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 return false;
             }
 
-            public string Peek()//bad
+            public virtual string Peek()//bad
             {
                 throw new NotSupportedException();
                 //      if(_iterator.hasNext()) 
@@ -85,9 +85,11 @@ namespace BoboBrowse.Net.Facets.Impl
             count = 0;
         }
 
-        /* (non-Javadoc)
-         * @see com.browseengine.bobo.api.FacetIterator#getFacet()
-         */
+        /// <summary>
+        /// (non-Javadoc)
+        /// see com.browseengine.bobo.api.FacetIterator#getFacet()
+        /// </summary>
+        /// <returns></returns>
         public virtual string GetFacet()
         {
             if (_facet == TermLongList.VALUE_MISSING) return null;
@@ -101,17 +103,21 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             return _iterators[0].Format(val);
         }
-        /* (non-Javadoc)
-         * @see com.browseengine.bobo.api.FacetIterator#getFacetCount()
-         */
+
+        /// <summary>
+        /// (non-Javadoc)
+        /// see com.browseengine.bobo.api.FacetIterator#getFacetCount()
+        /// </summary>
         public virtual int FacetCount
         {
             get { return count; }
         }
 
-        /* (non-Javadoc)
-         * @see com.browseengine.bobo.api.FacetIterator#next()
-         */
+        /// <summary>
+        /// (non-Javadoc)
+        /// see com.browseengine.bobo.api.FacetIterator#next()
+        /// </summary>
+        /// <returns></returns>
         public override string Next()
         {
             if (!HasNext())
@@ -139,11 +145,11 @@ namespace BoboBrowse.Net.Facets.Impl
             return null;
         }
 
-        /**
-         * This version of the next() method applies the minHits from the _facet spec before returning the _facet and its hitcount
-         * @param minHits the minHits from the _facet spec for CombinedFacetAccessible
-         * @return        The next _facet that obeys the minHits 
-         */
+        /// <summary>
+        /// This version of the next() method applies the minHits from the _facet spec before returning the _facet and its hitcount
+        /// </summary>
+        /// <param name="minHits">the minHits from the _facet spec for CombinedFacetAccessible</param>
+        /// <returns>The next _facet that obeys the minHits </returns>
         public override string Next(int minHits)
         {
             int qsize = _queue.Size();
@@ -200,33 +206,38 @@ namespace BoboBrowse.Net.Facets.Impl
             return Format(_facet);
         }
 
-        /* (non-Javadoc)
-         * @see java.util.Iterator#hasNext()
-         */
+        /// <summary>
+        /// (non-Javadoc)
+        /// see java.util.Iterator#hasNext()
+        /// </summary>
+        /// <returns></returns>
         public override bool HasNext()
         {
             return (_queue.Size() > 0);
         }
 
-        /* (non-Javadoc)
-         * @see java.util.Iterator#remove()
-         */
+        /// <summary>
+        /// (non-Javadoc)
+        /// see java.util.Iterator#remove()
+        /// </summary>
         public override void Remove()
         {
             throw new NotSupportedException("remove() method not supported for Facet Iterators");
         }
 
-        /**
-         * Lucene PriorityQueue
-         * 
-         */
+        /// <summary>
+        /// Lucene PriorityQueue
+        /// </summary>
         public class LongFacetPriorityQueue
         {
             private int size;
             private int maxSize;
             protected LongIteratorNode[] heap;
 
-            /** Subclass constructors must call this. */
+            /// <summary>
+            /// Subclass constructors must call this.
+            /// </summary>
+            /// <param name="maxSize"></param>
             public void Initialize(int maxSize)
             {
                 size = 0;
@@ -280,7 +291,10 @@ namespace BoboBrowse.Net.Facets.Impl
                 }
             }
 
-            /** Returns the least element of the PriorityQueue in constant time. */
+            /// <summary>
+            /// Returns the least element of the PriorityQueue in constant time.
+            /// </summary>
+            /// <returns></returns>
             public LongIteratorNode Top()
             {
                 // We don't need to check size here: if maxSize is 0,
@@ -289,10 +303,11 @@ namespace BoboBrowse.Net.Facets.Impl
                 return heap[1];
             }
 
-            /**
-             * Removes and returns the least element of the PriorityQueue in log(size)
-             * time.
-             */
+            /// <summary>
+            /// Removes and returns the least element of the PriorityQueue in log(size)
+            /// time.
+            /// </summary>
+            /// <returns></returns>
             public LongIteratorNode Pop()
             {
                 if (size > 0)
@@ -319,13 +334,18 @@ namespace BoboBrowse.Net.Facets.Impl
                 return heap[1];
             }
 
-            /** Returns the number of elements currently stored in the PriorityQueue. */
+            /// <summary>
+            /// Returns the number of elements currently stored in the PriorityQueue.
+            /// </summary>
+            /// <returns></returns>
             public int Size()
             {
                 return size;
             }
 
-            /** Removes all entries from the PriorityQueue. */
+            /// <summary>
+            /// Removes all entries from the PriorityQueue.
+            /// </summary>
             public void Clear()
             {
                 for (int i = 0; i <= size; i++)
