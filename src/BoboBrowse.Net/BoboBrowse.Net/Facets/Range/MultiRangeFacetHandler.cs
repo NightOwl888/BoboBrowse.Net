@@ -117,7 +117,7 @@ namespace BoboBrowse.Net.Facets.Range
         public override FacetDataCache Load(BoboIndexReader reader, BoboIndexReader.WorkArea workArea)
         {
             MultiValueFacetDataCache dataCache = new MultiValueFacetDataCache();
-            dataCache.SetMaxItems(maxItems);
+            dataCache.MaxItems = maxItems;
             if (sizePayloadTerm == null)
             {
                 dataCache.Load(_indexFieldName, reader, _termListFactory, workArea);

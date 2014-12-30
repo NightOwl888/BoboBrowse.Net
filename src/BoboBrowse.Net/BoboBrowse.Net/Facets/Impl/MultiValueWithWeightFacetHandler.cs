@@ -40,7 +40,7 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             MultiValueWithWeightFacetDataCache dataCache = new MultiValueWithWeightFacetDataCache();
 
-            dataCache.SetMaxItems(_maxItems);
+            dataCache.MaxItems = _maxItems;
 
             if (_sizePayloadTerm == null)
             {

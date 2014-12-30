@@ -165,7 +165,7 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             var dataCache = new MultiValueFacetDataCache();
 
-            dataCache.SetMaxItems(_maxItems);
+            dataCache.MaxItems = _maxItems;
 
             if (_sizePayloadTerm == null)
             {

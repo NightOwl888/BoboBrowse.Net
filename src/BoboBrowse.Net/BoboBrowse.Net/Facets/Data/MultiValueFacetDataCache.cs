@@ -54,11 +54,13 @@ namespace BoboBrowse.Net.Facets.Data
             get { return _nestedArray; }
         }
 
-        // TODO: change to a property
-        public virtual void SetMaxItems(int maxItems)
+        public virtual int MaxItems
         {
-            _maxItems = Math.Min(maxItems, BigNestedIntArray.MAX_ITEMS);
-            _nestedArray.MaxItems = _maxItems;
+            set
+            {
+                _maxItems = Math.Min(value, BigNestedIntArray.MAX_ITEMS);
+                _nestedArray.MaxItems = _maxItems;
+            }
         }
 
         public override int GetNumItems(int docid)
