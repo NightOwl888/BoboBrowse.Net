@@ -91,7 +91,7 @@ namespace BoboBrowse.Net.Facets.Filter
                 return _doc;
             }
 
-            public override int Advance(int id)
+            public sealed override int Advance(int id)
             {
                 if (_doc < id)
                 {
