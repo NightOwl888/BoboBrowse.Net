@@ -22,7 +22,7 @@ namespace BoboBrowse.Net.Sort
             return new LuceneCustomDocComparator(_luceneComparator);
         }
 
-        public class LuceneCustomDocComparator : DocComparator
+        private class LuceneCustomDocComparator : DocComparator
         {
             private readonly FieldComparator _luceneComparator;
 
