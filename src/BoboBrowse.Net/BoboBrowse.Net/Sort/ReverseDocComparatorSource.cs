@@ -53,7 +53,7 @@ namespace BoboBrowse.Net.Sort
                     _inner = inner;
                 }
 
-                public int CompareTo(object obj)
+                public virtual int CompareTo(object obj)
                 {
                     if (obj is ReverseComparable)
                     {
@@ -62,7 +62,7 @@ namespace BoboBrowse.Net.Sort
                     }
                     else
                     {
-                        throw new ArgumentException("expected instance of ReverseComparable");
+                        throw new ArgumentException("expected instance of " + typeof(ReverseComparable));
                     }
                 }
 
