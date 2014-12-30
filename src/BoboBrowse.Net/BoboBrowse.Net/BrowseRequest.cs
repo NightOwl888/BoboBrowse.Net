@@ -78,6 +78,9 @@ namespace BoboBrowse.Net
 
         public virtual IDictionary<string, FacetSpec> FacetSpecs { get; set; }
 
+        /// <summary>
+        /// Gets or sets the map between <b>RuntimeFacetHandler</b> names and their corresponding initialization data.
+        /// </summary>
         public virtual IDictionary<string, FacetHandlerInitializerParam> FacetHandlerDataMap { get; set; }
 
         public virtual int SelectionCount
@@ -96,7 +99,7 @@ namespace BoboBrowse.Net
         }
 
         ///<summary>Gets the number of facet specs </summary>
-        ///<returns> number of facet pecs </returns>
+        ///<returns> number of facet specs </returns>
         ///<seealso cref= #setFacetSpec(string, FacetSpec) </seealso>
         ///<seealso cref= #getFacetSpec(string) </seealso>
         public virtual int FacetSpecCount
@@ -185,7 +188,7 @@ namespace BoboBrowse.Net
         /// <summary>
         /// Gets or sets the search query
         /// </summary>
-        public Lucene.Net.Search.Query Query { get; set; }
+        public virtual Lucene.Net.Search.Query Query { get; set; }
 
         ///<summary>Adds a browse selection </summary>
         ///<param name="sel"> selection </param>
@@ -230,7 +233,7 @@ namespace BoboBrowse.Net
             _selections.PutAll(map);
         }
 
-        public IBoboMapFunctionWrapper MapReduceWrapper { get; set; }
+        public virtual IBoboMapFunctionWrapper MapReduceWrapper { get; set; }
 
         ///	 <summary> Add a sort spec </summary>
         ///	 <param name="sortSpec"> sort spec </param>
@@ -242,7 +245,7 @@ namespace BoboBrowse.Net
         /// <summary>
         /// Gets or sets the sort criteria
         /// </summary>
-        public SortField[] Sort
+        public virtual SortField[] Sort
         {
             get
             {
