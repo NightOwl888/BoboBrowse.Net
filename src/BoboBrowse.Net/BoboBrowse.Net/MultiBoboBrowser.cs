@@ -35,17 +35,17 @@ namespace BoboBrowse.Net
     using System.Collections.Generic;
     using System.Linq;
 
-    ///<summary> * Provides implementation of Browser for multiple Browser instances </summary>
+    ///<summary> Provides implementation of Browser for multiple Browser instances </summary>
     public class MultiBoboBrowser : MultiSearcher, IBrowsable
     {
         private static ILog logger = LogManager.GetLogger<MultiBoboBrowser>();
 
         protected readonly IBrowsable[] _subBrowsers;
 
-        ///   <summary> *  </summary>
-        ///   * <param name="browsers">
-        ///   *          Browsers to search on </param>
-        ///   * <exception cref="IOException"> </exception>
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="browsers">Browsers to search on</param>
         public MultiBoboBrowser(IBrowsable[] browsers)
             : base(browsers)
         {
@@ -268,7 +268,7 @@ namespace BoboBrowse.Net
         /// <returns>sub-browsers</returns>
         public virtual IBrowsable[] GetSubBrowsers()
         {
-            return (IBrowsable[])GetSearchables();
+            return _subBrowsers;
         }
 
 
@@ -282,7 +282,7 @@ namespace BoboBrowse.Net
         /// </summary>
         public class BrowseFacetValueComparator : IComparer<BrowseFacet>
         {
-            public int Compare(BrowseFacet o1, BrowseFacet o2)
+            public virtual int Compare(BrowseFacet o1, BrowseFacet o2)
             {
                 return string.CompareOrdinal(o1.Value, o2.Value);
             }
@@ -295,7 +295,7 @@ namespace BoboBrowse.Net
         /// <returns></returns>
         public virtual IBrowsable SubBrowser(int docid)
         {
-            return ((IBrowsable)(GetSubBrowsers()[SubSearcher(docid)]));
+            return (GetSubBrowsers()[SubSearcher(docid)]);
         }
 
         public override Similarity Similarity
@@ -375,7 +375,7 @@ namespace BoboBrowse.Net
             }
         }
 
-        public SortCollector GetSortCollector(SortField[] sort, Lucene.Net.Search.Query q,
+        public virtual SortCollector GetSortCollector(SortField[] sort, Lucene.Net.Search.Query q,
             int offset, int count, bool fetchStoredFields, IEnumerable<string> termVectorsToFetch,
             bool forceScoring, string[] groupBy, int maxPerGroup, bool collectDocIdCache)
         {
