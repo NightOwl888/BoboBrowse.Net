@@ -431,7 +431,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 }
                 else
                 {
-                    return IFacetCountCollector_Fields.EMPTY_FACET_LIST;
+                    return FacetCountCollector_Fields.EMPTY_FACET_LIST;
                 }
             }
 

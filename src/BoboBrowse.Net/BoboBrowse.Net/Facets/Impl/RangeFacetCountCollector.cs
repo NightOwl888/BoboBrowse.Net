@@ -229,12 +229,12 @@ namespace BoboBrowse.Net.Facets.Impl
                 }
                 else
                 {
-                    return IFacetCountCollector_Fields.EMPTY_FACET_LIST;
+                    return FacetCountCollector_Fields.EMPTY_FACET_LIST;
                 }
             }
             else
             {
-                return IFacetCountCollector_Fields.EMPTY_FACET_LIST;
+                return FacetCountCollector_Fields.EMPTY_FACET_LIST;
             }
         }
 
@@ -315,12 +315,12 @@ namespace BoboBrowse.Net.Facets.Impl
                 }
                 else
                 {
-                    return IFacetCountCollector_Fields.EMPTY_FACET_LIST;
+                    return FacetCountCollector_Fields.EMPTY_FACET_LIST;
                 }
             }
             else
             {
-                return IFacetCountCollector_Fields.EMPTY_FACET_LIST;
+                return FacetCountCollector_Fields.EMPTY_FACET_LIST;
             }
         }
 

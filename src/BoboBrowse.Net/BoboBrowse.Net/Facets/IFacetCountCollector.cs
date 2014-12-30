@@ -25,7 +25,7 @@ namespace BoboBrowse.Net.Facets
         int[] GetCountDistribution();
     }
 
-    public static class IFacetCountCollector_Fields
+    public static class FacetCountCollector_Fields
     {
         ///<summary>Empty facet list.  </summary>
         public static List<BrowseFacet> EMPTY_FACET_LIST = new List<BrowseFacet>();
