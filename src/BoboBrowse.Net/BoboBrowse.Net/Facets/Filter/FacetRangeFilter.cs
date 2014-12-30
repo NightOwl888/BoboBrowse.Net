@@ -165,7 +165,7 @@ namespace BoboBrowse.Net.Facets.Filter
             private FacetRangeValueConverter()
             { }
 
-            public int[] Convert(FacetDataCache dataCache, string[] vals)
+            public virtual int[] Convert(FacetDataCache dataCache, string[] vals)
             {
                 return ConvertIndexes(dataCache, vals);
             }
