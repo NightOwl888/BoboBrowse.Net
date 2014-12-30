@@ -7,27 +7,27 @@ namespace BoboBrowse.Net.Facets.Impl
 
     public class FacetValueComparatorFactory : IComparatorFactory
     {
-        public IComparer<int> NewComparator(IFieldValueAccessor fieldValueAccessor, int[] counts)
+        public virtual IComparer<int> NewComparator(IFieldValueAccessor fieldValueAccessor, int[] counts)
         {
             return new FacetValueComparatorFactoryComparator();
         }
 
         private class FacetValueComparatorFactoryComparator : IComparer<int>
         {
-            public int Compare(int o1, int o2)
+            public virtual int Compare(int o1, int o2)
             {
                 return o2 - o1;
             }
         }
 
-        public IComparer<BrowseFacet> NewComparator()
+        public virtual IComparer<BrowseFacet> NewComparator()
         {
             return new FacetValueComparatorFactoryBrowseFacetComparator();
         }
 
         private class FacetValueComparatorFactoryBrowseFacetComparator : IComparer<BrowseFacet>
         {
-            public int Compare(BrowseFacet o1, BrowseFacet o2)
+            public virtual int Compare(BrowseFacet o1, BrowseFacet o2)
             {
                 return string.CompareOrdinal(o1.Value, o2.Value);
             }
