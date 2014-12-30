@@ -22,7 +22,12 @@ namespace BoboBrowse.Net.DocIdSet
             _bs = new BitSet(nbits);
         }
 
-        public int Size
+        public virtual void AddDoc(int docid)
+        {
+            _bs.Set(docid);
+        }
+
+        public virtual int Size
         {
             get { return _bs.Cardinality(); }
         }
