@@ -37,7 +37,7 @@ namespace BoboBrowse.Net
         ///<summary>Sort options for facets </summary>
         public enum FacetSortSpec
         {
-            ///<summary>Order by the facet values in lexographical ascending order </summary>
+            ///<summary>Order by the facet values in lexicographical ascending order </summary>
             OrderValueAsc,
             ///<summary>Order by the facet hit counts in descending order </summary>
             OrderHitsDesc,
@@ -57,16 +57,16 @@ namespace BoboBrowse.Net
             Properties = new Dictionary<string, string>();
         }
 
-        public IComparatorFactory CustomComparatorFactory { get; set; }
+        public virtual IComparatorFactory CustomComparatorFactory { get; set; }
 
         ///<summary>Gets or sets the minimum number of hits a choice would need to have to be returned. </summary>
-        public int MinHitCount { get; set; }
+        public virtual int MinHitCount { get; set; }
 
         ///<summary>Gets or sets the current choice sort order</summary>
-        public FacetSortSpec OrderBy { get; set; }
+        public virtual FacetSortSpec OrderBy { get; set; }
 
         ///<summary>Gets or sets the maximum number of choices to return. Default = 0 which means all </summary>
-        public int MaxCount { get; set; }
+        public virtual int MaxCount { get; set; }
 
         public override string ToString()
         {
@@ -79,14 +79,14 @@ namespace BoboBrowse.Net
         }
 
         ///<summary>Gets or sets whether we are expanding sibling choices</summary>
-        public bool ExpandSelection { get; set; }
+        public virtual bool ExpandSelection { get; set; }
 
         /// <summary>
         /// Gets or sets custom properties for the facet search. For example AttributeFacetHandler uses this to perform custom facet filtering
         /// </summary>
-        public IDictionary<string, string> Properties { get; set; }
+        public virtual IDictionary<string, string> Properties { get; set; }
 
-        public object Clone()
+        public virtual object Clone()
         {
             var properties = this.Properties;
             var clonedProperties = new Dictionary<string, string>(properties);
