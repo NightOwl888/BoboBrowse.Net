@@ -15,7 +15,7 @@ namespace BoboBrowse.Net.MapRed
             MapResults = new ArrayList(200);
         }
 
-        public ArrayList MapResults { get; set; }
-        public MapReduceResult ReduceResult { get; set; }
+        public virtual ArrayList MapResults { get; set; }
+        public virtual MapReduceResult ReduceResult { get; set; }
     }
 }
