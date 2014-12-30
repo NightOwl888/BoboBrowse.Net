@@ -40,8 +40,8 @@ namespace BoboBrowse.Net.Index.Digest
             this.Encoding = Encoding.UTF8;
         }
 
-        public int MaxDocs { get; set; }
-        public Encoding Encoding { get; set; }
-        public string File { get { return _file; } }
+        public virtual int MaxDocs { get; set; }
+        public virtual Encoding Encoding { get; set; }
+        public virtual string File { get { return _file; } }
     }
 }
