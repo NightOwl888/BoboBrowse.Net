@@ -254,7 +254,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return new SimpleBoboDocScorer(dataCache, scoringFunctionFactory, boostList);
         }
 
-        private sealed class SimpleFacetCountCollector : DefaultFacetCountCollector
+        public sealed class SimpleFacetCountCollector : DefaultFacetCountCollector
         {
             public SimpleFacetCountCollector(string name, FacetDataCache dataCache, int docBase, BrowseSelection sel, FacetSpec ospec)
                 : base(name, dataCache, docBase, sel, ospec)
@@ -310,7 +310,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        private sealed class SimpleBoboDocScorer : BoboDocScorer
+        public sealed class SimpleBoboDocScorer : BoboDocScorer
         {
             private readonly FacetDataCache _dataCache;
 
