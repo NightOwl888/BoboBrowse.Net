@@ -46,7 +46,7 @@ namespace BoboBrowse.Net.Facets.Data
             }
         }
 
-        public virtual string this[int index]// From IList<string>
+        public override string this[int index]// From IList<string>
         {
             get
             {
