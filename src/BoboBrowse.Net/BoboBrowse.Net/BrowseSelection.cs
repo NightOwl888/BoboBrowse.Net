@@ -70,6 +70,7 @@ namespace BoboBrowse.Net
         /// <summary>
         /// the depth.  Used if the field is of type <b><i>path</i></b>. 
         /// </summary>
+        [Obsolete("use SelectionProperties")]
         public virtual int Depth
         {
             get
