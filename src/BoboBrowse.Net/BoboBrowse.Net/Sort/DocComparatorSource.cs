@@ -31,7 +31,7 @@ namespace BoboBrowse.Net.Sort
                 return new IntDocComparator(values);
             }
 
-            public class IntDocComparator : DocComparator
+            private class IntDocComparator : DocComparator
             {
                 private readonly int[] values;
 
@@ -81,7 +81,7 @@ namespace BoboBrowse.Net.Sort
                 return new StringLocaleDocComparator(values, _cultureInfo);
             }
 
-            public class StringLocaleDocComparator : DocComparator
+            private class StringLocaleDocComparator : DocComparator
             {
                 private readonly string[] values;
                 private readonly CultureInfo cultureInfo;
@@ -131,7 +131,7 @@ namespace BoboBrowse.Net.Sort
                 return new StringValDocComparator(values);
             }
 
-            public class StringValDocComparator : DocComparator
+            private class StringValDocComparator : DocComparator
             {
                 private readonly string[] values;
 
@@ -179,7 +179,7 @@ namespace BoboBrowse.Net.Sort
                 return new StringOrdDocComparator(values);
             }
 
-            public class StringOrdDocComparator : DocComparator
+            private class StringOrdDocComparator : DocComparator
             {
                 private readonly StringIndex values;
 
@@ -215,7 +215,7 @@ namespace BoboBrowse.Net.Sort
                 return new ShortDocComparator(values);
             }
 
-            public class ShortDocComparator : DocComparator
+            private class ShortDocComparator : DocComparator
             {
                 private readonly short[] values;
 
@@ -251,7 +251,7 @@ namespace BoboBrowse.Net.Sort
                 return new LongDocComparator(values);
             }
 
-            public class LongDocComparator : DocComparator
+            private class LongDocComparator : DocComparator
             {
                 private readonly long[] values;
 
@@ -299,7 +299,7 @@ namespace BoboBrowse.Net.Sort
                 return new FloatDocComparator(values);
             }
 
-            public class FloatDocComparator : DocComparator
+            private class FloatDocComparator : DocComparator
             {
                 private readonly float[] values;
 
@@ -347,7 +347,7 @@ namespace BoboBrowse.Net.Sort
                 return new DoubleDocComparator(values);
             }
 
-            public class DoubleDocComparator : DocComparator
+            private class DoubleDocComparator : DocComparator
             {
                 private readonly double[] values;
 
@@ -391,7 +391,7 @@ namespace BoboBrowse.Net.Sort
                 return new RelevanceDocComparator();
             }
 
-            public class RelevanceDocComparator : DocComparator
+            private class RelevanceDocComparator : DocComparator
             {
                 public RelevanceDocComparator()
                 {
@@ -432,7 +432,7 @@ namespace BoboBrowse.Net.Sort
                 return new DocIdDocComparator(docbase);
             }
 
-            public class DocIdDocComparator : DocComparator
+            private class DocIdDocComparator : DocComparator
             {
                 private readonly int docbase;
 
@@ -468,7 +468,7 @@ namespace BoboBrowse.Net.Sort
                 return new ByteDocComparator(values);
             }
 
-            public class ByteDocComparator : DocComparator
+            private class ByteDocComparator : DocComparator
             {
                 private readonly sbyte[] values;
 
