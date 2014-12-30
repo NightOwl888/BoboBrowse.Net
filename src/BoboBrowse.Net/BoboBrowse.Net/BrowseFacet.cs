@@ -49,7 +49,7 @@ namespace BoboBrowse.Net
         /// <summary>
         /// Gets or sets the facet value
         /// </summary>
-        public string Value 
+        public virtual string Value 
         {
             get { return _value; }
             set { _value = value; }
@@ -59,7 +59,7 @@ namespace BoboBrowse.Net
         /// Gets or sets the hit count
         /// </summary>
         [Obsolete("Use FacetValueHitCount instead")]
-        public int HitCount
+        public virtual int HitCount
         {
             get { return _hitcount; }
             set { _hitcount = value; }
@@ -68,7 +68,7 @@ namespace BoboBrowse.Net
         /// <summary>
         /// Gets or sets the hit count
         /// </summary>
-        public int FacetValueHitCount
+        public virtual int FacetValueHitCount
         {
             get { return _hitcount; }
             set { _hitcount = value; }
