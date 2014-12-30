@@ -62,7 +62,7 @@ namespace BoboBrowse.Net.Facets
             get { return _doubleMap.Keys; }
         }
 
-        public DefaultFacetHandlerInitializerParam PutBooleanParam(string key, bool[] value)
+        public virtual DefaultFacetHandlerInitializerParam PutBooleanParam(string key, bool[] value)
         {
             _boolMap.Put(key, value);
             return this;
@@ -73,7 +73,7 @@ namespace BoboBrowse.Net.Facets
             return _boolMap.Get(name);
         }
 
-        public DefaultFacetHandlerInitializerParam PutByteArrayParam(string key, sbyte[] value)
+        public virtual DefaultFacetHandlerInitializerParam PutByteArrayParam(string key, sbyte[] value)
         {
             _byteMap.Put(key, value);
             return this;
@@ -84,7 +84,7 @@ namespace BoboBrowse.Net.Facets
             return _byteMap.Get(name);
         }
 
-        public DefaultFacetHandlerInitializerParam PutIntParam(string key, int[] value)
+        public virtual DefaultFacetHandlerInitializerParam PutIntParam(string key, int[] value)
         {
             _intMap.Put(key, value);
             return this;
@@ -95,7 +95,7 @@ namespace BoboBrowse.Net.Facets
             return _intMap.Get(name);
         }
 
-        public DefaultFacetHandlerInitializerParam PutLongParam(string key, long[] value)
+        public virtual DefaultFacetHandlerInitializerParam PutLongParam(string key, long[] value)
         {
             _longMap.Put(key, value);
             return this;
@@ -106,7 +106,7 @@ namespace BoboBrowse.Net.Facets
             return _longMap.Get(name);
         }
 
-        public DefaultFacetHandlerInitializerParam PutStringParam(string key, IEnumerable<string> value)
+        public virtual DefaultFacetHandlerInitializerParam PutStringParam(string key, IEnumerable<string> value)
         {
             _stringMap.Put(key, value);
             return this;
@@ -117,7 +117,7 @@ namespace BoboBrowse.Net.Facets
             return _stringMap.Get(name);
         }
 
-        public DefaultFacetHandlerInitializerParam PutDoubleParam(string key, double[] value)
+        public virtual DefaultFacetHandlerInitializerParam PutDoubleParam(string key, double[] value)
         {
             _doubleMap.Put(key, value);
             return this;
@@ -128,7 +128,7 @@ namespace BoboBrowse.Net.Facets
             return _doubleMap.Get(name);
         }
 
-        public void Clear()
+        public virtual void Clear()
         {
             _boolMap.Clear();
             _intMap.Clear();
