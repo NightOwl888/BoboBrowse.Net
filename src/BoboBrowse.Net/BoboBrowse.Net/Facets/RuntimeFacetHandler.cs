@@ -8,8 +8,6 @@ namespace BoboBrowse.Net.Facets
 
     public interface IRuntimeFacetHandler : IFacetHandler, IDisposable
     {
-        T GetFacetData<T>(BoboIndexReader reader);
-        void LoadFacetData(BoboIndexReader reader);
     }
 
     /// <summary>
@@ -41,20 +39,10 @@ namespace BoboBrowse.Net.Facets
             : base(name)
         { }
 
-        //public override D GetFacetData<D>(BoboIndexReader reader)
-        //{
-        //    return (D)reader.GetRuntimeFacetData(_name);
-        //}
-
         public override T GetFacetData<T>(BoboIndexReader reader)
         {
             return (T)reader.GetRuntimeFacetData(_name);
         }
-
-        //public override object GetFacetData(BoboIndexReader reader)
-        //{
-        //    return reader.GetRuntimeFacetData(_name);
-        //}
 
         public override void LoadFacetData(BoboIndexReader reader)
         {
