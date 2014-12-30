@@ -35,7 +35,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// (non-Javadoc)
         /// see com.browseengine.bobo.api.FacetIterator#getFacet()
         /// </summary>
-        public virtual string Facet
+        new public virtual string Facet
         {
             get
             {

@@ -28,7 +28,7 @@ namespace BoboBrowse.Net.Facets.Impl
             base.count = 0;
         }
 
-        public virtual string Facet
+        new public virtual string Facet
         {
             get
             {
