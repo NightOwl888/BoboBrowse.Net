@@ -79,7 +79,7 @@ namespace BoboBrowse.Net.Facets.Impl
             /// <summary>
             /// Gets or sets the _xValArray
             /// </summary>
-            public BigFloatArray xValArray
+            public virtual BigFloatArray xValArray
             {
                 get { return _xValArray; }
                 set { _xValArray = value; }
@@ -88,7 +88,7 @@ namespace BoboBrowse.Net.Facets.Impl
             /// <summary>
             /// Gets or sets the _yValArray
             /// </summary>
-            public BigFloatArray yValArray
+            public virtual BigFloatArray yValArray
             {
                 get { return _yValArray; }
                 set { _yValArray = value; }
@@ -97,13 +97,13 @@ namespace BoboBrowse.Net.Facets.Impl
             /// <summary>
             /// Gets or sets the _zValArray
             /// </summary>
-            public BigFloatArray zValArray
+            public virtual BigFloatArray zValArray
             {
                 get { return _zValArray; }
                 set { _zValArray = value; }
             }
 
-            public void Load(string latFieldName, string lonFieldName, BoboIndexReader reader)
+            public virtual void Load(string latFieldName, string lonFieldName, BoboIndexReader reader)
             {
                 if (reader == null) throw new ArgumentNullException("reader object is null");
 
