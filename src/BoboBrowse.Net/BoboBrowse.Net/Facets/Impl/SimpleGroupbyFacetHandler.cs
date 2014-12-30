@@ -170,7 +170,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 _comparators = comparators;
             }
 
-            public override int Compare(ScoreDoc d1, ScoreDoc d2)
+            public override sealed int Compare(ScoreDoc d1, ScoreDoc d2)
             {
                 int retval = 0;
                 foreach (DocComparator comparator in _comparators)
@@ -181,13 +181,13 @@ namespace BoboBrowse.Net.Facets.Impl
                 return retval;
             }
 
-            public override IComparable Value(ScoreDoc doc)
+            public override sealed IComparable Value(ScoreDoc doc)
             {
                 return new GroupbyComparable(_comparators, doc);
             }
         }
 
-        public class GroupbyComparable : IComparable
+        private class GroupbyComparable : IComparable
         {
             private readonly DocComparator[] _comparators;
             private readonly ScoreDoc _doc;
@@ -198,7 +198,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 _doc = doc;
             }
 
-            public int CompareTo(object o)
+            public virtual int CompareTo(object o)
             {
                 int retval = 0;
                 foreach (DocComparator comparator in _comparators)
@@ -303,7 +303,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 return f;
             }
 
-            public int GetFacetHitsCount(object value)
+            public virtual int GetFacetHitsCount(object value)
             {
                 string[] vals = ((string)value).Split(new string[] { _sep }, StringSplitOptions.RemoveEmptyEntries);
                 if (vals.Length == 0) return 0;
@@ -435,7 +435,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 }
             }
 
-            public class GroupbyFieldValueAccessor : IFieldValueAccessor
+            private class GroupbyFieldValueAccessor : IFieldValueAccessor
             {
                 private readonly Func<int, string> getFacetString;
                 private readonly Func<int, object> getRawFaceValue;
@@ -461,7 +461,7 @@ namespace BoboBrowse.Net.Facets.Impl
             {
             }
 
-            public FacetIterator Iterator()
+            public virtual FacetIterator Iterator()
             {
                 return new GroupByFacetIterator(this);
             }
