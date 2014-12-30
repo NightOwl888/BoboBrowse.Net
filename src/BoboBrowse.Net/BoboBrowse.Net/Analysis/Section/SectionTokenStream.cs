@@ -8,7 +8,7 @@ namespace BoboBrowse.Net.Analysis.Section
     /// <summary>
     /// This class augments a token stream by attaching a section id as payloads.
     /// </summary>
-    public class SectionTokenStream : TokenFilter
+    public sealed class SectionTokenStream : TokenFilter
     {
         private Payload _payload;
         private PayloadAttribute _payloadAtt;
