@@ -109,7 +109,7 @@ namespace BoboBrowse.Net.Sort
                 this.sortValue = null;
             }
 
-            public IComparable Value
+            public virtual IComparable Value
             {
                 get
                 {
@@ -143,6 +143,8 @@ namespace BoboBrowse.Net.Sort
             bool collectDocIdCache)
             : base(sortFields, fetchStoredFields)
         {
+            // TODO: Work out what to do about collectDocIdCache, which currently does nothing.
+
             // TODO: Make this a guard clause?
             Debug.Assert(offset >= 0 && count >= 0);
             _boboBrowser = boboBrowser;
