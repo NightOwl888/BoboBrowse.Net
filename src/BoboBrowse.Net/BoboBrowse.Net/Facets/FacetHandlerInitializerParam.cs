@@ -14,7 +14,7 @@ namespace BoboBrowse.Net.Facets
     {
         public static readonly FacetHandlerInitializerParam EMPTY_PARAM = new EmptyFacetHandlerInitializerParam();
 
-        public class EmptyFacetHandlerInitializerParam : FacetHandlerInitializerParam
+        private sealed class EmptyFacetHandlerInitializerParam : FacetHandlerInitializerParam
         {
             public override IEnumerable<string> GetStringParam(string name)
             {
