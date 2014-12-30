@@ -25,7 +25,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 _curFacetCount = 0;
             }
 
-            public bool Fetch(int minHits)
+            public virtual bool Fetch(int minHits)
             {
                 if (minHits > 0)
                     minHits = 1;
@@ -39,7 +39,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 return false;
             }
 
-            public string Peek()// bad
+            public virtual string Peek()// bad
             {
                 throw new NotSupportedException();
                 // if(_iterator.hasNext())
