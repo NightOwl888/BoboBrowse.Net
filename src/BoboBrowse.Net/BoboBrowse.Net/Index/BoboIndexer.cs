@@ -55,13 +55,13 @@ namespace BoboBrowse.Net.Index
             {
                 _writer = writer;
             }
-            public void HandleDocument(Document doc)
+            public virtual void HandleDocument(Document doc)
             {
                 _writer.AddDocument(doc);
             }
 	    }
 
-        public Analyzer Analyzer
+        public virtual Analyzer Analyzer
         {
             get { return _analyzer == null ? new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_CURRENT) : _analyzer; }
             set { _analyzer = value; }
@@ -74,7 +74,7 @@ namespace BoboBrowse.Net.Index
 		    _digester = digester;
 	    }	
 
-	    public void Index() 
+	    public virtual void Index() 
         {
             using (_writer = new IndexWriter(_index, this.Analyzer, IndexWriter.MaxFieldLength.UNLIMITED))
             {
