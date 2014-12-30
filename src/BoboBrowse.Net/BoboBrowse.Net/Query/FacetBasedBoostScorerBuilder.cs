@@ -26,7 +26,7 @@ namespace BoboBrowse.Net.Query
             _scoringFunctionFactory = scoringFunctionFactory;
         }
 
-        public Scorer CreateScorer(Scorer innerScorer, IndexReader reader, bool scoreDocsInOrder, bool topScorer)
+        public virtual Scorer CreateScorer(Scorer innerScorer, IndexReader reader, bool scoreDocsInOrder, bool topScorer)
         {
             if(!(reader is BoboIndexReader)) 
                 throw new ArgumentException("IndexReader is not BoboIndexReader");
@@ -34,7 +34,7 @@ namespace BoboBrowse.Net.Query
             return new FacetBasedBoostingScorer(this, (BoboIndexReader)reader, innerScorer.Similarity, innerScorer);
         }
 
-        public Explanation Explain(IndexReader indexReader, int docid, Explanation innerExplaination)
+        public virtual Explanation Explain(IndexReader indexReader, int docid, Explanation innerExplaination)
         {
             if (!(indexReader is BoboIndexReader)) throw new ArgumentException("IndexReader is not BoboIndexReader");
             BoboIndexReader reader = (BoboIndexReader)indexReader;
