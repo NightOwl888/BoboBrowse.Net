@@ -50,7 +50,7 @@ namespace BoboBrowse.Net.Search.Section
             return _curSec;
         }
 
-        internal override int FetchPos()
+        protected override int FetchPos()
         {
             int targetPhrasePos = _curPos + 1;
 
@@ -61,7 +61,7 @@ namespace BoboBrowse.Net.Search.Section
                 int targetTermPos = (targetPhrasePos + node.PositionInPhrase);
                 while (node.CurPos < targetTermPos)
                 {
-                    if (node.FetchPos() == SectionSearchQueryPlan.NO_MORE_POSITIONS)
+                    if (node.FetchPosInternal() == SectionSearchQueryPlan.NO_MORE_POSITIONS)
                     {
                         _curPos = SectionSearchQueryPlan.NO_MORE_POSITIONS;
                         return _curPos;

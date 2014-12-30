@@ -61,7 +61,7 @@ namespace BoboBrowse.Net.Search.Section
 
         public abstract int FetchSec(int targetSec);
 
-        internal virtual int FetchPos()
+        protected virtual int FetchPos()
         {
             return NO_MORE_POSITIONS;
         }

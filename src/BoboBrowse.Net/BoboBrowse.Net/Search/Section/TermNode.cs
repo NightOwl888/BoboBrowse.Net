@@ -43,7 +43,14 @@ namespace BoboBrowse.Net.Search.Section
             return _curSec;
         }
 
-        internal override int FetchPos()
+        // NOTE: Added this method so FetchPos() can be utilized internally
+        // without changing the scope of FetchPos() method from protected.
+        internal virtual int FetchPosInternal()
+        {
+            return this.FetchPos();
+        }
+
+        protected override int FetchPos()
         {
             if (_posLeft > 0)
             {
