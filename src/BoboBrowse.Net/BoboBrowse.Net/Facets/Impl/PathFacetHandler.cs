@@ -188,7 +188,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 }
             }
 
-            public int[] Convert(FacetDataCache dataCache, string[] vals)
+            public virtual int[] Convert(FacetDataCache dataCache, string[] vals)
             {
                 IList<int> intSet = new List<int>();
                 GetFilters(dataCache, intSet, vals, _depth, _strict);
