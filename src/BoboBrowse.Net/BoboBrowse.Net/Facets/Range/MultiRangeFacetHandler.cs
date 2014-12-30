@@ -33,7 +33,7 @@ namespace BoboBrowse.Net.Facets.Range
 
         public override string[] GetFieldValues(BoboIndexReader reader, int id)
         {
-            MultiValueFacetDataCache dataCache = GetFacetData(reader);
+            MultiValueFacetDataCache dataCache = GetFacetData<MultiValueFacetDataCache>(reader);
             if (dataCache != null)
             {
                 return dataCache.NestedArray.GetTranslatedData(id, dataCache.ValArray);
@@ -43,16 +43,16 @@ namespace BoboBrowse.Net.Facets.Range
 
         public override object[] GetRawFieldValues(BoboIndexReader reader, int id)
         {
- 	        MultiValueFacetDataCache dataCache = GetFacetData(reader);
+            MultiValueFacetDataCache dataCache = GetFacetData<MultiValueFacetDataCache>(reader);
             if (dataCache != null) {
                 return dataCache.NestedArray.GetRawData(id, dataCache.ValArray);
             }
             return new string[0];
         }
 
-        public MultiValueFacetDataCache GetFacetData(BoboIndexReader reader)
+        public override T GetFacetData<T>(BoboIndexReader reader)
         {
-            return (MultiValueFacetDataCache)reader.GetFacetData(_name);
+            return (T)reader.GetFacetData(_name);
         }
 
         public override RandomAccessFilter BuildRandomAccessFilter(string value, Properties prop)
@@ -78,7 +78,7 @@ namespace BoboBrowse.Net.Facets.Range
 
             public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
             {
-                MultiValueFacetDataCache dataCache = parent.GetFacetData(reader);
+                MultiValueFacetDataCache dataCache = parent.GetFacetData<MultiValueFacetDataCache>(reader);
                 BigNestedIntArray _nestedArray = dataCache.NestedArray;
                 return new MultiRangeFacetCountCollector(parent.Name, dataCache, docBase, this.ospec, parent._predefinedRanges, _nestedArray);
             }
@@ -104,7 +104,7 @@ namespace BoboBrowse.Net.Facets.Range
         public override BoboDocScorer GetDocScorer(BoboIndexReader reader, IFacetTermScoringFunctionFactory scoringFunctionFactory,
             IDictionary<string, float> boostMap)
         {
-            MultiValueFacetDataCache dataCache = GetFacetData(reader);
+            MultiValueFacetDataCache dataCache = GetFacetData<MultiValueFacetDataCache>(reader);
             float[] boostList = BoboDocScorer.BuildBoostList(dataCache.ValArray, boostMap);
             return new MultiValueFacetHandler.MultiValueDocScorer(dataCache, scoringFunctionFactory, boostList);
         }
