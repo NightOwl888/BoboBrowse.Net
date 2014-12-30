@@ -62,6 +62,11 @@ namespace BoboBrowse.Net.Facets.Data
             base.Clear();
         }
 
+        public override string Get(int index)
+        {
+            return this[index];
+        }
+
         public override string this[int index]// From IList<string>
         {
             get
@@ -91,7 +96,7 @@ namespace BoboBrowse.Net.Facets.Data
             }
         }
 
-        public long GetPrimitiveValue(int index)
+        public virtual long GetPrimitiveValue(int index)
         {
             if (index < _elements.Length)
                 return _elements[index];
@@ -123,7 +128,7 @@ namespace BoboBrowse.Net.Facets.Data
             }
         }
 
-        public int IndexOf(long value)
+        public virtual int IndexOf(long value)
         {
             if (withDummy)
                 return Array.BinarySearch(_elements, 1, _elements.Length - 1, value);
@@ -167,7 +172,7 @@ namespace BoboBrowse.Net.Facets.Data
             return Parse(o);
         }
 
-        public bool Contains(long val)
+        public virtual bool Contains(long val)
         {
             if (withDummy)
                 return Array.BinarySearch(_elements, 1, _elements.Length - 1, val) >= 0;
@@ -183,7 +188,7 @@ namespace BoboBrowse.Net.Facets.Data
                 return Array.BinarySearch(_elements, val) >= 0;
         }
 
-        public long[] Elements
+        public virtual long[] Elements
         {
             get { return _elements; }
         }
