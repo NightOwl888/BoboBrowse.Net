@@ -140,9 +140,9 @@ namespace BoboBrowse.Net.Facets.Impl
             return dataCache;
         }
 
-        public class VirtualSimpleFacetHandlerLongArrayComparator : IComparer<object>
+        private class VirtualSimpleFacetHandlerLongArrayComparator : IComparer<object>
         {
-            public int Compare(object big, object small)
+            public virtual int Compare(object big, object small)
             {
                 if (((long[])big).Length != ((long[])small).Length)
                 {
@@ -167,9 +167,9 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public class VirtualSimpleFacetHandlerObjectComparator : IComparer<object>
+        private class VirtualSimpleFacetHandlerObjectComparator : IComparer<object>
         {
-            public int Compare(object big, object small)
+            public virtual int Compare(object big, object small)
             {
                 return string.CompareOrdinal(Convert.ToString(big), Convert.ToString(small));
             }
