@@ -28,7 +28,7 @@ namespace BoboBrowse.Net.Facets.Impl
             if (!zeroBased)
                 _index++;
             _facet = TermLongList.VALUE_MISSING;
-            base._count = 0;
+            base.count = 0;
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// </summary>
         public virtual int FacetCount
         {
-            get { return base._count; }
+            get { return base.count; }
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 throw new IndexOutOfRangeException("No more facets in this iteration");
             _index++;
             _facet = _valList.GetPrimitiveValue(_index);
-            base._count = _count[_index];
+            base.count = _count[_index];
             return _valList.Get(_index);
         }
 
@@ -99,7 +99,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 throw new IndexOutOfRangeException("No more facets in this iteration");
             _index++;
             _facet = _valList.GetPrimitiveValue(_index);
-            base._count = _count[_index];
+            base.count = _count[_index];
             return _facet;
         }
 
@@ -125,12 +125,12 @@ namespace BoboBrowse.Net.Facets.Impl
                 if (_count[_index] >= minHits)
                 {
                     _facet = _valList.GetPrimitiveValue(_index);
-                    base._count = _count[_index];
+                    base.count = _count[_index];
                     return _valList.Format(_facet);
                 }
             }
             _facet = TermLongList.VALUE_MISSING;
-            base._count = 0;
+            base.count = 0;
             return null;
         }
 
@@ -147,12 +147,12 @@ namespace BoboBrowse.Net.Facets.Impl
                 if (_count[_index] >= minHits)
                 {
                     _facet = _valList.GetPrimitiveValue(_index);
-                    base._count = _count[_index];
+                    base.count = _count[_index];
                     return _facet;
                 }
             }
             _facet = TermLongList.VALUE_MISSING;
-            base._count = 0;
+            base.count = 0;
             return _facet;
         }
     }

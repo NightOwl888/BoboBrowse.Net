@@ -338,7 +338,7 @@ namespace BoboBrowse.Net.Facets.Impl
             {
                 if (HasNext())
                 {
-                    base._count = _count[++_idx];
+                    base.count = _count[++_idx];
                     return (_facet = _idx).ToString();
                 }
                 return null;
@@ -350,7 +350,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 {
                     if (_count[++_idx] >= minHits)
                     {
-                        base._count = _count[_idx];
+                        base.count = _count[_idx];
                         return (_facet = _idx).ToString();
                     }
                 }
@@ -361,7 +361,7 @@ namespace BoboBrowse.Net.Facets.Impl
             {
                 if (HasNext())
                 {
-                    base._count = _count[++_idx];
+                    base.count = _count[++_idx];
                     return (_facet = _idx);
                 }
                 return TermIntList.VALUE_MISSING;
@@ -373,7 +373,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 {
                     if (_count[++_idx] >= minHits)
                     {
-                        base._count = _count[_idx];
+                        base.count = _count[_idx];
                         return (_facet = _idx);
                     }
                 }

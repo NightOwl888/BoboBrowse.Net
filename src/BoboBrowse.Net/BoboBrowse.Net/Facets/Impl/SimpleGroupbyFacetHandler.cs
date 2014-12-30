@@ -475,8 +475,8 @@ namespace BoboBrowse.Net.Facets.Impl
                 {
                     _parent = parent;
                     _index = 0;
-                    _stringFacet = null;
-                    _count = 0;
+                    facet = null;
+                    count = 0;
                 }
 
                 /// <summary>
@@ -489,9 +489,9 @@ namespace BoboBrowse.Net.Facets.Impl
                     if ((_index >= 0) && !HasNext())
                         throw new IndexOutOfRangeException("No more facets in this iteration");
                     _index++;
-                    _stringFacet = _parent.GetFacetString(_index);
-                    _count = _parent._count[_index];
-                    return _stringFacet;
+                    facet = _parent.GetFacetString(_index);
+                    count = _parent._count[_index];
+                    return facet;
                 }
 
                 /// <summary>
@@ -523,8 +523,8 @@ namespace BoboBrowse.Net.Facets.Impl
                 {
                     if ((_index >= 0) && !HasNext())
                     {
-                        _count = 0;
-                        _stringFacet = null;
+                        count = 0;
+                        facet = null;
                         return null;
                     }
                     do
@@ -533,15 +533,15 @@ namespace BoboBrowse.Net.Facets.Impl
                     } while ((_index < (_parent._countlength - 1)) && (_parent._count[_index] < minHits));
                     if (_parent._count[_index] >= minHits)
                     {
-                        _stringFacet = _parent.GetFacetString(_index);
-                        _count = _parent._count[_index];
+                        facet = _parent.GetFacetString(_index);
+                        count = _parent._count[_index];
                     }
                     else
                     {
-                        _count = 0;
-                        _stringFacet = null;
+                        count = 0;
+                        facet = null;
                     }
-                    return _stringFacet;
+                    return facet;
                 }
 
                 /// <summary>

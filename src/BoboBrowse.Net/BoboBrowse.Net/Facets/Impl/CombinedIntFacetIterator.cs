@@ -68,7 +68,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     _queue.Add(node);
             }
             _facet = TermIntList.VALUE_MISSING;
-            _count = 0;
+            count = 0;
         }
 
         public CombinedIntFacetIterator(IList<IntFacetIterator> iterators, int minHits)
@@ -82,7 +82,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     _queue.Add(node);
             }
             _facet = TermIntList.VALUE_MISSING;
-            _count = 0;
+            count = 0;
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace BoboBrowse.Net.Facets.Impl
          */
         public virtual int FacetCount
         {
-            get { return _count; }
+            get { return count; }
         }
 
         /* (non-Javadoc)
@@ -123,7 +123,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
             _facet = node._curFacet;
             int next = TermIntList.VALUE_MISSING;
-            _count = 0;
+            count = 0;
             while (HasNext())
             {
                 node = _queue.Top();
@@ -132,7 +132,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 {
                     return Format(_facet);
                 }
-                _count += node._curFacetCount;
+                count += node._curFacetCount;
                 if (node.Fetch(1))
                     _queue.UpdateTop();
                 else
@@ -152,13 +152,13 @@ namespace BoboBrowse.Net.Facets.Impl
             if (qsize == 0)
             {
                 _facet = TermIntList.VALUE_MISSING;
-                _count = 0;
+                count = 0;
                 return null;
             }
 
             IntIteratorNode node = _queue.Top();
             _facet = node._curFacet;
-            _count = node._curFacetCount;
+            count = node._curFacetCount;
             while (true)
             {
                 if (node.Fetch(minHits))
@@ -175,10 +175,10 @@ namespace BoboBrowse.Net.Facets.Impl
                     else
                     {
                         // we reached the end. check if this facet obeys the minHits
-                        if (_count < minHits)
+                        if (count < minHits)
                         {
                             _facet = TermIntList.VALUE_MISSING;
-                            _count = 0;
+                            count = 0;
                             return null;
                         }
                         break;
@@ -188,15 +188,15 @@ namespace BoboBrowse.Net.Facets.Impl
                 if (next != _facet)
                 {
                     // check if this facet obeys the minHits
-                    if (_count >= minHits)
+                    if (count >= minHits)
                         break;
                     // else, continue iterating to the next facet
                     _facet = next;
-                    _count = node._curFacetCount;
+                    count = node._curFacetCount;
                 }
                 else
                 {
-                    _count += node._curFacetCount;
+                    count += node._curFacetCount;
                 }
             }
             return Format(_facet);
@@ -388,7 +388,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
             _facet = node._curFacet;
             int next = TermIntList.VALUE_MISSING;
-            _count = 0;
+            count = 0;
             while (HasNext())
             {
                 node = _queue.Top();
@@ -397,7 +397,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 {
                     return _facet;
                 }
-                _count += node._curFacetCount;
+                count += node._curFacetCount;
                 if (node.Fetch(1))
                     _queue.UpdateTop();
                 else
@@ -413,13 +413,13 @@ namespace BoboBrowse.Net.Facets.Impl
             if (qsize == 0)
             {
                 _facet = TermIntList.VALUE_MISSING;
-                _count = 0;
+                count = 0;
                 return TermIntList.VALUE_MISSING;
             }
 
             IntIteratorNode node = _queue.Top();
             _facet = node._curFacet;
-            _count = node._curFacetCount;
+            count = node._curFacetCount;
             while (true)
             {
                 if (node.Fetch(minHits))
@@ -436,10 +436,10 @@ namespace BoboBrowse.Net.Facets.Impl
                     else
                     {
                         // we reached the end. check if this facet obeys the minHits
-                        if (_count < minHits)
+                        if (count < minHits)
                         {
                             _facet = TermIntList.VALUE_MISSING;
-                            _count = 0;
+                            count = 0;
                         }
                         break;
                     }
@@ -448,15 +448,15 @@ namespace BoboBrowse.Net.Facets.Impl
                 if (next != _facet)
                 {
                     // check if this facet obeys the minHits
-                    if (_count >= minHits)
+                    if (count >= minHits)
                         break;
                     // else, continue iterating to the next facet
                     _facet = next;
-                    _count = node._curFacetCount;
+                    count = node._curFacetCount;
                 }
                 else
                 {
-                    _count += node._curFacetCount;
+                    count += node._curFacetCount;
                 }
             }
             return _facet;

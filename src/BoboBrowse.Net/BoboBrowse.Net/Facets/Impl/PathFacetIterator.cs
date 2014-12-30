@@ -21,8 +21,8 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             _facets = facets.ToArray();
             _index = -1;
-            _stringFacet = null;
-            _count = 0;
+            facet = null;
+            count = 0;
         }
 
         /// <summary>
@@ -35,9 +35,9 @@ namespace BoboBrowse.Net.Facets.Impl
             if ((_index >= 0) && !HasNext())
                 throw new IndexOutOfRangeException("No more facets in this iteration");
             _index++;
-            _stringFacet = _facets[_index].Value;
-            _count = _facets[_index].FacetValueHitCount;
-            return _stringFacet;
+            facet = _facets[_index].Value;
+            count = _facets[_index].FacetValueHitCount;
+            return facet;
         }
 
         /// <summary>
@@ -74,14 +74,14 @@ namespace BoboBrowse.Net.Facets.Impl
             {
                 if (_facets[_index].FacetValueHitCount >= minHits)
                 {
-                    _stringFacet = _facets[_index].Value;
-                    _count = _facets[_index].FacetValueHitCount;
-                    return _stringFacet;
+                    facet = _facets[_index].Value;
+                    count = _facets[_index].FacetValueHitCount;
+                    return facet;
                 }
             }
-            _stringFacet = null;
-            _count = 0;
-            return _stringFacet; 
+            facet = null;
+            count = 0;
+            return facet; 
         }
 
         /// <summary>

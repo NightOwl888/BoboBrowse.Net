@@ -25,8 +25,8 @@ namespace BoboBrowse.Net.Facets.Impl
                 if (iterator.Next(0) != null)
                     Add(iterator);
             }
-            _stringFacet = null;
-            _count = 0;
+            facet = null;
+            count = 0;
         }
 
         private void Add(FacetIterator element)
@@ -109,14 +109,14 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             if (size == 0)
             {
-                _stringFacet = null;
-                _count = 0;
+                facet = null;
+                count = 0;
                 return null;
             }
 
             FacetIterator node = heap[1];
-            _stringFacet = node.Facet;
-            _count = node.Count;
+            facet = node.Facet;
+            count = node.Count;
             int min = (minHits > 0 ? 1 : 0);
             while (true)
             {
@@ -137,31 +137,31 @@ namespace BoboBrowse.Net.Facets.Impl
                     else
                     {
                         // we reached the end. check if this facet obeys the minHits
-                        if (_count < minHits)
+                        if (count < minHits)
                         {
-                            _stringFacet = null;
-                            _count = 0;
+                            facet = null;
+                            count = 0;
                         }
                         break;
                     }
                 }
                 var next = node.Facet;
                 if (next == null) throw new RuntimeException();
-                if (!next.Equals(_stringFacet))
+                if (!next.Equals(facet))
                 {
                     // check if this facet obeys the minHits
-                    if (_count >= minHits)
+                    if (count >= minHits)
                         break;
                     // else, continue iterating to the next facet
-                    _stringFacet = next;
-                    _count = node.Count;
+                    facet = next;
+                    count = node.Count;
                 }
                 else
                 {
-                    _count += node.Count;
+                    count += node.Count;
                 }
             }
-            return Format(_stringFacet);
+            return Format(facet);
         }
 
         /// <summary>

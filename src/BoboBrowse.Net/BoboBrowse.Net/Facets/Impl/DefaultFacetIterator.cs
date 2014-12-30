@@ -27,8 +27,8 @@ namespace BoboBrowse.Net.Facets.Impl
             _lastIndex = _countlength - 1;
             if (!zeroBased)
                 _index++;
-            _stringFacet = null;
-            base._count = 0;
+            facet = null;
+            base.count = 0;
         }
 
         /// <summary>
@@ -50,9 +50,9 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             _index++;
             // TODO: Try to find a way to get this value without having to cast.
-            _stringFacet = Convert.ToString(_valList.GetRawValue(_index));
-            base._count = _count[_index];
-            return Format(_stringFacet);
+            facet = Convert.ToString(_valList.GetRawValue(_index));
+            base.count = _count[_index];
+            return Format(facet);
         }
 
         /// <summary>
@@ -77,13 +77,13 @@ namespace BoboBrowse.Net.Facets.Impl
                 if (_count[_index] >= minHits)
                 {
                     // TODO: Try to find a way to get this value without having to cast.
-                    _stringFacet = Convert.ToString(_valList.GetRawValue(_index));
-                    base._count = _count[_index];
-                    return Format(_stringFacet);
+                    facet = Convert.ToString(_valList.GetRawValue(_index));
+                    base.count = _count[_index];
+                    return Format(facet);
                 }
             }
-            _stringFacet = null;
-            base._count = 0;
+            facet = null;
+            base.count = 0;
             return null;   
         }
 

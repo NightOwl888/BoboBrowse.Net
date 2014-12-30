@@ -13,17 +13,17 @@ namespace BoboBrowse.Net
     /// </summary>
     public abstract class FacetIterator : IIterator<string>
     {
-        protected int _count;
-        protected string _stringFacet;
+        protected int count;
+        protected string facet;
 
         public int Count 
         { 
-            get { return _count; } 
+            get { return count; } 
         }
 
         public string Facet
         {
-            get { return _stringFacet; }
+            get { return facet; }
         }
 
         /// <summary>
