@@ -54,7 +54,7 @@ namespace BoboBrowse.Net.Facets.Impl
         }
 
         /// <summary>
-        /// gets distribution of the value arrays. This is only valid when predefined ranges are available.
+        /// gets distribution of the value arrays. When predefined ranges are available, this returns distribution by predefined ranges.
         /// </summary>
         /// <returns></returns>
         public virtual int[] GetCountDistribution()
