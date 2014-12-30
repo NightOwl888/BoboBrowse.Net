@@ -46,6 +46,11 @@ namespace BoboBrowse.Net.Facets.Data
             }
         }
 
+        public override string Get(int index)
+        {
+            return Format(_elements[index]);
+        }
+
         public override string this[int index]// From IList<string>
         {
             get
