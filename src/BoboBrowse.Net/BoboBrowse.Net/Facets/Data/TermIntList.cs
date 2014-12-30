@@ -61,6 +61,11 @@ namespace BoboBrowse.Net.Facets.Data
             base.Clear();
         }
 
+        public override string Get(int index)
+        {
+            return this[index];
+        }
+
         public override string this[int index]// From IList<string>
         {
             get
@@ -90,7 +95,7 @@ namespace BoboBrowse.Net.Facets.Data
             }
         }
 
-        public int GetPrimitiveValue(int index)
+        public virtual int GetPrimitiveValue(int index)
         {
             if (index < _elements.Length)
                 return _elements[index];
@@ -121,7 +126,7 @@ namespace BoboBrowse.Net.Facets.Data
             }
         }
 
-        public int IndexOf(int value)
+        public virtual int IndexOf(int value)
         {
 
             if (withDummy)
@@ -130,7 +135,23 @@ namespace BoboBrowse.Net.Facets.Data
                 return Array.BinarySearch(_elements, value);
         }
 
-        public int IndexOfWithOffset(int value, int offset)
+        public virtual int indexOfWithOffset(object value, int offset)
+        {
+            if (withDummy)
+            {
+                if (value == null || offset >= _elements.Length)
+                    return -1;
+                int val = Parse(Convert.ToString(value));
+                return Array.BinarySearch(_elements, offset, _elements.Length, val);
+            }
+            else
+            {
+                int val = Parse(Convert.ToString(value));
+                return Array.BinarySearch(_elements, offset, _elements.Length, val);
+            }
+        }
+
+        public virtual int IndexOfWithOffset(int value, int offset)
         {
             if (withDummy)
             {
@@ -180,7 +201,7 @@ namespace BoboBrowse.Net.Facets.Data
             return Parse(o);
         }
 
-        public bool Contains(int val)
+        public virtual bool Contains(int val)
         {
             if (withDummy)
                 return Array.BinarySearch(_elements, 1, _elements.Length - 1, val) >= 0;
@@ -196,7 +217,7 @@ namespace BoboBrowse.Net.Facets.Data
                 return Array.BinarySearch(_elements, val) >= 0;
         }
 
-        public int[] Elements
+        public virtual int[] Elements
         {
             get { return _elements; }
         }
