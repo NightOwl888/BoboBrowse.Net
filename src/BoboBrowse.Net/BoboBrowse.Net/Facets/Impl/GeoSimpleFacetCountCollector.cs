@@ -173,7 +173,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return facet;
         }
 
-        public int GetFacetHitsCount(object value)
+        public virtual int GetFacetHitsCount(object value)
         {
             int[] range = FacetRangeFilter.Parse(_latDataCache, (string)value);
 
