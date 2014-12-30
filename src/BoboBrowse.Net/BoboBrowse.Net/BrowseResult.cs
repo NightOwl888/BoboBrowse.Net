@@ -123,7 +123,7 @@ namespace BoboBrowse.Net
         /// <summary>
         /// Gets or sets the hits
         /// </summary>
-        public BrowseHit[] Hits
+        public virtual BrowseHit[] Hits
         {
             get { return hits == null ? NO_HITS : hits; }
             set { hits = value; }
@@ -132,16 +132,16 @@ namespace BoboBrowse.Net
         /// <summary>
         /// Gets or sets the Search Time in milliseconds
         /// </summary>
-        public long Time { get; set; }
+        public virtual long Time { get; set; }
 
 
         ///<summary>Gets all the facet collections </summary>
-        public IDictionary<string, IFacetAccessible> FacetMap
+        public virtual IDictionary<string, IFacetAccessible> FacetMap
         {
             get { return _facetMap; }
         }
 
-        public MapReduceResult MapReduceResult { get; set; }
+        public virtual MapReduceResult MapReduceResult { get; set; }
 
         public static string ToString(IDictionary<string, IFacetAccessible> map)
         {
@@ -169,7 +169,7 @@ namespace BoboBrowse.Net
             return buf.ToString();
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             this.Dispose(true);
         }
