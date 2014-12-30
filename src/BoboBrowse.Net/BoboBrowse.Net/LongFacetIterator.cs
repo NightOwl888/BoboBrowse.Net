@@ -10,7 +10,7 @@ namespace BoboBrowse.Net
     {
         protected long _facet;
 
-        new public long Facet
+        new public virtual long Facet
         {
             get { return _facet; }
         }
