@@ -104,9 +104,9 @@ namespace BoboBrowse.Net.Facets.Impl
             return new MultiFacetDocComparatorSource(new MultiDataCacheBuilder(Name, _indexFieldName));
         }
 
-        public virtual void SetMaxItems(int maxItems)
+        public virtual int MaxItems
         {
-            _maxItems = Math.Min(maxItems, BigNestedIntArray.MAX_ITEMS);
+            set { _maxItems = Math.Min(value, BigNestedIntArray.MAX_ITEMS); }
         }
 
         public override string[] GetFieldValues(BoboIndexReader reader, int id)
