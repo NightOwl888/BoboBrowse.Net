@@ -1,3 +1,4 @@
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Service
 {
     using System;
@@ -11,9 +12,6 @@ namespace BoboBrowse.Net.Service
 
     public class SelectionNode
     {
-        public string FieldName { get; set; }
-        public DocIdSet DocSet { get; set; }
-
         public SelectionNode()
         {
         }
@@ -23,5 +21,8 @@ namespace BoboBrowse.Net.Service
             FieldName = fieldName;
             DocSet = docSet;
         }
+
+        public virtual string FieldName { get; set; }
+        public virtual DocIdSet DocSet { get; set; }
     }
 }
