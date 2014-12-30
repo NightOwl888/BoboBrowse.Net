@@ -55,7 +55,7 @@ namespace BoboBrowse.Net.Facets.Data
             {
                 if (this.FormatProvider != null)
                 {
-                    return Convert.ToDecimal(o).ToString(this.FormatString, this.FormatProvider);
+                    return Convert.ToDecimal(o, this.FormatProvider).ToString(this.FormatString, this.FormatProvider);
                 }
 
                 return Convert.ToDecimal(o).ToString(this.FormatString);
