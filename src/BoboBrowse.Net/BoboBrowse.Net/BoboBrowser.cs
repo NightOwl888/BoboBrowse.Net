@@ -105,7 +105,7 @@ namespace BoboBrowse.Net
             get { return _subBrowsers[0].FacetNames; }
         }
 
-        public virtual IFacetHandler GetFacetHandler(string name)
+        public override IFacetHandler GetFacetHandler(string name)
         {
             return _subBrowsers[0].GetFacetHandler(name);
         }
