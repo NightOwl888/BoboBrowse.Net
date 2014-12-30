@@ -356,7 +356,7 @@ namespace BoboBrowse.Net.Facets.Data
             this.freqs[0] = maxdoc + 1 - (int)bitset.Cardinality();
         }
 
-        protected void LogOverflow(string fieldName)
+        protected virtual void LogOverflow(string fieldName)
         {
             if (!_overflow)
             {
@@ -365,7 +365,7 @@ namespace BoboBrowse.Net.Facets.Data
             }
         }
 
-        protected BigNestedIntArray.BufferedLoader GetBufferedLoader(int maxdoc, BoboIndexReader.WorkArea workArea)
+        protected virtual BigNestedIntArray.BufferedLoader GetBufferedLoader(int maxdoc, BoboIndexReader.WorkArea workArea)
         {
             if (workArea == null)
             {
@@ -465,14 +465,14 @@ namespace BoboBrowse.Net.Facets.Data
                 throw new ArgumentException("reader must be instance of BoboIndexReader");
             BoboIndexReader boboReader = (BoboIndexReader)reader;
             MultiValueFacetDataCache dataCache = (MultiValueFacetDataCache)cacheBuilder.Build(boboReader);
-            return new MyComparator(dataCache);
+            return new MultiFacetDocComparator(dataCache);
         }
 
-        public sealed class MyComparator : DocComparator
+        public sealed class MultiFacetDocComparator : DocComparator
         {
             private readonly MultiValueFacetDataCache _dataCache;
 
-            public MyComparator(MultiValueFacetDataCache dataCache)
+            public MultiFacetDocComparator(MultiValueFacetDataCache dataCache)
             {
                 _dataCache = dataCache;
             }
