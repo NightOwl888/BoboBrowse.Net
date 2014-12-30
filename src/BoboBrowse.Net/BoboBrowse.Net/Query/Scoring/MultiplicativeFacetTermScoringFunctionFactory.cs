@@ -5,7 +5,7 @@ namespace BoboBrowse.Net.Query.Scoring
 
     public class MultiplicativeFacetTermScoringFunctionFactory : IFacetTermScoringFunctionFactory
     {
-        public IFacetTermScoringFunction GetFacetTermScoringFunction(int termCount, int docCount)
+        public virtual IFacetTermScoringFunction GetFacetTermScoringFunction(int termCount, int docCount)
         {
             return new MultiplicativeFacetTermScoringFunction();
         }
