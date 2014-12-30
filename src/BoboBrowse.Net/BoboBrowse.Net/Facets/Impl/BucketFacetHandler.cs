@@ -16,13 +16,11 @@ namespace BoboBrowse.Net.Facets.Impl
     {
         private static ILog logger = LogManager.GetLogger<BucketFacetHandler>();
         private readonly IDictionary<string, string[]> _predefinedBuckets;
-        private readonly string _name;
         private readonly string _dependsOnFacetName;
 
         public BucketFacetHandler(string name, IDictionary<string, string[]> predefinedBuckets, string dependsOnFacetName)
             : base(name, new string[] { dependsOnFacetName })
         {
-            _name = name;
             _predefinedBuckets = predefinedBuckets;
             _dependsOnFacetName = dependsOnFacetName;
         }
