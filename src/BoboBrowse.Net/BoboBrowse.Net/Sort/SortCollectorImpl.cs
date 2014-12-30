@@ -220,7 +220,7 @@ namespace BoboBrowse.Net.Sort
 
         public override bool AcceptsDocsOutOfOrder
         {
-            get { return _collector == null ? true : _collector.AcceptsDocsOutOfOrder; }
+            get { return this.Collector == null ? true : this.Collector.AcceptsDocsOutOfOrder; }
         }
 
         public override void Collect(int doc)
@@ -362,7 +362,7 @@ namespace BoboBrowse.Net.Sort
                 }
             }
 
-            if (_collector != null) _collector.Collect(doc);
+            if (this.Collector != null) this.Collector.Collect(doc);
         }
 
         private void CollectTotalGroups()

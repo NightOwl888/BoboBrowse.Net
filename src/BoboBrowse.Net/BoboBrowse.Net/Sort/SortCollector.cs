@@ -46,7 +46,6 @@ namespace BoboBrowse.Net.Sort
 
         //public static int BLOCK_SIZE = 4096;
 
-        protected Collector _collector = null;
         protected readonly SortField[] _sortFields;
         protected readonly bool _fetchStoredFields;
         protected bool _closed = false;
@@ -215,16 +214,7 @@ namespace BoboBrowse.Net.Sort
             return new SortCollectorImpl(compSource, sort, browser, offset, count, doScoring, fetchStoredFields, termVectorsToFetch, groupBy, maxPerGroup, collectDocIdCache);
         }
 
-        public virtual SortCollector SetCollector(Collector collector)
-        {
-            _collector = collector;
-            return this;
-        }
-
-        public virtual Collector Collector
-        {
-            get { return _collector; }
-        }
+        public virtual Collector Collector { get; set; }
 
         public virtual void Dispose()
         {
