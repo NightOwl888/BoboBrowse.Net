@@ -116,7 +116,7 @@ namespace BoboBrowse.Net
         /// Gets a set of facet names
         /// </summary>
         /// <returns>set of facet names</returns>
-        public IEnumerable<string> FacetNames
+        public virtual IEnumerable<string> FacetNames
         {
             get
             {
@@ -510,7 +510,7 @@ namespace BoboBrowse.Net
             }
         }
 
-        private class BoboSubBrowserFieldSelector : Lucene.Net.Documents.FieldSelector
+        private class BoboSubBrowserFieldSelector : FieldSelector
         {
             //private static long serialVersionUID = 1L; // NOT USED
             private readonly string _field;
@@ -520,15 +520,15 @@ namespace BoboBrowse.Net
                 this._field = fieldName;
             }
 
-            public Lucene.Net.Documents.FieldSelectorResult Accept(string fieldName)
+            public FieldSelectorResult Accept(string fieldName)
             {
  	            if (fieldName.Equals(_field))
                 {
-                    return Lucene.Net.Documents.FieldSelectorResult.LOAD_AND_BREAK;
+                    return FieldSelectorResult.LOAD_AND_BREAK;
                 }
                 else
                 {
-                    return Lucene.Net.Documents.FieldSelectorResult.NO_LOAD;
+                    return FieldSelectorResult.NO_LOAD;
                 }
             }
         }
