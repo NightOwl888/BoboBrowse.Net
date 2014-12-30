@@ -16,12 +16,12 @@ namespace BoboBrowse.Net
         protected int count;
         protected string facet;
 
-        public int Count 
+        public virtual int Count 
         { 
             get { return count; } 
         }
 
-        public string Facet
+        public virtual string Facet
         {
             get { return facet; }
         }
