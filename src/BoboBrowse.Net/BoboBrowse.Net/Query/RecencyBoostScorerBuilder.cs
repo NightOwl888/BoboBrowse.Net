@@ -39,7 +39,7 @@ namespace BoboBrowse.Net.Query
             _now = timeunit.ToMillis(from);
         }
 
-        public Explanation Explain(IndexReader reader, int doc, Explanation innerExplanation)
+        public virtual Explanation Explain(IndexReader reader, int doc, Explanation innerExplanation)
         {
             if (reader is BoboIndexReader)
             {
@@ -63,7 +63,7 @@ namespace BoboBrowse.Net.Query
                 }
                 else
                 {
-                    throw new InvalidOperationException("underlying facet data must be of type FacetDataCache<Long>");
+                    throw new InvalidOperationException("underlying facet data must be of type FacetDataCache<long>");
                 }
             }
             else
@@ -72,7 +72,7 @@ namespace BoboBrowse.Net.Query
             }
         }
 
-        public Scorer CreateScorer(Scorer innerScorer, IndexReader reader, bool scoreDocsInOrder, bool topScorer)
+        public virtual Scorer CreateScorer(Scorer innerScorer, IndexReader reader, bool scoreDocsInOrder, bool topScorer)
         {
             if (reader is BoboIndexReader)
             {
@@ -87,7 +87,7 @@ namespace BoboBrowse.Net.Query
                 }
                 else
                 {
-                    throw new InvalidOperationException("underlying facet data must be of type FacetDataCache<Long>");
+                    throw new InvalidOperationException("underlying facet data must be of type FacetDataCache<long>");
                 }
             }
             else
@@ -138,7 +138,7 @@ namespace BoboBrowse.Net.Query
         }
 
 
-        protected float ComputeTimeFactor(long timeVal)
+        protected virtual float ComputeTimeFactor(long timeVal)
         {
             long xVal = _now - timeVal;
             if (xVal > _cutoffInMillis)
