@@ -38,7 +38,6 @@ namespace BoboBrowse.Net.Facets.Data
         object GetRawValue(int index);
         string Format(object o);
         int IndexOf(object o);
-        void Add(string o); // TODO: Add boolean return value here.
         List<string> GetInnerList();
         void Seal();
         Type Type { get; }
