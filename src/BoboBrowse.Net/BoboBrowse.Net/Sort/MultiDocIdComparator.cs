@@ -47,7 +47,7 @@ namespace BoboBrowse.Net.Sort
                 _comparators = comparators;
             }
 
-            public int CompareTo(object o)
+            public virtual int CompareTo(object o)
             {
                 MultiDocIdComparable other = (MultiDocIdComparable)o;
                 IComparable c1, c2;
