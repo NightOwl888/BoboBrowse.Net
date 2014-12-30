@@ -47,9 +47,14 @@ namespace BoboBrowse.Net.Facets.Data
         { }
 
         
-        public override void Add(string @value)
+        public override void Add(string value)
         {
-            _innerList.Add(Parse(@value));
+            _innerList.Add(Parse(value));
+        }
+
+        public override string Get(int index)
+        {
+            return this[index];
         }
 
         public override string this[int index]// From IList<string>
@@ -77,7 +82,7 @@ namespace BoboBrowse.Net.Facets.Data
             }
         }
 
-        public double GetPrimitiveValue(int index)
+        public virtual double GetPrimitiveValue(int index)
         {
             if (index < _elements.Length)
                 return _elements[index];
@@ -95,7 +100,7 @@ namespace BoboBrowse.Net.Facets.Data
             return _innerList.BinarySearch(val);
         }
 
-        public int IndexOf(double val)
+        public virtual int IndexOf(double val)
         {
             return Array.BinarySearch(_elements, val);
         }
@@ -128,7 +133,7 @@ namespace BoboBrowse.Net.Facets.Data
             return Parse(o);
         }
 
-        public bool Contains(double val)
+        public virtual bool Contains(double val)
         {
             return Array.BinarySearch(_elements, val) >= 0;
         }
