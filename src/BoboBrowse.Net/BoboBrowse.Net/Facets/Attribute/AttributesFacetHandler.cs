@@ -38,7 +38,7 @@ namespace BoboBrowse.Net.Facets.Attribute
             return @string.Replace("\\[", "").Replace("\\]", "");
         }
 
-        public char GetSeparator(BrowseSelection browseSelection)
+        public virtual char GetSeparator(BrowseSelection browseSelection)
         {
             if (browseSelection == null || !browseSelection.SelectionProperties.ContainsKey(SEPARATOR_PROP_NAME))
             {
@@ -71,7 +71,7 @@ namespace BoboBrowse.Net.Facets.Attribute
             return base.BuildRandomAccessOrFilter(ranges, prop, isNot);
         }
 
-        public int GetFacetsPerKey(BrowseSelection browseSelection)
+        public virtual int GetFacetsPerKey(BrowseSelection browseSelection)
         {
             if (browseSelection == null || !browseSelection.SelectionProperties.ContainsKey(MAX_FACETS_PER_KEY_PROP_NAME))
             {
