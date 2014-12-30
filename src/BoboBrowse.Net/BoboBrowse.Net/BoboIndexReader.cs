@@ -34,10 +34,12 @@ namespace BoboBrowse.Net
     using Lucene.Net.Util;
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Reflection;
     using System.Runtime.CompilerServices;
     using System.Text;
+    using Directory = Lucene.Net.Store.Directory;
 
     /// <summary>
     /// bobo browse index reader
@@ -313,7 +315,7 @@ namespace BoboBrowse.Net
             _runtimeFacetDataMap.Set(null);
         }
 
-        public IRuntimeFacetHandler GetRuntimeFacetHandler(string name)
+        public virtual IRuntimeFacetHandler GetRuntimeFacetHandler(string name)
         {
             var map = _runtimeFacetHandlerMap.Get();
             if (map == null) return null;
@@ -321,7 +323,7 @@ namespace BoboBrowse.Net
             return map.Get(name);
         }
 
-        public void PutRuntimeFacetHandler(string name, IRuntimeFacetHandler data)
+        public virtual void PutRuntimeFacetHandler(string name, IRuntimeFacetHandler data)
         {
             var map = _runtimeFacetHandlerMap.Get();
             if (map == null)
@@ -332,7 +334,7 @@ namespace BoboBrowse.Net
             map.Put(name, data);
         }
 
-        public void ClearRuntimeFacetHandler()
+        public virtual void ClearRuntimeFacetHandler()
         {
             _runtimeFacetHandlerMap.Set(null);
         }
@@ -383,13 +385,13 @@ namespace BoboBrowse.Net
                         {
                             if (visited.Contains(f))
                             {
-                                throw new System.IO.IOException("Facet handler dependency cycle detected, facet handler: " + name + " not loaded");
+                                throw new IOException("Facet handler dependency cycle detected, facet handler: " + name + " not loaded");
                             }
                             LoadFacetHandler(f, loaded, visited, workArea);
                         }
                         if (!loaded.Contains(f))
                         {
-                            throw new System.IO.IOException("unable to load facet handler: " + f);
+                            throw new IOException("unable to load facet handler: " + f);
                         }
                         facetHandler.PutDependedFacetHandler(_facetHandlerMap[f]);
                     }
@@ -453,7 +455,7 @@ namespace BoboBrowse.Net
             return boboReaders;
         }
 
-        public override Lucene.Net.Store.Directory Directory()
+        public override Directory Directory()
         {
             return (_subReaders != null) ? _subReaders[0].Directory() : base.Directory();
         }
@@ -467,7 +469,7 @@ namespace BoboBrowse.Net
                 {
                     // Look for the bobo.spring file in the same directory as the Lucene index
                     var dir = ((FSDirectory)idxDir).Directory;
-                    var springConfigFile = System.IO.Path.Combine(dir.FullName, SPRING_CONFIG);
+                    var springConfigFile = Path.Combine(dir.FullName, SPRING_CONFIG);
                     Type loaderType = Type.GetType("BoboBrowse.Net.Spring.FacetHandlerLoader, BoboBrowse.Net.Spring");
 
                     if (loaderType != null)
@@ -479,7 +481,7 @@ namespace BoboBrowse.Net
                     }
                     else
                     {
-                        if (System.IO.File.Exists(springConfigFile))
+                        if (File.Exists(springConfigFile))
                         {
                             throw new RuntimeException(string.Format(
                                 "There is a file named '{0}' in the Lucene.Net index directory '{1}', but you don't have " + 
@@ -610,9 +612,9 @@ namespace BoboBrowse.Net
         /// Utility method to dump out all fields (name and terms) for a given index.
         /// </summary>
         /// <param name="outStream">Stream to dump to.</param>
-        public virtual void DumpFields(System.IO.Stream outStream)
+        public virtual void DumpFields(Stream outStream)
         {
-            using (var writer = new System.IO.StreamWriter(outStream))
+            using (var writer = new StreamWriter(outStream))
             {
                 var fieldNames = this.FacetNames;
                 foreach (var fieldName in fieldNames)
