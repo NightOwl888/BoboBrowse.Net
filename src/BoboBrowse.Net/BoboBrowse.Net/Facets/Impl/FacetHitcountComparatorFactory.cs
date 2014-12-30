@@ -35,7 +35,7 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             internal int[] counts;
 
-            public int Compare(int f1, int f2)
+            public virtual int Compare(int f1, int f2)
             {
                 int val = counts[f1] - counts[f2];
                 if (val == 0)
@@ -53,7 +53,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         private class DefaultFacetHitsComparer : IComparer<BrowseFacet>
         {
-            public int Compare(BrowseFacet f1, BrowseFacet f2)
+            public virtual int Compare(BrowseFacet f1, BrowseFacet f2)
             {
                 int val = f2.FacetValueHitCount - f1.FacetValueHitCount;
                 if (val == 0)
@@ -66,7 +66,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public static IComparer<BrowseFacet> FACET_HITS_COMPARATOR = new DefaultFacetHitsComparer();
 
-        public IComparer<BrowseFacet> NewComparator()
+        public virtual IComparer<BrowseFacet> NewComparator()
         {
             return FACET_HITS_COMPARATOR;
         }
