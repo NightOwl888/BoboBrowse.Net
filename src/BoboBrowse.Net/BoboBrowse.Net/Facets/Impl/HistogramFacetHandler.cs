@@ -199,12 +199,12 @@ namespace BoboBrowse.Net.Facets.Impl
                 return 0;
             }
 
-            public virtual void Collect(int docid)
+            public void Collect(int docid)
             {
                 _baseCollector.Collect(docid);
             }
 
-            public virtual void CollectAll()
+            public void CollectAll()
             {
                 _baseCollector.CollectAll();
             }
