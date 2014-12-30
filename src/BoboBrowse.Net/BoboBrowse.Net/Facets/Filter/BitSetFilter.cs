@@ -26,7 +26,7 @@ namespace BoboBrowse.Net.Facets.Filter
             this.facetDataCacheBuilder = facetDataCacheBuilder;
         }
 
-        public OpenBitSet GetBitSet(FacetDataCache dataCache)
+        public virtual OpenBitSet GetBitSet(FacetDataCache dataCache)
         {
             if (lastCache == dataCache)
             {
