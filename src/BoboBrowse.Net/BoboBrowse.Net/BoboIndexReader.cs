@@ -273,7 +273,7 @@ namespace BoboBrowse.Net
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public virtual IndexReader Reopen(bool openReadOnly)
+        public override IndexReader Reopen(bool openReadOnly)
         {
             // bobo readers are always readonly 
             return Reopen();
