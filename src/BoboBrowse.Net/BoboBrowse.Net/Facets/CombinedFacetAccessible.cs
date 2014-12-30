@@ -29,7 +29,7 @@ namespace BoboBrowse.Net.Facets
             return "_list:" + _list + " _fspec:" + _fspec;
         }
 
-        public BrowseFacet GetFacet(string value)
+        public virtual BrowseFacet GetFacet(string value)
         {
             if (_closed)
             {
@@ -54,7 +54,7 @@ namespace BoboBrowse.Net.Facets
             return new BrowseFacet(foundValue, sum);
         }
 
-        public int GetCappedFacetCount(object value, int cap)
+        public virtual int GetCappedFacetCount(object value, int cap)
         {
             if (_closed)
             {
@@ -76,7 +76,7 @@ namespace BoboBrowse.Net.Facets
             return sum;
         }
 
-        public int GetFacetHitsCount(object value)
+        public virtual int GetFacetHitsCount(object value)
         {
             if (_closed)
             {
@@ -93,7 +93,7 @@ namespace BoboBrowse.Net.Facets
             return sum;
         }
 
-        public IEnumerable<BrowseFacet> GetFacets()
+        public virtual IEnumerable<BrowseFacet> GetFacets()
         {
             if (_closed)
             {
@@ -206,7 +206,7 @@ namespace BoboBrowse.Net.Facets
 
         private class BrowseFacetComparator : IComparer<BrowseFacet>
         {
-            public int Compare(BrowseFacet f1, BrowseFacet f2)
+            public virtual int Compare(BrowseFacet f1, BrowseFacet f2)
             {
  	            int val = f2.FacetValueHitCount - f1.FacetValueHitCount;
                 if (val==0)
@@ -240,7 +240,7 @@ namespace BoboBrowse.Net.Facets
             }
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             this.Dispose(true);
         }
@@ -269,7 +269,7 @@ namespace BoboBrowse.Net.Facets
             }
         }
 
-        public FacetIterator Iterator()
+        public virtual FacetIterator Iterator()
         {
             if (_closed)
             {
