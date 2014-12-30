@@ -129,9 +129,9 @@ namespace BoboBrowse.Net.Facets.Range
             return dataCache;
         }
 
-        public void SetMaxItems(int maxItems)
+        public virtual int MaxItems
         {
-            this.maxItems = maxItems;
+            set { this.maxItems = value; }
         }
     }
 }
