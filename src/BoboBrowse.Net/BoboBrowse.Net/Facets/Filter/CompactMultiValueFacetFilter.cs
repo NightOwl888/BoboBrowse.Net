@@ -26,7 +26,7 @@ namespace BoboBrowse.Net.Facets.Filter
             _vals = vals;
         }
 
-        public double GetFacetSelectivity(BoboIndexReader reader)
+        public override double GetFacetSelectivity(BoboIndexReader reader)
         {
             double selectivity = 0;
             FacetDataCache dataCache = _facetHandler.GetFacetData<FacetDataCache>(reader);
