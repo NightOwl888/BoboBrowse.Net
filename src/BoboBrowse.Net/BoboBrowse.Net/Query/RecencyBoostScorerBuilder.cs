@@ -115,7 +115,6 @@ namespace BoboBrowse.Net.Query
             public override float Score()
             {
                 float rawScore = _innerScorer.Score();
-                // TODO: Try to find a way to get this value without having to cast.
                 long timeVal = (long)_termList.GetRawValue(_orderArray.Get(_innerScorer.DocID()));
                 float timeScore = _parent.ComputeTimeFactor(timeVal);
                 return RecencyBoostScorerBuilder.CombineScores(timeScore, rawScore);

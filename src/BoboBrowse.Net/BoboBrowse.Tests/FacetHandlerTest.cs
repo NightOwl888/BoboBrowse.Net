@@ -95,7 +95,7 @@ namespace BoboBrowse.Tests
 
             var s3 = new HashSet<string>();
             s3.Add("A");
-            s2.Add("D"); // TODO: BUG: Should this be s3?
+            s2.Add("D");
             var h3 = new NoopFacetHandler("C", s3);
             list.Add(h3);
 
@@ -172,7 +172,7 @@ namespace BoboBrowse.Tests
 
             var s3 = new HashSet<string>();
             s3.Add("A");
-            s2.Add("D"); // TODO: BUG: Should this be s3?
+            s2.Add("D");
             var h3 = new NoopFacetHandler("C", s3);
             list.Add(h3);
 

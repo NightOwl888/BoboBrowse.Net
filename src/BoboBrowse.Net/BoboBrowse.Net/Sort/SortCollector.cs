@@ -123,7 +123,7 @@ namespace BoboBrowse.Net.Sort
             {
                 BoboCustomSortField custField = (BoboCustomSortField)sf;
                 DocComparatorSource src = custField.GetCustomComparatorSource();
-                Debug.Assert(src != null); // TODO: Should this be a guard clause?
+                Debug.Assert(src != null);
                 compSource = src;
             }
             else
@@ -133,7 +133,7 @@ namespace BoboBrowse.Net.Sort
                 if (facetNames.Contains(sortName))
                 {
                     var handler = browser.GetFacetHandler(sortName);
-                    Debug.Assert(handler != null); // TODO: Should this be a guard clause?
+                    Debug.Assert(handler != null);
                     compSource = handler.GetDocComparatorSource();
                 }
                 else

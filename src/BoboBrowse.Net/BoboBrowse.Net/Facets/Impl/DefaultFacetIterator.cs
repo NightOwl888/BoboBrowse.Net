@@ -49,7 +49,6 @@ namespace BoboBrowse.Net.Facets.Impl
         public override string Next()
         {
             _index++;
-            // TODO: Try to find a way to get this value without having to cast.
             facet = Convert.ToString(_valList.GetRawValue(_index));
             base.count = _count[_index];
             return Format(facet);
@@ -76,7 +75,6 @@ namespace BoboBrowse.Net.Facets.Impl
             {
                 if (_count[_index] >= minHits)
                 {
-                    // TODO: Try to find a way to get this value without having to cast.
                     facet = Convert.ToString(_valList.GetRawValue(_index));
                     base.count = _count[_index];
                     return Format(facet);

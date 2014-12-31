@@ -11,7 +11,7 @@ namespace BoboBrowse.Net.Util
 
         private readonly int _maxSize;
         public BoundedPriorityQueue(int maxSize)
-            : base() // TODO: This may be a bug in the original bobo source - why was the size not being set with this overload?
+            : base()
         {
             this._maxSize = maxSize;
         }

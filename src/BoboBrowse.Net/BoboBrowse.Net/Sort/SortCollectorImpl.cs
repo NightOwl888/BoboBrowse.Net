@@ -145,7 +145,6 @@ namespace BoboBrowse.Net.Sort
         {
             // TODO: Work out what to do about collectDocIdCache, which currently does nothing.
 
-            // TODO: Make this a guard clause?
             Debug.Assert(offset >= 0 && count >= 0);
             _boboBrowser = boboBrowser;
             _compSource = compSource;
