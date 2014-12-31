@@ -684,12 +684,15 @@ namespace BoboBrowse.Net
         {
             if (!Check(result, numHits, choiceMap, ids))
             {
+                //Format the choice map using LINQ
+                string choices = (choiceMap == null) ? "" : string.Join("\n", choiceMap.Select(kvp => string.Format("{0} = {1}", kvp.Key, string.Join(", ", kvp.Value.Select(x => x.ToString()).ToArray()))).ToArray());
+
                 StringBuilder buffer = new StringBuilder();
                 buffer.Append("Test: ").Append(new StackFrame(1).GetMethod().Name).Append("\n");
                 buffer.Append("Result check failed: \n");
                 buffer.Append("expected: \n");
                 buffer.Append(numHits).Append(" hits\n");
-                buffer.Append(choiceMap).Append('\n'); // TODO: Format the choice map using LINQ
+                buffer.Append(choices).Append('\n');
                 buffer.Append(Arrays.ToString(ids)).AppendLine().AppendLine();
                 buffer.Append("gotten: \n");
                 buffer.Append(result.NumHits).Append(" hits\n");
