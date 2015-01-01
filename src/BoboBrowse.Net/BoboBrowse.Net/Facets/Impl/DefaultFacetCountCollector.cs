@@ -40,11 +40,10 @@ namespace BoboBrowse.Net.Facets.Impl
         protected internal readonly BrowseSelection _sel;
         protected internal readonly BigSegmentedArray _array;
         private int _docBase;
+        // NOTE: Removed memory manager implementation
         //protected readonly List<int[]> intarraylist = new List<int[]>();
-        //private Iterator _iterator;
+        //private Iterator _iterator; // NOT USED
         private bool _closed = false;
-
-        // TODO: Need to determine if the memory manger is necessary
 
         public DefaultFacetCountCollector(string name, FacetDataCache dataCache, int docBase, BrowseSelection sel, FacetSpec ospec)
         {
@@ -62,6 +61,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 _countlength = _dataCache.Freqs.Length;
                 _count = new int[_countlength];
 
+                // NOTE: Removed memory manager implementation
                 //_count = intarraymgr.get(_countlength);//new int[_dataCache.freqs.length];
                 //intarraylist.add(_count);
             }
@@ -237,7 +237,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     return;
                 }
                 _closed = true;
-                // TODO: memory manager implementation
+                // NOTE: Removed memory manager implementation
                 //while (!intarraylist.isEmpty())
                 //{
                 //    intarraymgr.release(intarraylist.poll());
