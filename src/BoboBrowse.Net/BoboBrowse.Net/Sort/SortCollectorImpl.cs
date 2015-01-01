@@ -143,8 +143,6 @@ namespace BoboBrowse.Net.Sort
             bool collectDocIdCache)
             : base(sortFields, fetchStoredFields)
         {
-            // TODO: Work out what to do about collectDocIdCache, which currently does nothing.
-
             Debug.Assert(offset >= 0 && count >= 0);
             _boboBrowser = boboBrowser;
             _compSource = compSource;

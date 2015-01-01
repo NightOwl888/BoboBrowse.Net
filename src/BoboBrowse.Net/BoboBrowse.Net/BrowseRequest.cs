@@ -131,6 +131,7 @@ namespace BoboBrowse.Net
 
         public virtual int MaxPerGroup { get; set; }
 
+        [Obsolete("CollectDocIdCache not implemented.")]
         public virtual bool CollectDocIdCache { get; set; }
 
         /// <summary>
