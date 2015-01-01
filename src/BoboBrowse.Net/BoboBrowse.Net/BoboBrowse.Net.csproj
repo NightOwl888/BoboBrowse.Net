@@ -278,6 +278,7 @@
     <Compile Include="Support\AtomicLong.cs" />
     <Compile Include="Support\DateTimeExtensions.cs" />
     <Compile Include="Support\IIterator.cs" />
+    <Compile Include="Support\IListExtensions.cs" />
     <Compile Include="Support\MathUtil.cs" />
     <Compile Include="Support\ParseException.cs" />
     <Compile Include="Support\Properties.cs" />
