@@ -22,7 +22,6 @@
 //* send mail to owner@browseengine.com. 
 
 ﻿// Version compatibility level: 3.1.0
-// EXCEPTION: We are using object instead of string for the BrowseFacet.Value property.
 namespace BoboBrowse.Net.Util
 {
     using BoboBrowse.Net.Facets.Impl;
