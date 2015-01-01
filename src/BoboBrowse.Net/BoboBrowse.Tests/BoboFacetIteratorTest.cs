@@ -89,7 +89,7 @@ namespace BoboBrowse.Net
         }
 
         [Test]
-        public void TestDefaultFaccetIterator()
+        public void TestDefaultFacetIterator()
         {
             TermStringList tsl1 = new TermStringList();
             tsl1.Add("i");
