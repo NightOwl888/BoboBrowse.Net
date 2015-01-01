@@ -106,7 +106,7 @@ namespace BoboBrowse.Net
             int numIters = 200;
 
             string fname1 = "facet1";
-            string fname2 = "facet2";
+            //string fname2 = "facet2"; // NOT USED
             FacetSpec fspec = new FacetSpec();
             fspec.ExpandSelection = (true);
             fspec.MaxCount = (50);
@@ -173,8 +173,8 @@ namespace BoboBrowse.Net
             for (int i=0;i<count;++i){
                 list.add(i);
             }*/
-            int v1 = 1;
-            int v2 = 2;
+            //int v1 = 1; // NOT USED
+            //int v2 = 2; // NOT USED
             Console.WriteLine("start");
             long s = System.Environment.TickCount;
             for (int i = 0; i < count; ++i)
