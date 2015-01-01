@@ -221,7 +221,7 @@ namespace BoboBrowse.Net.Facets.Attribute
         }
 
         [Test]
-        public void test9ModifiedNumberOfFacetsPerKey()
+        public void Test9ModifiedNumberOfFacetsPerKey()
         {
             ModifiedSetup();
             BrowseRequest request = CreateRequest(1, BrowseSelection.ValueOperation.ValueOperationOr);
