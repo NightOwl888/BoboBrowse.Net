@@ -60,8 +60,6 @@ namespace BoboBrowse.Net.Facets.Impl
             throw new NotSupportedException("remove() method not supported for Facet Iterators");
         }
 
-        // TODO: It looks like the FacetIterator and this class can be made generic to support the various behaviors
-
         /// <summary>
         /// (non-Javadoc)
         /// see com.browseengine.bobo.api.FacetIterator#next(int)
