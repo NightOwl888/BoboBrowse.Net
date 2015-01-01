@@ -1,17 +1,19 @@
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Service
 {
-    using System.IO;
     using BoboBrowse.Net;
     using Common.Logging;
     using Lucene.Net.Index;
     using Lucene.Net.Store;
+    using System;
+    using System.IO;
 
     public class BoboService
     {
         private static ILog logger = LogManager.GetLogger(typeof(BoboService));
 
-        private readonly DirectoryInfo idxDir;
-        private BoboIndexReader boboReader;
+        private readonly DirectoryInfo _idxDir;
+        private BoboIndexReader _boboReader;
 
         public BoboService(string path)
             : this(new DirectoryInfo(path))
@@ -20,8 +22,8 @@ namespace BoboBrowse.Net.Service
 
         public BoboService(DirectoryInfo idxDir)
         {
-            this.idxDir = idxDir;
-            boboReader = null;
+            this._idxDir = idxDir;
+            _boboReader = null;
         }
 
         public virtual BrowseResult Browse(BrowseRequest req)
@@ -29,12 +31,12 @@ namespace BoboBrowse.Net.Service
             BoboBrowser browser = null;
             try
             {
-                browser = new BoboBrowser(boboReader);
+                browser = new BoboBrowser(_boboReader);
                 return browser.Browse(req);
             }
-            catch (BrowseException be)
+            catch (Exception e)
             {
-                logger.Error(be.Message, be);
+                logger.Error(e.Message, e);
                 return new BrowseResult();
             }
             finally
@@ -45,7 +47,7 @@ namespace BoboBrowse.Net.Service
                     {
                         browser.Dispose();
                     }
-                    catch (IOException e)
+                    catch (Exception e)
                     {
                         logger.Error(e.Message);
                     }
@@ -55,10 +57,10 @@ namespace BoboBrowse.Net.Service
 
         public virtual void Start()
         {
-            IndexReader reader = IndexReader.Open(FSDirectory.Open(idxDir), true);
+            IndexReader reader = IndexReader.Open(FSDirectory.Open(_idxDir), true);
             try
             {
-                boboReader = BoboIndexReader.GetInstance(reader);
+                _boboReader = BoboIndexReader.GetInstance(reader);
             }
             catch
             {
@@ -71,13 +73,13 @@ namespace BoboBrowse.Net.Service
 
         public virtual void Shutdown()
         {
-            if (boboReader != null)
+            if (_boboReader != null)
             {
                 try
                 {
-                    boboReader.Dispose();
+                    _boboReader.Dispose();
                 }
-                catch (IOException e)
+                catch (Exception e)
                 {
                     logger.Error(e.Message);
                 }

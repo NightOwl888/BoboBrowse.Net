@@ -23,6 +23,7 @@
 /// * <or other contact info for bobo-browse; snail mail/email/both> </summary>
 /// 
 
+// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Service
 {
     using System;
