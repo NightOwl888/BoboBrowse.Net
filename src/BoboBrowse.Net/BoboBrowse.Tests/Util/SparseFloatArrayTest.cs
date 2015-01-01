@@ -39,6 +39,7 @@ namespace BoboBrowse.Net.Util
         //private const long SEED = -1587797429870936371L;
 
         [Test]
+        [Category("LongRunning")]
         public void TestSpeed()
         {
             float[] orig = new float[32 * 1024 * 1024];

@@ -96,6 +96,7 @@ namespace BoboBrowse.Net.Util
         }
 
         [Test]
+        [Category("LongRunning")]
         public void TestSpeed()
         {
             Random r = new Random();

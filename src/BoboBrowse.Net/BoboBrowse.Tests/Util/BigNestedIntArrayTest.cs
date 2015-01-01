@@ -80,6 +80,7 @@ namespace BoboBrowse.Net.Util
         }
 
         [Test]
+        [Category("LongRunning")]
         public void TestBufferedLoaderReuse()
         {
             int maxId = 5000;
@@ -175,6 +176,7 @@ namespace BoboBrowse.Net.Util
         }
 
         [Test]
+        [Category("LongRunning")]
         public void TestAllocThenAddData()
         {
             int maxId = 5000;
