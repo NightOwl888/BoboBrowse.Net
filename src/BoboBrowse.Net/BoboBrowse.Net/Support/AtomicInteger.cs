@@ -19,5 +19,10 @@
         {
             return Interlocked.Increment(ref _value);
         }
+
+        public int GetAndAdd(int value)
+        {
+            return Interlocked.Add(ref _value, value);
+        }
     }
 }

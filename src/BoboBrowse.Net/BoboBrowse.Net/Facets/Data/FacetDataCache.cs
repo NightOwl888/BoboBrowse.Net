@@ -72,26 +72,31 @@ namespace BoboBrowse.Net.Facets.Data
         public virtual ITermValueList ValArray
         {
             get { return this.valArray; }
+            internal set { this.valArray = value; }
         }
 
         public virtual BigSegmentedArray OrderArray
         {
             get { return this.orderArray; }
+            internal set { this.orderArray = value; }
         }
 
         public virtual int[] Freqs
         {
             get { return freqs; }
+            internal set { freqs = value; }
         }
 
         public virtual int[] MinIDs
         {
             get { return minIDs; }
+            internal set { minIDs = value; }
         }
 
         public virtual int[] MaxIDs
         {
             get { return maxIDs; }
+            internal set { maxIDs = value; }
         }
 
         

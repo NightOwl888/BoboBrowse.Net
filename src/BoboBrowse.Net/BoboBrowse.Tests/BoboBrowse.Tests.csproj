@@ -126,6 +126,7 @@
     <Compile Include="BasicTests.cs" />
     <Compile Include="BoboFacetIteratorTest.cs" />
     <Compile Include="BoboTestCase.cs" />
+    <Compile Include="FacetMergePerf.cs" />
     <Compile Include="FacetNameTest.cs" />
     <Compile Include="FacetHandlerTest.cs" />
     <Compile Include="FacetNotValuesTest.cs" />
