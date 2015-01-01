@@ -68,67 +68,217 @@ namespace BoboBrowse.Net
         
         private readonly CloseableThreadLocal<IDictionary<string, IRuntimeFacetHandler>> _runtimeFacetHandlerMap = new CloseableThreadLocal<IDictionary<string, IRuntimeFacetHandler>>();
 
+        private readonly bool _autoClose = false;
+
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="reader">Index reader</param>
-        /// <returns></returns>
+        /// <returns>A new BoboIndexReader instance.</returns>
         public static BoboIndexReader GetInstance(IndexReader reader)
         {
-            return BoboIndexReader.GetInstance(reader, null, null, new WorkArea());
-        }
-
-        public static BoboIndexReader GetInstance(IndexReader reader, WorkArea workArea)
-        {
-            return BoboIndexReader.GetInstance(reader, null, null, workArea);
+            return BoboIndexReader.GetInstance(reader, null, null, new WorkArea(), false);
         }
 
         /// <summary>
-        /// Constructor.
+        /// Constructor
         /// </summary>
-        /// <param name="reader">index reader</param>
+        /// <param name="reader">Index reader</param>
+        /// <param name="autoClose">True to close the underlying IndexReader when this instance is closed.</param>
+        /// <returns>A new BoboIndexReader instance.</returns>
+        public static BoboIndexReader GetInstance(IndexReader reader, bool autoClose)
+        {
+            return BoboIndexReader.GetInstance(reader, null, null, new WorkArea(), autoClose);
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="reader">Index reader</param>
+        /// <param name="workArea">A service locator that can be used to inject custom objects.</param>
+        /// <returns>A new BoboIndexReader instance.</returns>
+        public static BoboIndexReader GetInstance(IndexReader reader, WorkArea workArea)
+        {
+            return BoboIndexReader.GetInstance(reader, null, null, workArea, false);
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="reader">Index reader</param>
+        /// <param name="workArea">A service locator that can be used to inject custom objects.</param>
+        /// <param name="autoClose">True to close the underlying IndexReader when this instance is closed.</param>
+        /// <returns>A new BoboIndexReader instance.</returns>
+        public static BoboIndexReader GetInstance(IndexReader reader, WorkArea workArea, bool autoClose)
+        {
+            return BoboIndexReader.GetInstance(reader, null, null, workArea, autoClose);
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="reader">Index reader</param>
         /// <param name="facetHandlers">List of facet handlers</param>
-        /// <param name="facetHandlerFactories"></param>
-        /// <returns></returns>
+        /// <param name="facetHandlerFactories">List of factories to create facet handler instances at runtime.</param>
+        /// <returns>A new BoboIndexReader instance.</returns>
         public static BoboIndexReader GetInstance(IndexReader reader, IEnumerable<IFacetHandler> facetHandlers, IEnumerable<IRuntimeFacetHandlerFactory> facetHandlerFactories)
         {
-            return BoboIndexReader.GetInstance(reader, facetHandlers, facetHandlerFactories, new WorkArea());
+            return BoboIndexReader.GetInstance(reader, facetHandlers, facetHandlerFactories, new WorkArea(), false);
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="reader">Index reader</param>
+        /// <param name="facetHandlers">List of facet handlers</param>
+        /// <param name="facetHandlerFactories"></param>
+        /// <param name="autoClose">True to close the underlying IndexReader when this instance is closed.</param>
+        /// <returns>A new BoboIndexReader instance.</returns>
+        public static BoboIndexReader GetInstance(IndexReader reader, IEnumerable<IFacetHandler> facetHandlers, IEnumerable<IRuntimeFacetHandlerFactory> facetHandlerFactories, bool autoClose)
+        {
+            return BoboIndexReader.GetInstance(reader, facetHandlers, facetHandlerFactories, new WorkArea(), autoClose);
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="reader">Index reader</param>
+        /// <param name="facetHandlers">List of facet handlers</param>
+        /// <returns>A new BoboIndexReader instance.</returns>
         public static BoboIndexReader GetInstance(IndexReader reader, IEnumerable<IFacetHandler> facetHandlers)
         {
-            return BoboIndexReader.GetInstance(reader, facetHandlers, new IRuntimeFacetHandlerFactory[0], new WorkArea());
+            return BoboIndexReader.GetInstance(reader, facetHandlers, new IRuntimeFacetHandlerFactory[0], new WorkArea(), false);
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="reader">Index reader</param>
+        /// <param name="facetHandlers">List of facet handlers</param>
+        /// <param name="autoClose">True to close the underlying IndexReader when this instance is closed.</param>
+        /// <returns>A new BoboIndexReader instance.</returns>
+        public static BoboIndexReader GetInstance(IndexReader reader, IEnumerable<IFacetHandler> facetHandlers, bool autoClose)
+        {
+            return BoboIndexReader.GetInstance(reader, facetHandlers, new IRuntimeFacetHandlerFactory[0], new WorkArea(), autoClose);
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="reader">Index reader</param>
+        /// <param name="facetHandlers">List of facet handlers</param>
+        /// <param name="facetHandlerFactories">List of factories to create facet handler instances at runtime.</param>
+        /// <param name="workArea">A service locator that can be used to inject custom objects.</param>
+        /// <returns>A new BoboIndexReader instance.</returns>
         public static BoboIndexReader GetInstance(IndexReader reader, IEnumerable<IFacetHandler> facetHandlers, IEnumerable<IRuntimeFacetHandlerFactory> facetHandlerFactories, WorkArea workArea)
         {
-            BoboIndexReader boboReader = new BoboIndexReader(reader, facetHandlers, facetHandlerFactories, workArea);
+            return BoboIndexReader.GetInstance(reader, facetHandlers, facetHandlerFactories, workArea, false);
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="reader">Index reader</param>
+        /// <param name="facetHandlers">List of facet handlers</param>
+        /// <param name="facetHandlerFactories">List of factories to create facet handler instances at runtime.</param>
+        /// <param name="workArea">A service locator that can be used to inject custom objects.</param>
+        /// <param name="autoClose">True to close the underlying IndexReader when this instance is closed.</param>
+        /// <returns>A new BoboIndexReader instance.</returns>
+        public static BoboIndexReader GetInstance(IndexReader reader, IEnumerable<IFacetHandler> facetHandlers, IEnumerable<IRuntimeFacetHandlerFactory> facetHandlerFactories, WorkArea workArea, bool autoClose)
+        {
+            BoboIndexReader boboReader = new BoboIndexReader(reader, facetHandlers, facetHandlerFactories, workArea, autoClose);
             boboReader.FacetInit();
             return boboReader;
         }
 
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="reader">Index reader</param>
+        /// <returns>A new BoboIndexReader instance.</returns>
         public static BoboIndexReader GetInstanceAsSubReader(IndexReader reader)
         {
-            return GetInstanceAsSubReader(reader, null, null, new WorkArea());
+            return GetInstanceAsSubReader(reader, null, null, new WorkArea(), false);
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="reader">Index reader</param>
+        /// <param name="autoClose">True to close the underlying IndexReader when this instance is closed.</param>
+        /// <returns>A new BoboIndexReader instance.</returns>
+        public static BoboIndexReader GetInstanceAsSubReader(IndexReader reader, bool autoClose)
+        {
+            return GetInstanceAsSubReader(reader, null, null, new WorkArea(), autoClose);
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="reader">Index reader</param>
+        /// <param name="facetHandlers">List of facet handlers</param>
+        /// <param name="facetHandlerFactories">List of factories to create facet handler instances at runtime.</param>
+        /// <returns>A new BoboIndexReader instance.</returns>
         public static BoboIndexReader GetInstanceAsSubReader(IndexReader reader,
                                                        IEnumerable<IFacetHandler> facetHandlers,
                                                        IEnumerable<IRuntimeFacetHandlerFactory> facetHandlerFactories)
         {
-            return GetInstanceAsSubReader(reader, facetHandlers, facetHandlerFactories, new WorkArea());
+            return GetInstanceAsSubReader(reader, facetHandlers, facetHandlerFactories, new WorkArea(), false);
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="reader">Index reader</param>
+        /// <param name="facetHandlers">List of facet handlers</param>
+        /// <param name="facetHandlerFactories">List of factories to create facet handler instances at runtime.</param>
+        /// <param name="autoClose">True to close the underlying IndexReader when this instance is closed.</param>
+        /// <returns>A new BoboIndexReader instance.</returns>
+        public static BoboIndexReader GetInstanceAsSubReader(IndexReader reader,
+                                                       IEnumerable<IFacetHandler> facetHandlers,
+                                                       IEnumerable<IRuntimeFacetHandlerFactory> facetHandlerFactories,
+                                                       bool autoClose)
+        {
+            return GetInstanceAsSubReader(reader, facetHandlers, facetHandlerFactories, new WorkArea(), autoClose);
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="reader">Index reader</param>
+        /// <param name="facetHandlers">List of facet handlers</param>
+        /// <param name="facetHandlerFactories">List of factories to create facet handler instances at runtime.</param>
+        /// <param name="workArea">A service locator that can be used to inject custom objects.</param>
+        /// <returns>A new BoboIndexReader instance.</returns>
         public static BoboIndexReader GetInstanceAsSubReader(IndexReader reader,
                                                        IEnumerable<IFacetHandler> facetHandlers,
                                                        IEnumerable<IRuntimeFacetHandlerFactory> facetHandlerFactories,
                                                        WorkArea workArea)
         {
-            BoboIndexReader boboReader = new BoboIndexReader(reader, facetHandlers, facetHandlerFactories, workArea, false);
+            return GetInstanceAsSubReader(reader, facetHandlers, facetHandlerFactories, workArea, false);
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="reader">Index reader</param>
+        /// <param name="facetHandlers">List of facet handlers</param>
+        /// <param name="facetHandlerFactories">List of factories to create facet handler instances at runtime.</param>
+        /// <param name="workArea">A service locator that can be used to inject custom objects.</param>
+        /// <param name="autoClose">True to close the underlying IndexReader when this instance is closed.</param>
+        /// <returns>A new BoboIndexReader instance.</returns>
+        public static BoboIndexReader GetInstanceAsSubReader(IndexReader reader,
+                                                       IEnumerable<IFacetHandler> facetHandlers,
+                                                       IEnumerable<IRuntimeFacetHandlerFactory> facetHandlerFactories,
+                                                       WorkArea workArea,
+                                                       bool autoClose)
+        {
+            BoboIndexReader boboReader = new BoboIndexReader(reader, facetHandlers, facetHandlerFactories, workArea, autoClose, false);
             boboReader.FacetInit();
             return boboReader;
         }
+
 
         public override long Version
         {
@@ -352,10 +502,13 @@ namespace BoboBrowse.Net
             // BUG: DoClose() already calls close on the inner reader
             //if (_srcReader != null) _srcReader.Close();
 
-            // BUG: We don't want to close the underlying index reader
+            // We don't want to close the underlying index reader by default
             // because it should be closed in its own try block or using statement
             // and closing it twice causes an exception.
-            //base.DoClose();
+            if (_autoClose)
+            {
+                base.DoClose();
+            }
         }
 
         protected override void DoCommit(IDictionary<string, string> commitUserData)
@@ -445,12 +598,12 @@ namespace BoboBrowse.Net
                 boboReaders = new BoboIndexReader[subReaderCount];
                 for (int i = 0; i < subReaderCount; i++)
                 {
-                    boboReaders[i] = new BoboIndexReader(subReaders[i], null, null, workArea, false);
+                    boboReaders[i] = new BoboIndexReader(subReaders[i], null, null, workArea, true, false);
                 }
             }
             else
             {
-                boboReaders = new BoboIndexReader[] { new BoboIndexReader(reader, null, null, workArea, false) };
+                boboReaders = new BoboIndexReader[] { new BoboIndexReader(reader, null, null, workArea, true, false) };
             }
             return boboReaders;
         }
@@ -516,10 +669,12 @@ namespace BoboBrowse.Net
         protected BoboIndexReader(IndexReader reader, 
             IEnumerable<IFacetHandler> facetHandlers, 
             IEnumerable<IRuntimeFacetHandlerFactory> facetHandlerFactories, 
-            WorkArea workArea)
-            : this(reader, facetHandlers, facetHandlerFactories, workArea, true)
+            WorkArea workArea,
+            bool autoClose)
+            : this(reader, facetHandlers, facetHandlerFactories, workArea, autoClose, true)
         {
             _srcReader = reader;
+            _autoClose = autoClose;
         }
 
         /// <summary>
@@ -535,6 +690,7 @@ namespace BoboBrowse.Net
             IEnumerable<IFacetHandler> facetHandlers,
             IEnumerable<IRuntimeFacetHandlerFactory> facetHandlerFactories,
             WorkArea workArea,
+            bool autoClose,
             bool useSubReaders)
             : base(useSubReaders ? new MultiReader(CreateSubReaders(reader, workArea)) : reader)
         {
@@ -569,6 +725,7 @@ namespace BoboBrowse.Net
             }
             _facetHandlers = facetHandlers;
             _workArea = workArea;
+            _autoClose = autoClose;
         }
 
         protected virtual void FacetInit()

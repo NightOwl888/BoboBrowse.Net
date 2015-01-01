@@ -2651,7 +2651,7 @@ namespace BoboBrowse.Net
             writer.Commit();
 
             IndexReader idxReader = IndexReader.Open(idxDir, true);
-            BoboIndexReader boboReader = BoboIndexReader.GetInstance(idxReader, _fconf);
+            BoboIndexReader boboReader = BoboIndexReader.GetInstance(idxReader, _fconf, true);
 
 
             for (int i = 1; i < docs.Length; ++i)
