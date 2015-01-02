@@ -1,12 +1,10 @@
 // Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Facets.Data
 {
+    using BoboBrowse.Net.Support;
     using Common.Logging;
-    using Lucene.Net.Util;
     using System;
-    using System.Collections.Generic;
     using System.Globalization;
-    using System.Linq;
 
     public class TermIntList : TermNumberList<int>
     {
@@ -24,7 +22,19 @@ namespace BoboBrowse.Net.Facets.Data
             }
             else
             {
-                return Convert.ToInt32(s, this.FormatProvider);
+                try
+                {
+                    // Since this value is stored in a file, we should always store it and parse it with the invariant culture.
+                    return int.Parse(s, CultureInfo.InvariantCulture);
+                }
+                catch (Exception ex)
+                {
+                    if (NumericUtil.IsPrefixCodedInt(s))
+                    {
+                        throw new NotSupportedException("Lucene.Net index field must be a formatted string data type (typically padded with leading zeros). NumericField (INT) is not supported.", ex);
+                    }
+                    throw ex;
+                }
             }
         }
 

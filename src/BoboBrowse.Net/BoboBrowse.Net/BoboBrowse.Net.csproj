@@ -280,6 +280,7 @@
     <Compile Include="Support\IIterator.cs" />
     <Compile Include="Support\IListExtensions.cs" />
     <Compile Include="Support\MathUtil.cs" />
+    <Compile Include="Support\NumericUtil.cs" />
     <Compile Include="Support\ParseException.cs" />
     <Compile Include="Support\Properties.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
