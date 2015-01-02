@@ -6,13 +6,10 @@ namespace BoboBrowse.Net
     using BoboBrowse.Net.Facets.Impl;
     using BoboBrowse.Net.Support;
     using BoboBrowse.Net.Util;
+    using NUnit.Framework;
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Linq;
     using System.Threading;
-    using System.Text;
-    using NUnit.Framework;
 
     [TestFixture]
     public class FacetMergePerf

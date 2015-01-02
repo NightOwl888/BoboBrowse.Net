@@ -2,9 +2,7 @@
 namespace BoboBrowse.Net.Query.Scoring
 {
     using BoboBrowse.Net.Support;
-    using BoboBrowse.Net.Util;
     using Lucene.Net.Search;
-    using System;
 
     public class MultiplicativeFacetTermScoringFunction : IFacetTermScoringFunction
     {

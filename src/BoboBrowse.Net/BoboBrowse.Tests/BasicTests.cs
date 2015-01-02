@@ -1,22 +1,17 @@
 ﻿// Version compatibility level: 3.1.0
-namespace BoboBrowse.Tests
+namespace BoboBrowse.Net
 {
-    using BoboBrowse.Net;
     using BoboBrowse.Net.Facets;
     using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Facets.Impl;
-    using BoboBrowse.Net.Search;
-    using Lucene.Net.Analysis;
     using Lucene.Net.Analysis.Standard;
+    using Lucene.Net.Documents;
     using Lucene.Net.Index;
-    using Lucene.Net.QueryParsers;
     using Lucene.Net.Search;
     using Lucene.Net.Store;
-    using Lucene.Net.Documents;
     using NUnit.Framework;
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
 
     [TestFixture]
@@ -129,7 +124,7 @@ namespace BoboBrowse.Tests
                 Count = 10,
                 Offset = 0,
                 Query = query,
-                Sort = new Sort(new SortField("year", SortField.INT, false)).GetSort()
+                Sort = new Lucene.Net.Search.Sort(new SortField("year", SortField.INT, false)).GetSort()
             };
 
             var faceHandlers = new IFacetHandler[] { new SimpleFacetHandler("category") };
@@ -192,7 +187,7 @@ namespace BoboBrowse.Tests
                 Count = 100,
                 Offset = 0,
                 Query = query,
-                Sort = new Sort(new SortField("path", SortField.STRING, false)).GetSort()
+                Sort = new Lucene.Net.Search.Sort(new SortField("path", SortField.STRING, false)).GetSort()
             };
 
             var faceHandlers = new IFacetHandler[] { new MultiValueFacetHandler("path") };
@@ -234,7 +229,7 @@ namespace BoboBrowse.Tests
                     Count = 100,
                     Offset = 0,
                     Query = query,
-                    Sort = new Sort(new SortField("price", SortField.DOUBLE, false)).GetSort()
+                    Sort = new Lucene.Net.Search.Sort(new SortField("price", SortField.DOUBLE, false)).GetSort()
                 };
 
                 var sectionFilter = new BrowseSelection("category");
@@ -267,7 +262,7 @@ namespace BoboBrowse.Tests
                 Count = 10,
                 Offset = 0,
                 Query = query,
-                Sort = new Sort(new SortField("price", SortField.DOUBLE, false)).GetSort()
+                Sort = new Lucene.Net.Search.Sort(new SortField("price", SortField.DOUBLE, false)).GetSort()
             };
 
             var facetHandlers = new IFacetHandler[] { new SimpleFacetHandler("category") };

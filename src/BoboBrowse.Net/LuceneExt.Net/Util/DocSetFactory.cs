@@ -1,8 +1,6 @@
-﻿
-namespace LuceneExt.Util
+﻿namespace LuceneExt.Util
 {
     using LuceneExt.Impl;
-    using System;
 
     /// <summary> * Utility class to make appropriate measurement calls to recognize optimal
     /// * representation for an ordered document set based on hints provided and 

@@ -9,9 +9,7 @@ namespace BoboBrowse.Tests
     using Lucene.Net.Analysis.Standard;
     using Lucene.Net.Index;
     using Lucene.Net.Store;
-    using Lucene.Net.Util;
     using NUnit.Framework;
-    using System;
     using System.Collections.Generic;
     using System.Linq;
 

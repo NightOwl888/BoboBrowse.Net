@@ -23,11 +23,7 @@
 namespace BoboBrowse.Net
 {
     using BoboBrowse.Net.Facets;
-    using BoboBrowse.Net.Util;
     using Common.Logging;
-    using Lucene.Net.Index;
-    using Lucene.Net.Util;
-    using System;
     using System.Collections.Generic;
     using System.Linq;
 

@@ -2,10 +2,6 @@
 namespace BoboBrowse.Net
 {
     using BoboBrowse.Net.Support;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
 
     /// <summary>
     /// Iterator to iterate over facets

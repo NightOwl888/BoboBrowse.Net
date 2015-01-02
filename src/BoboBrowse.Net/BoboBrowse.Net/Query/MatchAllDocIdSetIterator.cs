@@ -3,7 +3,6 @@ namespace BoboBrowse.Net.Query
 {
     using Lucene.Net.Index;
     using Lucene.Net.Search;
-    using System;
 
     public class MatchAllDocIdSetIterator : DocIdSetIterator
     {

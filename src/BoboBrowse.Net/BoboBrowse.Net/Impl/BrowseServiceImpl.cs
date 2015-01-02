@@ -24,13 +24,13 @@
 // Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Impl
 {
-    using System.IO;
-    using System.Runtime.CompilerServices;
     using BoboBrowse.Net;
     using BoboBrowse.Net.Service;
     using Common.Logging;
     using Lucene.Net.Index;
     using Lucene.Net.Store;
+    using System.IO;
+    using System.Runtime.CompilerServices;
     using Directory = Lucene.Net.Store.Directory;
 
     public class BrowseServiceImpl : IBrowseService

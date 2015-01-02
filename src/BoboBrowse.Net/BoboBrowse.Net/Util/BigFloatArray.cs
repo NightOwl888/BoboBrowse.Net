@@ -1,8 +1,6 @@
 ﻿// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Util
 {
-    using System;
-
     public class BigFloatArray
     {
         //private static long serialVersionUID = 1L; // NOT USED

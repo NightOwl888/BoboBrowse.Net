@@ -26,10 +26,7 @@ namespace BoboBrowse.Net.Facets.Filter
 {
     using BoboBrowse.Net.DocIdSet;
     using Lucene.Net.Search;
-    using Lucene.Net.Index;
     using LuceneExt.Impl;
-    using System;
-    using System.Collections.Generic;
 
     public class RandomAccessNotFilter : RandomAccessFilter
     {

@@ -28,7 +28,6 @@ namespace BoboBrowse.Net
 {
     using BoboBrowse.Net.Facets;
     using BoboBrowse.Net.Facets.Data;
-    using BoboBrowse.Net.Facets.Filter;
     using BoboBrowse.Net.Facets.Impl;
     using BoboBrowse.Net.Index;
     using BoboBrowse.Net.Index.Digest;
@@ -36,7 +35,6 @@ namespace BoboBrowse.Net
     using BoboBrowse.Net.Query.Scoring;
     using BoboBrowse.Net.Sort;
     using BoboBrowse.Net.Support;
-    using BoboBrowse.Net.Util;
     using Common.Logging;
     using Lucene.Net.Analysis;
     using Lucene.Net.Analysis.Standard;
@@ -46,14 +44,12 @@ namespace BoboBrowse.Net
     using Lucene.Net.QueryParsers;
     using Lucene.Net.Search;
     using Lucene.Net.Store;
-    using Lucene.Net.Util;
     using NUnit.Framework;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
-    using System.Runtime.Serialization;
     using System.Runtime.Serialization.Formatters.Binary;
     using System.Text;
 

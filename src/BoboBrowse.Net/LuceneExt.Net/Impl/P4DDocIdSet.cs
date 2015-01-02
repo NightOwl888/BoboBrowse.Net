@@ -23,10 +23,10 @@
 
 namespace LuceneExt.Impl
 {
-    using System;
-    using Lucene.Net.Util;
     using Lucene.Net.Search;
+    using Lucene.Net.Util;
     using LuceneExt.Util;
+    using System;
 
     ///<summary>Doc id set wrapper around P4DSet  
     ///@author abhasin

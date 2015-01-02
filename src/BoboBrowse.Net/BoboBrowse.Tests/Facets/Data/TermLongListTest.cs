@@ -3,10 +3,6 @@ namespace BoboBrowse.Net.Facets.Data
 {
     using BoboBrowse.Net.Support;
     using NUnit.Framework;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
 
     [TestFixture]
     public class TermLongListTest

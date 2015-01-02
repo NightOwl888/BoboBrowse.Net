@@ -3,7 +3,6 @@ namespace BoboBrowse.Net
 {
     using BoboBrowse.Net.Sort;
     using Lucene.Net.Search;
-    using System;
 
     public class BoboCustomSortField : SortField
     {

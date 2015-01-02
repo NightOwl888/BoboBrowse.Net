@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace BoboBrowse.Net.Support
+﻿namespace BoboBrowse.Net.Support
 {
+    using System;
+
     internal static class DateTimeExtensions
     {
         /// <summary>

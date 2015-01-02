@@ -1,7 +1,6 @@
 // Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Service
 {
-    using System;
     using Lucene.Net.Search;
 
     ///<summary>Builds a DocSet from an array of SelectioNodes </summary>

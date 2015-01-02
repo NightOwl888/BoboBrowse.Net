@@ -22,8 +22,6 @@
 // Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Query.Scoring
 {
-    using System;
-
     public interface IFacetTermScoringFunctionFactory
     {
         IFacetTermScoringFunction GetFacetTermScoringFunction(int termCount, int docCount);

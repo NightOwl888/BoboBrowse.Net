@@ -28,7 +28,6 @@ namespace BoboBrowse.Tests
 {
     using BoboBrowse.Net;
     using BoboBrowse.Net.Facets;
-    using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Facets.Impl;
     using BoboBrowse.Net.Index;
     using BoboBrowse.Net.Index.Digest;
@@ -40,7 +39,6 @@ namespace BoboBrowse.Tests
     using NUnit.Framework;
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Text;
 
     [TestFixture]

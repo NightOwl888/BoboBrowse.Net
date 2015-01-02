@@ -27,7 +27,6 @@ namespace BoboBrowse.Net
     using BoboBrowse.Net.Facets;
     using BoboBrowse.Net.Sort;
     using Lucene.Net.Search;
-    using System;
     using System.Collections.Generic;
 
     public interface IBrowsable : Searchable

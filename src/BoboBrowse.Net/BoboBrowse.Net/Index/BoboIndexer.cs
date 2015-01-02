@@ -26,20 +26,12 @@
 // Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Index
 {
-    using BoboBrowse.Net.Facets;
-    using BoboBrowse.Net.Facets.Filter;
     using BoboBrowse.Net.Index.Digest;
-    using BoboBrowse.Net.Search;
     using Lucene.Net.Analysis;
     using Lucene.Net.Analysis.Standard;
     using Lucene.Net.Documents;
     using Lucene.Net.Index;
-    using Lucene.Net.Search;
     using Lucene.Net.Store;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
 
     public class BoboIndexer
     {

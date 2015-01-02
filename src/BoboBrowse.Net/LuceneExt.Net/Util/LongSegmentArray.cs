@@ -23,8 +23,8 @@
 
 namespace LuceneExt.Util
 {
-    using System;
     using Lucene.Net.Util;
+    using System;
 
     [Serializable]
     public class LongSegmentArray : PrimitiveArray<OpenBitSet>

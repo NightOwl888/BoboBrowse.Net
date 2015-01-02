@@ -4,8 +4,7 @@ namespace BoboBrowse.Net.Util
     using BoboBrowse.Net.Support;
     using Lucene.Net.Search;
     using Lucene.Net.Util;
-    using System;
-    
+
     public class BigShortArray : BigSegmentedArray
     {
         //private static long serialVersionUID = 1L; // NOT USED

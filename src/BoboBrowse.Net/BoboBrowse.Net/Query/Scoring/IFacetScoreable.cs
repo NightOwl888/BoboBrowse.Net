@@ -22,7 +22,6 @@
 // Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Query.Scoring
 {
-    using System;
     using System.Collections.Generic;
     
     public interface IFacetScoreable

@@ -26,7 +26,6 @@ namespace BoboBrowse.Net.Search
     using BoboBrowse.Net.Facets;
     using BoboBrowse.Net.Facets.Filter;
     using Lucene.Net.Search;
-    using System;
     using System.Collections.Generic;
     
     public sealed class FacetHitCollector

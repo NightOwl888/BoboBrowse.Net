@@ -1,10 +1,9 @@
 ﻿﻿// Kamikaze version compatibility level: 3.0.6
 namespace LuceneExt.Impl
 {
-    using System;
-    using System.IO;
     using Lucene.Net.Search;
     using LuceneExt.Util;
+    using System;
 
     [Serializable]
     public class IntArrayDocIdSet : DocSet

@@ -25,12 +25,10 @@
 namespace BoboBrowse.Net.Util
 {
     using BoboBrowse.Net.Facets.Impl;
-    using BoboBrowse.Net.Search;
     using Lucene.Net.Util;
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.Linq;
 
     public class ListMerger

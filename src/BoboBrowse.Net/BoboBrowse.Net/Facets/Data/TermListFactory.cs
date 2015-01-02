@@ -1,8 +1,6 @@
 ﻿// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Facets.Data
 {
-    using System;
-
     public abstract class TermListFactory
     {
         public abstract ITermValueList CreateTermList(int capacity);

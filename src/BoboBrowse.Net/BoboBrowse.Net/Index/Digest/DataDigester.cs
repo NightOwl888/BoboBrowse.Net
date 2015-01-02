@@ -28,9 +28,7 @@ namespace BoboBrowse.Net.Index.Digest
 {
     using BoboBrowse.Net.Facets;
     using Lucene.Net.Documents;
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Text;
 
     public abstract class DataDigester

@@ -24,7 +24,6 @@
 // Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Query.Scoring
 {
-    using System;
     using Lucene.Net.Search;
 
     public interface IFacetTermScoringFunction

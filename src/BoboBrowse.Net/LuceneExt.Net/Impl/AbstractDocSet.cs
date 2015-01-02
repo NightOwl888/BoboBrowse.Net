@@ -23,9 +23,9 @@
 
 namespace LuceneExt.Impl
 {
-    using System;
     using Lucene.Net.Util;
     using LuceneExt.Util;
+    using System;
 
     [Serializable]
     public abstract class AbstractDocSet : DocSet

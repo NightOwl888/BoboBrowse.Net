@@ -15,12 +15,10 @@ namespace BoboBrowse.Net.Facets.Impl
     using BoboBrowse.Net.Facets.Filter;
     using BoboBrowse.Net.Sort;
     using BoboBrowse.Net.Support;
-    using Lucene.Net.Search;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
-    
+
     public class PathFacetHandler : FacetHandler<FacetDataCache>
     {
         private const string DEFAULT_SEP = "/";

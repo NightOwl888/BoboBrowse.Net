@@ -26,17 +26,8 @@
 // Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Util
 {
-    using BoboBrowse.Net.Facets.Filter;
-    using BoboBrowse.Net.Search;
-    using Lucene.Net.Analysis.Standard;
-    using Lucene.Net.Index;
-    using Lucene.Net.Search;
-    using Lucene.Net.Store;
     using NUnit.Framework;
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
 
     /**
      * @author spackle

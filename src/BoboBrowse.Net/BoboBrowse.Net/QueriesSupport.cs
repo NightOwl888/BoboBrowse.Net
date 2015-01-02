@@ -2,7 +2,6 @@
 namespace BoboBrowse.Net
 {
     using Lucene.Net.Search;
-    using System;
     using System.Collections.Generic;
     using System.Linq;
 

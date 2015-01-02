@@ -1,10 +1,6 @@
 ﻿namespace BoboBrowse.Net.Client
 {
     using Lucene.Net.Search;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
 
     public class BrowseRequestBuilder
     {

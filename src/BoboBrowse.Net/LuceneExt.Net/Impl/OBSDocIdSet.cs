@@ -23,10 +23,9 @@
 
 namespace LuceneExt.Impl
 {
-    using System;
-    using System.IO;
-    using Lucene.Net.Util;
     using Lucene.Net.Search;
+    using Lucene.Net.Util;
+    using System;
 
     [Serializable]
     public class OBSDocIdSet : DocSet

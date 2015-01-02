@@ -4,8 +4,6 @@ namespace BoboBrowse.Net.Facets.Impl
     using BoboBrowse.Net.Facets.Data;
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
 
     public class CombinedLongFacetIterator : LongFacetIterator
     {

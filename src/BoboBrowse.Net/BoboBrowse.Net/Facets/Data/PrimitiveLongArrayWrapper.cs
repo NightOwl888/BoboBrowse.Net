@@ -2,7 +2,6 @@
 namespace BoboBrowse.Net.Facets.Data
 {
     using BoboBrowse.Net.Support;
-    using System;
 
     public class PrimitiveLongArrayWrapper
     {

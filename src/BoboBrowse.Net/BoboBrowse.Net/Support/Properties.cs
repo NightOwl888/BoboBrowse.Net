@@ -10,10 +10,7 @@
 
 namespace BoboBrowse.Net.Support
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
 
     public class Properties : Dictionary<string, string>
     {

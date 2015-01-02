@@ -2,7 +2,6 @@
 namespace BoboBrowse.Net.Facets.Filter
 {
     using BoboBrowse.Net.Facets.Data;
-    using System;
 
     public class FacetValueConverter_Fields
     {

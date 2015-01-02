@@ -2,7 +2,6 @@
 namespace BoboBrowse.Net.Sort
 {
     using Lucene.Net.Index;
-    using System;
 
     public class MultiDocIdComparatorSource : DocComparatorSource
     {

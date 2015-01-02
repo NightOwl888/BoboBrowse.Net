@@ -22,7 +22,6 @@
 // Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Facets.Data
 {
-    using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Facets.Range;
     using BoboBrowse.Net.Sort;
     using BoboBrowse.Net.Support;
@@ -33,8 +32,7 @@ namespace BoboBrowse.Net.Facets.Data
     using Lucene.Net.Util;
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    
+
     public class MultiValueFacetDataCache : FacetDataCache
     {
         //private static long serialVersionUID = 1L; // NOT USED

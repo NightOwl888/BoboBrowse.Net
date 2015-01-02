@@ -1,10 +1,9 @@
 ﻿﻿// Kamikaze version compatibility level: 3.0.6
 namespace LuceneExt.Impl
 {
+    using Lucene.Net.Search;
     using System;
     using System.Collections.Generic;
-    using System.IO;
-    using Lucene.Net.Search;
 
     [Serializable]
     public class OrDocIdSet : ImmutableDocSet

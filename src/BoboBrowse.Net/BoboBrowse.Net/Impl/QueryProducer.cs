@@ -30,10 +30,6 @@ namespace BoboBrowse.Net.Impl
     using Lucene.Net.Analysis.Standard;
     using Lucene.Net.QueryParsers;
     using Lucene.Net.Search;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
 
     public class QueryProducer
     {

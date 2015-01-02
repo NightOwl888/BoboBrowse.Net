@@ -22,8 +22,8 @@
 // Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.DocIdSet
 {
-    using System;
     using Lucene.Net.Search;
+    using System;
 
     public abstract class FilteredDocSetIterator : DocIdSetIterator
     {

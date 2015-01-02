@@ -2,10 +2,6 @@
 namespace BoboBrowse.Net.MapRed
 {
     using BoboBrowse.Net.Facets;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
 
     /// <summary>
     /// Is the part of the bobo request, that maintains the map result intermediate state

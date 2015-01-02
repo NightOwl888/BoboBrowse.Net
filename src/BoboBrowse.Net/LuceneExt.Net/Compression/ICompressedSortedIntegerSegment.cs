@@ -1,7 +1,6 @@
 ﻿
 namespace LuceneExt
 {
-    using System;
     using Lucene.Net.Util;
 
     public interface ICompressedSortedIntegerSegment

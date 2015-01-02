@@ -28,7 +28,6 @@ namespace BoboBrowse.Net.Util
 {
     using NUnit.Framework;
     using System;
-    using System.Diagnostics;
 
     /// <summary>
     /// author spackle

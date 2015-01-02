@@ -1,7 +1,6 @@
 ﻿﻿// Kamikaze version compatibility level: 3.0.6
 namespace LuceneExt
 {
-    using System;
     using Lucene.Net.Search;
 
     /// <summary>

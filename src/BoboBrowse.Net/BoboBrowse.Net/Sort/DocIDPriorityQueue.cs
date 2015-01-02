@@ -1,12 +1,9 @@
 ﻿﻿// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Sort
 {
-    using Lucene.Net.Search;
     using Common.Logging;
+    using Lucene.Net.Search;
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
 
     public class DocIDPriorityQueue
     {

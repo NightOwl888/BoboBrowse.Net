@@ -1,7 +1,6 @@
 ﻿// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Sort
 {
-    using Lucene.Net.Index;
     using Lucene.Net.Search;
     using System;
 

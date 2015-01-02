@@ -28,7 +28,6 @@ namespace BoboBrowse.Net.Facets.Data
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
 
     public interface ITermValueList : IList<string>
     {

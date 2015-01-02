@@ -2,12 +2,7 @@
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
-    using BoboBrowse.Net.Support;
     using BoboBrowse.Net.Util;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
 
     public class MultiValuedPathFacetCountCollector : PathFacetCountCollector
     {

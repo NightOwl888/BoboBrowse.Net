@@ -25,9 +25,7 @@
 namespace BoboBrowse.Net.Facets.Filter
 {
     using BoboBrowse.Net.DocIdSet;
-    using Lucene.Net.Index;
-    using System;
-    
+
     public class EmptyFilter : RandomAccessFilter
     {
         //private static long serialVersionUID = 1L; // NOT USED

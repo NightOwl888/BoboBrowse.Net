@@ -1,9 +1,8 @@
 ﻿﻿// Kamikaze version compatibility level: 3.0.6
 namespace LuceneExt.Impl
 {
-    using System;
-    using System.Collections.Generic;
     using Lucene.Net.Search;
+    using System.Collections.Generic;
 
      public class OrDocIdSetIterator : DocIdSetIterator
     {

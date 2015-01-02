@@ -6,8 +6,6 @@ namespace BoboBrowse.Net.Facets.Impl
     using BoboBrowse.Net.Util;
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
 
     public class GeoFacetCountCollector : IFacetCountCollector
     {

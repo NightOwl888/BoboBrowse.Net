@@ -1,8 +1,6 @@
 ﻿// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net
 {
-    using System;
-
     /// <summary>
     /// author "Xiaoyang Gu<xgu@linkedin.com>"
     /// </summary>

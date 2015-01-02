@@ -1,18 +1,12 @@
 ﻿// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Facets.Data
 {
-    using BoboBrowse.Net.Facets.Range;
-    using BoboBrowse.Net.Sort;
     using BoboBrowse.Net.Support;
     using BoboBrowse.Net.Util;
-    using Common.Logging;
     using Lucene.Net.Index;
-    using Lucene.Net.Search;
     using Lucene.Net.Util;
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
 
     public class MultiValueWithWeightFacetDataCache : MultiValueFacetDataCache
     {

@@ -3,13 +3,10 @@ namespace BoboBrowse.Net
 {
     using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Facets.Impl;
-    using BoboBrowse.Net.Support;
     using Common.Logging;
     using NUnit.Framework;
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
 
     [TestFixture]
     public class BoboFacetIteratorTest

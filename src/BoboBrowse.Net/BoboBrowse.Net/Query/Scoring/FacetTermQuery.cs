@@ -5,12 +5,9 @@ namespace BoboBrowse.Net.Query.Scoring
     using BoboBrowse.Net.Facets;
     using BoboBrowse.Net.Facets.Filter;
     using BoboBrowse.Net.Support;
-    using BoboBrowse.Net.Util;
     using Common.Logging;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
-    using Lucene.Net.Support;
-    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.IO;

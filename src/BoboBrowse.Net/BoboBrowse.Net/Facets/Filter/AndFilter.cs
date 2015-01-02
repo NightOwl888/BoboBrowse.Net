@@ -27,7 +27,6 @@ namespace BoboBrowse.Net.Facets.Filter
     using Lucene.Net.Index;
     using Lucene.Net.Search;
     using LuceneExt.Impl;
-    using System;
     using System.Collections.Generic;
     using System.Linq;
 

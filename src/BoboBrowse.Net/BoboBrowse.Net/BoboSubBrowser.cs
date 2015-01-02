@@ -6,16 +6,13 @@ namespace BoboBrowse.Net
     using BoboBrowse.Net.Search;
     using BoboBrowse.Net.Sort;
     using BoboBrowse.Net.Support;
-    using BoboBrowse.Net.Util;
     using Common.Logging;
     using Lucene.Net.Documents;
-    using Lucene.Net.Index;
     using Lucene.Net.Search;
     using System;
-    using System.Diagnostics;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
-    using System.Text;
 
     public class BoboSubBrowser : BoboSearcher2, IBrowsable, IDisposable
     {

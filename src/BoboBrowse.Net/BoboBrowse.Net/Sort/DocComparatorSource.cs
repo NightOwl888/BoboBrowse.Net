@@ -3,12 +3,8 @@ namespace BoboBrowse.Net.Sort
 {
     using Lucene.Net.Index;
     using Lucene.Net.Search;
-    using Lucene.Net.Search.Payloads;
     using System;
-    using System.Collections.Generic;
     using System.Globalization;
-    using System.Linq;
-    using System.Text;
 
     public abstract class DocComparatorSource
     {

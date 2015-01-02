@@ -26,7 +26,6 @@ namespace BoboBrowse.Net
 {
     using BoboBrowse.Net.Facets.Impl;
     using BoboBrowse.Net.Support;
-    using BoboBrowse.Net.Util;
     using System;
     using System.Collections.Generic;
     using System.Text;

@@ -4,15 +4,14 @@ namespace BoboBrowse.Net
     using BoboBrowse.Net.Facets;
     using BoboBrowse.Net.Facets.Impl;
     using BoboBrowse.Net.Support;
-    using NUnit.Framework;
     using Lucene.Net.Analysis;
     using Lucene.Net.Documents;
     using Lucene.Net.Index;
     using Lucene.Net.Store;
+    using NUnit.Framework;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
 
     [TestFixture]
     public class PathMultiValTest // Original name was TestPathMultiVal.java

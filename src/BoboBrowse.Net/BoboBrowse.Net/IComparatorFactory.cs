@@ -1,7 +1,6 @@
 ﻿// Version compatibility level: 3.1.0
 namespace BoboBrowse.Net
 {
-    using System;
     using System.Collections.Generic;
 
     /// <summary>

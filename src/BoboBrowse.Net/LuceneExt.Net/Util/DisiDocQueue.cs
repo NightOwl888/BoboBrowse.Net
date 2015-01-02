@@ -1,8 +1,5 @@
-﻿
-
-namespace LuceneExt.Util
+﻿namespace LuceneExt.Util
 {
-    using System;
     using Lucene.Net.Search;
 
     /// <summary> * Licensed to the Apache Software Foundation (ASF) under one or more

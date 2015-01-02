@@ -6,8 +6,8 @@ namespace BoboBrowse.Net.Facets.Impl
     using BoboBrowse.Net.Sort;
     using BoboBrowse.Net.Support;
     using BoboBrowse.Net.Util;
-    using Lucene.Net.Search;
     using Lucene.Net.Index;
+    using Lucene.Net.Search;
     using System;
     using System.Collections.Generic;
     using System.Linq;

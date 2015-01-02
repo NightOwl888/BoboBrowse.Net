@@ -25,7 +25,6 @@
 namespace BoboBrowse.Net.Util
 {
     using Lucene.Net.Util;
-    using System;
 
     public abstract class BigSegmentedArray
     {

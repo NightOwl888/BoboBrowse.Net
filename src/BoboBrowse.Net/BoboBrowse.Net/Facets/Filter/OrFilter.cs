@@ -1,11 +1,11 @@
 // Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Facets.Filter
 {
-    using System.Collections.Generic;
-    using System.Linq;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
     using LuceneExt.Impl;
+    using System.Collections.Generic;
+    using System.Linq;
 
     public class OrFilter : Filter
     {

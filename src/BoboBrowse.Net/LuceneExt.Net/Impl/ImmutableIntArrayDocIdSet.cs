@@ -23,7 +23,6 @@
 
 namespace LuceneExt.Impl
 {
-    using System;
     using Lucene.Net.Search;
     using LuceneExt.Util;
 

@@ -25,9 +25,8 @@
 namespace BoboBrowse.Net
 {
     using BoboBrowse.Net.Support;
-    using BoboBrowse.Net.Util;
-    using Lucene.Net.Search;
     using Lucene.Net.Documents;
+    using Lucene.Net.Search;
     using System;
     using System.Collections.Generic;
     using System.Text;

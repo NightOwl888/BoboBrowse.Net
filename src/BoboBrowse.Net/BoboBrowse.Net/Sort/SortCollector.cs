@@ -10,7 +10,6 @@ namespace BoboBrowse.Net.Sort
     using System.Diagnostics;
     using System.Globalization;
     using System.Linq;
-    using System.Text;
 
     public abstract class SortCollector : Collector, IDisposable
     {

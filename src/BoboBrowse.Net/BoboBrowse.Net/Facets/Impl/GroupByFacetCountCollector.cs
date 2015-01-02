@@ -2,7 +2,6 @@
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
-    using System;
 
     public abstract class GroupByFacetCountCollector : DefaultFacetCountCollector
     {

@@ -4,7 +4,6 @@ namespace BoboBrowse.Net.Facets.Data
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Reflection;
 
     /// <summary>
     /// Similar to the original Java version of the PredefinedTermListFactory, but has been optimized to use

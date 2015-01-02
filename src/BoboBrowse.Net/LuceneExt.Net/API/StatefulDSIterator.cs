@@ -24,7 +24,6 @@
 ﻿// Kamikaze version compatibility level: 3.0.6
 namespace LuceneExt
 {
-    using System;
     using Lucene.Net.Search;
    
     /// <summary>This abstract class defines methods to iterate over a set of non-decreasing doc ids. </summary>

@@ -26,8 +26,6 @@
 // Version compatibility level: 3.1.0
 namespace BoboBrowse.Net.Index.Digest
 {
-    using System;
-    using System.IO;
     using System.Text;
 
     public abstract class FileDigester : DataDigester

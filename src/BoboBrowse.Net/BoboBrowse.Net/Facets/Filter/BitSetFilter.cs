@@ -3,13 +3,8 @@ namespace BoboBrowse.Net.Facets.Filter
 {
     using BoboBrowse.Net.DocIdSet;
     using BoboBrowse.Net.Facets.Data;
-    using BoboBrowse.Net.Facets.Range;
     using Lucene.Net.Search;
     using Lucene.Net.Util;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
 
     public class BitSetFilter : RandomAccessFilter
     {

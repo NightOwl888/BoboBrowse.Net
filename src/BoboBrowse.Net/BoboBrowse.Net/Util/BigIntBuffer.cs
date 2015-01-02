@@ -2,7 +2,6 @@
 namespace BoboBrowse.Net.Util
 {
     using BoboBrowse.Net.Support;
-    using System;
     using System.Collections.Generic;
 
     ///<summary>@author ymatsuda</summary>
