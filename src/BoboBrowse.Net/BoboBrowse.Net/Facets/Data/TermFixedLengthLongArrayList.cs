@@ -6,6 +6,7 @@ namespace BoboBrowse.Net.Facets.Data
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Text;
 
@@ -49,7 +50,7 @@ namespace BoboBrowse.Net.Facets.Data
 
             for (int i = 0; i < width; ++i)
             {
-                r[i] = long.Parse(a[i]);
+                r[i] = long.Parse(a[i], CultureInfo.InvariantCulture);
                 //if (r[i] < 0)
                 // throw new RuntimeException("We only support non-negative numbers: " + s);
             }
