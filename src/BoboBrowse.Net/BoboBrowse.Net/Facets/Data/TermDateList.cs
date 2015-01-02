@@ -2,7 +2,9 @@
 namespace BoboBrowse.Net.Facets.Data
 {
     using BoboBrowse.Net.Support;
+    using Lucene.Net.Documents;
     using System;
+    using System.Globalization;
 
     ///<summary>Internal data are stored in a long[] with values generated from <seealso cref="Date#getTime()"/> </summary>
     public class TermDateList : TermLongList
@@ -37,7 +39,14 @@ namespace BoboBrowse.Net.Facets.Data
             {
                 try
                 {
-                    return DateTime.Parse(s, this.FormatProvider).ToBinary();
+                    DateTime result;
+                    // Since this value is stored in a file, we should always store it and parse it with the invariant culture.
+                    if (!DateTime.TryParse(s, CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
+                    {
+                        // Support the Lucene.Net date formatting (yyyyMMddHHmmssfff or any subset starting on the left) for convenience.
+                        result = DateTools.StringToDate(s);
+                    }
+                    return result.ToBinary();
                 }
                 catch (Exception e)
                 {
