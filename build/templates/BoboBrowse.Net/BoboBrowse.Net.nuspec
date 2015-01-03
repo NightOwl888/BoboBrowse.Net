@@ -13,7 +13,7 @@
 		<tags>faceted search engine lucene lucene.net nosql text information retrieval apache drill down</tags>
 		<projectUrl>https://github.com/NightOwl888/BoboBrowse.Net</projectUrl>
     <licenseUrl>https://github.com/NightOwl888/BoboBrowse.Net/blob/master/LICENSE.md</licenseUrl>
-		<iconUrl>https://github.com/NightOwl888/BoboBrowse.Net/blob/master/BoboBrowse.Net.png</iconUrl>
+		<iconUrl>https://raw.githubusercontent.com/NightOwl888/BoboBrowse.Net/master/BoboBrowse.Net.png</iconUrl>
 		<dependencies>
 			<group targetFramework="net35">
 				<dependency id="Lucene.Net" version="[3.0.3]" />
