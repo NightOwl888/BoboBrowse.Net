@@ -50,7 +50,16 @@ namespace BoboBrowse.Net.Facets.Data
 
             for (int i = 0; i < width; ++i)
             {
-                r[i] = long.Parse(a[i], CultureInfo.InvariantCulture);
+                // Try the invariant culture first.
+                long result;
+                if (!long.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result))
+                {
+                    // If the invariant culture doesn't work, fall back to the format provider
+                    // of the current thread by default.
+                    result = long.Parse(s, NumberStyles.Any);
+                }
+                r[i] = result;
+
                 //if (r[i] < 0)
                 // throw new RuntimeException("We only support non-negative numbers: " + s);
             }

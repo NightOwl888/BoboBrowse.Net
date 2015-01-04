@@ -25,7 +25,14 @@ namespace BoboBrowse.Net.Facets.Data
                 try
                 {
                     // Since this value is stored in a file, we should always store it and parse it with the invariant culture.
-                    return short.Parse(s, CultureInfo.InvariantCulture);
+                    short result;
+                    if (!short.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out result))
+                    {
+                        // If the invariant culture doesn't work, fall back to the passed in format provider
+                        // if the provider is null, this will use the culture of the current thread by default.
+                        result = short.Parse(s, NumberStyles.Any, this.FormatProvider);
+                    }
+                    return result;
                 }
                 catch (Exception ex)
                 {
