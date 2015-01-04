@@ -75,6 +75,7 @@ namespace BoboBrowse.Net.Facets.Impl
         }
 
         ///<summary>Sets is strict applied for counting. Used if the field is of type <b><i>path</i></b>. </summary>
+        ///<param name="props">The properties dictionary to set the property value on.</param>
         ///<param name="strict"> is strict applied </param>
         public static void SetStrict(Properties props, bool strict)
         {
@@ -82,6 +83,7 @@ namespace BoboBrowse.Net.Facets.Impl
         }
 
         ///<summary>Sets the depth.  Used if the field is of type <b><i>path</i></b>. </summary>
+        ///<param name="props">The properties dictionary to set the property value on.</param>
         ///<param name="depth">depth </param>
         public static void SetDepth(Properties props, int depth)
         {
