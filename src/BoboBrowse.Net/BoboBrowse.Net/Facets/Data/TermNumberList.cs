@@ -20,7 +20,7 @@ namespace BoboBrowse.Net.Facets.Data
         { }
 
         protected TermNumberList(int capacity, string formatString)
-            : this(capacity, formatString, CultureInfo.InvariantCulture)
+            : this(capacity, formatString, null)
         { }
 
         protected TermNumberList(int capacity, string formatString, IFormatProvider formatProvider)
