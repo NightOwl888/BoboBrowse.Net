@@ -20,7 +20,7 @@ All tests are now passing. We now in an incubation period to evaluate stability.
 
 ###Documentation###
 
-Read the documentation on the wiki: https://github.com/NightOwl888/BoboBrowse/wiki
+Read the documentation on the wiki: https://github.com/NightOwl888/BoboBrowse.Net/wiki
 
 ###License###
 
