@@ -31,6 +31,9 @@ namespace BoboBrowse.Net
     using System.Collections.Generic;
     using System.Text;
     
+    /// <summary>
+    /// Result of a browse operation.
+    /// </summary>
     [Serializable]
     public class BrowseResult : IDisposable
     {
@@ -59,11 +62,19 @@ namespace BoboBrowse.Net
 	    private static BrowseHit[] NO_HITS = new BrowseHit[0];
 
         /// <summary>
-        /// Constructor
+        /// Initializes a new instance of the <see cref="T:BrowseResult"/> class.
         /// </summary>
         public BrowseResult()
         {
             _facetMap = new Dictionary<string, IFacetAccessible>();
+            this.GroupAccessibles = null;
+            this.SortCollector = null;
+            this.NumHits = 0;
+            this.NumGroups = 0;
+            this.TotalDocs = 0;
+            //totalGroups = 0;
+            hits = null;
+            this.Time = 0L;
         }
 
         /// <summary>
@@ -91,36 +102,41 @@ namespace BoboBrowse.Net
         }
 
         /// <summary>
-        /// Gets or sets the hit count
+        /// Gets or sets the hit count.
         /// </summary>
         public virtual int NumHits { get; set; }
 
         /// <summary>
-        /// Gets or sets the group count
+        /// Gets or sets the group count.
         /// </summary>
         public virtual int NumGroups { get; set; }
 
         /// <summary>
-        /// Gets or sets the total number of docs in the index
+        /// Gets or sets the total number of docs in the index.
         /// </summary>
         public virtual int TotalDocs { get; set; }
 
-        ///<summary>Add a container full of choices </summary>
-        ///<param name="facets"> container full of facets </param>
+        /// <summary>
+        /// Add a container full of choices.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="facets">container full of facets</param>
         public virtual void AddFacets(string name, IFacetAccessible facets)
         {
             _facetMap.Put(name, facets);
         }
 
-        ///<summary>Add all of the given FacetAccessible to this BrowseResult </summary>
-        ///<param name="facets"> map of facets to add to the result set </param>
+        /// <summary>
+        /// Add all of the given <see cref="T:IFacetAccessible"/> to this <see cref="T:BrowseResult"/>.
+        /// </summary>
+        /// <param name="facets">map of facets to add to the result set</param>
         public virtual void AddAll(IDictionary<string, IFacetAccessible> facets)
         {
             _facetMap.PutAll(facets);
         }
 
         /// <summary>
-        /// Gets or sets the hits
+        /// Gets or sets the hits.
         /// </summary>
         public virtual BrowseHit[] Hits
         {
@@ -129,17 +145,21 @@ namespace BoboBrowse.Net
         }
 
         /// <summary>
-        /// Gets or sets the Search Time in milliseconds
+        /// Gets or sets the search time in milliseconds.
         /// </summary>
         public virtual long Time { get; set; }
 
-
-        ///<summary>Gets all the facet collections </summary>
+        /// <summary>
+        /// Gets all the facet collections.
+        /// </summary>
         public virtual IDictionary<string, IFacetAccessible> FacetMap
         {
             get { return _facetMap; }
         }
 
+        /// <summary>
+        /// Is the part of the bobo request, that maintains the map result intermediate state.
+        /// </summary>
         public virtual MapReduceResult MapReduceResult { get; set; }
 
         public static string ToString(IDictionary<string, IFacetAccessible> map)
@@ -158,6 +178,10 @@ namespace BoboBrowse.Net
             return buffer.ToString();
         }
 
+        /// <summary>
+        /// Gets a string representation of the <see cref="BrowseResult"/>.
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             StringBuilder buf = new StringBuilder();
@@ -195,11 +219,18 @@ namespace BoboBrowse.Net
             }
         }
 
+        /// <summary>
+        /// Adds an error message to the result.
+        /// </summary>
+        /// <param name="message"></param>
         public virtual void AddError(string message)
         {
             errors.Add(message);
         }
 
+        /// <summary>
+        /// Gets a list of all error messages for the current result.
+        /// </summary>
         public virtual IEnumerable<string> BoboErrors
         {
             get { return errors; }

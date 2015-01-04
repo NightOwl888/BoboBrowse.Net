@@ -19,6 +19,11 @@ namespace BoboBrowse.Net.Facets.Impl
     using System.Collections.Generic;
     using System.Linq;
 
+    /// <summary>
+    /// Used to denote facet values with hierarchical structure, for example: "A/B/C/D". 
+    /// Multiple values in this field are allowed if constructor parameter multiValue is set to true. 
+    /// When being indexed, this field should not be tokenized.
+    /// </summary>
     public class PathFacetHandler : FacetHandler<FacetDataCache>
     {
         private const string DEFAULT_SEP = "/";
@@ -32,16 +37,34 @@ namespace BoboBrowse.Net.Facets.Impl
         private string _separator;
         private readonly string _indexedName;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:PathFacetHandler"/> with the specified name.
+        /// The Lucene.Net index field must have the same name. The field separator is assumed to be "/".
+        /// </summary>
+        /// <param name="name">The facet handler name. Must be the same value as the Lucene.Net index field name.</param>
         public PathFacetHandler(string name)
             : this(name, false)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:PathFacetHandler"/> with the specified name.
+        /// The Lucene.Net index field must have the same name. The field separator is assumed to be "/".
+        /// </summary>
+        /// <param name="name">The facet handler name. Must be the same value as the Lucene.Net index field name.</param>
+        /// <param name="multiValue">Indicates whether multiple values are allowed in this field.</param>
         public PathFacetHandler(string name, bool multiValue)
             : this(name, name, multiValue)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:PathFacetHandler"/> with the specified name and 
+        /// Lucene.Net index field name. The field separator is assumed to be "/"
+        /// </summary>
+        /// <param name="name">The name of the facet handler.</param>
+        /// <param name="indexedName">The name of the Lucene.Net index field this handler will utilize.</param>
+        /// <param name="multiValue">Indicates whether multiple values are allowed in this field.</param>
         public PathFacetHandler(string name, string indexedName, bool multiValue)
             : base(name)
         {

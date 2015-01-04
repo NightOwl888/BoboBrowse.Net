@@ -37,6 +37,11 @@ namespace BoboBrowse.Net.Facets.Impl
     using System;
     using System.Collections.Generic;
 
+    /// <summary>
+    /// Similar to <see cref="T:SimpleFacetHandler"/>, allows a document to have multiple values. 
+    /// When being indexed, this field can be tokenized. Or alternatively, one can index multiple 
+    /// values in multiple document fields under the same field name.
+    /// </summary>
     public class MultiValueFacetHandler : FacetHandler<MultiValueFacetDataCache>, IFacetScoreable
     {
         private static ILog logger = LogManager.GetLogger<MultiValueFacetHandler>();       
@@ -48,10 +53,21 @@ namespace BoboBrowse.Net.Facets.Impl
         protected Term _sizePayloadTerm;
         protected IEnumerable<string> _depends;
 
-        public MultiValueFacetHandler(string name, string indexFieldName, TermListFactory termListFactory, Term sizePayloadTerm, IEnumerable<string> depends)
-            : base(name, depends)
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:MultiValueFacetHandler"/> with the specified name,
+        /// Lucene.Net index field name, <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance, size payload term, 
+        /// and list of facet handlers this one depends on.
+        /// </summary>
+        /// <param name="name">The facet handler name.</param>
+        /// <param name="indexFieldName">The name of the Lucene.Net index field this handler will utilize.</param>
+        /// <param name="termListFactory">A <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance that will create a 
+        /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
+        /// <param name="sizePayloadTerm"></param>
+        /// <param name="dependsOn">List of facets this one depends on for loading.</param>
+        public MultiValueFacetHandler(string name, string indexFieldName, TermListFactory termListFactory, Term sizePayloadTerm, IEnumerable<string> dependsOn)
+            : base(name, dependsOn)
         {
-            _depends = depends;
+            _depends = dependsOn;
             _indexFieldName = (indexFieldName != null ? indexFieldName : name);
             _termListFactory = termListFactory;
             _sizePayloadTerm = sizePayloadTerm;
@@ -64,38 +80,88 @@ namespace BoboBrowse.Net.Facets.Impl
 	        return data.GetNumItems(id);
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:MultiValueFacetHandler"/> with the specified name,
+        /// Lucene.Net index field name, <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance, and size payload term.
+        /// </summary>
+        /// <param name="name">The facet handler name.</param>
+        /// <param name="indexFieldName">The name of the Lucene.Net index field this handler will utilize.</param>
+        /// <param name="termListFactory">A <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance that will create a 
+        /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
+        /// <param name="sizePayloadTerm"></param>
         public MultiValueFacetHandler(string name, string indexFieldName, TermListFactory termListFactory, Term sizePayloadTerm)
             : this(name, indexFieldName, termListFactory, sizePayloadTerm, null)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:MultiValueFacetHandler"/> with the specified name,
+        /// <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance, and size payload term.
+        /// </summary>
+        /// <param name="name">The facet handler name. Must be the same value as the Lucene.Net index field name.</param>
+        /// <param name="termListFactory">A <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance that will create a 
+        /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
+        /// <param name="sizePayloadTerm"></param>
         public MultiValueFacetHandler(string name, TermListFactory termListFactory, Term sizePayloadTerm)
             : this(name, name, termListFactory, sizePayloadTerm, null)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:MultiValueFacetHandler"/> with the specified name,
+        /// Lucene.Net index field name, and <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance.
+        /// </summary>
+        /// <param name="name">The facet handler name.</param>
+        /// <param name="indexFieldName">The name of the Lucene.Net index field this handler will utilize.</param>
+        /// <param name="termListFactory">A <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance that will create a 
+        /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
         public MultiValueFacetHandler(string name, string indexFieldName, TermListFactory termListFactory)
             : this(name, indexFieldName, termListFactory, null, null)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:MultiValueFacetHandler"/> with the specified name
+        /// and <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance.
+        /// The Lucene.Net index field must have the same name.
+        /// </summary>
+        /// <param name="name">The facet handler name. Must be the same value as the Lucene.Net index field name.</param>
+        /// <param name="termListFactory">A <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance that will create a 
+        /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
         public MultiValueFacetHandler(string name, TermListFactory termListFactory)
             : this(name, name, termListFactory)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:MultiValueFacetHandler"/> with the specified name
+        /// and Lucene.Net index field name.
+        /// </summary>
+        /// <param name="name">The facet handler name.</param>
+        /// <param name="indexFieldName">The name of the Lucene.Net index field this handler will utilize.</param>
         public MultiValueFacetHandler(string name, string indexFieldName)
             : this(name, indexFieldName, null)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:MultiValueFacetHandler"/> with the specified name.
+        /// The Lucene.Net index field must have the same name.
+        /// </summary>
+        /// <param name="name">The facet handler name. Must be the same value as the Lucene.Net index field name.</param>
         public MultiValueFacetHandler(string name)
             : this(name, name, null)
         {
         }
 
-        public MultiValueFacetHandler(string name, IEnumerable<string> depends)
-            : this(name, name, null, null, depends)
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:MultiValueFacetHandler"/> with the specified name
+        /// and list of facet handlers this one depends on. The Lucene.Net index field must have the same name.
+        /// </summary>
+        /// <param name="name">The facet handler name. Must be the same value as the Lucene.Net index field name.</param>
+        /// <param name="dependsOn">List of facets this one depends on for loading.</param>
+        public MultiValueFacetHandler(string name, IEnumerable<string> dependsOn)
+            : this(name, name, null, null, dependsOn)
         {
         }
 

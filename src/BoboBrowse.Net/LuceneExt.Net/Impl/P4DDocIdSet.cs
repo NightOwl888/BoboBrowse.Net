@@ -1,25 +1,25 @@
-﻿//* Bobo Browse Engine - High performance faceted/parametric search implementation 
-//* that handles various types of semi-structured data.  Written in Java.
-//* 
-//* Copyright (C) 2005-2006  John Wang
-//*
-//* This library is free software; you can redistribute it and/or
-//* modify it under the terms of the GNU Lesser General Public
-//* License as published by the Free Software Foundation; either
-//* version 2.1 of the License, or (at your option) any later version.
-//*
-//* This library is distributed in the hope that it will be useful,
-//* but WITHOUT ANY WARRANTY; without even the implied warranty of
-//* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//* Lesser General Public License for more details.
-//*
-//* You should have received a copy of the GNU Lesser General Public
-//* License along with this library; if not, write to the Free Software
-//* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
-//* 
-//* To contact the project administrators for the bobo-browse project, 
-//* please go to https://sourceforge.net/projects/bobo-browse/, or 
-//* send mail to owner@browseengine.com.  
+﻿// * Bobo Browse Engine - High performance faceted/parametric search implementation 
+// * that handles various types of semi-structured data.  Written in Java.
+// * 
+// * Copyright (C) 2005-2006  John Wang
+// *
+// * This library is free software; you can redistribute it and/or
+// * modify it under the terms of the GNU Lesser General Public
+// * License as published by the Free Software Foundation; either
+// * version 2.1 of the License, or (at your option) any later version.
+// *
+// * This library is distributed in the hope that it will be useful,
+// * but WITHOUT ANY WARRANTY; without even the implied warranty of
+// * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// * Lesser General Public License for more details.
+// *
+// * You should have received a copy of the GNU Lesser General Public
+// * License along with this library; if not, write to the Free Software
+// * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// * 
+// * To contact the project administrators for the bobo-browse project, 
+// * please go to https://sourceforge.net/projects/bobo-browse/, or 
+// * send mail to owner@browseengine.com.  
 
 namespace LuceneExt.Impl
 {
@@ -166,6 +166,7 @@ namespace LuceneExt.Impl
                 blobSize = parent.blob.Size();
 
                 localCompressedSet.SetParam(0, DEFAULT_B, parent.BATCH_SIZE, parent.BATCH_OVER);
+                this.parent = parent;
             }
 
             public override int DocID()
@@ -173,11 +174,11 @@ namespace LuceneExt.Impl
                 return lastReturn;
             }
 
-            ///<summary>Method to allow iteration in decompressed form</summary>
-            /*public int get(OpenBitSet set, int index)
-            {
-                return compressedSet.get(set, index);
-            }*/
+            /////<summary>Method to allow iteration in decompressed form</summary>
+            //public int get(OpenBitSet set, int index)
+            //{
+            //    return localCompressedSet.Get(set, index);
+            //}
 
             ///<summary>Method to allow iteration in decompressed form </summary>
             public virtual int @get(long[] @set, int index)
@@ -400,34 +401,39 @@ namespace LuceneExt.Impl
                 return -1;
             }
 
-            ///    
-            ///     <summary> * Find the element in the compressed set
-            ///     *  </summary>
-            ///     * <param name="next"> </param>
-            ///     * <param name="target"> </param>
-            ///     * <param name="base">
-            ///     * @return
-            ///     
-            ///    private int findAndUpdate(OpenBitSet next, int target, int base) {
-            ///      lastReturn = base;
-            ///      if (lastReturn >= target)
-            ///        return 1;
-            ///
-            ///      for (int i = 1; i < BATCH_SIZE; i++) {
-            ///        // System.out.println("Getting "+i);
-            ///        // System.out.flush();
-            ///
-            ///        lastReturn += compressedSet.get(next, i);
-            ///        if (lastReturn >= target) {
-            ///          // if(i==127)
-            ///          return (i + 1) % BATCH_SIZE;
-            ///        }
-            ///      }
-            ///      return -1; </param>
-            ///    }
 
-            ///     <summary> * Find the element in the set and update parameters.
-            ///     *  </summary>
+            ///// <summary>
+            ///// Find the element in the compressed set
+            ///// </summary>
+            ///// <param name="next"></param>
+            ///// <param name="target"></param>
+            ///// <param name="?"></param>
+            ///// <returns></returns>
+            //private int findAndUpdate(OpenBitSet next, int target, int base) {
+            //    lastReturn = base;
+            //    if (lastReturn >= target)
+            //    return 1;
+            
+            //    for (int i = 1; i < BATCH_SIZE; i++) {
+            //    // System.out.println("Getting "+i);
+            //    // System.out.flush();
+            
+            //    lastReturn += compressedSet.get(next, i);
+            //    if (lastReturn >= target) {
+            //        // if(i==127)
+            //        return (i + 1) % BATCH_SIZE;
+            //    }
+            //    }
+            //    return -1; </param>
+            //}
+
+
+            /// <summary>
+            /// Find the element in the set and update parameters.
+            /// </summary>
+            /// <param name="array"></param>
+            /// <param name="target"></param>
+            /// <returns></returns>
             private int FindAndUpdate(int[] array, int target)
             {
 

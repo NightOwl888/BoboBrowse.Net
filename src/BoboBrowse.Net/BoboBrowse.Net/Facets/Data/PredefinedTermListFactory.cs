@@ -20,17 +20,29 @@ namespace BoboBrowse.Net.Facets.Data
     ///     <item>DateTime</item>
     /// </list>
     /// </summary>
-    /// <typeparam name="TSupported">The type of term list to build. Supported types are int, float, char, double, long, and DateTime.</typeparam>
+    /// <typeparam name="TSupported">The type of term list to build. Supported types are <see cref="T:System.Int32"/>, <see cref="T:System.Single"/>, <see cref="T:System.Char"/>, <see cref="T:System.Double"/>, <see cref="T:System.Int16"/>, <see cref="T:System.Int64"/>, <see cref="T:System.DateTime"/>.</typeparam>
     public class PredefinedTermListFactory<TSupported> : PredefinedTermListFactory
     {
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:PredefinedTermListFactory{TSupported}"/>.
+        /// </summary>
+        /// <param name="formatString">The format string that will be used to format each value in the list for output display.</param>
+        /// <param name="formatProvider">An object that provides culture-specific formatting information.</param>
         public PredefinedTermListFactory(string formatString, IFormatProvider formatProvider)
             : base(typeof(TSupported), formatString, formatProvider)
         { }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:PredefinedTermListFactory{TSupported}"/>.
+        /// </summary>
+        /// <param name="formatString">The format string that will be used to format each value in the list for output display.</param>
         public PredefinedTermListFactory(string formatString)
             : this(formatString, null)
         { }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:PredefinedTermListFactory{TSupported}"/>.
+        /// </summary>
         public PredefinedTermListFactory()
             : this(null, null)
         { }
@@ -51,7 +63,6 @@ namespace BoboBrowse.Net.Facets.Data
     ///     <item>DateTime</item>
     /// </list>
     /// </summary>
-    /// <typeparam name="TSupported">The type of term list to build. Supported types are int, float, char, double, long, and DateTime.</typeparam>
     public class PredefinedTermListFactory: TermListFactory
     {
         private readonly Type listType;
@@ -68,6 +79,14 @@ namespace BoboBrowse.Net.Facets.Data
             { typeof(DateTime), typeof(TermDateList) }
         };
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:PredefinedTermListFactory"/>.
+        /// </summary>
+        /// <param name="type">The native type of the values in the list. 
+        /// Supported types are <see cref="T:System.Int32"/>, <see cref="T:System.Single"/>, <see cref="T:System.Char"/>, 
+        /// <see cref="T:System.Double"/>, <see cref="T:System.Int16"/>, <see cref="T:System.Int64"/>, <see cref="T:System.DateTime"/>.</param>
+        /// <param name="formatString">The format string that will be used to format each value in the list for output display.</param>
+        /// <param name="formatProvider">An object that provides culture-specific formatting information.</param>
         public PredefinedTermListFactory(Type type, string formatString, IFormatProvider formatProvider)
         {
             if (!supportedTypes.ContainsKey(type))
@@ -79,10 +98,23 @@ namespace BoboBrowse.Net.Facets.Data
             this.formatProvider = formatProvider;
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:PredefinedTermListFactory"/>.
+        /// </summary>
+        /// <param name="listType">The native type of the values in the list. 
+        /// Supported types are <see cref="T:System.Int32"/>, <see cref="T:System.Single"/>, <see cref="T:System.Char"/>, 
+        /// <see cref="T:System.Double"/>, <see cref="T:System.Int16"/>, <see cref="T:System.Int64"/>, <see cref="T:System.DateTime"/>.</param>
+        /// <param name="formatString">The format string that will be used to format each value in the list for output display.</param>
         public PredefinedTermListFactory(Type listType, string formatString)
             : this(listType, formatString, null)
         { }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:PredefinedTermListFactory"/>.
+        /// </summary>
+        /// <param name="listType">The native type of the values in the list. 
+        /// Supported types are <see cref="T:System.Int32"/>, <see cref="T:System.Single"/>, <see cref="T:System.Char"/>, 
+        /// <see cref="T:System.Double"/>, <see cref="T:System.Int16"/>, <see cref="T:System.Int64"/>, <see cref="T:System.DateTime"/>.</param>
         public PredefinedTermListFactory(Type listType)
             : this(listType, null, null)
         { }

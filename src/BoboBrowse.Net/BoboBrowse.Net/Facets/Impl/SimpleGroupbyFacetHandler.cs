@@ -22,6 +22,13 @@ namespace BoboBrowse.Net.Facets.Impl
         private const string SEP = ",";
         private readonly string _sep;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:SimpleFacetHandler"/> with the specified name, 
+        /// dependent facet handler names, and separator.
+        /// </summary>
+        /// <param name="name">The facet handler name.</param>
+        /// <param name="dependsOn">List of facet handler names that will be included in the group.</param>
+        /// <param name="separator">The separator string that will be used to delineate each value in the group.</param>
         public SimpleGroupbyFacetHandler(string name, IEnumerable<string> dependsOn, string separator)
             : base(name, dependsOn)
         {
@@ -31,6 +38,12 @@ namespace BoboBrowse.Net.Facets.Impl
             _sep = separator;
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:SimpleFacetHandler"/> with the specified name and 
+        /// dependent facet handler names. The separator is assumed to be ",".
+        /// </summary>
+        /// <param name="name">The facet handler name.</param>
+        /// <param name="dependsOn">List of facet handler names that will be included in the group.</param>
         public SimpleGroupbyFacetHandler(string name, IEnumerable<string> dependsOn)
             : this(name, dependsOn, SEP)
         {

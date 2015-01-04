@@ -5,15 +5,20 @@ namespace LuceneExt
     using LuceneExt.BitSet;
     using System;
 
-    ///
-    /// <summary> * Implementation of the p4delta algorithm for sorted integer arrays based on
-    /// * 
-    /// * 1. Original Algorithm from
-    /// * http://homepages.cwi.nl/~heman/downloads/msthesis.pdf 2. Optimization and
-    /// * variation from http://www2008.org/papers/pdf/p387-zhangA.pdf
-    /// * 
-    /// * This class is a wrapper around a CompressedSegment based on Lucene OpenBitSet </summary>
+    /// <summary> 
+    /// Implementation of the p4delta algorithm for sorted integer arrays based on
     /// 
+    /// <list type="number">
+    ///     <item>
+    ///         <description>Original Algorithm from http://homepages.cwi.nl/~heman/downloads/msthesis.pdf</description>
+    ///     </item>
+    ///     <item>
+    ///         <description>Optimization and variation from http://www2008.org/papers/pdf/p387-zhangA.pdf</description>
+    ///     </item>
+    /// </list>
+    /// 
+    /// This class is a wrapper around a CompressedSegment based on Lucene OpenBitSet 
+    /// </summary>
     [Serializable]
     public class P4DSetNoBase : ICompressedSortedIntegerSegment
     {

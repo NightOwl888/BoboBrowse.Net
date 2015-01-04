@@ -32,12 +32,25 @@ namespace BoboBrowse.Net.Facets.Impl
     using System;
     using System.Collections.Generic;
 
+    /// <summary>
+    /// Used when there is a discrete set of facet values, for example: color, with values: red, green, blue, white, black. 
+    /// Each document can have only 1 value in this field. When being indexed, this field should not be tokenized.
+    /// </summary>
     public class SimpleFacetHandler : FacetHandler<FacetDataCache>, IFacetScoreable
     {
         private static ILog logger = LogManager.GetLogger<SimpleFacetHandler>();
         protected TermListFactory _termListFactory;
         protected readonly string _indexFieldName;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:SimpleFacetHandler"/> with the specified name, Lucene.Net index field name, 
+        /// <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance, and a list of facets this one depends on for loading.
+        /// </summary>
+        /// <param name="name">The facet handler name.</param>
+        /// <param name="indexFieldName">The name of the Lucene.Net index field this handler will utilize.</param>
+        /// <param name="termListFactory">A <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance that will create a 
+        /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
+        /// <param name="dependsOn">List of facets this one depends on for loading.</param>
         public SimpleFacetHandler(string name, string indexFieldName, TermListFactory termListFactory, IEnumerable<string> dependsOn)
             : base(name, dependsOn)
         {
@@ -45,21 +58,49 @@ namespace BoboBrowse.Net.Facets.Impl
             _termListFactory = termListFactory;
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:SimpleFacetHandler"/> with the specified name, Lucene.Net index field name, 
+        /// and <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance.
+        /// </summary>
+        /// <param name="name">The facet handler name.</param>
+        /// <param name="indexFieldName">The name of the Lucene.Net index field this handler will utilize.</param>
+        /// <param name="termListFactory">A <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance that will create a 
+        /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
         public SimpleFacetHandler(string name, string indexFieldName, TermListFactory termListFactory)
             : this(name, indexFieldName, termListFactory, null)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:SimpleFacetHandler"/> with the specified name and <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance.
+        /// The Lucene.Net index field must have the same name.
+        /// </summary>
+        /// <param name="name">The facet handler name. Must be the same value as the Lucene.Net index field name.</param>
+        /// <param name="termListFactory">A <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance that will create a 
+        /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
         public SimpleFacetHandler(string name, TermListFactory termListFactory)
             : this(name, name, termListFactory)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:SimpleFacetHandler"/> with the specified name.
+        /// The Lucene.Net index field must have the same name. A <see cref="T:BoboBrowse.Net.Facets.Data.TermStringList"/> will be
+        /// used to store the data elements for comparison.
+        /// </summary>
+        /// <param name="name">The facet handler name. Must be the same value as the Lucene.Net index field name.</param>
         public SimpleFacetHandler(string name)
             : this(name, name, null)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:SimpleFacetHandler"/> with the specified name
+        /// and Lucene.Net index field name. A <see cref="T:BoboBrowse.Net.Facets.Data.TermStringList"/> will be
+        /// used to store the data elements for comparison.
+        /// </summary>
+        /// <param name="name">The name of the facet handler.</param>
+        /// <param name="indexFieldName">The name of the Lucene.Net index field this handler will utilize.</param>
         public SimpleFacetHandler(string name, string indexFieldName)
             : this(name, indexFieldName, null)
         {

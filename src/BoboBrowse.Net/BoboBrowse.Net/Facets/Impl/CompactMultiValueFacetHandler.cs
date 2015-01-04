@@ -15,6 +15,10 @@ namespace BoboBrowse.Net.Facets.Impl
     using System.Collections.Generic;
     using System.IO;
     
+    /// <summary>
+    /// Same as <see cref="T:MultiValueFacetHandler"/>, multiple values are allowed, but the total possible values are limited to 32. 
+    /// This is more efficient than <see cref="T:MultiValueFacetHandler"/> and has a smaller memory footprint.
+    /// </summary>
     public class CompactMultiValueFacetHandler : FacetHandler<FacetDataCache>, IFacetScoreable
     {
         private static ILog logger = LogManager.GetLogger<CompactMultiValueFacetHandler>();
@@ -23,6 +27,14 @@ namespace BoboBrowse.Net.Facets.Impl
         private readonly TermListFactory _termListFactory;
         private readonly string _indexFieldName;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:CompactMultiValueFacetHandler"/> with the specified name,
+        /// Lucene.Net index field name, and <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance.
+        /// </summary>
+        /// <param name="name">The facet handler name.</param>
+        /// <param name="indexFieldName">The name of the Lucene.Net index field this handler will utilize.</param>
+        /// <param name="termListFactory">A <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance that will create a 
+        /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
         public CompactMultiValueFacetHandler(string name, string indexFieldName, TermListFactory termListFactory)
             : base(name)
         {
@@ -30,16 +42,35 @@ namespace BoboBrowse.Net.Facets.Impl
             _termListFactory = termListFactory;
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:CompactMultiValueFacetHandler"/> with the specified name
+        /// and <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance.
+        /// The Lucene.Net index field must have the same name.
+        /// </summary>
+        /// <param name="name">The facet handler name. Must be the same value as the Lucene.Net index field name.</param>
+        /// <param name="termListFactory">A <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance that will create a 
+        /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
         public CompactMultiValueFacetHandler(string name, TermListFactory termListFactory)
             : this(name, name, termListFactory)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:CompactMultiValueFacetHandler"/> with the specified name
+        /// and Lucene.Net index field name.
+        /// </summary>
+        /// <param name="name">The facet handler name.</param>
+        /// <param name="indexFieldName">The name of the Lucene.Net index field this handler will utilize.</param>
         public CompactMultiValueFacetHandler(string name, string indexFieldName)
             : this(name, indexFieldName, null)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:CompactMultiValueFacetHandler"/> with the specified name.
+        /// The Lucene.Net index field must have the same name.
+        /// </summary>
+        /// <param name="name">The facet handler name. Must be the same value as the Lucene.Net index field name.</param>
         public CompactMultiValueFacetHandler(string name)
             : this(name, name, null)
         {

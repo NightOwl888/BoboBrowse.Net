@@ -35,8 +35,10 @@ namespace BoboBrowse.Net
     {
         private static ILog logger = LogManager.GetLogger<BoboBrowser>();
 
-        ///<summary>Constructor.</summary>
-        ///<param name="reader">A bobo reader instance</param>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:BoboBrowser"/> class with the specified <see cref="T:BoboIndexReader"/> instance.
+        /// </summary>
+        /// <param name="reader">An open <see cref="T:BoboIndexReader"/> instance.</param>
         public BoboBrowser(BoboIndexReader reader)
             : base(CreateBrowsables(reader))
         {}
@@ -93,14 +95,19 @@ namespace BoboBrowse.Net
         }
 
         /// <summary>
-        /// Gets a set of facet names
+        /// Gets a set of facet names.
         /// </summary>
-        /// <returns>set of facet names</returns>
+        /// <returns>Set of facet names.</returns>
         public override IEnumerable<string> FacetNames
         {
             get { return _subBrowsers[0].FacetNames; }
         }
 
+        /// <summary>
+        /// Gets a facet handler by facet name.
+        /// </summary>
+        /// <param name="name">The facet name.</param>
+        /// <returns>The facet handler instance.</returns>
         public override IFacetHandler GetFacetHandler(string name)
         {
             return _subBrowsers[0].GetFacetHandler(name);

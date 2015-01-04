@@ -7,7 +7,7 @@ namespace LuceneExt.BitSet
     [Serializable]
     public class MyOpenBitSet : OpenBitSet
     {
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
 
         public MyOpenBitSet()
         {

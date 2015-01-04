@@ -71,14 +71,13 @@ namespace BoboBrowse.Net.Facets.Data
             this.Load(fieldName, reader, listFactory, new BoboIndexReader.WorkArea());
         }
 
-        ///  
-        ///   <summary> * loads multi-value facet data. This method uses a workarea to prepare loading. </summary>
-        ///   * <param name="fieldName"> </param>
-        ///   * <param name="reader"> </param>
-        ///   * <param name="listFactory"> </param>
-        ///   * <param name="workArea"> </param>
-        ///   * <exception cref="IOException"> </exception>
-        ///   
+        /// <summary>
+        /// loads multi-value facet data. This method uses a workarea to prepare loading.
+        /// </summary>
+        /// <param name="fieldName"></param>
+        /// <param name="reader"></param>
+        /// <param name="listFactory"></param>
+        /// <param name="workArea"></param>
         public virtual void Load(string fieldName, IndexReader reader, TermListFactory listFactory, BoboIndexReader.WorkArea workArea)
         {
             long t0 = Environment.TickCount;
@@ -214,14 +213,13 @@ namespace BoboBrowse.Net.Facets.Data
             this.freqs[0] = maxdoc + 1 - (int)bitset.Cardinality();
         }
 
-        ///  
-        ///   <summary> * loads multi-value facet data. This method uses the count payload to allocate storage before loading data. </summary>
-        ///   * <param name="fieldName"> </param>
-        ///   * <param name="sizeTerm"> </param>
-        ///   * <param name="reader"> </param>
-        ///   * <param name="listFactory"> </param>
-        ///   * <exception cref="IOException"> </exception>
-        ///   
+        /// <summary>
+        /// loads multi-value facet data. This method uses the count payload to allocate storage before loading data.
+        /// </summary>
+        /// <param name="fieldName"></param>
+        /// <param name="reader"></param>
+        /// <param name="listFactory"></param>
+        /// <param name="sizeTerm"></param>
         public virtual void Load(string fieldName, IndexReader reader, TermListFactory listFactory, Term sizeTerm)
         {
             int maxdoc = reader.MaxDoc;

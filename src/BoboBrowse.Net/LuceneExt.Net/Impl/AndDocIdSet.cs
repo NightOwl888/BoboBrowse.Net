@@ -8,13 +8,13 @@ namespace LuceneExt.Impl
     [Serializable]
     public class AndDocIdSet : ImmutableDocSet
     {
-        private static long serialVersionUID = 1L;
+        //private static long serialVersionUID = 1L; // NOT USED
         private List<int> _interSectionResult = new List<int>();
 
         [Serializable]
         public class DescDocIdSetComparator : IComparer<StatefulDSIterator>
         {
-            private static long serialVersionUID = 1L;
+            //private static long serialVersionUID = 1L; // NOT USED
 
             public virtual int Compare(StatefulDSIterator o1, StatefulDSIterator o2)
             {

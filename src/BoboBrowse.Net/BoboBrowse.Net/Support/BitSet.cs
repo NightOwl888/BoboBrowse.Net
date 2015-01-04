@@ -366,13 +366,13 @@ namespace BoboBrowse.Net.Support
         /// of <code>k</code>) if and only if
         /// 
         /// <code>((k/64) &lt; bits.length)
-        /// && ((bits[k/64] & (1L &lt;&lt; (bit % 64))) != 0)
+        /// &amp; ((bits[k/64] &amp; (1L &lt;&lt; (bit % 64))) != 0)
         /// </code>
         /// 
         /// Then the following definition of the GetHashCode method
         /// would be a correct implementation of the actual algorithm:
         /// 
-        /// <pre>public override int GetHashCode()
+        /// <code>public override int GetHashCode()
         /// {
         ///   long h = 1234;
         ///   for (int i = bits.length-1; i &gt;= 0; i--)
@@ -381,7 +381,7 @@ namespace BoboBrowse.Net.Support
         ///   }
         ///   
         ///   return (int)((h >> 32) ^ h);
-        /// }</pre>
+        /// }</code>
         /// 
         /// Note that the hash code values changes, if the set is changed.
         /// </summary>
@@ -490,7 +490,7 @@ namespace BoboBrowse.Net.Support
         /// <summary>
         /// Returns the index of the next true bit, from the specified bit
         /// (inclusive). If there is none, -1 is returned. You can iterate over
-        /// all true bits with this loop:<br>
+        /// all true bits with this loop:<br/>
         /// 
         /// <pre>for (int i = bs.nextSetBit(0); i &gt;= 0; i = bs.nextSetBit(i + 1))
         /// {

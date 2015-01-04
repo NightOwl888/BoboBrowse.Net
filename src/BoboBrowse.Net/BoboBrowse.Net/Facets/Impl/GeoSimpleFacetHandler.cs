@@ -64,6 +64,12 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:GeoSimpleFacetHandler"/>.
+        /// </summary>
+        /// <param name="name">Name of the geo facet.</param>
+        /// <param name="latFacetName">Name of the Lucene.Net index field that stores the latitude value.</param>
+        /// <param name="longFacetName">Name of the Lucene.Net index field that stores the longitude value.</param>
         public GeoSimpleFacetHandler(string name, string latFacetName, string longFacetName)
             : base(name, new string[] { latFacetName, longFacetName })
         {

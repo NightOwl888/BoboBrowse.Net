@@ -6,7 +6,7 @@ namespace BoboBrowse.Net.Facets.Impl
     using System.Collections.Generic;
 
     /// <summary>
-    /// author "Xiaoyang Gu<xgu@linkedin.com>"
+    /// author "Xiaoyang Gu &lt;xgu@linkedin.com&gt;"
     /// </summary>
     public class CombinedDoubleFacetIterator : DoubleFacetIterator
     {

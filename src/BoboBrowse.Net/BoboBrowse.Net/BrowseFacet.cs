@@ -38,8 +38,16 @@ namespace BoboBrowse.Net
         private string _value;
         private int _hitcount;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:BrowseFacet"/> class.
+        /// </summary>
         public BrowseFacet() { }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:BrowseFacet"/> class with the provided value and hit count.
+        /// </summary>
+        /// <param name="value">The facet value.</param>
+        /// <param name="hitCount">The hit count.</param>
         public BrowseFacet(string value, int hitCount)
         {
             _value = value;
@@ -47,7 +55,7 @@ namespace BoboBrowse.Net
         }
 
         /// <summary>
-        /// Gets or sets the facet value
+        /// Gets or sets the facet value.
         /// </summary>
         public virtual string Value 
         {
@@ -56,7 +64,7 @@ namespace BoboBrowse.Net
         }
 
         /// <summary>
-        /// Gets or sets the hit count
+        /// Gets or sets the hit count.
         /// </summary>
         [Obsolete("Use FacetValueHitCount instead")]
         public virtual int HitCount
@@ -66,7 +74,7 @@ namespace BoboBrowse.Net
         }
 
         /// <summary>
-        /// Gets or sets the hit count
+        /// Gets or sets the hit count.
         /// </summary>
         public virtual int FacetValueHitCount
         {

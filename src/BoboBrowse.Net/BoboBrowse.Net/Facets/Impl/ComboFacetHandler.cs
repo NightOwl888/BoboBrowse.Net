@@ -14,10 +14,21 @@ namespace BoboBrowse.Net.Facets.Impl
         private const string DFEAULT_SEPARATOR = ":";
 	    private readonly string _separator;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:ComboFacetHandler"/>. The separator will be assumed to be ":".
+        /// </summary>
+        /// <param name="name">The facet handler name. Must be the same value as the Lucene.Net index field name.</param>
+        /// <param name="dependsOn">List of facets this one depends on for loading.</param>
         public ComboFacetHandler(string name, IEnumerable<string> dependsOn)
             : this(name, DFEAULT_SEPARATOR, dependsOn)
         {}
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:ComboFacetHandler"/>.
+        /// </summary>
+        /// <param name="name">The facet handler name. Must be the same value as the Lucene.Net index field name.</param>
+        /// <param name="separator">The separator that is used to delineate the values of the different index fields.</param>
+        /// <param name="dependsOn">List of facets this one depends on for loading.</param>
         public ComboFacetHandler(string name, string separator, IEnumerable<string> dependsOn)
             : base(name, dependsOn)
         {

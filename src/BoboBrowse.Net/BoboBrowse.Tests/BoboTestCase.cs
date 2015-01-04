@@ -2696,7 +2696,8 @@ namespace BoboBrowse.Net
             // This method returns the difference, measured in milliseconds, between the current 
             // time and midnight, January 1, 1970 UTC(coordinated universal time).
             // long now = System.currentTimeMillis();
-            long now = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
+            //long now = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
+            long now = DateTime.Now.GetTime();
             for (long l = 0; l < 53; l++)
             {
                 Document d = new Document();

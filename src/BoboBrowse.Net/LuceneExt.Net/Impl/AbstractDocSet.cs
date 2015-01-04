@@ -1,25 +1,25 @@
-﻿//* Bobo Browse Engine - High performance faceted/parametric search implementation 
-//* that handles various types of semi-structured data.  Written in Java.
-//* 
-//* Copyright (C) 2005-2006  John Wang
-//*
-//* This library is free software; you can redistribute it and/or
-//* modify it under the terms of the GNU Lesser General Public
-//* License as published by the Free Software Foundation; either
-//* version 2.1 of the License, or (at your option) any later version.
-//*
-//* This library is distributed in the hope that it will be useful,
-//* but WITHOUT ANY WARRANTY; without even the implied warranty of
-//* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//* Lesser General Public License for more details.
-//*
-//* You should have received a copy of the GNU Lesser General Public
-//* License along with this library; if not, write to the Free Software
-//* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
-//* 
-//* To contact the project administrators for the bobo-browse project, 
-//* please go to https://sourceforge.net/projects/bobo-browse/, or 
-//* send mail to owner@browseengine.com.  
+﻿// * Bobo Browse Engine - High performance faceted/parametric search implementation 
+// * that handles various types of semi-structured data.  Written in Java.
+// * 
+// * Copyright (C) 2005-2006  John Wang
+// *
+// * This library is free software; you can redistribute it and/or
+// * modify it under the terms of the GNU Lesser General Public
+// * License as published by the Free Software Foundation; either
+// * version 2.1 of the License, or (at your option) any later version.
+// *
+// * This library is distributed in the hope that it will be useful,
+// * but WITHOUT ANY WARRANTY; without even the implied warranty of
+// * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// * Lesser General Public License for more details.
+// *
+// * You should have received a copy of the GNU Lesser General Public
+// * License along with this library; if not, write to the Free Software
+// * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+// * 
+// * To contact the project administrators for the bobo-browse project, 
+// * please go to https://sourceforge.net/projects/bobo-browse/, or 
+// * send mail to owner@browseengine.com.  
 
 namespace LuceneExt.Impl
 {
@@ -46,8 +46,8 @@ namespace LuceneExt.Impl
         ///<summary>Last added value</summary>
         protected internal int lastAdded = 0;
 
-        ///<summary>List of Data blobs</summary>
-        ///protected OpenBitSetArray blob = null;
+        /////<summary>List of Data blobs</summary>
+        //protected OpenBitSetArray blob = null;
 
         ///<summary>List of Data blobs</summary>
         protected internal LongSegmentArray blob = null;
@@ -55,28 +55,24 @@ namespace LuceneExt.Impl
         ///<summary>Pointer to the current data block.</summary>
         protected internal int[] current = null;
 
-        ///<summary>Size of the current array
-        ///   *  </summary>
+        ///<summary>Size of the current array</summary>
         protected internal int current_size = 0;
 
-        ///<summary>Current Max bit count
-        ///   *  </summary>
+        ///<summary>Current Max bit count</summary>
         protected internal int current_ex_count = 0;
 
-        ///<summary>Current Bit Size
-        ///   *  </summary>
+        ///<summary>Current Bit Size</summary>
         protected internal int current_b = 1;
 
-        ///<summary>B Value accumulator
-        ///   *  </summary>
+        ///<summary>B Value accumulator</summary>
         protected internal int[] bVal = null;
 
         ///<summary>compressed bit size </summary>
         ///<summary>Compressed Bits </summary>
         protected internal long compressedBits;
 
-        ///<summary>Internal compression Method  </summary>
-        ///   * <returns> compressed object </returns>
+        /// <summary>Internal compression Method  </summary>
+        /// <returns> compressed object </returns>
         protected internal abstract object Compress();
         // protected abstract Object compressAlt();
 
@@ -86,17 +82,15 @@ namespace LuceneExt.Impl
 
         }
 
-        ///<summary>Internal Decompression Method
-        ///   * @return </summary>
+        ///<summary>Internal Decompression Method</summary>
         private int[] decompress(OpenBitSet packedSet)
         {
             Console.Error.WriteLine("Method not implemented");
             return null;
         }
 
-        ///<summary>Internal Decompression Method
-        ///   *  </summary>
-        ///   * <returns> decompressed in the form of integer array </returns>
+        /// <summary>Internal Decompression Method</summary>
+        /// <returns> decompressed in the form of integer array </returns>
         protected internal virtual int[] decompress(DocIdBitSet packedSet)
         {
             Console.Error.WriteLine("Method not implemented");
@@ -112,8 +106,8 @@ namespace LuceneExt.Impl
             bVal = new int[33];
         }
 
-        ///<summary>Number of compressed units plus the last block </summary>
-        ///   * <returns> docset size </returns>
+        /// <summary>Number of compressed units plus the last block </summary>
+        /// <returns> docset size </returns>
         public override int Size()
         {
             return blob.Size() * BATCH_SIZE + current_size;
@@ -121,8 +115,7 @@ namespace LuceneExt.Impl
 
 
 
-        ///<summary>Add document to this set
-        ///   *  </summary>
+        ///<summary>Add document to this set</summary>
         public override void AddDoc(int docid)
         {
             if (Size() == 0)

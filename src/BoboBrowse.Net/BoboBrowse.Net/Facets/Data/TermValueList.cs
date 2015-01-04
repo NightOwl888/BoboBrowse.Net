@@ -42,13 +42,18 @@ namespace BoboBrowse.Net.Facets.Data
         Type Type { get; }
     }
 
-    /// <summary>This class behaves as List<string> with a few extensions:
-    /// <ul>
-    /// <li> Semi-immutable, e.g. once added, cannot be removed. </li>
-    /// <li> Assumes sequence of values added are in sorted order </li>
-    /// <li> <seealso cref="#indexOf(Object)"/> return value conforms to the contract of <seealso cref="Arrays#binarySearch(Object[], Object)"/></li>
-    /// <li> <seealso cref="#seal()"/> is introduce to trim the List size, similar to <seealso cref="ArrayList#TrimToSize()"/>, once it is called, no add should be performed.</li>
-    /// </u> </summary>
+    /// <summary>This class behaves as <see cref="T:System.Collections.Generic.List{System.String}"/> with a few extensions:
+    /// <list type="bullet">
+    ///     <item>
+    ///         <description>Semi-immutable, e.g. once added, cannot be removed.</description>
+    ///     </item>
+    ///     <item>
+    ///         <description>Assumes sequence of values added are in sorted order.</description>
+    ///     </item>
+    /// </list>
+    /// <see cref="M:IndexOf(System.Object)"/> return value conforms to the contract of <see cref="M:System.Array.BinarySearch(T[], T)"/>.
+    /// <see cref="M:Seal"/> is introduce to trim the List size, similar to <see cref="M:System.Collections.ArrayList.TrimToSize"/>, once it is called, no add should be performed.
+    /// </summary>
     public abstract class TermValueList<T> : ITermValueList
     {
         public abstract string Format(object o);

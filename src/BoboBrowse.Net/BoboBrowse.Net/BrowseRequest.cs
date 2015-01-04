@@ -34,7 +34,7 @@ namespace BoboBrowse.Net
     using System.Text;
     
     /// <summary>
-    /// Browse Request.
+    /// Browse Request. A set of BrowseSelections, a keyword text query, and a set of FacetSpecs.
     /// author jwang
     /// </summary>
     [Serializable]
@@ -60,21 +60,40 @@ namespace BoboBrowse.Net
         private readonly Dictionary<string, BrowseSelection> _selections;
         private readonly List<SortField> _sortSpecs;
 
-
+        /// <summary>
+        /// Gets or sets a list of term vectors to fetch from the Lucene.Net index. The values are populated in the <see cref="P:BrowseHit.TermFreqMap"/>.
+        /// A term vector is a list of the document's terms and their number of occurrences in that document.
+        /// </summary>
         public virtual IEnumerable<string> TermVectorsToFetch { get; set; }
 
+        /// <summary>
+        /// Gets or sets a flag indicating whether to set a <see cref="T:Lucene.Net.Search.Explanation"/> to the <see cref="P:BrowseHit.Explanation"/> property.
+        /// An <see cref="T:Lucene.Net.Search.Explanation"/> describes the score computation for document and query.
+        /// </summary>
         public virtual bool ShowExplanation { get; set; }
 
+        /// <summary>
+        /// Gets a list of the names of the current selections.
+        /// </summary>
+        /// <returns></returns>
         public virtual IEnumerable<string> GetSelectionNames()
         {
             return _selections.Keys;
         }
 
+        /// <summary>
+        /// Removes a selection by name.
+        /// </summary>
+        /// <param name="name"></param>
         public virtual void RemoveSelection(string name)
         {
             _selections.Remove(name);
         }
 
+        /// <summary>
+        /// A dictionary of named FacetSpec instances.
+        /// <see cref="T:FacetSpec"/> specifies how facets are to be returned on the <see cref="T:BrowseResult"/>.
+        /// </summary>
         public virtual IDictionary<string, FacetSpec> FacetSpecs { get; set; }
 
         /// <summary>
@@ -82,13 +101,16 @@ namespace BoboBrowse.Net
         /// </summary>
         public virtual IDictionary<string, FacetHandlerInitializerParam> FacetHandlerDataMap { get; set; }
 
+        /// <summary>
+        /// Gets the number of selections in the current request.
+        /// </summary>
         public virtual int SelectionCount
         {
             get { return _selections.Count; }
         }
 
         /// <summary>
-        /// Gets or sets the default filter
+        /// Gets or sets the default filter.
         /// </summary>
         public virtual Filter Filter { get; set; }
 
@@ -97,15 +119,19 @@ namespace BoboBrowse.Net
             _selections.Clear();
         }
 
-        ///<summary>Gets the number of facet specs </summary>
-        ///<returns> number of facet specs </returns>
-        ///<seealso cref= #setFacetSpec(string, FacetSpec) </seealso>
-        ///<seealso cref= #getFacetSpec(string) </seealso>
+        /// <summary>
+        /// Gets the number of facet specs.
+        /// </summary>
+        /// <seealso cref="M:SetFacetSpec"/>
+        /// <seealso cref="M:GetFacetSpec"/>
         public virtual int FacetSpecCount
         {
             get { return FacetSpecs.Count; }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:BrowseRequest"/> class.
+        /// </summary>
         public BrowseRequest()
         {
             _selections = new Dictionary<string, BrowseSelection>();
@@ -119,22 +145,37 @@ namespace BoboBrowse.Net
             CollectDocIdCache = false;
         }
 
+        /// <summary>
+        /// Clears the list of <see cref="T:Lucene.Net.Search.SortField"/> instances for the <see cref="P:BrowseResult.Hits"/>.
+        /// </summary>
         public virtual void ClearSort()
         {
             _sortSpecs.Clear();
         }
 
+        /// <summary>
+        /// Gets or sets a flag indicating whether to return a reference to the Lucene.Net Document
+        /// object in the <see cref="P:BrowseHit.StoredFields"/> property.
+        /// </summary>
         public virtual bool FetchStoredFields { get; set; }
 
         public virtual string[] GroupBy { get; set; }
 
+        /// <summary>
+        /// This setting does nothing. Left in place for parity with the Java version, which also has this field that does nothing.
+        /// </summary>
         public virtual int MaxPerGroup { get; set; }
 
+        /// <summary>
+        /// This setting does nothing. The Java version had some kind of caching mechanism that was triggered by this setting that was
+        /// not implemented in this version.
+        /// </summary>
         [Obsolete("CollectDocIdCache not implemented.")]
         public virtual bool CollectDocIdCache { get; set; }
 
         /// <summary>
-        /// Sets a facet spec
+        /// Sets a <see cref="T:FacetSpec"/> and its related field name.
+        /// <see cref="T:FacetSpec"/> specifies how facets are to be returned on the <see cref="T:BrowseResult"/>.
         /// </summary>
         /// <param name="name">field name</param>
         /// <param name="facetSpec">Facet spec</param>
@@ -144,7 +185,8 @@ namespace BoboBrowse.Net
         }
 
         /// <summary>
-        /// Gets a facet spec
+        /// Gets a <see cref="T:FacetSpec"/> by field name.
+        /// <see cref="T:FacetSpec"/> specifies how facets are to be returned on the <see cref="T:BrowseResult"/>.
         /// </summary>
         /// <param name="name">field name</param>
         /// <returns>facet spec</returns>
@@ -177,11 +219,13 @@ namespace BoboBrowse.Net
 
         /// <summary>
         /// Gets or sets the number of hits to return. Part of the paging parameters.
+        /// Similar to the Take() method in a LINQ query.
         /// </summary>
         public virtual int Count { get; set; }
 
         /// <summary>
         /// Gets or sets of the offset. Part of the paging parameters.
+        /// Similar to the Skip() method in a LINQ query, but is 0-based instead of 1-based.
         /// </summary>
         public virtual int Offset { get; set; }
 
@@ -190,9 +234,11 @@ namespace BoboBrowse.Net
         /// </summary>
         public virtual Lucene.Net.Search.Query Query { get; set; }
 
-        ///<summary>Adds a browse selection </summary>
-        ///<param name="sel"> selection </param>
-        ///<seealso cref= #getSelections() </seealso>
+        /// <summary>
+        /// Adds a browse selection. This typically corresponds to the selections a user would make on the user interface.
+        /// </summary>
+        /// <param name="sel">selection</param>
+        /// <seealso cref="M:GetSelections"/>
         public virtual void AddSelection(BrowseSelection sel)
         {
             string[] vals = sel.Values;
@@ -207,27 +253,39 @@ namespace BoboBrowse.Net
             _selections.Put(sel.FieldName, sel);
         }
 
-        ///<summary>Gets all added browse selections </summary>
-        ///<returns> added selections </returns>
-        ///<seealso cref= #addSelection(BrowseSelection) </seealso>
+        /// <summary>
+        /// Gets all added browse selections.
+        /// </summary>
+        /// <returns>added selections</returns>
+        /// <seealso cref="M:AddSelections"/>
         public virtual BrowseSelection[] GetSelections()
         {
             return _selections.Values.ToArray();
         }
 
-        ///<summary> Gets selection by field name </summary>
-        ///<param name="fieldname"> </param>
-        ///<returns> selection on the field </returns>
+        /// <summary>
+        /// Gets a selection by field name.
+        /// </summary>
+        /// <param name="fieldname">The field name.</param>
+        /// <returns>The selection on the field.</returns>
         public virtual BrowseSelection GetSelection(string fieldname)
         {
             return _selections.Get(fieldname);
         }
 
+        /// <summary>
+        /// Gets a dictionary of all current selections.
+        /// </summary>
+        /// <returns></returns>
         public virtual IDictionary<string, BrowseSelection> GetAllSelections()
         {
             return _selections;
         }
 
+        /// <summary>
+        /// Adds all of the selection entries to the current dictionary of selections.
+        /// </summary>
+        /// <param name="map">A dictionary of field name to <see cref="T:BrowseSelection"/> pairs.</param>
         public virtual void PutAllSelections(IDictionary<string, BrowseSelection> map)
         {
             _selections.PutAll(map);
@@ -235,15 +293,17 @@ namespace BoboBrowse.Net
 
         public virtual IBoboMapFunctionWrapper MapReduceWrapper { get; set; }
 
-        ///	 <summary> Add a sort spec </summary>
-        ///	 <param name="sortSpec"> sort spec </param>
+        /// <summary>
+        /// Add a sort specification for the <see cref="P:BrowseResult.Hits"/>.
+        /// </summary>
+        /// <param name="sortSpec">sort specification</param>
         public virtual void AddSortField(SortField sortSpec)
         {
             _sortSpecs.Add(sortSpec);
         }
 
         /// <summary>
-        /// Gets or sets the sort criteria
+        /// Gets or sets the sort criteria for the <see cref="P:BrowseResult.Hits"/>.
         /// </summary>
         public virtual SortField[] Sort
         {
@@ -260,7 +320,11 @@ namespace BoboBrowse.Net
                 }
             }
         }
-       
+
+        /// <summary>
+        /// Gets a string representation of the current request.
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             StringBuilder buf = new StringBuilder();

@@ -2,12 +2,13 @@
 {
     using LuceneExt.Impl;
 
-    /// <summary> * Utility class to make appropriate measurement calls to recognize optimal
-    /// * representation for an ordered document set based on hints provided and 
-    /// * min/max/count values on the docset if available. 
-    /// * 
-    /// * 
-    /// * @author abhasin </summary>
+    /// <summary>
+    /// Utility class to make appropriate measurement calls to recognize optimal
+    /// representation for an ordered document set based on hints provided and 
+    /// min/max/count values on the docset if available. 
+    /// 
+    /// author abhasin
+    /// </summary>
     public class DocSetFactory
     {
         private enum Act
@@ -25,7 +26,7 @@
         private static int DEFAULT_COUNT = 1000;
         private static long DEFAULT_INVOKE = 10000L;
         private static long INVOKE = DEFAULT_INVOKE;
-        private static long INT_ARRAY_MAX = 500000;
+        //private static long INT_ARRAY_MAX = 500000; // NOT USED
 
         public enum FOCUS
         {

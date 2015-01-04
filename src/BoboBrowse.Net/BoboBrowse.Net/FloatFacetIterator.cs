@@ -2,7 +2,7 @@
 namespace BoboBrowse.Net
 {
     /// <summary>
-    /// author "Xiaoyang Gu<xgu@linkedin.com>"
+    /// author "Xiaoyang Gu &lt;xgu@linkedin.com&gt;"
     /// </summary>
     public abstract class FloatFacetIterator : FacetIterator
     {

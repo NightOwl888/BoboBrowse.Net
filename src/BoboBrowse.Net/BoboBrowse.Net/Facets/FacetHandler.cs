@@ -133,7 +133,6 @@ namespace BoboBrowse.Net.Facets
         /// <summary>
         /// Adds a list of depended facet handlers
         /// </summary>
-        /// <param name="name">Name of handler depended facet handler</param>
         /// <param name="facetHandler">Handler depended facet handler</param>
         public void PutDependedFacetHandler(IFacetHandler facetHandler)
         {

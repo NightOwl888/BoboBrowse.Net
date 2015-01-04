@@ -34,7 +34,9 @@ namespace BoboBrowse.Net
     using System.Collections.Generic;
     using System.Linq;
 
-    ///<summary> Provides implementation of Browser for multiple Browser instances </summary>
+    /// <summary>
+    /// Provides implementation of Browser for multiple Browser instances.
+    /// </summary>
     public class MultiBoboBrowser : MultiSearcher, IBrowsable
     {
         private static ILog logger = LogManager.GetLogger<MultiBoboBrowser>();
@@ -52,17 +54,26 @@ namespace BoboBrowse.Net
         }
 
 
-        ///   <summary>
-        ///   Implementation of the browse method using a Lucene HitCollector
-        ///   </summary>
-        ///   <param name="req">BrowseRequest</param>
-        ///   <param name="collector">HitCollector for the hits generated during a search</param>
-        ///   <param name="facetMap"></param>
+        /// <summary>
+        /// Generates a merged BrowseResult from the supplied <see cref="T:BrowseRequest"/>.
+        /// The results are put into a Lucene.Net <see cref="T:Lucene.Net.Search.Collector"/> and a <see cref="T:System.Collections.Generic.IDictionary{System.String, IFacetAccessible}"/>.
+        /// </summary>
+        /// <param name="req"><see cref="T:BrowseRequest"/> for generating the facets.</param>
+        /// <param name="hitCollector">A <see cref="T:Lucene.Net.Search.Collector"/> for the hits generated during a search.</param>
+        /// <param name="facetMap">A dictionary of all of the facet collections (output).</param>
         public virtual void Browse(BrowseRequest req, Collector hitCollector, IDictionary<string, IFacetAccessible> facetMap)
         {
             Browse(req, hitCollector, facetMap, 0);
         }
         
+        /// <summary>
+        /// Generates a merged BrowseResult from the supplied <see cref="T:BrowseRequest"/>.
+        /// The results are put into a Lucene.Net <see cref="T:Lucene.Net.Search.Collector"/> and a <see cref="T:System.Collections.Generic.IDictionary{System.String, IFacetAccessible}"/>.
+        /// </summary>
+        /// <param name="req"><see cref="T:BrowseRequest"/> for generating the facets.</param>
+        /// <param name="hitCollector">A <see cref="T:Lucene.Net.Search.Collector"/> for the hits generated during a search.</param>
+        /// <param name="facetMap">A dictionary of all of the facet collections (output).</param>
+        /// <param name="start">The offset value for the document number.</param>
         public virtual void Browse(
             BrowseRequest req, 
             Collector hitCollector, 
@@ -94,6 +105,15 @@ namespace BoboBrowse.Net
             Browse(req, w, hitCollector, facetMap, start);
         }
 
+        /// <summary>
+        /// Generates a merged BrowseResult from the supplied <see cref="T:BrowseRequest"/> and a <see cref="T:Lucene.Net.Search.Weight"/>.
+        /// The results are put into a Lucene.Net <see cref="T:Lucene.Net.Search.Collector"/> and a <see cref="T:System.Collections.Generic.IDictionary{System.String, IFacetAccessible}"/>.
+        /// </summary>
+        /// <param name="req"><see cref="T:BrowseRequest"/> for generating the facets.</param>
+        /// <param name="weight">A <see cref="T:Lucene.Net.Search.Weight"/> instance to alter the score of the queries in a multiple index scenario.</param>
+        /// <param name="hitCollector">A <see cref="T:Lucene.Net.Search.Collector"/> for the hits generated during a search.</param>
+        /// <param name="facetMap">A dictionary of all of the facet collections (output).</param>
+        /// <param name="start">The offset value for the document number.</param>
         public virtual void Browse(
             BrowseRequest req, 
             Weight weight, 
@@ -163,10 +183,10 @@ namespace BoboBrowse.Net
 
 
         /// <summary>
-        /// Generate a merged BrowseResult from the given BrowseRequest
+        /// Generates a merged BrowseResult from the supplied <see cref="T:BrowseRequest"/>.
         /// </summary>
-        /// <param name="req">BrowseRequest for generating the facets</param>
-        /// <returns>BrowseResult of the results of the BrowseRequest</returns>
+        /// <param name="req"><see cref="T:BrowseRequest"/> for generating the facets.</param>
+        /// <returns><see cref="T:BrowseResult"/> of the results corresponding to the <see cref="T:BrowseRequest"/>.</returns>
         public virtual BrowseResult Browse(BrowseRequest req)
         {
             BrowseResult result = new BrowseResult();
@@ -242,11 +262,11 @@ namespace BoboBrowse.Net
         }
 
         /// <summary>
-        /// Return the values of a field for the given doc
+        /// Return the string representation of the values of a field for the given doc.
         /// </summary>
-        /// <param name="docid"></param>
-        /// <param name="fieldname"></param>
-        /// <returns></returns>
+        /// <param name="docid">The document id.</param>
+        /// <param name="fieldname">The field name.</param>
+        /// <returns>A string array of field values.</returns>
         public virtual string[] GetFieldVal(int docid, string fieldname)
         {
             int i = SubSearcher(docid);
@@ -254,6 +274,12 @@ namespace BoboBrowse.Net
             return browser.GetFieldVal(SubDoc(docid), fieldname);
         }
 
+        /// <summary>
+        /// Return the raw (primitive) field values for the given doc.
+        /// </summary>
+        /// <param name="docid">The document id.</param>
+        /// <param name="fieldname">The field name.</param>
+        /// <returns>An object array of raw field values.</returns>
         public virtual object[] GetRawFieldVal(int docid, string fieldname)
         {
             int i = SubSearcher(docid);
@@ -262,7 +288,7 @@ namespace BoboBrowse.Net
         }
        
         /// <summary>
-        /// Gets the array of sub-browsers
+        /// Gets the array of sub-browsers.
         /// </summary>
         /// <returns>sub-browsers</returns>
         public virtual IBrowsable[] GetSubBrowsers()
@@ -313,6 +339,10 @@ namespace BoboBrowse.Net
             }
         }
 
+        /// <summary>
+        /// Gets the total number of documents in all sub browser instances.
+        /// </summary>
+        /// <returns>The total number of documents.</returns>
         public virtual int NumDocs()
         {
             int count = 0;
@@ -338,6 +368,11 @@ namespace BoboBrowse.Net
             }
         }
 
+        /// <summary>
+        /// Gets a facet handler by facet name.
+        /// </summary>
+        /// <param name="name">The facet name.</param>
+        /// <returns>The facet handler instance.</returns>
         public virtual IFacetHandler GetFacetHandler(string name)
         {
             IBrowsable[] subBrowsers = GetSubBrowsers();
@@ -365,6 +400,10 @@ namespace BoboBrowse.Net
             }
         }
 
+        /// <summary>
+        /// Sets a facet handler for each sub-browser instance.
+        /// </summary>
+        /// <param name="facetHandler">A facet handler.</param>
         public virtual void SetFacetHandler(IFacetHandler facetHandler)
         {
             IBrowsable[] subBrowsers = GetSubBrowsers();

@@ -68,7 +68,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <param name="dataCache">The data cache for the Geo Facet</param>
         /// <param name="docBase">the base doc id</param>
         /// <param name="fspec">the facet spec for this facet</param>
-        /// <param name="predefinedRanges">List of ranges, where each range looks like <lat, lon: rad></param>
+        /// <param name="predefinedRanges">List of ranges, where each range looks like &lt;lat, lon: rad&gt;</param>
         /// <param name="miles">variable to specify if the geo distance calculations are in miles. False indicates distance calculation is in kilometers</param>
         public GeoFacetCountCollector(string name, GeoFacetHandler.GeoFacetData dataCache,
             int docBase, FacetSpec fspec, IEnumerable<string> predefinedRanges, bool miles)

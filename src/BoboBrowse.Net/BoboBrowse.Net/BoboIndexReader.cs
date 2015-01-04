@@ -800,9 +800,9 @@ namespace BoboBrowse.Net
             get { return _facetHandlerMap.Keys; }
         }
 
-        ///<summary>Gets a facet handler</summary>
-        ///<param name="fieldname">name </param>
-        ///<returns>facet handler </returns>
+        /// <summary>Gets a facet handler</summary>
+        /// <param name="fieldName">name</param>
+        /// <returns>facet handler</returns>
         public virtual IFacetHandler GetFacetHandler(string fieldName)
         {
             IFacetHandler f = _facetHandlerMap.Get(fieldName);

@@ -32,6 +32,12 @@ namespace BoboBrowse.Net.Facets.Impl
     using Lucene.Net.Search;
     using System.Collections.Generic;
 
+    /// <summary>
+    /// Used to denote a range of facet, e.g. dates, prices etc. Each document can have only 1 value in this field. 
+    /// When being indexed, this field should not be tokenized. Furthermore, the values need to be formatted to 
+    /// ensure sorting by lexical order is the same as the value order. IMPORTANT: <see cref="T:Lucene.Net.Documents.NumericField"/> 
+    /// in the Lucene.Net index is not supported, use <see cref="T:Lucene.Net.Documents.Field"/> with a formatted string instead.
+    /// </summary>
     public class RangeFacetHandler : FacetHandler<FacetDataCache>, IFacetScoreable
     {
         private static ILog logger = LogManager.GetLogger<RangeFacetHandler>();
@@ -39,6 +45,17 @@ namespace BoboBrowse.Net.Facets.Impl
         protected readonly TermListFactory _termListFactory;
         protected readonly IEnumerable<string> _predefinedRanges;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:RangeFacetHandler"/> with the specified name, Lucene.Net index field name,
+        /// <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance, and predefined ranges.
+        /// </summary>
+        /// <param name="name">The facet handler name.</param>
+        /// <param name="indexFieldName">The name of the Lucene.Net index field this handler will utilize.</param>
+        /// <param name="termListFactory">A <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance that will create a 
+        /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
+        /// <param name="predefinedRanges">A set of range strings denoting the beginning and ending of each range, e.g. "[2010/1/1 TO 2012/12/31], [2013/1/1 TO 2015/12/31]".
+        /// Date and numeric types are supported. The range values are sorted in lexicographical order, so if you want them formatted a different way, you should provide them in
+        /// a specific order. It is valid for the ranges to overlap.</param>
         public RangeFacetHandler(string name, string indexFieldName, TermListFactory termListFactory, IEnumerable<string> predefinedRanges)
             : base(name)
         {
@@ -47,16 +64,44 @@ namespace BoboBrowse.Net.Facets.Impl
             _predefinedRanges = predefinedRanges;
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:RangeFacetHandler"/> with the specified name, 
+        /// <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance, and predefined ranges.
+        /// The Lucene.Net index field must have the same name.
+        /// </summary>
+        /// <param name="name">The facet handler name. Must be the same value as the Lucene.Net index field name.</param>
+        /// <param name="termListFactory">A <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance that will create a 
+        /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
+        /// <param name="predefinedRanges">A set of range strings denoting the beginning and ending of each range, e.g. "[2010/1/1 TO 2012/12/31], [2013/1/1 TO 2015/12/31]".
+        /// Date and numeric types are supported. The range values are sorted in lexicographical order, so if you want them formatted a different way, you should provide them in
+        /// a specific order. It is valid for the ranges to overlap.</param>
         public RangeFacetHandler(string name, TermListFactory termListFactory, IEnumerable<string> predefinedRanges)
             : this(name, name, termListFactory, predefinedRanges)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:RangeFacetHandler"/> with the specified name and predefined ranges.
+        /// The Lucene.Net index field must have the same name.
+        /// </summary>
+        /// <param name="name">The facet handler name. Must be the same value as the Lucene.Net index field name.</param>
+        /// <param name="predefinedRanges">A set of range strings denoting the beginning and ending of each range, e.g. "[2010/1/1 TO 2012/12/31], [2013/1/1 TO 2015/12/31]".
+        /// Date and numeric types are supported. The range values are sorted in lexicographical order, so if you want them formatted a different way, you should provide them in
+        /// a specific order. It is valid for the ranges to overlap.</param>
         public RangeFacetHandler(string name, IEnumerable<string> predefinedRanges)
             : this(name, name, null, predefinedRanges)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:RangeFacetHandler"/> with the specified name, Lucene.Net index field name,
+        /// and a set of predefined range values.
+        /// </summary>
+        /// <param name="name">The facet handler name.</param>
+        /// <param name="indexFieldName">The name of the Lucene.Net index field this handler will utilize.</param>
+        /// <param name="predefinedRanges">A set of range strings denoting the beginning and ending of each range, e.g. "[2010/1/1 TO 2012/12/31], [2013/1/1 TO 2015/12/31]".
+        /// Date and numeric types are supported. The range values are sorted in lexicographical order, so if you want them formatted a different way, you should provide them in
+        /// a specific order. It is valid for the ranges to overlap.</param>
         public RangeFacetHandler(string name, string indexFieldName, IEnumerable<string> predefinedRanges)
             : this(name, indexFieldName, null, predefinedRanges)
         {

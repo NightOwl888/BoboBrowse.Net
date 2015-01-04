@@ -23,12 +23,15 @@ namespace BoboBrowse.Net.Facets.Impl
         private readonly IList<string> _rangeStringList;
 
         /// <summary>
-        /// the format of range string is dddhhmmss. (ddd: days (000-999), hh : hours (00-23), mm: minutes (00-59), ss: seconds (00-59))
+        /// Initializes a new instance of <see cref="T:DynamicTimeRangeFacetHandler"/>.
+        /// The format of range string is dddhhmmss. (ddd: days (000-999), hh : hours (00-23), mm: minutes (00-59), ss: seconds (00-59))
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="dataFacetName"></param>
-        /// <param name="currentTime"></param>
-        /// <param name="ranges"></param>
+        /// <param name="name">The facet handler name.</param>
+        /// <param name="dataFacetName">The facet handler this one depends on.</param>
+        /// <param name="currentTime">The number of milliseconds since January 1, 1970 expessed in universal coordinated time (UTC). 
+        /// The <see cref="M:BoboBrowse.Net.Support.DateTimeExtensions.GetTime"/> method can be used to convert the current time to 
+        /// this format, e.g. DateTime.Now.GetTime().</param>
+        /// <param name="ranges">A list of range strings in the format dddhhmmss. (ddd: days (000-999), hh : hours (00-23), mm: minutes (00-59), ss: seconds (00-59))</param>
         public DynamicTimeRangeFacetHandler(string name, string dataFacetName, long currentTime, IEnumerable<string> ranges)
             : base(name, dataFacetName)
         {

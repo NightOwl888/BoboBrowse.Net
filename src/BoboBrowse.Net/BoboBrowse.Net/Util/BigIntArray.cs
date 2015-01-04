@@ -6,10 +6,11 @@ namespace BoboBrowse.Net.Util
     using Lucene.Net.Util;
     using System;
     
-    /// <summary> * 
-    /// * @author femekci
-    /// * This class is written for a special purpose. No check is done in insertion and getting a value
-    /// * for performance reasons. Be careful if you are going to use this class  </summary>
+    /// <summary> 
+    /// This class is written for a special purpose. No check is done in insertion and getting a value
+    /// for performance reasons. Be careful if you are going to use this class.
+    /// author femekci
+    /// </summary>
     [Serializable]
     public sealed class BigIntArray : BigSegmentedArray
     {

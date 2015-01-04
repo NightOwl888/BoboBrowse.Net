@@ -19,11 +19,11 @@ namespace BoboBrowse.Net.Facets.Impl
 	    private bool _miles;
 
         /// <summary>
-        /// Constructor
+        /// Initializes a new instance of <see cref="T:GeoFacetHandler"/>.
         /// </summary>
-        /// <param name="name">name of the geo facet</param>
-        /// <param name="latFieldName">name of the index field that stores the latitude value</param>
-        /// <param name="lonFieldName">name of the index field that stores the longitude value</param>
+        /// <param name="name">Name of the geo facet.</param>
+        /// <param name="latFieldName">Name of the Lucene.Net index field that stores the latitude value.</param>
+        /// <param name="lonFieldName">Name of the Lucene.Net index field that stores the longitude value.</param>
         public GeoFacetHandler(string name, string latFieldName, string lonFieldName)
             : base(name, new List<string>(new string[] { latFieldName, lonFieldName }))
         {
@@ -33,11 +33,11 @@ namespace BoboBrowse.Net.Facets.Impl
         }
 
         /// <summary>
-        /// Constructor
+        /// Initializes a new instance of <see cref="T:GeoFacetHandler"/>.
         /// </summary>
-        /// <param name="name">name of the geo facet</param>
-        /// <param name="latFieldName">name of the index field that stores the latitude value</param>
-        /// <param name="lonFieldName">name of the index field that stores the longitude value</param>
+        /// <param name="name">Name of the geo facet.</param>
+        /// <param name="latFieldName">Name of the Lucene.Net index field that stores the latitude value.</param>
+        /// <param name="lonFieldName">Name of the Lucene.Net index field that stores the longitude value.</param>
         /// <param name="miles">variable to specify if the geo distance calculations are in miles. False indicates distance calculation is in kilometers</param>
         public GeoFacetHandler(string name, string latFieldName, string lonFieldName, bool miles)
             : this(name, latFieldName, lonFieldName)

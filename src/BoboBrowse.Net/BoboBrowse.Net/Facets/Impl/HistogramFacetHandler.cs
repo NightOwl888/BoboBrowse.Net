@@ -8,6 +8,23 @@ namespace BoboBrowse.Net.Facets.Impl
     using System;
     using System.Collections.Generic;
 
+    /// <summary>
+    /// A runtime facet handler that works on top of a number based facet handler, called the data facet handler. 
+    /// T is a subtype of Number. T and the type of the term list of the data facet handler must match. 
+    /// If the the data facet handler is an instance of RangeFacetHandler, it should not have the predefined ranges, 
+    /// otherwise loading of HistogramFacetHandler will fail.
+    /// 
+    /// You must specify the name of the data facet handler, the range (start and end) of values you want to collect 
+    /// a histogram and the unit (the width of a "bin") when you construct the HistogramFacetHandler object.
+    /// 
+    /// Supports BrowseSelection. It simply passes the selection to the data facet handler to build a filter. 
+    /// ExpandSelection of FacetSpec must be set to true to collect counts of hits that don't match the selection.
+    /// 
+    /// The facet values returned by the count collector are the bin numbers starting from 0. They are not the 
+    /// values from the data facet handlers. It is application's responsibility to map the bin numbers to 
+    /// intervals of the actual values.
+    /// </summary>
+    /// <typeparam name="T">A numeric data type.</typeparam>
     public class HistogramFacetHandler<T> : RuntimeFacetHandler<FacetDataNone> 
         where T : struct
     {
@@ -18,6 +35,14 @@ namespace BoboBrowse.Net.Facets.Impl
 
         private IFacetHandler _dataFacetHandler;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="T:HistogramFacetHandler"/>.
+        /// </summary>
+        /// <param name="name">The facet handler name.</param>
+        /// <param name="dataHandlerName">The facet handler this one depends upon.</param>
+        /// <param name="start">The start of the range of values to collect a histogram.</param>
+        /// <param name="end">The end of the range of values to collect a histogram.</param>
+        /// <param name="unit">The unit (the width of a "bin").</param>
         public HistogramFacetHandler(string name, string dataHandlerName, T start, T end, T unit)
             : base(name, new string[] { dataHandlerName })
         {

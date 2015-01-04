@@ -6,7 +6,9 @@ namespace BoboBrowse.Net.Facets.Data
     using System;
     using System.Globalization;
 
-    ///<summary>Internal data are stored in a long[] with values generated from <seealso cref="Date#getTime()"/> </summary>
+    /// <summary>
+    /// Internal data are stored in a long[] with values generated from <see cref="M:DateTime.ToBinary"/>.
+    /// </summary>
     public class TermDateList : TermLongList
     {
         public TermDateList()

@@ -30,6 +30,9 @@ namespace BoboBrowse.Net
     using System.Collections.Generic;
     using System.Text;
 
+    /// <summary>
+    /// A selection or filter to be applied, e.g. Color=Red.
+    /// </summary>
     [Serializable]
     public class BrowseSelection
     {
@@ -44,13 +47,27 @@ namespace BoboBrowse.Net
         private readonly List<string> values;
         private readonly List<string> notValues;
 
+        /// <summary>
+        /// A dictionary of custom properties that can be used by custom (or some built-in) 
+        /// implementations of facet handlers, filters, and collectors.
+        /// </summary>
         public virtual Properties SelectionProperties { get; private set; }
 
+        /// <summary>
+        /// Sets a specific selection property with the given key and value.
+        /// </summary>
+        /// <param name="key">A key for the property.</param>
+        /// <param name="val">The value for the property.</param>
         public virtual void SetSelectionProperty(string key, string val)
         {
             SelectionProperties.SetProperty(key, val);
         }
 
+        /// <summary>
+        /// Sets a group of selection properties all at once. If the property already exists, 
+        /// it will be overwritten; otherwise it will be added.
+        /// </summary>
+        /// <param name="props"></param>
         public virtual void SetSelectionProperties(IDictionary<string, string> props)
         {
             SelectionProperties.PutAll(props);
@@ -87,12 +104,12 @@ namespace BoboBrowse.Net
         }
 
         /// <summary>
-        /// Gets or sets the field name
+        /// Gets or sets the field name.
         /// </summary>
         public virtual string FieldName { get; private set; }
 
         /// <summary>
-        /// Gets or sets the selected values
+        /// Gets or sets the selected values.
         /// </summary>
         public virtual string[] Values
         {
@@ -105,7 +122,7 @@ namespace BoboBrowse.Net
         }
 
         /// <summary>
-        /// Gets or sets the selected NOT values
+        /// Gets or sets the selected NOT values.
         /// </summary>
         public virtual string[] NotValues
         {
@@ -117,24 +134,28 @@ namespace BoboBrowse.Net
             }
         }
 
-        ///<summary>Add a select value </summary>
-        ///<param name="val"> select value </param>
+        /// <summary>
+        /// Adds a selection value.
+        /// </summary>
+        /// <param name="val">Value to select.</param>
         public virtual void AddValue(string val)
         {
             values.Add(val);
         }
 
-        ///<summary>Add a select NOT value </summary>
-        ///<param name="val"> select NOT value </param>
+        /// <summary>
+        /// Adds a selection NOT value.
+        /// </summary>
+        /// <param name="val">Value to NOT select.</param>
         public virtual void AddNotValue(string val)
         {
             notValues.Add(val);
         }
 
         /// <summary>
-        /// Constructor
+        /// Initializes a new instance of the <see cref="T:BrowseSelection"/> class with the given field name.
         /// </summary>
-        /// <param name="fieldName">field name</param>
+        /// <param name="fieldName">A field name.</param>
         public BrowseSelection(string fieldName)
         {
             this.FieldName = fieldName;
@@ -149,6 +170,10 @@ namespace BoboBrowse.Net
         /// </summary>
         public virtual ValueOperation SelectionOperation { get; set; }
 
+        /// <summary>
+        /// Gets a string representation of <see cref="T:BrowseSelection"/>.
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             StringBuilder buf = new StringBuilder();
