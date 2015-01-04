@@ -663,9 +663,11 @@ namespace BoboBrowse.Net
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="reader"></param>
-        /// <param name="facetHandlers"></param>
-        /// <param name="workArea"></param>
+        /// <param name="reader">Index reader</param>
+        /// <param name="facetHandlers">List of facet handlers</param>
+        /// <param name="facetHandlerFactories">List of factories to create facet handler instances at runtime.</param>
+        /// <param name="workArea">A service locator that can be used to inject custom objects.</param>
+        /// <param name="autoClose">True to close the underlying IndexReader when this instance is closed.</param>
         protected BoboIndexReader(IndexReader reader, 
             IEnumerable<IFacetHandler> facetHandlers, 
             IEnumerable<IRuntimeFacetHandlerFactory> facetHandlerFactories, 
@@ -680,10 +682,11 @@ namespace BoboBrowse.Net
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="reader"></param>
-        /// <param name="facetHandlers"></param>
-        /// <param name="facetHandlerFactories"></param>
-        /// <param name="workArea"></param>
+        /// <param name="reader">Index reader</param>
+        /// <param name="facetHandlers">List of facet handlers</param>
+        /// <param name="facetHandlerFactories">List of factories to create facet handler instances at runtime.</param>
+        /// <param name="workArea">A service locator that can be used to inject custom objects.</param>
+        /// <param name="autoClose">True to close the underlying IndexReader when this instance is closed.</param>
         /// <param name="useSubReaders">true => we create a MultiReader of all the leaf sub-readers as 
         /// the inner reader. false => we use the given reader as the inner reader.</param>
         protected BoboIndexReader(IndexReader reader,
