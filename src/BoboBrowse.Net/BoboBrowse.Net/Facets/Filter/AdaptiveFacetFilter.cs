@@ -21,7 +21,7 @@ namespace BoboBrowse.Net.Facets.Filter
     {
         //private static long serialVersionUID = 1L; // NOT USED
 
-        private static ILog logger = LogManager.GetLogger<AdaptiveFacetFilter>();
+        private static ILog logger = LogManager.GetLogger(typeof(AdaptiveFacetFilter));
 
         private readonly RandomAccessFilter _facetFilter;
 	    private readonly IFacetDataCacheBuilder _facetDataCacheBuilder;

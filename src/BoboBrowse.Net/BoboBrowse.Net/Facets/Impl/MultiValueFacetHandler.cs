@@ -44,7 +44,7 @@ namespace BoboBrowse.Net.Facets.Impl
     /// </summary>
     public class MultiValueFacetHandler : FacetHandler<MultiValueFacetDataCache>, IFacetScoreable
     {
-        private static ILog logger = LogManager.GetLogger<MultiValueFacetHandler>();       
+        private static ILog logger = LogManager.GetLogger(typeof(MultiValueFacetHandler));       
 
         protected readonly TermListFactory _termListFactory;
         protected readonly string _indexFieldName;

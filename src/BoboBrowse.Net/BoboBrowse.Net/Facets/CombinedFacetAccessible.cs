@@ -13,7 +13,7 @@ namespace BoboBrowse.Net.Facets
      ///</summary>
     public class CombinedFacetAccessible : IFacetAccessible
     {
-        private static ILog log = LogManager.GetLogger<CombinedFacetAccessible>();
+        private static ILog log = LogManager.GetLogger(typeof(CombinedFacetAccessible));
         protected readonly IEnumerable<IFacetAccessible> _list;
         protected readonly FacetSpec _fspec;
         protected bool _closed;

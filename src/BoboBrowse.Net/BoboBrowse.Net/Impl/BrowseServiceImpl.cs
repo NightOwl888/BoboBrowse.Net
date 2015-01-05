@@ -35,7 +35,7 @@ namespace BoboBrowse.Net.Impl
 
     public class BrowseServiceImpl : IBrowseService
     {
-        private static readonly ILog logger = LogManager.GetLogger<BrowseServiceImpl>();
+        private static readonly ILog logger = LogManager.GetLogger(typeof(BrowseServiceImpl));
         private readonly DirectoryInfo _idxDir;
         private readonly BoboIndexReader _reader;
 

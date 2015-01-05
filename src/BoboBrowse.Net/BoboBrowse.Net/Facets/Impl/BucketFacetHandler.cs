@@ -12,7 +12,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
     public class BucketFacetHandler : FacetHandler<FacetDataNone>
     {
-        private static ILog logger = LogManager.GetLogger<BucketFacetHandler>();
+        private static ILog logger = LogManager.GetLogger(typeof(BucketFacetHandler));
         private readonly IDictionary<string, string[]> _predefinedBuckets;
         private readonly string _dependsOnFacetName;
 

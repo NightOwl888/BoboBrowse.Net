@@ -33,7 +33,7 @@ namespace BoboBrowse.Net.Impl
 
     public class QueryProducer
     {
-        private static readonly ILog logger = LogManager.GetLogger<QueryProducer>();
+        private static readonly ILog logger = LogManager.GetLogger(typeof(QueryProducer));
 
         public const string CONTENT_FIELD = "contents";
 

@@ -36,7 +36,7 @@ namespace BoboBrowse.Net.Facets.Data
     public class MultiValueFacetDataCache : FacetDataCache
     {
         //private static long serialVersionUID = 1L; // NOT USED
-        private static ILog logger = LogManager.GetLogger<MultiValueFacetDataCache>();
+        private static ILog logger = LogManager.GetLogger(typeof(MultiValueFacetDataCache));
 
         public readonly BigNestedIntArray _nestedArray;
         private int _maxItems = BigNestedIntArray.MAX_ITEMS;

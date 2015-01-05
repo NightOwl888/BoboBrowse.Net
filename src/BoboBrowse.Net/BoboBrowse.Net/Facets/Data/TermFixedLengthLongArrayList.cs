@@ -12,7 +12,7 @@ namespace BoboBrowse.Net.Facets.Data
 
     public class TermFixedLengthLongArrayList : TermValueList<long[]>
     {
-        private static ILog logger = LogManager.GetLogger<TermFixedLengthLongArrayList>();
+        private static ILog logger = LogManager.GetLogger(typeof(TermFixedLengthLongArrayList));
 
         private List<long> _innerList2 = new List<long>();
         protected long[] _elements = null;

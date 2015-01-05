@@ -12,7 +12,7 @@ namespace BoboBrowse.Net.Facets.Impl
     /// </summary>
     public class GeoSimpleFacetCountCollector : IFacetCountCollector
     {
-        private static ILog log = LogManager.GetLogger<GeoSimpleFacetCountCollector>();
+        private static ILog log = LogManager.GetLogger(typeof(GeoSimpleFacetCountCollector));
 	    private readonly FacetSpec _spec;
 	    private readonly string _name;
 	    private int[] _latCount;

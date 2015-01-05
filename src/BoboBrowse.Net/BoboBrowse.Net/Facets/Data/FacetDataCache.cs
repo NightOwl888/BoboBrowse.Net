@@ -36,7 +36,7 @@ namespace BoboBrowse.Net.Facets.Data
     [Serializable]
     public class FacetDataCache
     {
-        private static ILog logger = LogManager.GetLogger<FacetDataCache>();
+        private static ILog logger = LogManager.GetLogger(typeof(FacetDataCache));
 
         //private readonly static long serialVersionUID = 1L; // NOT USED
 

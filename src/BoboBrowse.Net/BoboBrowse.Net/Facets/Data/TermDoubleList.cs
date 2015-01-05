@@ -8,7 +8,7 @@ namespace BoboBrowse.Net.Facets.Data
 
     public class TermDoubleList : TermNumberList<double>
     {
-        private static ILog logger = LogManager.GetLogger<TermDoubleList>();
+        private static ILog logger = LogManager.GetLogger(typeof(TermDoubleList));
         private double[] _elements;
         public const double VALUE_MISSING = double.MinValue;
 

@@ -16,7 +16,7 @@ namespace BoboBrowse.Net.Query.Scoring
     {
         //private static long serialVersionUID = 1L; // NOT USED
 
-        private static ILog logger = LogManager.GetLogger<FacetTermQuery>();
+        private static ILog logger = LogManager.GetLogger(typeof(FacetTermQuery));
 
         private readonly string _name;
         private readonly BrowseSelection _sel;

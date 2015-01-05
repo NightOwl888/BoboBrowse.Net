@@ -7,7 +7,7 @@ namespace BoboBrowse.Net.Sort
 
     public class DocIDPriorityQueue
     {
-        private static readonly ILog logger = LogManager.GetLogger<DocIDPriorityQueue>();
+        private static readonly ILog logger = LogManager.GetLogger(typeof(DocIDPriorityQueue));
         public int size;
         protected readonly ScoreDoc[] heap;
         public readonly int @base;

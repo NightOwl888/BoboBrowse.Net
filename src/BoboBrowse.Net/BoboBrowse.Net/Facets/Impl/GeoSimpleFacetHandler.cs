@@ -17,7 +17,7 @@ namespace BoboBrowse.Net.Facets.Impl
     /// </summary>
     public class GeoSimpleFacetHandler : RuntimeFacetHandler<FacetDataNone>
     {
-        private static ILog logger = LogManager.GetLogger<GeoSimpleFacetHandler>();
+        private static ILog logger = LogManager.GetLogger(typeof(GeoSimpleFacetHandler));
 	    protected readonly string _latFacetName;
         protected readonly string _longFacetName;
 	    protected RangeFacetHandler _latFacetHandler;

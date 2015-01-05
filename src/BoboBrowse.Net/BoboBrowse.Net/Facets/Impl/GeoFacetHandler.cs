@@ -12,7 +12,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
     public class GeoFacetHandler : FacetHandler<GeoFacetHandler.GeoFacetData>
     {
-        private static ILog logger = LogManager.GetLogger<GeoFacetHandler>();
+        private static ILog logger = LogManager.GetLogger(typeof(GeoFacetHandler));
 	    private string _latFieldName;
 	    private string _lonFieldName;
 	    // variable to specify if the geo distance calculations are in miles. Default is miles

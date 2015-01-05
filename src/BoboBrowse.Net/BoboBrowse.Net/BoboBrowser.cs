@@ -33,7 +33,7 @@ namespace BoboBrowse.Net
     ///</summary>
     public class BoboBrowser : MultiBoboBrowser
     {
-        private static ILog logger = LogManager.GetLogger<BoboBrowser>();
+        private static ILog logger = LogManager.GetLogger(typeof(BoboBrowser));
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:BoboBrowser"/> class with the specified <see cref="T:BoboIndexReader"/> instance.

@@ -39,7 +39,7 @@ namespace BoboBrowse.Net.Facets.Impl
     /// </summary>
     public class SimpleFacetHandler : FacetHandler<FacetDataCache>, IFacetScoreable
     {
-        private static ILog logger = LogManager.GetLogger<SimpleFacetHandler>();
+        private static ILog logger = LogManager.GetLogger(typeof(SimpleFacetHandler));
         protected TermListFactory _termListFactory;
         protected readonly string _indexFieldName;
 

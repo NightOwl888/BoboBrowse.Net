@@ -21,7 +21,7 @@ namespace BoboBrowse.Net.Facets.Impl
     /// </summary>
     public class CompactMultiValueFacetHandler : FacetHandler<FacetDataCache>, IFacetScoreable
     {
-        private static ILog logger = LogManager.GetLogger<CompactMultiValueFacetHandler>();
+        private static ILog logger = LogManager.GetLogger(typeof(CompactMultiValueFacetHandler));
 
         private const int MAX_VAL_COUNT = 32;
         private readonly TermListFactory _termListFactory;

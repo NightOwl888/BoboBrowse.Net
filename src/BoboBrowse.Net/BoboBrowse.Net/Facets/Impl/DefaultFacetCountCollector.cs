@@ -30,7 +30,7 @@ namespace BoboBrowse.Net.Facets.Impl
     
     public abstract class DefaultFacetCountCollector : IFacetCountCollector
     {
-        private static ILog log = LogManager.GetLogger<DefaultFacetCountCollector>();
+        private static ILog log = LogManager.GetLogger(typeof(DefaultFacetCountCollector));
 
         protected internal readonly FacetSpec _ospec;
         protected internal BigSegmentedArray _count;

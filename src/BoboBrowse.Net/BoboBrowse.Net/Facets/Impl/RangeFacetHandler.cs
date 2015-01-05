@@ -40,7 +40,7 @@ namespace BoboBrowse.Net.Facets.Impl
     /// </summary>
     public class RangeFacetHandler : FacetHandler<FacetDataCache>, IFacetScoreable
     {
-        private static ILog logger = LogManager.GetLogger<RangeFacetHandler>();
+        private static ILog logger = LogManager.GetLogger(typeof(RangeFacetHandler));
         protected readonly string _indexFieldName;
         protected readonly TermListFactory _termListFactory;
         protected readonly IEnumerable<string> _predefinedRanges;

@@ -10,7 +10,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
     public class DynamicTimeRangeFacetHandler : DynamicRangeFacetHandler
     {
-        private static ILog log = LogManager.GetLogger<DynamicTimeRangeFacetHandler>();
+        private static ILog log = LogManager.GetLogger(typeof(DynamicTimeRangeFacetHandler));
         public const string NUMBER_FORMAT = "00000000000000000000";
 
         public const long MILLIS_IN_DAY = 24L * 60L * 60L * 1000L;

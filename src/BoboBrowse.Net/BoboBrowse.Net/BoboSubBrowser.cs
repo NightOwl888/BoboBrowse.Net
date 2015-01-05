@@ -16,7 +16,7 @@ namespace BoboBrowse.Net
 
     public class BoboSubBrowser : BoboSearcher2, IBrowsable, IDisposable
     {
-        private static ILog logger = LogManager.GetLogger<BoboSubBrowser>();
+        private static ILog logger = LogManager.GetLogger(typeof(BoboSubBrowser));
         private readonly BoboIndexReader _reader;
         private readonly IDictionary<string, IRuntimeFacetHandlerFactory> _runtimeFacetHandlerFactoryMap;
         private readonly IDictionary<string, IFacetHandler> _runtimeFacetHandlerMap;

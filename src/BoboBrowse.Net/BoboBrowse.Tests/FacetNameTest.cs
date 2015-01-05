@@ -47,7 +47,7 @@ namespace BoboBrowse.Tests
     [TestFixture]
     public class FacetNameTest
     {
-        private static readonly ILog logger = LogManager.GetLogger<FacetNameTest>();
+        private static readonly ILog logger = LogManager.GetLogger(typeof(FacetNameTest));
         private IEnumerable<IFacetHandler> _facetHandlers;
         private int _documentSize;
 

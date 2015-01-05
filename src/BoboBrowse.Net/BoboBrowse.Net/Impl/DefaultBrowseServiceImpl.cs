@@ -33,7 +33,7 @@ namespace BoboBrowse.Net.Impl
 
     public class DefaultBrowseServiceImpl : IBrowseService
     {
-        private static ILog logger = LogManager.GetLogger<DefaultBrowseServiceImpl>();
+        private static ILog logger = LogManager.GetLogger(typeof(DefaultBrowseServiceImpl));
         private BoboIndexReader _reader;
         private bool _closeReader;
 

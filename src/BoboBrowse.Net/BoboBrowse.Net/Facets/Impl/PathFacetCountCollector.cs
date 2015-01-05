@@ -13,7 +13,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
     public class PathFacetCountCollector : IFacetCountCollector
     {
-        private static ILog log = LogManager.GetLogger<PathFacetCountCollector>();
+        private static ILog log = LogManager.GetLogger(typeof(PathFacetCountCollector));
         private readonly BrowseSelection _sel;
         private readonly FacetSpec _ospec;
         protected BigSegmentedArray _count;

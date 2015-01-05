@@ -39,7 +39,7 @@ namespace BoboBrowse.Net
     /// </summary>
     public class MultiBoboBrowser : MultiSearcher, IBrowsable
     {
-        private static ILog logger = LogManager.GetLogger<MultiBoboBrowser>();
+        private static ILog logger = LogManager.GetLogger(typeof(MultiBoboBrowser));
 
         protected readonly IBrowsable[] _subBrowsers;
 

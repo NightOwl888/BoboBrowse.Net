@@ -8,7 +8,7 @@ namespace BoboBrowse.Net.Facets.Data
 
     public class TermFloatList : TermNumberList<float>
     {
-        private static ILog logger = LogManager.GetLogger<TermFloatList>();
+        private static ILog logger = LogManager.GetLogger(typeof(TermFloatList));
         private float[] _elements;
         public const float VALUE_MISSING = float.MinValue;
 

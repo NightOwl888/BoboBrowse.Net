@@ -8,7 +8,7 @@ namespace BoboBrowse.Net.Facets.Data
 
     public class TermShortList : TermNumberList<short>
     {
-        private static ILog logger = LogManager.GetLogger<TermShortList>();
+        private static ILog logger = LogManager.GetLogger(typeof(TermShortList));
         private short[] _elements;
         //private short sanity = -1; // Not used
         private bool withDummy = true;

@@ -12,7 +12,7 @@ namespace BoboBrowse.Net
     [TestFixture]
     public class BoboFacetIteratorTest
     {
-        private static ILog log = LogManager.GetLogger<BoboFacetIteratorTest>();
+        private static ILog log = LogManager.GetLogger(typeof(BoboFacetIteratorTest));
 
         [SetUp]
         public void Init()

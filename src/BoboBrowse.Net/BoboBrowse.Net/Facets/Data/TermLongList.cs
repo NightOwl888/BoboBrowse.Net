@@ -8,7 +8,7 @@ namespace BoboBrowse.Net.Facets.Data
 
     public class TermLongList : TermNumberList<long>
     {
-        private static ILog logger = LogManager.GetLogger<TermLongList>();
+        private static ILog logger = LogManager.GetLogger(typeof(TermLongList));
         protected long[] _elements;
         //private long sanity = -1; // Not used
         private bool withDummy = true;

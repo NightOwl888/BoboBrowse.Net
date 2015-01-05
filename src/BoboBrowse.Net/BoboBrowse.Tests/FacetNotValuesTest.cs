@@ -44,7 +44,7 @@ namespace BoboBrowse.Tests
     [TestFixture]
     public class FacetNotValuesTest
     {
-        private static ILog log = LogManager.GetLogger<FacetNotValuesTest>();
+        private static ILog log = LogManager.GetLogger(typeof(FacetNotValuesTest));
         private List<IFacetHandler> _facetHandlers;
         private int _documentSize;
         private static string[] _idRanges = new string[] { "[10 TO 10]" };

@@ -57,7 +57,7 @@ namespace BoboBrowse.Net
     [TestFixture]
     public class BoboTestCase
     {
-        private static ILog log = LogManager.GetLogger<BoboTestCase>();
+        private static ILog log = LogManager.GetLogger(typeof(BoboTestCase));
         private Lucene.Net.Store.Directory _indexDir;
         private IEnumerable<IFacetHandler> _fconf;
         private static Term tagSizePayloadTerm = new Term("tagSizePayload", "size");
