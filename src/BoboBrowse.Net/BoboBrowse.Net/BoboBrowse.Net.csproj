@@ -78,9 +78,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Lucene.Net.3.0.3\lib\NET40\Lucene.Net.dll</HintPath>
     </Reference>
-    <Reference Include="C5, Version=2.2.5073.27396, Culture=neutral, PublicKeyToken=282361b99ded7e8e, processorArchitecture=MSIL">
+    <Reference Include="C5, Version=2.2.4822.42600, Culture=neutral, PublicKeyToken=282361b99ded7e8e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\C5.2.2.5073.27396\lib\portable-net40+sl50+wp80+win\C5.dll</HintPath>
+      <HintPath>..\packages\C5.2.2.4822.42600\lib\portable-win+net40+sl40+wp+Xbox40\C5.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
