@@ -21,7 +21,7 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
-﻿// Version compatibility level: 3.1.0
+﻿// Version compatibility level: 3.2.0
 namespace BoboBrowse.Net
 {
     using System;

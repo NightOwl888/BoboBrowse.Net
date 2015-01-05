@@ -19,7 +19,7 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
-// Version compatibility level: 3.1.0
+// Version compatibility level: 3.2.0
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
@@ -27,6 +27,7 @@ namespace BoboBrowse.Net.Facets.Impl
     using BoboBrowse.Net.Query.Scoring;
     using BoboBrowse.Net.Sort;
     using BoboBrowse.Net.Support;
+    using BoboBrowse.Net.Util;
     using Common.Logging;
     using Lucene.Net.Search;
     using System;
@@ -304,12 +305,13 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override void Collect(int docid)
             {
-                _count[_array.Get(docid)]++;
+                int index = _array.Get(docid);
+                _count.Add(index, _count.Get(index) + 1);
             }
 
             public override void CollectAll()
             {
-                _count = _dataCache.Freqs;
+                _count = BigIntArray.FromArray(_dataCache.Freqs);
             }
         }
 
@@ -325,13 +327,16 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override sealed void Collect(int docid)
             {
-                if (++_count[_array.Get(docid)] <= 1)
+                int index = _array.Get(docid);
+                int newValue = _count.Get(index) + 1;
+                _count.Add(index, newValue);
+                if (newValue <= 1)
                     ++_totalGroups;
             }
 
             public override sealed void CollectAll()
             {
-                _count = _dataCache.Freqs;
+                _count = BigIntArray.FromArray(_dataCache.Freqs);
                 _totalGroups = -1;
             }
 
@@ -342,8 +347,9 @@ namespace BoboBrowse.Net.Facets.Impl
 
                 // If the user calls collectAll instead of collect, we have to collect all the groups here:
                 _totalGroups = 0;
-                foreach (int c in _count)
+                for (int i = 0; i < _count.Size(); i++)
                 {
+                    int c = _count.Get(i);
                     if (c > 0)
                         ++_totalGroups;
                 }

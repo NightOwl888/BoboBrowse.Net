@@ -1,4 +1,4 @@
-// Version compatibility level: 3.1.0
+// Version compatibility level: 3.2.0
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net;
@@ -228,7 +228,7 @@ namespace BoboBrowse.Net.Facets.Impl
             private readonly DefaultFacetCountCollector[] _subcollectors;
             private readonly string _name;
             private readonly FacetSpec _fspec;
-            private readonly int[] _count;
+            private readonly BigSegmentedArray _count;
             private readonly int _countlength;
             private readonly int[] _lens;
             private readonly int _maxdoc;
@@ -244,11 +244,11 @@ namespace BoboBrowse.Net.Facets.Impl
                 _lens = new int[_subcollectors.Length];
                 for (int i = 0; i < _subcollectors.Length; ++i)
                 {
-                    _lens[i] = _subcollectors[i]._count.Length;
+                    _lens[i] = _subcollectors[i]._countlength;
                     totalLen *= _lens[i];
                 }
                 _countlength = totalLen;
-                _count = new int[_countlength];
+                _count = new LazyBigIntArray(_countlength);
                 _maxdoc = maxdoc;
             }
 
@@ -262,7 +262,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     segsize = segsize / _lens[i++];
                     idx += (subcollector._dataCache.OrderArray.Get(docid) * segsize);
                 }
-                _count[idx]++;
+                _count.Add(idx, _count.Get(idx) + 1);
             }
 
             public virtual void CollectAll()
@@ -273,7 +273,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 }
             }
 
-            public virtual int[] GetCountDistribution()
+            public virtual BigSegmentedArray GetCountDistribution()
             {
                 return _count;
             }
@@ -309,7 +309,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 int count = 0;
                 for (int i = startIdx; i < startIdx + segLen; ++i)
                 {
-                    count += _count[i];
+                    count += _count.Get(i);
                 }
 
                 BrowseFacet f = new BrowseFacet(buf.ToString(), count);
@@ -332,7 +332,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
                 int count = 0;
                 for (int i = startIdx; i < startIdx + segLen; ++i)
-                    count += _count[i];
+                    count += _count.Get(i);
 
                 return count;
             }
@@ -388,7 +388,7 @@ namespace BoboBrowse.Net.Facets.Impl
                         facetColl = new List<BrowseFacet>(max);
                         for (int i = 1; i < _countlength; ++i) // exclude zero
                         {
-                            int hits = _count[i];
+                            int hits = _count.Get(i);
                             if (hits >= minCount)
                             {
                                 BrowseFacet facet = new BrowseFacet(GetFacetString(i), hits);
@@ -422,7 +422,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
                         for (int i = 1; i < _countlength; ++i) // exclude zero
                         {
-                            int hits = _count[i];
+                            int hits = _count.Get(i);
                             if (hits >= minCount)
                             {
                                 if (!pq.Offer(i))
@@ -436,7 +436,7 @@ namespace BoboBrowse.Net.Facets.Impl
                         int val;
                         while ((val = pq.Poll()) != forbidden)
                         {
-                            BrowseFacet facet = new BrowseFacet(GetFacetString(val), _count[val]);
+                            BrowseFacet facet = new BrowseFacet(GetFacetString(val), _count.Get(val));
                             facetColl.Insert(0, facet);
                         }
                     }
@@ -503,7 +503,7 @@ namespace BoboBrowse.Net.Facets.Impl
                         throw new IndexOutOfRangeException("No more facets in this iteration");
                     _index++;
                     facet = _parent.GetFacetString(_index);
-                    count = _parent._count[_index];
+                    count = _parent._count.Get(_index);
                     return facet;
                 }
 
@@ -543,11 +543,11 @@ namespace BoboBrowse.Net.Facets.Impl
                     do
                     {
                         _index++;
-                    } while ((_index < (_parent._countlength - 1)) && (_parent._count[_index] < minHits));
-                    if (_parent._count[_index] >= minHits)
+                    } while ((_index < (_parent._countlength - 1)) && (_parent._count.Get(_index) < minHits));
+                    if (_parent._count.Get(_index) >= minHits)
                     {
                         facet = _parent.GetFacetString(_index);
-                        count = _parent._count[_index];
+                        count = _parent._count.Get(_index);
                     }
                     else
                     {

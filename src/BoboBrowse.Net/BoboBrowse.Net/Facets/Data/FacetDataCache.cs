@@ -21,7 +21,7 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
-// Version compatibility level: 3.1.0
+// Version compatibility level: 3.2.0
 namespace BoboBrowse.Net.Facets.Data
 {
     using BoboBrowse.Net.Sort;
@@ -45,7 +45,6 @@ namespace BoboBrowse.Net.Facets.Data
         protected int[] freqs;
         protected int[] minIDs;
         protected int[] maxIDs;
-        private readonly TermCountSize _termCountSize;
 
         public FacetDataCache(BigSegmentedArray orderArray, ITermValueList valArray, int[] freqs, int[] minIDs, 
             int[] maxIDs, TermCountSize termCountSize)
@@ -55,7 +54,6 @@ namespace BoboBrowse.Net.Facets.Data
             this.freqs = freqs;
             this.minIDs = minIDs;
             this.maxIDs = maxIDs;
-            _termCountSize = termCountSize;
         }
 
         public FacetDataCache()
@@ -65,7 +63,6 @@ namespace BoboBrowse.Net.Facets.Data
             this.maxIDs = null;
             this.minIDs = null;
             this.freqs = null;
-            _termCountSize = TermCountSize.Large;
         }
 
         public virtual ITermValueList ValArray
@@ -106,18 +103,35 @@ namespace BoboBrowse.Net.Facets.Data
             return valIdx <= 0 ? 0 : 1;
         }
 
-        private static BigSegmentedArray NewInstance(TermCountSize termCountSize, int maxDoc)
+        private static BigSegmentedArray NewInstance(int termCount, int maxDoc)
         {
-            if (termCountSize == TermCountSize.Small)
+            // we use < instead of <= to take into consideration "missing" value (zero element in the dictionary)
+            if (termCount < sbyte.MaxValue)
             {
                 return new BigByteArray(maxDoc);
             }
-            else if (termCountSize == TermCountSize.Medium)
+            else if (termCount < short.MaxValue)
             {
                 return new BigShortArray(maxDoc);
             }
             else
                 return new BigIntArray(maxDoc);
+        }
+
+        protected int GetDictValueCount(IndexReader reader, string field)
+        {
+            int ret = 0;
+            using (TermEnum termEnum = reader.Terms(new Term(field, "")))
+            {
+                do
+                {
+                    Term term = termEnum.Term;
+                    if (term == null || string.CompareOrdinal(term.Field, field) != 0)
+                        break;
+                    ret++;
+                } while (termEnum.Next());
+            }
+            return ret;
         }
 
         protected int GetNegativeValueCount(IndexReader reader, string field)
@@ -148,7 +162,8 @@ namespace BoboBrowse.Net.Facets.Data
             BigSegmentedArray order = this.orderArray;
             if (order == null) // we want to reuse the memory
             {
-                order = NewInstance(_termCountSize, maxDoc);
+                int dictValueCount = GetDictValueCount(reader, fieldName);
+                order = NewInstance(dictValueCount, maxDoc);
             }
             else
             {
@@ -184,10 +199,6 @@ namespace BoboBrowse.Net.Facets.Data
                     if (term == null || string.CompareOrdinal(term.Field, field) != 0)
                         break;
 
-                    if (t > orderArray.MaxValue)
-                    {
-                        throw new System.IO.IOException("maximum number of value cannot exceed: " + orderArray.MaxValue);
-                    }
                     // store term text
                     // we expect that there is at most one term per document
 

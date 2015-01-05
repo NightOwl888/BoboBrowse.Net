@@ -3,7 +3,7 @@ BoboBrowse.Net
 
 Bobo-Browse is a powerful and extensible faceted search engine library built on top of Lucene.Net. It is a C# port of the [original Bobo-Browse project](https://github.com/senseidb/bobo) written in Java by John Wang.
 
-This project is based on earlier work from [here](https://bobo.codeplex.com/) and [here](https://github.com/zhengchun/Bobo-Browse.Net), but both of those versions are based on Bobo-Browse.Net 2.x. This is an (almost) complete port of [Bobo-Browse 3.1.0](https://github.com/senseidb/bobo/releases), which is fully compatible with [Lucene.Net 3.0.3](https://www.nuget.org/packages/Lucene.Net/).
+This project is based on earlier work from [here](https://bobo.codeplex.com/) and [here](https://github.com/zhengchun/Bobo-Browse.Net), but both of those versions are based on Bobo-Browse.Net 2.x. This is an (almost) complete port of [Bobo-Browse 3.2.0](https://github.com/senseidb/bobo/releases), which is fully compatible with [Lucene.Net 3.0.3](https://www.nuget.org/packages/Lucene.Net/).
 
 Features Not Implemented:
 
@@ -52,7 +52,7 @@ Set-ExecutionPolicy RemoteSigned
 To build the source, run the following command from the root directory of the Git project (the same directory that contains the .git folder):
 
 ```
-build.bat -v:3.1.0 -pv:3.1.0-beta00003
+build.bat -v:3.2.0 -pv:3.2.0-beta00001
 ```
 
 The -v parameter is the file version number, and the -pv parameter is the NuGet package version number. The package version number can contain a pre-release tag as shown in the example, but is not required.

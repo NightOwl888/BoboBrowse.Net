@@ -1,4 +1,4 @@
-﻿// Version compatibility level: 3.1.0
+﻿// Version compatibility level: 3.2.0
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
@@ -11,7 +11,7 @@ namespace BoboBrowse.Net.Facets.Impl
     {
         private readonly string _name;
 	    private readonly FacetSpec _spec;
-	    private int[] _count;
+	    private BigSegmentedArray _count;
 	    private int _countlength;
 	    private GeoFacetHandler.GeoFacetData _dataCache;
         private readonly TermStringList _predefinedRanges;
@@ -85,7 +85,7 @@ namespace BoboBrowse.Net.Facets.Impl
             _predefinedRanges.AddAll(predefinedTemp);
             _docBase = docBase;
             _countlength = predefinedTemp.Count;
-            _count = new int[_countlength];
+            _count = new LazyBigIntArray(_countlength);
             _ranges = new GeoRange[predefinedTemp.Count];
             int index = 0;
             foreach (string range in predefinedTemp)
@@ -147,7 +147,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 {
                     // if the lat, lon values of this docid match the current user-specified range, then increment the 
                     // appropriate count[] value
-                    _count[countIndex]++;
+                    _count.Add(countIndex, _count.Get(countIndex) + 1);
                     // do not break here, since one document could lie in multiple user-specified ranges
                 }
             }
@@ -158,16 +158,17 @@ namespace BoboBrowse.Net.Facets.Impl
             throw new NotSupportedException("collectAll is not supported for Geo Facets yet");
         }
 
-        public virtual int[] GetCountDistribution()
+        public virtual BigSegmentedArray GetCountDistribution()
         {
-            int[] dist = null;
+            BigSegmentedArray dist = null;
             if (_predefinedRanges != null)
             {
-                dist = new int[_predefinedRanges.Count];
+                dist = new LazyBigIntArray(_predefinedRanges.Count);
                 int distIdx = 0;
-                foreach (int count in _count)
+                for (int i = 0; i < _count.Size(); i++)
                 {
-                    dist[distIdx++] = count;
+                    int count = _count.Get(i);
+                    dist.Add(distIdx++, count);
                 }
             }
             return dist;
@@ -192,7 +193,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 if ((index = _predefinedRanges.IndexOf(value)) != -1)
                 {
                     BrowseFacet choice = new BrowseFacet();
-                    choice.FacetValueHitCount = _count[index];
+                    choice.FacetValueHitCount = _count.Get(index);
                     choice.Value = value;
                     return choice;
                 }
@@ -217,7 +218,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 int index = 0;
                 if ((index = _predefinedRanges.IndexOf(value)) != -1)
                 {
-                    return _count[index];
+                    return _count.Get(index);
                 }
                 else
                 {
@@ -246,10 +247,10 @@ namespace BoboBrowse.Net.Facets.Impl
                     foreach (string value in _predefinedRanges)
                     {
                         countIndex++;
-                        if (_count[countIndex] >= minHitCount)
+                        if (_count.Get(countIndex) >= minHitCount)
                         {
                             BrowseFacet choice = new BrowseFacet();
-                            choice.FacetValueHitCount = _count[countIndex];
+                            choice.FacetValueHitCount = _count.Get(countIndex);
                             choice.Value = value;
                             facets.Add(choice);
                         }

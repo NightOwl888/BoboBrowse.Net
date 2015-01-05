@@ -1,7 +1,8 @@
-﻿// Version compatibility level: 3.1.0
+﻿// Version compatibility level: 3.2.0
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
+    using BoboBrowse.Net.Util;
     using System;
 
     /// <summary>
@@ -10,12 +11,12 @@ namespace BoboBrowse.Net.Facets.Impl
     public class DefaultFacetIterator : FacetIterator
     {
         private ITermValueList _valList;
-        private int[] _count;
+        private BigSegmentedArray _count;
         private int _countlength;
         private int _index;
         private int _lastIndex;
 
-        public DefaultFacetIterator(ITermValueList valList, int[] counts, int countlength, bool zeroBased)
+        public DefaultFacetIterator(ITermValueList valList, BigSegmentedArray counts, int countlength, bool zeroBased)
         {
             _valList = valList;
             _count = counts;
@@ -25,7 +26,7 @@ namespace BoboBrowse.Net.Facets.Impl
             if (!zeroBased)
                 _index++;
             facet = null;
-            base.count = 0;
+            count = 0;
         }
 
         /// <summary>
@@ -47,7 +48,7 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             _index++;
             facet = Convert.ToString(_valList.GetRawValue(_index));
-            base.count = _count[_index];
+            count = _count.Get(_index);
             return Format(facet);
         }
 
@@ -70,15 +71,15 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             while (++_index < _countlength)
             {
-                if (_count[_index] >= minHits)
+                if (_count.Get(_index) >= minHits)
                 {
                     facet = Convert.ToString(_valList.GetRawValue(_index));
-                    base.count = _count[_index];
+                    count = _count.Get(_index);
                     return Format(facet);
                 }
             }
             facet = null;
-            base.count = 0;
+            count = 0;
             return null;   
         }
 

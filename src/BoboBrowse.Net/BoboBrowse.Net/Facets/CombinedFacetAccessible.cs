@@ -1,4 +1,4 @@
-﻿// Version compatibility level: 3.1.0
+﻿// Version compatibility level: 3.2.0
 namespace BoboBrowse.Net.Facets
 {
     using BoboBrowse.Net.Facets.Impl;
@@ -14,9 +14,9 @@ namespace BoboBrowse.Net.Facets
     public class CombinedFacetAccessible : IFacetAccessible
     {
         private static ILog log = LogManager.GetLogger<CombinedFacetAccessible>();
-        private readonly IEnumerable<IFacetAccessible> _list;
-        private readonly FacetSpec _fspec;
-        private bool _closed;
+        protected readonly IEnumerable<IFacetAccessible> _list;
+        protected readonly FacetSpec _fspec;
+        protected bool _closed;
 
         public CombinedFacetAccessible(FacetSpec fspec, IEnumerable<IFacetAccessible> list)
         {
@@ -65,10 +65,7 @@ namespace BoboBrowse.Net.Facets
             {
                 foreach (IFacetAccessible facetAccessor in _list)
                 {
-                    if (facetAccessor is CombinedFacetAccessible)
-                        sum += ((CombinedFacetAccessible)facetAccessor).GetCappedFacetCount(value, cap - sum);
-                    else
-                        sum += facetAccessor.GetFacetHitsCount(value);
+                    sum += facetAccessor.GetFacetHitsCount(value);
                     if (sum >= cap)
                         return cap;
                 }

@@ -1,6 +1,7 @@
-// Version compatibility level: 3.1.0
+// Version compatibility level: 3.2.0
 namespace BoboBrowse.Net.Facets.Statistics
 {
+    using BoboBrowse.Net.Util;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -72,7 +73,7 @@ namespace BoboBrowse.Net.Facets.Statistics
 
         public virtual FacetCountStatistics GenerateStatistic(IFacetCountCollector countHitCollector, int n)
         {
-            return GenerateStatistic(countHitCollector.GetCountDistribution(), n);
+            return GenerateStatistic(BigIntArray.ToArray(countHitCollector.GetCountDistribution()), n);
         }
 
         //// FIXME : this is a kind of test
@@ -117,7 +118,7 @@ namespace BoboBrowse.Net.Facets.Statistics
         //        {
         //            Console.WriteLine("====================================");
         //            IFacetCountCollector fc = (IFacetCountCollector)f;
-        //            int[] dist = fc.GetCountDistribution();
+        //            int[] dist = BigIntArray.ToArray(fc.GetCountDistribution());
         //            if (dist != null)
         //            {
         //                ChiSquaredFacetCountStatisticsGenerator gen = new ChiSquaredFacetCountStatisticsGenerator();

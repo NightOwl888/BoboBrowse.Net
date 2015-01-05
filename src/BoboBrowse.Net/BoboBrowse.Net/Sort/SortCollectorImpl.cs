@@ -1,4 +1,4 @@
-﻿// Version compatibility level: 3.1.0
+﻿// Version compatibility level: 3.2.0
 // EXCEPTION: MemoryCache
 namespace BoboBrowse.Net.Sort
 {
@@ -184,9 +184,9 @@ namespace BoboBrowse.Net.Sort
                     else
                     {
                         _currentValueDocMaps = null;
-                        _facetCountCollectorMulti = new IFacetCountCollector[groupByList.Count];
-                        _facetAccessibleLists = new List<IFacetAccessible>[groupByMulti.Length];
-                        for (int i = 0; i < groupByMulti.Length; ++i)
+                        _facetCountCollectorMulti = new IFacetCountCollector[groupByList.Count - 1];
+                        _facetAccessibleLists = new List<IFacetAccessible>[_facetCountCollectorMulti.Length];
+                        for (int i = 0; i < _facetCountCollectorMulti.Length; ++i)
                         {
                             _facetAccessibleLists[i] = new List<IFacetAccessible>();
                         }
@@ -370,9 +370,10 @@ namespace BoboBrowse.Net.Sort
                 return;
             }
 
-            int[] count = _facetCountCollector.GetCountDistribution();
-            foreach (int c in count)
+            BigSegmentedArray count = _facetCountCollector.GetCountDistribution();
+            for (int i = 0; i < count.Size(); i++)
             {
+                int c = count.Get(i);
                 if (c > 0)
                     ++_totalGroups;
             }
@@ -387,9 +388,9 @@ namespace BoboBrowse.Net.Sort
             _currentQueue = new DocIDPriorityQueue(_currentComparator, _numHits, docBase);
             if (groupBy != null)
             {
-                if (_facetCountCollectorMulti != null)
+                if (_facetCountCollectorMulti != null)  // _facetCountCollectorMulti.Length >= 1
                 {
-                    for (int i = 0; i < groupByMulti.Length; ++i)
+                    for (int i = 0; i < _facetCountCollectorMulti.Length; ++i)
                     {
                         _facetCountCollectorMulti[i] = groupByMulti[i].GetFacetCountCollectorSource(null, null, true).GetFacetCountCollector(_currentReader, docBase);
                     }
@@ -398,7 +399,7 @@ namespace BoboBrowse.Net.Sort
                     _facetCountCollector = _facetCountCollectorMulti[0];
                     if (_facetAccessibleLists != null)
                     {
-                        for (int i = 0; i < groupByMulti.Length; ++i)
+                        for (int i = 0; i < _facetCountCollectorMulti.Length; ++i)
                         {
                             _facetAccessibleLists[i].Add(_facetCountCollectorMulti[i]);
                         }
@@ -583,6 +584,7 @@ namespace BoboBrowse.Net.Sort
                 hit.Comparable = fdoc.Value;
                 if (groupBy != null)
                 {
+                    hit.GroupField = groupBy.Name;
                     hit.GroupValue = hit.GetField(groupBy.Name);
                     hit.RawGroupValue = hit.GetRawField(groupBy.Name);
                     if (groupAccessibles != null &&

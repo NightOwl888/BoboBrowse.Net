@@ -1,8 +1,9 @@
-﻿// Version compatibility level: 3.1.0
+﻿// Version compatibility level: 3.2.0
 namespace BoboBrowse.Net
 {
     using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Facets.Impl;
+    using BoboBrowse.Net.Util;
     using Common.Logging;
     using NUnit.Framework;
     using System;
@@ -92,17 +93,23 @@ namespace BoboBrowse.Net
             tsl1.Add("i");
             tsl1.Add("m");
             tsl1.Seal();
-            DefaultFacetIterator itr1 = new DefaultFacetIterator(tsl1, new int[] { 1, 2 }, 2, false);
+            BigIntArray count = new BigIntArray(2);
+            count.Add(0, 1);
+            count.Add(1, 2);
+            DefaultFacetIterator itr1 = new DefaultFacetIterator(tsl1, count, 2, false);
             TermStringList tsl2 = new TermStringList();
             tsl2.Add("i");
             tsl2.Add("m");
             tsl2.Seal();
-            DefaultFacetIterator itr2 = new DefaultFacetIterator(tsl2, new int[] { 1, 5 }, 2, true);
+            BigIntArray count2 = new BigIntArray(2);
+            count2.Add(0, 1);
+            count2.Add(1, 5);
+            DefaultFacetIterator itr2 = new DefaultFacetIterator(tsl2, count2, 2, true);
             List<FacetIterator> list = new List<FacetIterator>();
             list.Add(itr1);
             list.Add(itr2);
             CombinedFacetIterator ctr = new CombinedFacetIterator(list);
-            String result = "";
+            string result = "";
             while (ctr.HasNext())
             {
                 ctr.Next();
@@ -115,14 +122,14 @@ namespace BoboBrowse.Net
         [Test]
         public void TestDefaultIntFacetIterator()
         {
-            String format = "00";
+            string format = "00";
             List<IntFacetIterator> list = new List<IntFacetIterator>();
             for (int seg = 0; seg < 5; seg++)
             {
                 TermIntList tsl1 = new TermIntList(format);
                 int limit = 25;
-                int[] count = new int[limit];
-                String[] terms = new String[limit];
+                BigIntArray count = new BigIntArray(limit);
+                string[] terms = new string[limit];
                 for (int i = limit - 1; i >= 0; i--)
                 {
                     terms[i] = i.ToString(format);
@@ -131,20 +138,20 @@ namespace BoboBrowse.Net
                 for (int i = 0; i < limit; i++)
                 {
                     tsl1.Add(terms[i]);
-                    count[i] = i;
+                    count.Add(i, i);
                 }
                 tsl1.Seal();
                 DefaultIntFacetIterator itr1 = new DefaultIntFacetIterator(tsl1, count, limit, true);
                 list.Add(itr1);
             }
             CombinedIntFacetIterator ctr = new CombinedIntFacetIterator(list);
-            String result = "";
+            string result = "";
             while (ctr.HasNext())
             {
                 ctr.Next();
                 result += (ctr.Facet + ":" + ctr.Count + " ");
             }
-            String expected = "1:5 2:10 3:15 4:20 5:25 6:30 7:35 8:40 9:45 10:50 11:55 12:60 13:65 14:70 15:75 16:80 17:85 18:90 19:95 20:100 21:105 22:110 23:115 24:120 ";
+            string expected = "1:5 2:10 3:15 4:20 5:25 6:30 7:35 8:40 9:45 10:50 11:55 12:60 13:65 14:70 15:75 16:80 17:85 18:90 19:95 20:100 21:105 22:110 23:115 24:120 ";
             Assert.AreEqual(expected, result);
         }
     }

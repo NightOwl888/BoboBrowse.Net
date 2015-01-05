@@ -23,7 +23,7 @@
  * send mail to owner@browseengine.com.
  */
 
-// Version compatibility level: 3.1.0
+// Version compatibility level: 3.2.0
 namespace BoboBrowse.Net
 {
     using BoboBrowse.Net.Facets;
@@ -35,6 +35,7 @@ namespace BoboBrowse.Net
     using BoboBrowse.Net.Query.Scoring;
     using BoboBrowse.Net.Sort;
     using BoboBrowse.Net.Support;
+    using BoboBrowse.Net.Util;
     using Common.Logging;
     using Lucene.Net.Analysis;
     using Lucene.Net.Analysis.Standard;
@@ -1239,7 +1240,7 @@ namespace BoboBrowse.Net
         private class TestMultiSelectedPathsComparatorFactory : IComparatorFactory
         {
 
-            public IComparer<int> NewComparator(IFieldValueAccessor fieldValueAccessor, int[] counts)
+            public IComparer<int> NewComparator(IFieldValueAccessor fieldValueAccessor, BigSegmentedArray counts)
             {
                 return new TestMultiSelectedPathsIntComparator(counts);
             }
@@ -1252,16 +1253,16 @@ namespace BoboBrowse.Net
 
         private class TestMultiSelectedPathsIntComparator : IComparer<int>
         {
-            private readonly int[] counts;
+            private readonly BigSegmentedArray counts;
 
-            public TestMultiSelectedPathsIntComparator(int[] counts)
+            public TestMultiSelectedPathsIntComparator(BigSegmentedArray counts)
             {
                 this.counts = counts;
             }
 
             public int Compare(int f1, int f2)
             {
-                int val = counts[f2] - counts[f1];
+                int val = counts.Get(f2) - counts.Get(f1);
                 if (val == 0)
                 {
                     val = f2 - f1;
@@ -2539,7 +2540,7 @@ namespace BoboBrowse.Net
         private class TestCustomFacetSortComparatorFactory : IComparatorFactory
         {
 
-            public IComparer<int> NewComparator(IFieldValueAccessor fieldValueAccessor, int[] counts)
+            public IComparer<int> NewComparator(IFieldValueAccessor fieldValueAccessor, BigSegmentedArray counts)
             {
                 return new TestCustomFacetSortIntComparator(fieldValueAccessor, counts);
             }
@@ -2552,9 +2553,9 @@ namespace BoboBrowse.Net
             public class TestCustomFacetSortIntComparator : IComparer<int>
             {
                 private readonly IFieldValueAccessor fieldValueAccessor;
-                private readonly int[] counts;
+                private readonly BigSegmentedArray counts;
 
-                public TestCustomFacetSortIntComparator(IFieldValueAccessor fieldValueAccessor, int[] counts)
+                public TestCustomFacetSortIntComparator(IFieldValueAccessor fieldValueAccessor, BigSegmentedArray counts)
                 {
                     this.fieldValueAccessor = fieldValueAccessor;
                     this.counts = counts;
@@ -2568,7 +2569,7 @@ namespace BoboBrowse.Net
                     int val = size1 - size2;
                     if (val == 0)
                     {
-                        val = counts[v1] - counts[v2];
+                        val = counts.Get(v1) - counts.Get(v2);
                     }
                     return val;
                 }
@@ -2634,8 +2635,11 @@ namespace BoboBrowse.Net
             DoTest(req, 7, answer, null);
         }
 
-        [Test]
-        public void TestIndexReaderReopen()
+        /// <summary>
+        /// Reopened is not used any more
+        /// </summary>
+        //[Test]
+        public void nTestIndexReaderReopen()
         {
             int numDocs;
             Lucene.Net.Store.Directory idxDir = new RAMDirectory();

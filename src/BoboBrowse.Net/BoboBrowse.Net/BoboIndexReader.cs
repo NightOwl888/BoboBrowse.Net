@@ -21,7 +21,7 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
-// Version compatibility level: 3.1.0
+// Version compatibility level: 3.2.0
 namespace BoboBrowse.Net
 {
     using BoboBrowse.Net.Facets;
@@ -305,123 +305,123 @@ namespace BoboBrowse.Net
         [MethodImpl(MethodImplOptions.Synchronized)]
         public override IndexReader Reopen()
         {
-            IndexReader newInner = null;
+            throw new NotSupportedException();
 
-            SegmentInfos sinfos = new SegmentInfos();
-            sinfos.Read(_dir);
-            int size = sinfos.Count;
+            //SegmentInfos sinfos = new SegmentInfos();
+            //sinfos.Read(_dir);
+            //int size = sinfos.Count;
 
-            if (this.in_Renamed is MultiReader)
-            {
-                // setup current reader list
-                List<IndexReader> boboReaderList = new List<IndexReader>();
-                ReaderUtil.GatherSubReaders(boboReaderList, this.in_Renamed);
-                var readerMap = new Dictionary<string, BoboIndexReader>();
+            //if (this.in_Renamed is MultiReader)
+            //{
+            //    // setup current reader list
+            //    List<IndexReader> boboReaderList = new List<IndexReader>();
+            //    ReaderUtil.GatherSubReaders(boboReaderList, this.in_Renamed);
+            //    var readerMap = new Dictionary<string, BoboIndexReader>();
 
-                foreach (IndexReader reader in boboReaderList)
-                {
-                    BoboIndexReader boboReader = (BoboIndexReader)reader;
-                    SegmentReader sreader = (SegmentReader)(boboReader.in_Renamed);
-                    readerMap.Put(sreader.SegmentName, boboReader);
-                }
+            //    foreach (IndexReader reader in boboReaderList)
+            //    {
+            //        BoboIndexReader boboReader = (BoboIndexReader)reader;
+            //        SegmentReader sreader = (SegmentReader)(boboReader.in_Renamed);
+            //        readerMap.Put(sreader.SegmentName, boboReader);
+            //    }
 
-                var currentReaders = new List<BoboIndexReader>(size);
-                bool isNewReader = false;
-                for (int i = 0; i < size; ++i)
-                {
-                    SegmentInfo sinfo = (SegmentInfo)sinfos.Info(i);
+            //    var currentReaders = new List<BoboIndexReader>(size);
+            //    bool isNewReader = false;
+            //    for (int i = 0; i < size; ++i)
+            //    {
+            //        SegmentInfo sinfo = (SegmentInfo)sinfos.Info(i);
 
-                    // NOTE: Replaced the remove() call with the 2 lines below.
-                    // It didn't look like the java HashMap was thread safe anyway.
-                    BoboIndexReader breader = readerMap.Get(sinfo.name); 
-                    readerMap.Remove(sinfo.name);
-                    if (breader != null)
-                    {
-                        // should use SegmentReader.reopen
-                        // TODO: see LUCENE-2559
-                        BoboIndexReader newReader = (BoboIndexReader)breader.Reopen(true);
-                        if (newReader != breader)
-                        {
-                            isNewReader = true;
-                        }
-                        if (newReader != null)
-                        {
-                            currentReaders.Add(newReader);
-                        }
-                    }
-                    else
-                    {
-                        isNewReader = true;
-                        SegmentReader newSreader = SegmentReader.Get(true, sinfo, 1);
-                        breader = BoboIndexReader.GetInstanceAsSubReader(newSreader, this._facetHandlers, this._runtimeFacetHandlerFactories);
-                        breader._dir = _dir;
-                        currentReaders.Add(breader);
-                    }
-                }
-                isNewReader = isNewReader || (readerMap.Count != 0);
-                if (!isNewReader)
-                {
-                    return this;
-                }
-                else
-                {
-                    MultiReader newMreader = new MultiReader(currentReaders.ToArray(), false);
-                    BoboIndexReader newReader = BoboIndexReader.GetInstanceAsSubReader(newMreader, this._facetHandlers, this._runtimeFacetHandlerFactories);
-                    newReader._dir = _dir;
-                    return newReader;
-                }
-            }
-            else if (this.in_Renamed is SegmentReader)
-            {
-                // should use SegmentReader.reopen
-                // TODO: see LUCENE-2559
+            //        // NOTE: Replaced the remove() call with the 2 lines below.
+            //        // It didn't look like the java HashMap was thread safe anyway.
+            //        BoboIndexReader breader = readerMap.Get(sinfo.name); 
+            //        readerMap.Remove(sinfo.name);
+            //        if (breader != null)
+            //        {
+            //            // should use SegmentReader.reopen
+            //            // TODO: see LUCENE-2559
+            //            BoboIndexReader newReader = (BoboIndexReader)breader.Reopen(true);
+            //            if (newReader != breader)
+            //            {
+            //                isNewReader = true;
+            //            }
+            //            if (newReader != null)
+            //            {
+            //                currentReaders.Add(newReader);
+            //            }
+            //        }
+            //        else
+            //        {
+            //            isNewReader = true;
+            //            SegmentReader newSreader = SegmentReader.Get(true, sinfo, 1);
+            //            breader = BoboIndexReader.GetInstanceAsSubReader(newSreader, this._facetHandlers, this._runtimeFacetHandlerFactories);
+            //            breader._dir = _dir;
+            //            currentReaders.Add(breader);
+            //        }
+            //    }
+            //    isNewReader = isNewReader || (readerMap.Count != 0);
+            //    if (!isNewReader)
+            //    {
+            //        return this;
+            //    }
+            //    else
+            //    {
+            //        MultiReader newMreader = new MultiReader(currentReaders.ToArray(), false);
+            //        BoboIndexReader newReader = BoboIndexReader.GetInstanceAsSubReader(newMreader, this._facetHandlers, this._runtimeFacetHandlerFactories);
+            //        newReader._dir = _dir;
+            //        return newReader;
+            //    }
+            //}
+            //else if (this.in_Renamed is SegmentReader)
+            //{
+            //    // should use SegmentReader.reopen
+            //    // TODO: see LUCENE-2559
 
-                SegmentReader sreader = (SegmentReader)this.in_Renamed;
-                int numDels = sreader.NumDeletedDocs;
+            //    SegmentReader sreader = (SegmentReader)this.in_Renamed;
+            //    int numDels = sreader.NumDeletedDocs;
 
-                SegmentInfo sinfo = null;
-                bool sameSeg = false;
-                //get SegmentInfo instance
-                for (int i = 0; i < size; ++i)
-                {
-                    SegmentInfo sinfoTmp = (SegmentInfo)sinfos.Info(i);
-                    if (sinfoTmp.name.Equals(sreader.SegmentName))
-                    {
-                        int numDels2 = sinfoTmp.GetDelCount();
-                        sameSeg = numDels == numDels2;
-                        sinfo = sinfoTmp;
-                        break;
-                    }
-                }
+            //    SegmentInfo sinfo = null;
+            //    bool sameSeg = false;
+            //    //get SegmentInfo instance
+            //    for (int i = 0; i < size; ++i)
+            //    {
+            //        SegmentInfo sinfoTmp = (SegmentInfo)sinfos.Info(i);
+            //        if (sinfoTmp.name.Equals(sreader.SegmentName))
+            //        {
+            //            int numDels2 = sinfoTmp.GetDelCount();
+            //            sameSeg = numDels == numDels2;
+            //            sinfo = sinfoTmp;
+            //            break;
+            //        }
+            //    }
 
-                if (sinfo == null)
-                {
-                    // segment no longer exists
-                    return null;
-                }
-                if (sameSeg)
-                {
-                    return this;
-                }
-                else
-                {
-                    SegmentReader newSreader = SegmentReader.Get(true, sinfo, 1);
-                    return BoboIndexReader.GetInstanceAsSubReader(newSreader, this._facetHandlers, this._runtimeFacetHandlerFactories);
-                }
-            }
-            else
-            {
-                // should not reach here, a catch-all default case
-	            IndexReader reader = this.in_Renamed.Reopen(true);
-                if (this.in_Renamed != reader)
-                {
-	                return BoboIndexReader.GetInstance(newInner, _facetHandlers, _runtimeFacetHandlerFactories, _workArea);
-	            }
-	            else
-                {
-		            return this;
-	            }
-            }
+            //    if (sinfo == null)
+            //    {
+            //        // segment no longer exists
+            //        return null;
+            //    }
+            //    if (sameSeg)
+            //    {
+            //        return this;
+            //    }
+            //    else
+            //    {
+            //        SegmentReader newSreader = SegmentReader.Get(true, sinfo, 1);
+            //        return BoboIndexReader.GetInstanceAsSubReader(newSreader, this._facetHandlers, this._runtimeFacetHandlerFactories);
+            //    }
+            //}
+            //else
+            //{
+            //    // should not reach here, a catch-all default case
+            //    IndexReader reader = this.in_Renamed.Reopen(true);
+            //    if (this.in_Renamed != reader)
+            //    {
+            //        return BoboIndexReader.GetInstance(newInner, _facetHandlers, _runtimeFacetHandlerFactories, _workArea);
+            //    }
+            //    else
+            //    {
+            //        return this;
+            //    }
+            //}
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
@@ -498,7 +498,8 @@ namespace BoboBrowse.Net
 
         protected override void DoClose()
         {
-            _facetDataMap.Clear();
+            //We can not clean up the facetDataMap, as it might be used by other BoboIndexReaders created by the copy method
+            //_facetDataMap.Clear();
             // BUG: DoClose() already calls close on the inner reader
             //if (_srcReader != null) _srcReader.Close();
 
@@ -832,6 +833,24 @@ namespace BoboBrowse.Net
         public virtual IDictionary<string, IRuntimeFacetHandlerFactory> RuntimeFacetHandlerFactoryMap
         {
             get { return _runtimeFacetHandlerFactoryMap; }
+        }
+
+        /// <summary>
+        /// Gets or sets the map of RuntimeFacetHandlers
+        /// </summary>
+        public virtual IDictionary<string, IRuntimeFacetHandler> RuntimeFacetHandlerMap
+        {
+            get { return _runtimeFacetHandlerMap.Get(); }
+            set { _runtimeFacetHandlerMap.Set(value); }
+        }
+
+        /// <summary>
+        /// Gets or sets the map of RuntimeFacetData
+        /// </summary>
+        public virtual IDictionary<string, object> RuntimeFacetDataMap
+        {
+            get { return _runtimeFacetDataMap.Get(); }
+            set { _runtimeFacetDataMap.Set(value); }
         }
 
         public override Document Document(int docid)

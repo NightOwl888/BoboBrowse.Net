@@ -21,7 +21,7 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
-// Version compatibility level: 3.1.0
+// Version compatibility level: 3.2.0
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
@@ -374,7 +374,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override sealed void CollectAll()
             {
-                _count = _dataCache.Freqs;
+                _count = BigIntArray.FromArray(_dataCache.Freqs);
             }
         }
     }

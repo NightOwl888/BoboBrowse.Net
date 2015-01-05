@@ -1,4 +1,4 @@
-﻿// Version compatibility level: 3.1.0
+﻿// Version compatibility level: 3.2.0
 // EXCEPTION: MemoryCache
 namespace BoboBrowse.Net.Sort
 {
@@ -25,11 +25,30 @@ namespace BoboBrowse.Net.Sort
         //    public DocComparator comparator;
         //    public int length;
 
+        //    private IDictionary<string, IRuntimeFacetHandler> _runtimeFacetMap;
+        //    private IDictionary<string, object> _runtimeFacetDataMap;
+
         //    public CollectorContext(BoboIndexReader reader, int @base, DocComparator comparator)
         //    {
         //        this.reader = reader;
         //        this.@base = @base;
         //        this.comparator = comparator;
+        //        _runtimeFacetMap = reader.RuntimeFacetHandlerMap;
+        //        _runtimeFacetDataMap = reader.RuntimeFacetDataMap;
+        //    }
+
+        //    public virtual void RestoreRuntimeFacets()
+        //    {
+        //        reader.RuntimeFacetHandlerMap = _runtimeFacetMap;
+        //        reader.RuntimeFacetDataMap = _runtimeFacetDataMap;
+        //    }
+
+        //    public virtual void ClearRuntimeFacetData()
+        //    {
+        //        reader.ClearRuntimeFacetData();
+        //        reader.ClearRuntimeFacetHandler();
+        //        _runtimeFacetDataMap = null;
+        //        _runtimeFacetMap = null;
         //    }
         //}
 
@@ -230,6 +249,13 @@ namespace BoboBrowse.Net.Sort
 
                     // NightOwl888: The _collectDocIdCache setting seems to put arrays into
                     // memory, but then do nothing with the arrays. Seems wasteful and unnecessary.
+                    //if (contextList != null)
+                    //{
+                    //    foreach (CollectorContext context in contextList)
+                    //    {
+                    //        context.ClearRuntimeFacetData();
+                    //    }
+                    //}
                     //if (docidarraylist != null)
                     //{
                     //    while (!(docidarraylist.Count == 0))

@@ -21,7 +21,7 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
-﻿// Version compatibility level: 3.1.0
+﻿// Version compatibility level: 3.2.0
 namespace BoboBrowse.Net
 {
     using BoboBrowse.Net.Support;
@@ -131,7 +131,6 @@ namespace BoboBrowse.Net
 
         /// <summary>
         /// Gets or sets the group field inside groupBy request.
-        /// NOTE: This does not appear to be in use by BoboBrowse.
         /// </summary>
         public virtual string GroupField { get; set; }
 

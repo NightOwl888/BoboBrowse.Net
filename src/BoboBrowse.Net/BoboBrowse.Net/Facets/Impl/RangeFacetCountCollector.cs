@@ -1,4 +1,4 @@
-﻿// Version compatibility level: 3.1.0
+﻿// Version compatibility level: 3.2.0
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
@@ -12,7 +12,7 @@ namespace BoboBrowse.Net.Facets.Impl
     public class RangeFacetCountCollector : IFacetCountCollector
     {
         private readonly FacetSpec _ospec;
-        protected int[] _count;
+        protected BigSegmentedArray _count;
         private int _countLength;
         private readonly BigSegmentedArray _array;
         private readonly FacetDataCache _dataCache;
@@ -26,7 +26,7 @@ namespace BoboBrowse.Net.Facets.Impl
             _name = name;
             _dataCache = dataCache;
             _countLength = _dataCache.Freqs.Length;
-            _count = new int[_countLength];
+            _count = new LazyBigIntArray(_countLength);
             _array = _dataCache.OrderArray;
             _docBase = docBase;
             _ospec = ospec;
@@ -57,12 +57,12 @@ namespace BoboBrowse.Net.Facets.Impl
         /// gets distribution of the value arrays. When predefined ranges are available, this returns distribution by predefined ranges.
         /// </summary>
         /// <returns></returns>
-        public virtual int[] GetCountDistribution()
+        public virtual BigSegmentedArray GetCountDistribution()
         {
-            int[] dist = null;
+            BigSegmentedArray dist = null;
             if (_predefinedRangeIndexes != null)
             {
-                dist = new int[_predefinedRangeIndexes.Length];
+                dist = new LazyBigIntArray(_predefinedRangeIndexes.Length);
                 int n = 0;
                 foreach (int[] range in _predefinedRangeIndexes)
                 {
@@ -72,9 +72,9 @@ namespace BoboBrowse.Net.Facets.Impl
                     int sum = 0;
                     for (int i = start; i < end; ++i)
                     {
-                        sum += _count[i];
+                        sum += _count.Get(i);
                     }
-                    dist[n++] = sum;
+                    dist.Add(n++, sum);
                 }
             }
             else
@@ -99,7 +99,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 int sum = 0;
                 for (int i = range[0]; i <= range[1]; ++i)
                 {
-                    sum += _count[i];
+                    sum += _count.Get(i);
                 }
                 facet = new BrowseFacet(value, sum);
             }
@@ -114,7 +114,7 @@ namespace BoboBrowse.Net.Facets.Impl
             {
                 for (int i = range[0]; i <= range[1]; ++i)
                 {
-                    sum += _count[i];
+                    sum += _count.Get(i);
                 }
             }
             return sum;
@@ -122,12 +122,13 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public virtual void Collect(int docid)
         {
-            _count[_array.Get(docid)]++;
+            int i = _array.Get(docid);
+            _count.Add(i, _count.Get(i) + 1);
         }
 
         public void CollectAll()
         {
-            _count = _dataCache.Freqs;
+            _count = BigIntArray.FromArray(_dataCache.Freqs);
             _countLength = _dataCache.Freqs.Length;
         }
 
@@ -210,7 +211,7 @@ namespace BoboBrowse.Net.Facets.Impl
                         int end = _predefinedRangeIndexes[k][1];
                         while (idx < end)
                         {
-                            count += _count[idx++];
+                            count += _count.Get(idx++);
                         }
                         rangeCount[k] = count;
                     }
@@ -248,7 +249,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     int maxNumOfFacets = _ospec.MaxCount;
                     if (maxNumOfFacets <= 0 || maxNumOfFacets > _predefinedRangeIndexes.Length) maxNumOfFacets = _predefinedRangeIndexes.Length;
 
-                    int[] rangeCount = new int[_predefinedRangeIndexes.Length];
+                    BigSegmentedArray rangeCount = new LazyBigIntArray(_predefinedRangeIndexes.Length);
 
                     for (int k = 0; k < _predefinedRangeIndexes.Length; ++k)
                     {
@@ -257,9 +258,9 @@ namespace BoboBrowse.Net.Facets.Impl
                         int end = _predefinedRangeIndexes[k][1];
                         while (idx <= end)
                         {
-                            count += _count[idx++];
+                            count += _count.Get(idx++);
                         }
-                        rangeCount[k] = count;
+                        rangeCount.Add(k, count);
                     }
 
                     List<BrowseFacet> facetColl;
@@ -269,9 +270,9 @@ namespace BoboBrowse.Net.Facets.Impl
                         facetColl = new List<BrowseFacet>(maxNumOfFacets);
                         for (int k = 0; k < _predefinedRangeIndexes.Length; ++k)
                         {
-                            if (rangeCount[k] >= minCount)
+                            if (rangeCount.Get(k) >= minCount)
                             {
-                                BrowseFacet choice = new BrowseFacet(_predefinedRanges.ElementAt(k), rangeCount[k]);
+                                BrowseFacet choice = new BrowseFacet(_predefinedRanges.Get(k), rangeCount.Get(k));
                                 facetColl.Add(choice);
                             }
                             if (facetColl.Count >= maxNumOfFacets) break;
@@ -300,14 +301,14 @@ namespace BoboBrowse.Net.Facets.Impl
                         IntBoundedPriorityQueue pq = new IntBoundedPriorityQueue(comparator, maxNumOfFacets, forbidden);
                         for (int i = 0; i < _predefinedRangeIndexes.Length; ++i)
                         {
-                            if (rangeCount[i] >= minCount) pq.Offer(i);
+                            if (rangeCount.Get(i) >= minCount) pq.Offer(i);
                         }
 
                         int val;
                         facetColl = new List<BrowseFacet>();
                         while ((val = pq.Poll()) != forbidden)
                         {
-                            BrowseFacet facet = new BrowseFacet(_predefinedRanges.ElementAt(val), rangeCount[val]);
+                            BrowseFacet facet = new BrowseFacet(_predefinedRanges.ElementAt(val), rangeCount.Get(val));
                             facetColl.Insert(0, facet);
                         }
                     }
@@ -379,7 +380,7 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             if (_predefinedRanges != null)
             {
-                int[] rangeCounts = new int[_predefinedRangeIndexes.Length];
+                BigSegmentedArray rangeCounts = new LazyBigIntArray(_predefinedRangeIndexes.Length);
                 for (int k = 0; k < _predefinedRangeIndexes.Length; ++k)
                 {
                     int count = 0;
@@ -387,11 +388,11 @@ namespace BoboBrowse.Net.Facets.Impl
                     int end = _predefinedRangeIndexes[k][1];
                     while (idx <= end)
                     {
-                        count += _count[idx++];
+                        count += _count.Get(idx++);
                     }
-                    rangeCounts[k] += count;
+                    rangeCounts.Add(k, rangeCounts.Get(k) + count);
                 }
-                return new DefaultFacetIterator(_predefinedRanges, rangeCounts, rangeCounts.Length, true);
+                return new DefaultFacetIterator(_predefinedRanges, rangeCounts, rangeCounts.Size(), true);
             }
             return null;
         }

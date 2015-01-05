@@ -1,4 +1,4 @@
-﻿// Version compatibility level: 3.1.0
+﻿// Version compatibility level: 3.2.0
 namespace BoboBrowse.Net.Util
 {
     using BoboBrowse.Net.Facets.Data;
@@ -962,6 +962,37 @@ namespace BoboBrowse.Net.Util
             return;
         }
 
+        public void CountNoReturn(int id, BigSegmentedArray count)
+        {
+            int[] page = _list[id >> PAGEID_SHIFT];
+            if (page == null)
+            {
+                count.Add(0, count.Get(0) + 1);
+                return;
+            }
+
+            int val = page[id & SLOTID_MASK];
+            if (val >= 0)
+            {
+                count.Add(val, count.Get(val) + 1);
+                return;
+            }
+            else if (val != MISSING)
+            {
+                int idx = -(val >> VALIDX_SHIFT); // signed shift, remember val is a negative number
+                int cnt = (val & COUNT_MASK);
+                int end = idx + cnt;
+                while (idx < end)
+                {
+                    count.Add(page[idx], count.Get(page[idx]) + 1);
+                    idx++;
+                }
+                return;
+            }
+            count.Add(0, count.Get(0) + 1);
+            return;
+        }
+
         public void CountNoReturnWithFilter(int id, int[] count, BitVector filter)
         {
             // NOTE: Added Get() extension method call because 
@@ -1039,6 +1070,43 @@ namespace BoboBrowse.Net.Util
                 return;
             }
             count[0]++;
+            return;
+        }
+
+        public void CountNoReturnWithFilter(int id, BigSegmentedArray count, OpenBitSet filter)
+        {
+            int[] page = _list[id >> PAGEID_SHIFT];
+            if (page == null)
+            {
+                count.Add(0, count.Get(0) + 1);
+                return;
+            }
+
+            int val = page[id & SLOTID_MASK];
+            if (val >= 0)
+            {
+                if (filter.FastGet(val))
+                {
+                    count.Add(val, count.Get(val) + 1);
+                }
+                return;
+            }
+            else if (val != MISSING)
+            {
+                int idx = -(val >> VALIDX_SHIFT); // signed shift, remember val is a negative number
+                int cnt = (val & COUNT_MASK);
+                int end = idx + cnt;
+                while (idx < end)
+                {
+                    int value = page[idx++];
+                    if (filter.FastGet(value))
+                    {
+                        count.Add(value, count.Get(value) + 1);
+                    }
+                }
+                return;
+            }
+            count.Add(0, count.Get(0) + 1);
             return;
         }
 

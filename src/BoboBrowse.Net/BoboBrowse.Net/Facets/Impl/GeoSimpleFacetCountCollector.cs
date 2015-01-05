@@ -1,4 +1,4 @@
-﻿// Version compatibility level: 3.1.0
+﻿// Version compatibility level: 3.2.0
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
@@ -113,12 +113,12 @@ namespace BoboBrowse.Net.Facets.Impl
         /// see com.browseengine.bobo.facets.FacetCountCollector#getCountDistribution()
         /// </summary>
         /// <returns></returns>
-        public virtual int[] GetCountDistribution()
+        public virtual BigSegmentedArray GetCountDistribution()
         {
-            int[] dist = null;
+            BigSegmentedArray dist = null;
             if (_latPredefinedRangeIndexes != null)
             {
-                dist = new int[_latPredefinedRangeIndexes.Length];
+                dist = new LazyBigIntArray(_latPredefinedRangeIndexes.Length);
                 int n = 0;
                 int start;
                 int end;
@@ -131,7 +131,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     {
                         sum += _latCount[i];
                     }
-                    dist[n++] = sum;
+                    dist.Add(n++, sum);
                 }
             }
             return dist;
@@ -241,7 +241,7 @@ namespace BoboBrowse.Net.Facets.Impl
         public virtual FacetIterator Iterator()
         {
             // each range is of the form <lat, lon, radius>
-            int[] rangeCounts = new int[_latPredefinedRangeIndexes.Length];
+            LazyBigIntArray rangeCounts = new LazyBigIntArray(_latPredefinedRangeIndexes.Length);
             for (int i = 0; i < _latCount.Length; ++i)
             {
                 if (_latCount[i] > 0)
@@ -250,12 +250,12 @@ namespace BoboBrowse.Net.Facets.Impl
                     {
                         if (i >= _latPredefinedRangeIndexes[k][0] && i <= _latPredefinedRangeIndexes[k][1])
                         {
-                            rangeCounts[k] += _latCount[i];
+                            rangeCounts.Add(k, rangeCounts.Get(k) + _latCount[i]);
                         }
                     }
                 }
             }
-            return new DefaultFacetIterator(_predefinedRanges, rangeCounts, rangeCounts.Length, true);
+            return new DefaultFacetIterator(_predefinedRanges, rangeCounts, rangeCounts.Size(), true);
         }
     }
 }

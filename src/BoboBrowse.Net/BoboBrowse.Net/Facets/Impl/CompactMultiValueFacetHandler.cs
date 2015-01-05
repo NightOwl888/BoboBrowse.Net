@@ -1,4 +1,4 @@
-// Version compatibility level: 3.1.0
+// Version compatibility level: 3.2.0
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net;
@@ -438,7 +438,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override sealed void CollectAll()
             {
-                _count = _dataCache.Freqs;
+                _count = BigIntArray.FromArray(_dataCache.Freqs);
                 _aggregated = true;
             }
 
@@ -477,7 +477,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 return base.GetFacetHitsCount(value);
             }
 
-            public override int[] GetCountDistribution()
+            public override BigSegmentedArray GetCountDistribution()
             {
                 if (!_aggregated)
                     AggregateCounts();
@@ -493,7 +493,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
             private void AggregateCounts()
             {
-                _count[0] = _noValCount;
+                _count.Add(0, _noValCount);
 
                 for (int i = 1; i < _combinationCount.Length; i++)
                 {
@@ -507,7 +507,8 @@ namespace BoboBrowse.Net.Facets.Impl
                         {
                             if ((encoded & 0x00000001) != 0x0)
                             {
-                                _count[index + offset] += count;
+                                int idx = index + offset;
+                                _count.Add(idx, _count.Get(idx) + count);
                             }
                             index++;
                             encoded = (int)(((uint)encoded) >> 1);

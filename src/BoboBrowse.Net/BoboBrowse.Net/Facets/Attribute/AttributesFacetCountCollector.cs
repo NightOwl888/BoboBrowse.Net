@@ -1,9 +1,10 @@
-﻿// Version compatibility level: 3.1.0
+﻿// Version compatibility level: 3.2.0
 namespace BoboBrowse.Net.Facets.Attribute
 {
     using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Facets.Impl;
     using BoboBrowse.Net.Support;
+    using BoboBrowse.Net.Util;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -42,7 +43,7 @@ namespace BoboBrowse.Net.Facets.Attribute
 
         public override void CollectAll()
         {
-            _count = _dataCache.Freqs;
+            _count = BigIntArray.FromArray(_dataCache.Freqs);
         }
 
         public override IEnumerable<BrowseFacet> GetFacets()

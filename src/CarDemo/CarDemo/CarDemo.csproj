@@ -39,13 +39,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BoboBrowse.Net, Version=3.1.0.0, Culture=neutral, PublicKeyToken=080dc64b6ee374ea, processorArchitecture=MSIL">
+    <Reference Include="BoboBrowse.Net, Version=3.2.0.0, Culture=neutral, PublicKeyToken=080dc64b6ee374ea, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\BoboBrowse.Net.3.1.0-beta00001\lib\net40\BoboBrowse.Net.dll</HintPath>
+      <HintPath>..\packages\BoboBrowse.Net.3.2.0-beta00001\lib\net40\BoboBrowse.Net.dll</HintPath>
     </Reference>
-    <Reference Include="BoboBrowse.Net.Spring, Version=3.1.0.0, Culture=neutral, PublicKeyToken=080dc64b6ee374ea, processorArchitecture=MSIL">
+    <Reference Include="BoboBrowse.Net.Spring, Version=3.2.0.0, Culture=neutral, PublicKeyToken=080dc64b6ee374ea, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\BoboBrowse.Net.Spring.3.1.0-beta00001\lib\net40\BoboBrowse.Net.Spring.dll</HintPath>
+      <HintPath>..\packages\BoboBrowse.Net.Spring.3.2.0-beta00001\lib\net40\BoboBrowse.Net.Spring.dll</HintPath>
     </Reference>
     <Reference Include="C5, Version=2.2.5073.27396, Culture=neutral, PublicKeyToken=282361b99ded7e8e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -63,9 +63,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Lucene.Net.3.0.3\lib\NET40\Lucene.Net.dll</HintPath>
     </Reference>
-    <Reference Include="LuceneExt.Net, Version=3.1.0.0, Culture=neutral, PublicKeyToken=080dc64b6ee374ea, processorArchitecture=MSIL">
+    <Reference Include="LuceneExt.Net, Version=3.2.0.0, Culture=neutral, PublicKeyToken=080dc64b6ee374ea, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\BoboBrowse.Net.3.1.0-beta00001\lib\net40\LuceneExt.Net.dll</HintPath>
+      <HintPath>..\packages\BoboBrowse.Net.3.2.0-beta00001\lib\net40\LuceneExt.Net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Spring.Core">

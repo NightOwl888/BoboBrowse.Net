@@ -1,6 +1,7 @@
-﻿// Version compatibility level: 3.1.0
+﻿// Version compatibility level: 3.2.0
 namespace BoboBrowse.Net.Facets
 {
+    using BoboBrowse.Net.Util;
     using System;
     using System.Collections.Generic;
 
@@ -21,8 +22,8 @@ namespace BoboBrowse.Net.Facets
         string Name { get; }
 
         ///<summary>Returns an integer array representing the distribution function of a given facet.</summary>
-        ///<returns>integer array of count values representing distribution of the facet values.</returns>
-        int[] GetCountDistribution();
+        ///<returns><see cref="T:BoboBrowse.Net.Util.BigSegmentedArray"/> of count values representing distribution of the facet values.</returns>
+        BigSegmentedArray GetCountDistribution();
     }
 
     public static class FacetCountCollector_Fields

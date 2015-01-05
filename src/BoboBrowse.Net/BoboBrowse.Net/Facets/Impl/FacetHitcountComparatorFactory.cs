@@ -21,20 +21,21 @@
 //* please go to https://sourceforge.net/projects/bobo-browse/, or 
 //* send mail to owner@browseengine.com. 
 
-// Version compatibility level: 3.1.0
+// Version compatibility level: 3.2.0
 namespace BoboBrowse.Net.Facets.Impl
 {
+    using BoboBrowse.Net.Util;
     using System.Collections.Generic;
 
     public class FacetHitcountComparatorFactory : IComparatorFactory
     {
         private class FacetHitComparer : IComparer<int>
         {
-            internal int[] counts;
+            internal BigSegmentedArray counts;
 
             public virtual int Compare(int f1, int f2)
             {
-                int val = counts[f1] - counts[f2];
+                int val = counts.Get(f1) - counts.Get(f2);
                 if (val == 0)
                 {
                     val = f2 - f1;
@@ -43,7 +44,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public virtual IComparer<int> NewComparator(IFieldValueAccessor valueList, int[] counts)
+        public virtual IComparer<int> NewComparator(IFieldValueAccessor valueList, BigSegmentedArray counts)
         {
             return new FacetHitComparer { counts = counts };
         }

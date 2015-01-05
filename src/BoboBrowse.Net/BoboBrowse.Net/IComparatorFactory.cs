@@ -1,6 +1,7 @@
-﻿// Version compatibility level: 3.1.0
+﻿// Version compatibility level: 3.2.0
 namespace BoboBrowse.Net
 {
+    using BoboBrowse.Net.Util;
     using System.Collections.Generic;
 
     /// <summary>
@@ -13,7 +14,7 @@ namespace BoboBrowse.Net
         ///<param name="fieldValueAccessor"> accessor for field values </param>
         ///<param name="counts"> hit counts </param>
         ///<returns> Comparator instance </returns>
-        IComparer<int> NewComparator(IFieldValueAccessor fieldValueAccessor, int[] counts);
+        IComparer<int> NewComparator(IFieldValueAccessor fieldValueAccessor, BigSegmentedArray counts);
 
         ///<summary>Providers a Comparator. This is called when doing a merge across browses. </summary>
         ///<returns> Comparator instance </returns>

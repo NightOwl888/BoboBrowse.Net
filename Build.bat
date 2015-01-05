@@ -1,7 +1,7 @@
 @echo off
 GOTO endcommentblock
 :: -----------------------------------------------------------------------------------
-:: This file will build BoboBrowse.NET and package the Nuget builds.
+:: This file will build BoboBrowse.Net and package the Nuget builds.
 ::
 :: Syntax:
 ::   build[.bat] [<options>]

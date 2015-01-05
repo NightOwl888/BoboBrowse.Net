@@ -1,8 +1,9 @@
-﻿// Version compatibility level: 3.1.0
+﻿// Version compatibility level: 3.2.0
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Support;
+    using BoboBrowse.Net.Util;
     using Lucene.Net.Util;
     using System.Collections.Generic;
     using System.Linq;
@@ -13,7 +14,7 @@ namespace BoboBrowse.Net.Facets.Impl
         private readonly DefaultFacetCountCollector _subCollector;
         private readonly FacetSpec _ospec;
         private readonly IDictionary<string, string[]> _predefinedBuckets;
-        private int[] _collapsedCounts;
+        private BigSegmentedArray _collapsedCounts;
         private TermStringList _bucketValues;
         private readonly int _numdocs;
 
@@ -39,15 +40,15 @@ namespace BoboBrowse.Net.Facets.Impl
             _bucketValues.Seal();
         }
 
-        private int[] GetCollapsedCounts()
+        private BigSegmentedArray GetCollapsedCounts()
         {
             if (_collapsedCounts == null)
             {
-                _collapsedCounts = new int[_bucketValues.Count];
+                _collapsedCounts = new LazyBigIntArray(_bucketValues.Count);
                 FacetDataCache dataCache = _subCollector._dataCache;
                 ITermValueList subList = dataCache.ValArray;
-                int[] subcounts = _subCollector._count;
-                BitVector indexSet = new BitVector(subcounts.Length);
+                BigSegmentedArray subcounts = _subCollector._count;
+                BitVector indexSet = new BitVector(subcounts.Size());
                 int c = 0;
                 int i = 0;
                 foreach (string val in _bucketValues)
@@ -61,7 +62,7 @@ namespace BoboBrowse.Net.Facets.Impl
                             int index = subList.IndexOf(subVal);
                             if (index > 0)
                             {
-                                int subcount = subcounts[index];
+                                int subcount = subcounts.Get(index);
                                 count += subcount;
                                 if (!indexSet.Get(index))
                                 {
@@ -70,11 +71,11 @@ namespace BoboBrowse.Net.Facets.Impl
                                 }
                             }
                         }
-                        _collapsedCounts[i] = count;
+                        _collapsedCounts.Add(i, count);
                     }
                     i++;
                 }
-                _collapsedCounts[0] = (_numdocs - c);
+                _collapsedCounts.Add(0, (_numdocs - c));
             }
             return _collapsedCounts;
         }
@@ -83,7 +84,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// get the total count of all possible elements 
         /// </summary>
         /// <returns></returns>
-        public virtual int[] GetCountDistribution()
+        public virtual BigSegmentedArray GetCountDistribution()
         {
             return GetCollapsedCounts();
         }
@@ -106,9 +107,9 @@ namespace BoboBrowse.Net.Facets.Impl
                 return new BrowseFacet(bucketValue, 0);
             }
 
-            int[] counts = GetCollapsedCounts();
+            BigSegmentedArray counts = GetCollapsedCounts();
 
-            return new BrowseFacet(bucketValue, counts[index]);
+            return new BrowseFacet(bucketValue, counts.Get(index));
         }
 
         public virtual int GetFacetHitsCount(object value)
@@ -119,9 +120,9 @@ namespace BoboBrowse.Net.Facets.Impl
                 return 0;
             }
 
-            int[] counts = GetCollapsedCounts();
+            BigSegmentedArray counts = GetCollapsedCounts();
 
-            return counts[index];
+            return counts.Get(index);
         }
 
         public void Collect(int docid)
@@ -136,8 +137,8 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public virtual IEnumerable<BrowseFacet> GetFacets()
         {
-            int[] counts = GetCollapsedCounts();
-            return DefaultFacetCountCollector.GetFacets(_ospec, counts, counts.Length, _bucketValues);
+            BigSegmentedArray counts = GetCollapsedCounts();
+            return DefaultFacetCountCollector.GetFacets(_ospec, counts, counts.Size(), _bucketValues);
         }
 
         public virtual void Dispose()
@@ -155,8 +156,8 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public virtual FacetIterator Iterator()
         {
-            int[] counts = GetCollapsedCounts();
-            return new DefaultFacetIterator(_bucketValues, counts, counts.Length, true);
+            BigSegmentedArray counts = GetCollapsedCounts();
+            return new DefaultFacetIterator(_bucketValues, counts, counts.Size(), true);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿// Version compatibility level: 3.1.0
+﻿// Version compatibility level: 3.2.0
 namespace BoboBrowse.Net.Util
 {
     using BoboBrowse.Net.Support;
@@ -131,6 +131,27 @@ namespace BoboBrowse.Net.Util
         public override int MaxValue
         {
             get { return int.MaxValue; }
+        }
+
+        public static BigSegmentedArray FromArray(int[] original)
+        {
+            BigIntArray result = new BigIntArray(original.Length);
+            int i = 0;
+            foreach (int c in original)
+            {
+                result.Add(i++, c);
+            }
+            return result;
+        }
+
+        public static int[] ToArray(BigSegmentedArray original)
+        {
+            int[] result = new int[original.Size()];
+            for (int i = 0; i < original.Size(); i++)
+            {
+                result[i] = original.Get(i);
+            }
+            return result;
         }
     }
 }

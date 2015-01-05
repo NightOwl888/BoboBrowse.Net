@@ -23,7 +23,7 @@
 // * contact owner@browseengine.com.
 // */
 
-// Version compatibility level: 3.1.0
+// Version compatibility level: 3.2.0
 namespace BoboBrowse.Net.Util
 {
     using BoboBrowse.Net.Support;

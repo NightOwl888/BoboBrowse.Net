@@ -1,4 +1,4 @@
-﻿// Version compatibility level: 3.1.0
+﻿// Version compatibility level: 3.2.0
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
@@ -16,7 +16,7 @@ namespace BoboBrowse.Net.Facets.Impl
         private static ILog log = LogManager.GetLogger<PathFacetCountCollector>();
         private readonly BrowseSelection _sel;
         private readonly FacetSpec _ospec;
-        protected int[] _count;
+        protected BigSegmentedArray _count;
         private readonly string _name;
         private readonly string _sep;
         private readonly BigSegmentedArray _orderArray;
@@ -38,14 +38,14 @@ namespace BoboBrowse.Net.Facets.Impl
             _dataCache = dataCache;
             _sep = sep;
             _sepArray = sep.ToCharArray();
-            _count = new int[_dataCache.Freqs.Length];
-            log.Info(name + ": " + _count.Length);
+            _count = new LazyBigIntArray(_dataCache.Freqs.Length);
+            log.Info(name + ": " + _count.Size());
             _orderArray = _dataCache.OrderArray;
             _minHitCount = ospec.MinHitCount;
             _maxCount = ospec.MaxCount;
             if (_maxCount < 1)
             {
-                _maxCount = _count.Length;
+                _maxCount = _count.Size();
             }
             FacetSpec.FacetSortSpec sortOption = ospec.OrderBy;
             switch (sortOption)
@@ -61,7 +61,7 @@ namespace BoboBrowse.Net.Facets.Impl
             _patEnd = 0;
         }
 
-        public virtual int[] GetCountDistribution()
+        public virtual BigSegmentedArray GetCountDistribution()
         {
             return _count;
         }
@@ -73,12 +73,13 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public virtual void Collect(int docid)
         {
-            _count[_orderArray.Get(docid)]++;
+            int i = _orderArray.Get(docid);
+            _count.Add(i, _count.Get(i) + 1);
         }
 
         public virtual void CollectAll()
         {
-            _count = _dataCache.Freqs;
+            _count = BigIntArray.FromArray(_dataCache.Freqs);
         }
 
         public virtual BrowseFacet GetFacet(string @value)
@@ -212,14 +213,14 @@ namespace BoboBrowse.Net.Facets.Impl
 
             //string[] pathParts; // NOT USED
             StringBuilder buf = new StringBuilder();
-            for (int i = index; i < _count.Length; ++i)
+            for (int i = index; i < _count.Size(); ++i)
             {
-                if (_count[i] >= minCount)
+                if (_count.Get(i) >= minCount)
                 {
                     string path = _dataCache.ValArray.Get(i);
                     //if (path==null || path.equals(selectedPath)) continue;						
 
-                    int subCount = _count[i];
+                    int subCount = _count.Get(i);
 
                     // do not use Java split string in a loop !
                     //				string[] pathParts=path.split(_sep);
@@ -422,13 +423,13 @@ namespace BoboBrowse.Net.Facets.Impl
             string[] paths = _sel == null ? null : _sel.Values;
             if (paths == null || paths.Length == 0)
             {
-                finalList = new List<BrowseFacet>(GetFacetsForPath(null, depth, strict, int.MinValue, _count.Length));
+                finalList = new List<BrowseFacet>(GetFacetsForPath(null, depth, strict, int.MinValue, _count.Size()));
                 return new PathFacetIterator(finalList);
             }
 
             if (paths.Length == 1)
             {
-                finalList = new List<BrowseFacet>(GetFacetsForPath(paths[0], depth, strict, int.MinValue, _count.Length));
+                finalList = new List<BrowseFacet>(GetFacetsForPath(paths[0], depth, strict, int.MinValue, _count.Size()));
                 return new PathFacetIterator(finalList);
             }
 
@@ -436,7 +437,7 @@ namespace BoboBrowse.Net.Facets.Impl
             var iterList = new List<IEnumerator<BrowseFacet>>(paths.Length);
             foreach (string path in paths)
             {
-                var subList = GetFacetsForPath(path, depth, strict, int.MinValue, _count.Length);
+                var subList = GetFacetsForPath(path, depth, strict, int.MinValue, _count.Size());
                 if (subList.Count() > 0)
                 {
                     iterList.Add(subList.GetEnumerator());
