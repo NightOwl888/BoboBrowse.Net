@@ -107,7 +107,7 @@ namespace BoboBrowse.Net
         private BoboIndexReader NewIndexReader(bool readOnly)
         {
             IndexReader srcReader = IndexReader.Open(_indexDir, readOnly);
-            return BoboIndexReader.GetInstance(srcReader, this._fconf);
+            return BoboIndexReader.GetInstance(srcReader, this._fconf, true);
         }
 
         private BoboBrowser NewBrowser()
