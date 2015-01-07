@@ -190,7 +190,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public bool HasPredefinedRanges
+        public virtual bool HasPredefinedRanges
         {
             get { return (_predefinedRanges != null); }
         }
