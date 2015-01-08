@@ -45,12 +45,42 @@ namespace BoboBrowse.Net.Facets.Impl
             _miles = miles;
         }
 
+        /// <summary>
+        /// Data structure for GeoFacetHandler.
+        /// 
+        /// <list type="bullet">
+        ///     <item>
+        ///         <description>
+        ///             xValArray array, int of size m, each element is the x coordinate value of the 
+        ///             docid (actually BigFloatArray is used instead of int to avoid requiring large 
+        ///             chunks of consecutive heap allocation)
+        ///         </description>
+        ///     </item>
+        ///     <item>
+        ///         <description>
+        ///             yValArray array, int of size m, each element is the y coordinate value of the 
+        ///             docid (actually BigFloatArray is used instead of int to avoid requiring large 
+        ///             chunks of consecutive heap allocation)
+        ///         </description>
+        ///     </item>
+        ///     <item>
+        ///         <description>
+        ///             zValArray array, int of size m, each element is the z coordinate value of the 
+        ///             docid (actually BigFloatArray is used instead of int to avoid requiring large 
+        ///             chunks of consecutive heap allocation)
+        ///         </description>
+        ///     </item>
+        /// </list>
+        /// </summary>
         public class GeoFacetData
         {
             private BigFloatArray _xValArray;
             private BigFloatArray _yValArray;
             private BigFloatArray _zValArray;
 
+            /// <summary>
+            /// Initializes a new instance of <see cref="T:GeoFacetData"/>.
+            /// </summary>
             public GeoFacetData()
             {
                 _xValArray = null;
@@ -58,6 +88,24 @@ namespace BoboBrowse.Net.Facets.Impl
                 _zValArray = null;
             }
 
+            /// <summary>
+            /// Initializes a new instance of <see cref="T:GeoFacetData"/>.
+            /// </summary>
+            /// <param name="xvals">
+            /// xValArray array, int of size m, each element is the x coordinate value of the 
+            /// docid (actually BigFloatArray is used instead of int to avoid requiring large 
+            /// chunks of consecutive heap allocation)
+            /// </param>
+            /// <param name="yvals">
+            /// yValArray array, int of size m, each element is the y coordinate value of the 
+            /// docid (actually BigFloatArray is used instead of int to avoid requiring large 
+            /// chunks of consecutive heap allocation)
+            /// </param>
+            /// <param name="zvals">
+            /// zValArray array, int of size m, each element is the z coordinate value of the 
+            /// docid (actually BigFloatArray is used instead of int to avoid requiring large 
+            /// chunks of consecutive heap allocation)
+            /// </param>
             public GeoFacetData(BigFloatArray xvals, BigFloatArray yvals, BigFloatArray zvals)
             {
                 _xValArray = xvals;
@@ -65,6 +113,11 @@ namespace BoboBrowse.Net.Facets.Impl
                 _zValArray = zvals;
             }
 
+            /// <summary>
+            /// Static constructor for BigFloatArray.
+            /// </summary>
+            /// <param name="maxDoc"></param>
+            /// <returns></returns>
             public static BigFloatArray NewInstance(int maxDoc)
             {
                 BigFloatArray array = new BigFloatArray(maxDoc);

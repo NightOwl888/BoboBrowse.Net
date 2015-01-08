@@ -70,8 +70,17 @@ namespace BoboBrowse.Net.Facets
     public class FacetDataNone
     {
         //private static long serialVersionUID = 1L; // NOT USED
-        public static FacetDataNone instance = new FacetDataNone();
+        private readonly static FacetDataNone instance = new FacetDataNone();
         private FacetDataNone() { }
+
+        /// <summary>
+        /// Added in .NET version as an accessor to the instance static field.
+        /// </summary>
+        /// <returns></returns>
+        public static FacetDataNone Instance
+        {
+            get { return instance; }
+        }
     }
 
     public abstract class FacetHandler<D> : ICloneable, IFacetHandler
@@ -79,7 +88,7 @@ namespace BoboBrowse.Net.Facets
         protected readonly string _name;
         private readonly IEnumerable<string> _dependsOn;
         // original was <string, FacetHandler<?>>
-        private readonly Dictionary<string, IFacetHandler> _dependedFacetHandlers;
+        private readonly IDictionary<string, IFacetHandler> _dependedFacetHandlers;
         private TermCountSize _termCountSize;
 
         /// <summary>
@@ -194,7 +203,7 @@ namespace BoboBrowse.Net.Facets
                     filter = BuildRandomAccessAndFilter(selections, prop);
                     if (filter == null)
                     {
-                        filter = EmptyFilter.GetInstance();
+                        filter = EmptyFilter.Instance;
                     }
                 }
                 else
@@ -202,7 +211,7 @@ namespace BoboBrowse.Net.Facets
                     filter = BuildRandomAccessOrFilter(selections, prop, false);
                     if (filter == null)
                     {
-                        return EmptyFilter.GetInstance();
+                        return EmptyFilter.Instance;
                     }
                 }
             }
@@ -240,7 +249,7 @@ namespace BoboBrowse.Net.Facets
                 }
                 else
                 {
-                    return EmptyFilter.GetInstance();
+                    return EmptyFilter.Instance;
                 }
             }
 
@@ -265,7 +274,7 @@ namespace BoboBrowse.Net.Facets
             RandomAccessFilter finalFilter;
             if (filterList.Count == 0)
             {
-                finalFilter = EmptyFilter.GetInstance();
+                finalFilter = EmptyFilter.Instance;
             }
             else
             {

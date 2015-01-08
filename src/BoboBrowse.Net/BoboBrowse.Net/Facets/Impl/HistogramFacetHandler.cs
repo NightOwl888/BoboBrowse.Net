@@ -63,7 +63,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     throw new NotSupportedException("underlying range facet handler should not have the predefined ranges");
                 }
             }
-            return FacetDataNone.instance;
+            return FacetDataNone.Instance;
         }
 
         public override DocComparatorSource GetDocComparatorSource()

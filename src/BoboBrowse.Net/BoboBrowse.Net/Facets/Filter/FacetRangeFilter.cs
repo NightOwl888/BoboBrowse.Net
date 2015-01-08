@@ -78,7 +78,7 @@ namespace BoboBrowse.Net.Facets.Filter
             private readonly int _end;
             private readonly BigSegmentedArray _orderArray;
 
-            public FacetRangeDocIdSetIterator(int start, int end, FacetDataCache dataCache)
+            internal FacetRangeDocIdSetIterator(int start, int end, FacetDataCache dataCache)
             {
                 _start = start;
                 _end = end;
@@ -123,7 +123,7 @@ namespace BoboBrowse.Net.Facets.Filter
             private readonly int _end;
             private readonly BigNestedIntArray nestedArray;
 
-            public MultiFacetRangeDocIdSetIterator(int start, int end, MultiValueFacetDataCache dataCache)
+            internal MultiFacetRangeDocIdSetIterator(int start, int end, MultiValueFacetDataCache dataCache)
             {
                 _start = start;
                 _end = end;
@@ -160,13 +160,22 @@ namespace BoboBrowse.Net.Facets.Filter
 
         public class FacetRangeValueConverter : IFacetValueConverter
         {
-            public static FacetRangeValueConverter instance = new FacetRangeValueConverter();
+            private readonly static FacetRangeValueConverter instance = new FacetRangeValueConverter();
             private FacetRangeValueConverter()
             { }
 
             public virtual int[] Convert(FacetDataCache dataCache, string[] vals)
             {
                 return ConvertIndexes(dataCache, vals);
+            }
+
+            /// <summary>
+            /// Added in .NET version as an accessor to the instance static field.
+            /// </summary>
+            /// <returns></returns>
+            public static FacetRangeValueConverter Instance
+            {
+                get { return instance; }
             }
         }
 
@@ -309,12 +318,12 @@ namespace BoboBrowse.Net.Facets.Filter
     
             if (range[0] > range[1])
             {
-                return EmptyDocIdSet.GetInstance();
+                return EmptyDocIdSet.Instance;
             }
     
             if (range[0] == range[1] && range[0] < 0)
             {
-	            return EmptyDocIdSet.GetInstance();
+	            return EmptyDocIdSet.Instance;
             }
 
             int start = range[0];

@@ -200,7 +200,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return new MultiValueFacetCountCollectorSource(this, _name, sel, ospec);
         }
 
-        public class MultiValueFacetCountCollectorSource : FacetCountCollectorSource
+        private class MultiValueFacetCountCollectorSource : FacetCountCollectorSource
         {
             private readonly MultiValueFacetHandler _parent;
             private readonly string _name;
@@ -265,7 +265,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 }
                 else
                 {
-                    return EmptyFilter.GetInstance();
+                    return EmptyFilter.Instance;
                 }
             }
             if (filterList.Count == 1)
@@ -295,7 +295,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
             else
             {
-                filter = EmptyFilter.GetInstance();
+                filter = EmptyFilter.Instance;
             }
 
             if (isNot)
@@ -353,7 +353,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        private sealed class MultiValueFacetCountCollector : DefaultFacetCountCollector
+        public sealed class MultiValueFacetCountCollector : DefaultFacetCountCollector
         {
             private readonly new BigNestedIntArray _array;
 

@@ -44,7 +44,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return new FilteredRangeFacetCountCollectorSource(_innerHandler, _name, fspec, _predefinedRanges);
 		}
 
-        public class FilteredRangeFacetCountCollectorSource : FacetCountCollectorSource
+        private class FilteredRangeFacetCountCollectorSource : FacetCountCollectorSource
         {
             private readonly RangeFacetHandler _innerHandler;
             private readonly string _name;
@@ -86,7 +86,7 @@ namespace BoboBrowse.Net.Facets.Impl
 			if (handler is RangeFacetHandler)
 			{
 				_innerHandler = (RangeFacetHandler)handler;
-                return FacetDataNone.instance;
+                return FacetDataNone.Instance;
 			}
 			else
 			{

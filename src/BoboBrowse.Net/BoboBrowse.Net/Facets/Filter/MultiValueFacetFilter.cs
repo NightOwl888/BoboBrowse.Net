@@ -56,7 +56,7 @@ namespace BoboBrowse.Net.Facets.Filter
             return selectivity;
         }
 
-        private sealed class MultiValueFacetDocIdSetIterator : FacetFilter.FacetDocIdSetIterator
+        public sealed class MultiValueFacetDocIdSetIterator : FacetFilter.FacetDocIdSetIterator
         {
             private readonly BigNestedIntArray _nestedArray;
 
@@ -89,7 +89,7 @@ namespace BoboBrowse.Net.Facets.Filter
             int index = dataCache.ValArray.IndexOf(_val);
             if (index < 0)
             {
-                return EmptyDocIdSet.GetInstance();
+                return EmptyDocIdSet.Instance;
             }
             else
             {

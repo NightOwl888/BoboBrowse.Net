@@ -5,11 +5,21 @@ namespace BoboBrowse.Net.Facets.Data
 
     public class PrimitiveLongArrayWrapper
     {
-        public long[] data;
+        private long[] data;
 
         public PrimitiveLongArrayWrapper(long[] data)
         {
             this.data = data;
+        }
+
+        /// <summary>
+        /// Added in .NET version as an accessor to the data field.
+        /// </summary>
+        /// <returns></returns>
+        public virtual long[] Data
+        {
+            get { return data; }
+            set { data = value; }
         }
 
         public override bool Equals(object other)

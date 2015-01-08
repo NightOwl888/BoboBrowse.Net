@@ -10,7 +10,7 @@ namespace BoboBrowse.Net.Facets.Impl
     /// </summary>
     public class DefaultLongFacetIterator : LongFacetIterator
     {
-        public TermLongList _valList;
+        private readonly TermLongList _valList;
         private BigSegmentedArray _count;
         private int _countlength;
         private int _countLengthMinusOne;
@@ -27,6 +27,14 @@ namespace BoboBrowse.Net.Facets.Impl
                 _index++;
             _facet = TermLongList.VALUE_MISSING;
             count = 0;
+        }
+
+        /// <summary>
+        /// Added in .NET version as as an accessor to the _valList field.
+        /// </summary>
+        public virtual TermLongList ValList
+        {
+            get { return _valList; }
         }
 
         /// <summary>

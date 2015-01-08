@@ -132,7 +132,15 @@ namespace BoboBrowse.Net.Facets.Impl
             _countLength = _dataCache.Freqs.Length;
         }
 
-        internal virtual void ConvertFacets(BrowseFacet[] facets)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <remarks>
+        /// This method was internal in the original design, but made it
+        /// protected to make it easy to bring back the auto ranges feature if so desired.
+        /// </remarks>
+        /// <param name="facets"></param>
+        protected virtual void ConvertFacets(BrowseFacet[] facets)
         {
             int i = 0;
             foreach (BrowseFacet facet in facets)
@@ -146,8 +154,19 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <remarks>
+        /// This method was internal in the original design, but made it
+        /// protected to make it easy to bring back the auto ranges feature if so desired.
+        /// </remarks>
+        /// <param name="choices"></param>
+        /// <param name="max"></param>
+        /// <returns></returns>
         // this is really crappy, need to fix it
-        private BrowseFacet[] FoldChoices(BrowseFacet[] choices, int max)
+        protected BrowseFacet[] FoldChoices(BrowseFacet[] choices, int max)
         {
             if (max == 0 || choices.Length <= max)
                 return choices;

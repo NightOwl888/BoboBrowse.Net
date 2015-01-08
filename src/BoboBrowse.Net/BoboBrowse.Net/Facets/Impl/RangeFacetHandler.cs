@@ -148,7 +148,7 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             if (vals.Length > 1)
             {
-                return new BitSetFilter(new ValueConverterBitSetBuilder(FacetRangeFilter.FacetRangeValueConverter.instance, vals, isNot), new SimpleDataCacheBuilder(Name, _indexFieldName));
+                return new BitSetFilter(new ValueConverterBitSetBuilder(FacetRangeFilter.FacetRangeValueConverter.Instance, vals, isNot), new SimpleDataCacheBuilder(Name, _indexFieldName));
             }
             else
             {
@@ -168,7 +168,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return new RangeFacetHandlerFacetCountCollectorSource(this, _name, fspec, _predefinedRanges);
         }
 
-        public class RangeFacetHandlerFacetCountCollectorSource : FacetCountCollectorSource
+        private class RangeFacetHandlerFacetCountCollectorSource : FacetCountCollectorSource
         {
             private readonly RangeFacetHandler _parent;
             private readonly string _name;
@@ -211,7 +211,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return new RangeBoboDocScorer(dataCache, scoringFunctionFactory, boostList);
         }
 
-        public class RangeBoboDocScorer : BoboDocScorer
+        public sealed class RangeBoboDocScorer : BoboDocScorer
         {
             private readonly FacetDataCache _dataCache;
 

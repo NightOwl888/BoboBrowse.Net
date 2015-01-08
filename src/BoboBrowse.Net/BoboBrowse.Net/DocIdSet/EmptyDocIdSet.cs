@@ -28,7 +28,7 @@ namespace BoboBrowse.Net.DocIdSet
 
     public sealed class EmptyDocIdSet : RandomAccessDocIdSet
     {
-        private static EmptyDocIdSet SINGLETON = new EmptyDocIdSet();
+        private readonly static EmptyDocIdSet SINGLETON = new EmptyDocIdSet();
 
         private class EmptyDocIdSetIterator : DocIdSetIterator
         {
@@ -54,9 +54,9 @@ namespace BoboBrowse.Net.DocIdSet
         {
         }
 
-        public static EmptyDocIdSet GetInstance()
+        public static EmptyDocIdSet Instance
         {
-            return SINGLETON;
+            get { return SINGLETON; }
         }
 
         public override DocIdSetIterator Iterator()

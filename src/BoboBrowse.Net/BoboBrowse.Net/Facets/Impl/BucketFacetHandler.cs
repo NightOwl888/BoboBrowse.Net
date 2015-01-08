@@ -47,7 +47,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
             string[] elems = _predefinedBuckets.Get(bucketString);
 
-            if (elems == null || elems.Length == 0) return EmptyFilter.GetInstance();
+            if (elems == null || elems.Length == 0) return EmptyFilter.Instance;
             if (elems.Length == 1) return dependOnFacetHandler.BuildRandomAccessFilter(elems[0], prop);
             return dependOnFacetHandler.BuildRandomAccessOrFilter(elems, prop, false);
         }
@@ -61,10 +61,10 @@ namespace BoboBrowse.Net.Facets.Impl
             {
                 string[] vals = _predefinedBuckets.Get(bucketString);
                 RandomAccessFilter filter = dependOnFacetHandler.BuildRandomAccessOrFilter(vals, prop, false);
-                if (filter == EmptyFilter.GetInstance()) return EmptyFilter.GetInstance();
+                if (filter == EmptyFilter.Instance) return EmptyFilter.Instance;
                 filterList.Add(filter);
             }
-            if (filterList.Count == 0) return EmptyFilter.GetInstance();
+            if (filterList.Count == 0) return EmptyFilter.Instance;
             if (filterList.Count == 1) return filterList[0];
             return new RandomAccessAndFilter(filterList);
         }
@@ -106,7 +106,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 }
                 else
                 {
-                    return EmptyFilter.GetInstance();
+                    return EmptyFilter.Instance;
                 }
             }
         }
@@ -124,7 +124,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return new BucketFacetCountCollectorSource(_name, sel, fspec, _predefinedBuckets, dependOnFacetHandler);
         }
 
-        public class BucketFacetCountCollectorSource : FacetCountCollectorSource
+        private class BucketFacetCountCollectorSource : FacetCountCollectorSource
         {
             private readonly string _name;
             private readonly BrowseSelection _sel;
@@ -157,7 +157,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override FacetDataNone Load(BoboIndexReader reader)
         {
-            return FacetDataNone.instance;
+            return FacetDataNone.Instance;
         }
     }
 }

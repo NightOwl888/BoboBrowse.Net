@@ -13,8 +13,8 @@ namespace BoboBrowse.Net.Facets.Impl
     ///</summary>
     public abstract class DynamicRangeFacetHandler : RuntimeFacetHandler<FacetDataNone>
     {
-        protected internal readonly string _dataFacetName;
-        protected internal RangeFacetHandler _dataFacetHandler;
+        protected readonly string _dataFacetName;
+        protected RangeFacetHandler _dataFacetHandler;
 
         public DynamicRangeFacetHandler(string name, string dataFacetName)
             : base(name, new string[] { dataFacetName })
@@ -101,7 +101,7 @@ namespace BoboBrowse.Net.Facets.Impl
         public override FacetDataNone Load(BoboIndexReader reader)
         {
             _dataFacetHandler = (RangeFacetHandler)GetDependedFacetHandler(_dataFacetName);
-            return FacetDataNone.instance;
+            return FacetDataNone.Instance;
         }
 
         private class DynamicRangeFacetCountCollector : RangeFacetCountCollector

@@ -31,14 +31,14 @@ namespace BoboBrowse.Net.Facets.Impl
     public abstract class DefaultFacetCountCollector : IFacetCountCollector
     {
         private static ILog log = LogManager.GetLogger(typeof(DefaultFacetCountCollector));
+        protected readonly FacetSpec _ospec;
+        protected BigSegmentedArray _count;
 
-        protected internal readonly FacetSpec _ospec;
-        protected internal BigSegmentedArray _count;
-        protected internal int _countlength;
-        protected internal readonly FacetDataCache _dataCache;
+        protected int _countlength;
+        protected readonly FacetDataCache _dataCache;
         private readonly string _name;
-        protected internal readonly BrowseSelection _sel;
-        protected internal readonly BigSegmentedArray _array;
+        protected readonly BrowseSelection _sel;
+        protected readonly BigSegmentedArray _array;
         private int _docBase;
         // NOTE: Removed memory manager implementation
         //protected readonly List<BigSegmentedArray> intarraylist = new List<BigSegmentedArray>();
@@ -68,6 +68,30 @@ namespace BoboBrowse.Net.Facets.Impl
 
             _array = _dataCache.OrderArray;
             _docBase = docBase;
+        }
+
+        /// <summary>
+        /// Added in .NET version as an accessor to the _count field.
+        /// </summary>
+        public virtual BigSegmentedArray Count
+        {
+            get { return _count; }
+        }
+
+        /// <summary>
+        /// Added in .NET version as an accessor to the _dataCache field.
+        /// </summary>
+        public virtual FacetDataCache DataCache
+        {
+            get { return _dataCache; }
+        }
+
+        /// <summary>
+        /// Added in .NET version as an accessor to the _countLength field.
+        /// </summary>
+        public virtual int CountLength
+        {
+            get { return _countlength; }
         }
 
         public virtual string Name

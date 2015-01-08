@@ -12,11 +12,20 @@ namespace BoboBrowse.Net.Facets.Data
     {
         //private static long serialVersionUID = 1L; // NOT USED
 
-        public readonly BigNestedIntArray _weightArray;
+        protected readonly BigNestedIntArray _weightArray;
 
         public MultiValueWithWeightFacetDataCache()
         {
             _weightArray = new BigNestedIntArray();
+        }
+
+        /// <summary>
+        /// Added in .NET version as an accessor to the _weightArray field.
+        /// </summary>
+        /// <returns></returns>
+        public virtual BigNestedIntArray WeightArray
+        {
+            get { return _weightArray; }
         }
 
         public override void Load(string fieldName, IndexReader reader, TermListFactory listFactory, BoboIndexReader.WorkArea workArea)

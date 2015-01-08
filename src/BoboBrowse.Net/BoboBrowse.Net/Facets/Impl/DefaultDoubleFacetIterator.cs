@@ -10,7 +10,7 @@ namespace BoboBrowse.Net.Facets.Impl
     /// </summary>
     public class DefaultDoubleFacetIterator : DoubleFacetIterator
     {
-        public TermDoubleList _valList;
+        private readonly TermDoubleList _valList;
         private BigSegmentedArray _count;
         private int _countlength;
         private int _countLengthMinusOne;
@@ -27,6 +27,14 @@ namespace BoboBrowse.Net.Facets.Impl
                 _index++;
             _facet = TermDoubleList.VALUE_MISSING;
             count = 0;
+        }
+
+        /// <summary>
+        /// Added in .NET version as as an accessor to the _valList field.
+        /// </summary>
+        public virtual TermDoubleList ValList
+        {
+            get { return _valList; }
         }
 
         /// <summary>

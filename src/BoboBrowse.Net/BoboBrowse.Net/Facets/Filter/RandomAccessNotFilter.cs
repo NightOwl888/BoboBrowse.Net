@@ -32,7 +32,7 @@ namespace BoboBrowse.Net.Facets.Filter
     {
         //private static long serialVersionUID = 1L; // NOT USED
 
-        protected internal readonly RandomAccessFilter _innerFilter;
+        protected readonly RandomAccessFilter _innerFilter;
 
         public RandomAccessNotFilter(RandomAccessFilter innerFilter)
         {

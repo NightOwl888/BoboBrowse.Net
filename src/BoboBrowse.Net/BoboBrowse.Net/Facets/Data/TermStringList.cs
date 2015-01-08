@@ -6,8 +6,8 @@ namespace BoboBrowse.Net.Facets.Data
 
     public class TermStringList : TermValueList<string>
     {
-        public string sanity = null;
-        public bool withDummy = true;
+        private string sanity = null;
+        private bool withDummy = true;
 
         public TermStringList(int capacity)
             : base(capacity)

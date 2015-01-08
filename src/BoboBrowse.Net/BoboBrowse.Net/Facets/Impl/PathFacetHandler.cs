@@ -246,7 +246,7 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             if (vals.Length > 1)
             {
-                return EmptyFilter.GetInstance();
+                return EmptyFilter.Instance;
             }
             else
             {
@@ -257,7 +257,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 }
                 else
                 {
-                    return EmptyFilter.GetInstance();
+                    return EmptyFilter.Instance;
                 }
             }
         }
@@ -286,7 +286,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     }
                     else
                     {
-                        return EmptyFilter.GetInstance();
+                        return EmptyFilter.Instance;
                     }
                 }
             }
@@ -308,7 +308,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return new PathFacetHandlerFacetCountCollectorSource(this, _name, _separator, sel, fspec, _multiValue);
         }
 
-        public class PathFacetHandlerFacetCountCollectorSource : FacetCountCollectorSource
+        private class PathFacetHandlerFacetCountCollectorSource : FacetCountCollectorSource
         {
             private readonly PathFacetHandler _parent;
             private readonly string _name;

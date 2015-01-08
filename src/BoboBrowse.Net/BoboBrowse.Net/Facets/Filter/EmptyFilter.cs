@@ -42,12 +42,12 @@ namespace BoboBrowse.Net.Facets.Filter
 
         public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboIndexReader reader)
         {
-            return EmptyDocIdSet.GetInstance();
+            return EmptyDocIdSet.Instance;
         }
 
-        public static EmptyFilter GetInstance()
+        public static EmptyFilter Instance
         {
-            return instance;
+            get { return instance; }
         }
     }
 }

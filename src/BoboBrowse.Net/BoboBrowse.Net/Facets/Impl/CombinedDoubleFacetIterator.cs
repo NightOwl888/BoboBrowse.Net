@@ -12,15 +12,40 @@ namespace BoboBrowse.Net.Facets.Impl
     {
         public class DoubleIteratorNode
         {
-            public DoubleFacetIterator _iterator;
-            public double _curFacet;
-            public int _curFacetCount;
+            private readonly DoubleFacetIterator _iterator;
+            protected double _curFacet;
+            protected int _curFacetCount;
 
             public DoubleIteratorNode(DoubleFacetIterator iterator)
             {
                 _iterator = iterator;
                 _curFacet = TermDoubleList.VALUE_MISSING;
                 _curFacetCount = 0;
+            }
+
+            /// <summary>
+            /// Added in .NET version as an accessor to the _iterator field.
+            /// </summary>
+            /// <returns></returns>
+            public virtual DoubleFacetIterator Iterator()
+            {
+                return _iterator;
+            }
+
+            /// <summary>
+            /// Added in .NET version as an accessor to the _curFacet field.
+            /// </summary>
+            public virtual double CurFacet
+            {
+                get { return _curFacet; }
+            }
+
+            /// <summary>
+            /// Added in .NET version as an accessor to the _curFacetCount field.
+            /// </summary>
+            public virtual int CurFacetCount
+            {
+                get { return _curFacetCount; }
             }
 
             public virtual bool Fetch(int minHits)
@@ -129,18 +154,18 @@ namespace BoboBrowse.Net.Facets.Impl
 
             DoubleIteratorNode node = _queue.Top();
 
-            _facet = node._curFacet;
+            _facet = node.CurFacet;
             double next = TermDoubleList.VALUE_MISSING;
             count = 0;
             while (HasNext())
             {
                 node = _queue.Top();
-                next = node._curFacet;
+                next = node.CurFacet;
                 if ((next != TermDoubleList.VALUE_MISSING) && (next != _facet))
                 {
                     return Format(_facet);
                 }
-                count += node._curFacetCount;
+                count += node.CurFacetCount;
                 if (node.Fetch(1))
                     _queue.UpdateTop();
                 else
@@ -166,8 +191,8 @@ namespace BoboBrowse.Net.Facets.Impl
             }
 
             DoubleIteratorNode node = _queue.Top();
-            _facet = node._curFacet;
-            count = node._curFacetCount;
+            _facet = node.CurFacet;
+            count = node.CurFacetCount;
             while (true)
             {
                 if (node.Fetch(minHits))
@@ -193,7 +218,7 @@ namespace BoboBrowse.Net.Facets.Impl
                         break;
                     }
                 }
-                double next = node._curFacet;
+                double next = node.CurFacet;
                 if (next != _facet)
                 {
                     // check if this facet obeys the minHits
@@ -201,11 +226,11 @@ namespace BoboBrowse.Net.Facets.Impl
                         break;
                     // else, continue iterating to the next facet
                     _facet = next;
-                    count = node._curFacetCount;
+                    count = node.CurFacetCount;
                 }
                 else
                 {
-                    count += node._curFacetCount;
+                    count += node.CurFacetCount;
                 }
             }
             return Format(_facet);
@@ -280,7 +305,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     Put(element);
                     return null;
                 }
-                else if (size > 0 && !(element._curFacet < heap[1]._curFacet))
+                else if (size > 0 && !(element.CurFacet < heap[1].CurFacet))
                 {
                     DoubleIteratorNode ret = heap[1];
                     heap[1] = element;
@@ -363,7 +388,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 int i = size;
                 DoubleIteratorNode node = heap[i]; // save bottom node
                 int j = (int)(((uint)i) >> 1);
-                while (j > 0 && (node._curFacet < heap[j]._curFacet))
+                while (j > 0 && (node.CurFacet < heap[j].CurFacet))
                 {
                     heap[i] = heap[j]; // shift parents down
                     i = j;
@@ -378,17 +403,17 @@ namespace BoboBrowse.Net.Facets.Impl
                 DoubleIteratorNode node = heap[i]; // save top node
                 int j = i << 1; // find smaller child
                 int k = j + 1;
-                if (k <= size && (heap[k]._curFacet < heap[j]._curFacet))
+                if (k <= size && (heap[k].CurFacet < heap[j].CurFacet))
                 {
                     j = k;
                 }
-                while (j <= size && (heap[j]._curFacet < node._curFacet))
+                while (j <= size && (heap[j].CurFacet < node.CurFacet))
                 {
                     heap[i] = heap[j]; // shift up child
                     i = j;
                     j = i << 1;
                     k = j + 1;
-                    if (k <= size && (heap[k]._curFacet < heap[j]._curFacet))
+                    if (k <= size && (heap[k].CurFacet < heap[j].CurFacet))
                     {
                         j = k;
                     }
@@ -404,18 +429,18 @@ namespace BoboBrowse.Net.Facets.Impl
 
             DoubleIteratorNode node = _queue.Top();
 
-            _facet = node._curFacet;
+            _facet = node.CurFacet;
             double next = TermDoubleList.VALUE_MISSING;
             count = 0;
             while (HasNext())
             {
                 node = _queue.Top();
-                next = node._curFacet;
+                next = node.CurFacet;
                 if ((next != TermDoubleList.VALUE_MISSING) && (next != _facet))
                 {
                     return _facet;
                 }
-                count += node._curFacetCount;
+                count += node.CurFacetCount;
                 if (node.Fetch(1))
                     _queue.UpdateTop();
                 else
@@ -435,8 +460,8 @@ namespace BoboBrowse.Net.Facets.Impl
             }
 
             DoubleIteratorNode node = _queue.Top();
-            _facet = node._curFacet;
-            count = node._curFacetCount;
+            _facet = node.CurFacet;
+            count = node.CurFacetCount;
             while (true)
             {
                 if (node.Fetch(minHits))
@@ -461,7 +486,7 @@ namespace BoboBrowse.Net.Facets.Impl
                         break;
                     }
                 }
-                double next = node._curFacet;
+                double next = node.CurFacet;
                 if (next != _facet)
                 {
                     // check if this facet obeys the minHits
@@ -469,11 +494,11 @@ namespace BoboBrowse.Net.Facets.Impl
                         break;
                     // else, continue iterating to the next facet
                     _facet = next;
-                    count = node._curFacetCount;
+                    count = node.CurFacetCount;
                 }
                 else
                 {
-                    count += node._curFacetCount;
+                    count += node.CurFacetCount;
                 }
             }
             return _facet;
