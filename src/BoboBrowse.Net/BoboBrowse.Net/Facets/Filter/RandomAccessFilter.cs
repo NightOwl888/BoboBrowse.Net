@@ -28,7 +28,7 @@ namespace BoboBrowse.Net.Facets.Filter
             }
             else
             {
-                throw new ArgumentException("reader not instance of BoboIndexReader");
+                throw new ArgumentException("reader not instance of " + typeof(BoboIndexReader));
             }
         }
 

@@ -134,7 +134,7 @@ namespace BoboBrowse.Net.Facets.Filter
 
         private class EmptyRandomAccessDocIdSet : RandomAccessDocIdSet
         {
-            private DocIdSet empty = EmptyDocIdSet.GetInstance();
+            private DocIdSet empty = EmptyDocIdSet.Instance;
 
             public override bool Get(int docId)
             {

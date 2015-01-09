@@ -119,7 +119,7 @@ namespace BoboBrowse.Net.Facets.Filter
 
             if (indexes.Length == 0)
             {
-                return EmptyDocIdSet.GetInstance();
+                return EmptyDocIdSet.Instance;
             }
             else
             {

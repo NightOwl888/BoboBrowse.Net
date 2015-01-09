@@ -10,7 +10,7 @@ namespace BoboBrowse.Net.Facets.Impl
     /// </summary>
     public class DefaultShortFacetIterator : ShortFacetIterator
     {
-        public TermShortList _valList;
+        private readonly TermShortList _valList;
         private BigSegmentedArray _count;
         private int _countlength;
         private int _countLengthMinusOne;
@@ -27,6 +27,14 @@ namespace BoboBrowse.Net.Facets.Impl
                 _index++;
             _facet = TermShortList.VALUE_MISSING;
             count = 0;
+        }
+
+        /// <summary>
+        /// Added in .NET version as as an accessor to the _valList field.
+        /// </summary>
+        public virtual TermShortList ValList
+        {
+            get { return _valList; }
         }
 
         /// <summary>

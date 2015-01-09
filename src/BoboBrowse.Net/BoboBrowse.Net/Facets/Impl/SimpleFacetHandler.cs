@@ -40,6 +40,7 @@ namespace BoboBrowse.Net.Facets.Impl
     public class SimpleFacetHandler : FacetHandler<FacetDataCache>, IFacetScoreable
     {
         private static ILog logger = LogManager.GetLogger(typeof(SimpleFacetHandler));
+
         protected TermListFactory _termListFactory;
         protected readonly string _indexFieldName;
 
@@ -150,7 +151,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return af;
         }
 
-        public class SimpleFacetHandlerFacetDataCacheBuilder : IFacetDataCacheBuilder
+        private class SimpleFacetHandlerFacetDataCacheBuilder : IFacetDataCacheBuilder
         {
             private readonly Func<BoboIndexReader, FacetDataCache> getFacetData;
             private readonly string _name;
@@ -183,7 +184,7 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             if (vals.Length > 1)
             {
-                return EmptyFilter.GetInstance();
+                return EmptyFilter.Instance;
             }
             else
             {
@@ -210,7 +211,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
             else
             {
-                filter = EmptyFilter.GetInstance();
+                filter = EmptyFilter.Instance;
             }
 
             if (isNot)

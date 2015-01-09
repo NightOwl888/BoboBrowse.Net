@@ -77,7 +77,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override RandomAccessFilter BuildRandomAccessFilter(string value, Properties selectionProperty)
         {
-            RandomAccessFilter retFilter = EmptyFilter.GetInstance();
+            RandomAccessFilter retFilter = EmptyFilter.Instance;
             ComboSelection comboSel = ComboSelection.Parse(value, _separator);
             if (comboSel != null)
             {
@@ -121,18 +121,18 @@ namespace BoboBrowse.Net.Facets.Impl
                 IFacetHandler facetHandler = GetDependedFacetHandler(name);
                 if (facetHandler == null)
                 {
-                    return EmptyFilter.GetInstance();
+                    return EmptyFilter.Instance;
                 }
                 IList<string> selVals = entry.Value;
-                if (selVals == null || selVals.Count == 0) return EmptyFilter.GetInstance();
+                if (selVals == null || selVals.Count == 0) return EmptyFilter.Instance;
                 RandomAccessFilter f = facetHandler.BuildRandomAccessAndFilter(selVals.ToArray(), prop);
-                if (f == EmptyFilter.GetInstance()) return f;
+                if (f == EmptyFilter.Instance) return f;
                 filterList.Add(f);
             }
 
             if (filterList.Count == 0)
             {
-                return EmptyFilter.GetInstance();
+                return EmptyFilter.Instance;
             }
             if (filterList.Count == 1)
             {
@@ -160,13 +160,13 @@ namespace BoboBrowse.Net.Facets.Impl
                     continue;
                 }
                 RandomAccessFilter f = facetHandler.BuildRandomAccessOrFilter(selVals.ToArray(), prop, isNot);
-                if (f == EmptyFilter.GetInstance()) continue;
+                if (f == EmptyFilter.Instance) continue;
                 filterList.Add(f);
             }
 
             if (filterList.Count == 0)
             {
-                return EmptyFilter.GetInstance();
+                return EmptyFilter.Instance;
             }
             if (filterList.Count == 1)
             {
@@ -230,7 +230,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override FacetDataNone Load(BoboIndexReader reader)
         {
-            return FacetDataNone.instance;
+            return FacetDataNone.Instance;
         }
     }
 }

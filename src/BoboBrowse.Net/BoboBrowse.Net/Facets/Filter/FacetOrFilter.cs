@@ -83,7 +83,7 @@ namespace BoboBrowse.Net.Facets.Filter
         {
             if (_vals.Length == 0)
             {
-                return EmptyDocIdSet.GetInstance();
+                return EmptyDocIdSet.Instance;
             }
             else
             {
@@ -134,11 +134,11 @@ namespace BoboBrowse.Net.Facets.Filter
 
         public class FacetOrDocIdSetIterator : DocIdSetIterator
         {
-            protected internal int _doc;
-            protected internal readonly FacetDataCache _dataCache;
-            protected internal int _maxID;
-            protected internal readonly OpenBitSet _bitset;
-            protected internal readonly BigSegmentedArray _orderArray;
+            protected int _doc;
+            protected readonly FacetDataCache _dataCache;
+            protected int _maxID;
+            protected readonly OpenBitSet _bitset;
+            protected readonly BigSegmentedArray _orderArray;
 
             public FacetOrDocIdSetIterator(FacetDataCache dataCache, OpenBitSet bitset)
             {

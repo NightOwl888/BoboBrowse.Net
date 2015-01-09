@@ -13,6 +13,25 @@ namespace BoboBrowse.Net.Facets.Impl
     using System.Text;
 
     /// <summary>
+    /// Used to filter documents based on distance metric – latitude and longitude. This is a 
+    /// dynamic facet handler that builds on top of two range facet handlers on two fields – 
+    /// latitude and longitude. The distance metric calculation in this facet handler is the 
+    /// delta of document’s latitude/longitude and the latitude/longitude values of the 
+    /// user’s point of interest.
+    /// 
+    /// Filters:
+    /// 
+    /// Given a term of the format "&lt;latitude, longitude, radius&gt;", we convert it to two 
+    /// ranges ‘– radius, latitude + radius’ and ‘– radius, longitude + radius’ and pass 
+    /// these two ranges to the two underlying range facet handlers.
+    /// 
+    /// FacetCountCollector:
+    /// 
+    /// A count array, int of size t, is created to store the hit count for each term, 
+    /// given a match docid, count[orderdocid] is incremented. Facets are created by 
+    /// grouping all elements in the term array with count >= minHitCount specified 
+    /// by the FacetSpec, into desired range facets of the format &lt;latitude, longitude, radius&gt;.
+    /// 
     /// author nnarkhed
     /// </summary>
     public class GeoSimpleFacetHandler : RuntimeFacetHandler<FacetDataNone>
@@ -199,7 +218,7 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             _latFacetHandler = (RangeFacetHandler)GetDependedFacetHandler(_latFacetName);
             _longFacetHandler = (RangeFacetHandler)GetDependedFacetHandler(_longFacetName);
-            return FacetDataNone.instance;
+            return FacetDataNone.Instance;
         }
 
         public override DocComparatorSource GetDocComparatorSource()
@@ -224,7 +243,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 return new GeoSimpleFacetHandlerDocComparator();
             }
 
-            public class GeoSimpleFacetHandlerDocComparator : DocComparator
+            private class GeoSimpleFacetHandlerDocComparator : DocComparator
             {
                 public override IComparable Value(ScoreDoc doc)
                 {

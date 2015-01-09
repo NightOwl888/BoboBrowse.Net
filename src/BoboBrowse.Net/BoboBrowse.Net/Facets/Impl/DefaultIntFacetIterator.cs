@@ -7,7 +7,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
     public class DefaultIntFacetIterator : IntFacetIterator
     {
-        public TermIntList _valList;
+        private readonly TermIntList _valList;
         private BigSegmentedArray _count;
         private int _countlength;
         private int _countLengthMinusOne;
@@ -24,6 +24,14 @@ namespace BoboBrowse.Net.Facets.Impl
                 _index++;
             _facet = TermIntList.VALUE_MISSING;
             count = 0;
+        }
+
+        /// <summary>
+        /// Added in .NET version as as an accessor to the _valList field.
+        /// </summary>
+        public virtual TermIntList ValList
+        {
+            get { return _valList; }
         }
 
         new public virtual string Facet

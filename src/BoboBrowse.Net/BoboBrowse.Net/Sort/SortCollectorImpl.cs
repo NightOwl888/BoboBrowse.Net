@@ -512,7 +512,7 @@ namespace BoboBrowse.Net.Sort
                                 }
                                 if (rawGroupValueType == 2)
                                 {
-                                    primitiveLongArrayWrapperTmp.data = (long[])rawGroupValue;
+                                    primitiveLongArrayWrapperTmp.Data = (long[])rawGroupValue;
                                     rawGroupValue = primitiveLongArrayWrapperTmp;
                                 }
 
@@ -526,7 +526,7 @@ namespace BoboBrowse.Net.Sort
                                         if (resList.Count >= _count)
                                             break;
                                     }
-                                    groupSet.Add(new PrimitiveLongArrayWrapper(primitiveLongArrayWrapperTmp.data));
+                                    groupSet.Add(new PrimitiveLongArrayWrapper(primitiveLongArrayWrapperTmp.Data));
                                 }
                             }
                         }

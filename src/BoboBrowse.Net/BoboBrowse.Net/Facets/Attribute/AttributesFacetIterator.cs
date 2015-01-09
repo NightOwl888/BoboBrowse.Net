@@ -7,12 +7,10 @@ namespace BoboBrowse.Net.Facets.Attribute
     public class AttributesFacetIterator : FacetIterator
     {
         private readonly IEnumerator<BrowseFacet> iterator;
-        private readonly IEnumerable<BrowseFacet> facets;
 
         public AttributesFacetIterator(IEnumerable<BrowseFacet> facets)
         {
             iterator = facets.GetEnumerator();
-            this.facets = facets;
         }
 
         public override bool HasNext()

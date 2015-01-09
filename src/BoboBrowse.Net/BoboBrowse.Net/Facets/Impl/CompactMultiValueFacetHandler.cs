@@ -99,7 +99,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 }
                 else
                 {
-                    return EmptyFilter.GetInstance();
+                    return EmptyFilter.Instance;
                 }
             }
             if (filterList.Count == 1)
@@ -117,7 +117,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
             else
             {
-                filter = EmptyFilter.GetInstance();
+                filter = EmptyFilter.Instance;
             }
             if (isNot)
             {
@@ -203,7 +203,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return new CompactMultiValueFacetCountCollectorSource(this.GetFacetData<FacetDataCache>, _name, sel, fspec);
         }
 
-        public class CompactMultiValueFacetCountCollectorSource : FacetCountCollectorSource
+        private class CompactMultiValueFacetCountCollectorSource : FacetCountCollectorSource
         {
             private readonly Func<BoboIndexReader, FacetDataCache> getFacetData;
             private readonly string _name;

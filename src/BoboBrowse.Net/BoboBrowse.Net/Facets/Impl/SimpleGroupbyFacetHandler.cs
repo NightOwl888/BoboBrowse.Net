@@ -134,7 +134,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return new GroupbyDocComparatorSource(_fieldsSet, _facetHandlers);
         }
 
-        public class GroupbyDocComparatorSource : DocComparatorSource
+        private class GroupbyDocComparatorSource : DocComparatorSource
         {
             private readonly IEnumerable<string> _fieldsSet;
             private readonly IEnumerable<SimpleFacetHandler> _facetHandlers;
@@ -171,7 +171,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 _facetHandlers.Add(sfh);
                 _facetHandlerMap.Add(name, sfh);
             }
-            return FacetDataNone.instance;
+            return FacetDataNone.Instance;
         }
 
         private class GroupbyDocComparator : DocComparator
@@ -244,7 +244,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 _lens = new int[_subcollectors.Length];
                 for (int i = 0; i < _subcollectors.Length; ++i)
                 {
-                    _lens[i] = _subcollectors[i]._countlength;
+                    _lens[i] = _subcollectors[i].CountLength;
                     totalLen *= _lens[i];
                 }
                 _countlength = totalLen;
@@ -260,7 +260,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 foreach (DefaultFacetCountCollector subcollector in _subcollectors)
                 {
                     segsize = segsize / _lens[i++];
-                    idx += (subcollector._dataCache.OrderArray.Get(docid) * segsize);
+                    idx += (subcollector.DataCache.OrderArray.Get(docid) * segsize);
                 }
                 _count.Add(idx, _count.Get(idx) + 1);
             }
@@ -298,11 +298,11 @@ namespace BoboBrowse.Net.Facets.Impl
                     {
                         buf.Append(_sep);
                     }
-                    int index = _subcollectors[i]._dataCache.ValArray.IndexOf(vals[i]);
-                    string facetName = _subcollectors[i]._dataCache.ValArray.Get(index);
+                    int index = _subcollectors[i].DataCache.ValArray.IndexOf(vals[i]);
+                    string facetName = _subcollectors[i].DataCache.ValArray.Get(index);
                     buf.Append(facetName);
 
-                    segLen /= _subcollectors[i]._countlength;
+                    segLen /= _subcollectors[i].CountLength;
                     startIdx += index * segLen;
                 }
 
@@ -325,8 +325,8 @@ namespace BoboBrowse.Net.Facets.Impl
 
                 for (int i = 0; i < vals.Length; ++i)
                 {
-                    int index = _subcollectors[i]._dataCache.ValArray.IndexOf(vals[i]);
-                    segLen /= _subcollectors[i]._countlength;
+                    int index = _subcollectors[i].DataCache.ValArray.IndexOf(vals[i]);
+                    segLen /= _subcollectors[i].CountLength;
                     startIdx += index * segLen;
                 }
 
@@ -351,7 +351,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     int adjusted = idx * len;
 
                     int bucket = adjusted / _countlength;
-                    buf.Append(_subcollectors[i]._dataCache.ValArray.Get(bucket));
+                    buf.Append(_subcollectors[i].DataCache.ValArray.Get(bucket));
                     idx = adjusted % _countlength;
                     i++;
                 }
@@ -366,7 +366,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 {
                     int adjusted = idx * len;
                     int bucket = adjusted / _countlength;
-                    retVal[i++] = _subcollectors[i]._dataCache.ValArray.GetRawValue(bucket);
+                    retVal[i++] = _subcollectors[i].DataCache.ValArray.GetRawValue(bucket);
                     idx = adjusted % _countlength;
                 }
                 return retVal;

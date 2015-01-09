@@ -39,7 +39,7 @@ namespace BoboBrowse.Net.Facets.Filter
             long count = openBitSet.Cardinality();
             if (count == 0)
             {
-                return EmptyDocIdSet.GetInstance();
+                return EmptyDocIdSet.Instance;
             }
             else
             {
@@ -49,7 +49,7 @@ namespace BoboBrowse.Net.Facets.Filter
             }
         }
 
-        public class BitSetRandomAccessDocIdSet : RandomAccessDocIdSet
+        private class BitSetRandomAccessDocIdSet : RandomAccessDocIdSet
         {
             private readonly bool _multi;
             private readonly MultiValueFacetDataCache _multiCache;

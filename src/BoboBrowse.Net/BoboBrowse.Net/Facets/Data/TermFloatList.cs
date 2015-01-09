@@ -2,13 +2,11 @@
 namespace BoboBrowse.Net.Facets.Data
 {
     using BoboBrowse.Net.Support;
-    using Common.Logging;
     using System;
     using System.Globalization;
 
     public class TermFloatList : TermNumberList<float>
     {
-        private static ILog logger = LogManager.GetLogger(typeof(TermFloatList));
         private float[] _elements;
         public const float VALUE_MISSING = float.MinValue;
 

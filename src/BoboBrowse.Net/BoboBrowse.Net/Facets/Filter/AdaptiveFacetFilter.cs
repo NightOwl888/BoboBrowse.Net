@@ -56,7 +56,7 @@ namespace BoboBrowse.Net.Facets.Filter
         public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboIndexReader reader)
         {
             RandomAccessDocIdSet innerDocSet = _facetFilter.GetRandomAccessDocIdSet(reader);
-            if (innerDocSet == EmptyDocIdSet.GetInstance())
+            if (innerDocSet == EmptyDocIdSet.Instance)
             {
                 return innerDocSet;
             }
@@ -79,7 +79,7 @@ namespace BoboBrowse.Net.Facets.Filter
 
             if (validVals.Count == 0)
             {
-                return EmptyDocIdSet.GetInstance();
+                return EmptyDocIdSet.Instance;
             }
 
             // takeComplement is only used to choose between TermListRandomAccessDocIdSet and innerDocSet
@@ -127,12 +127,12 @@ namespace BoboBrowse.Net.Facets.Filter
                     TermDocs td = reader.TermDocs(term);
                     if (td == null)
                     {
-                        return EmptyDocIdSet.GetInstance().Iterator();
+                        return EmptyDocIdSet.Instance.Iterator();
                     }
                     return new TermDocIdSetIterator(td);
                 }
 
-                public class TermDocIdSetIterator : DocIdSetIterator
+                private class TermDocIdSetIterator : DocIdSetIterator
                 {
                     private int _doc = -1;
                     private readonly TermDocs _td;
@@ -186,7 +186,7 @@ namespace BoboBrowse.Net.Facets.Filter
             {
                 if (_vals.Count() == 0)
                 {
-                    return EmptyDocIdSet.GetInstance().Iterator();
+                    return EmptyDocIdSet.Instance.Iterator();
                 }
                 if (_vals.Count() == 1)
                 {

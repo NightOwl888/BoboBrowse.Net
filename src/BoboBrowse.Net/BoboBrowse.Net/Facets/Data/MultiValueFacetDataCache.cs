@@ -38,8 +38,8 @@ namespace BoboBrowse.Net.Facets.Data
         //private static long serialVersionUID = 1L; // NOT USED
         private static ILog logger = LogManager.GetLogger(typeof(MultiValueFacetDataCache));
 
-        public readonly BigNestedIntArray _nestedArray;
-        private int _maxItems = BigNestedIntArray.MAX_ITEMS;
+        protected readonly BigNestedIntArray _nestedArray;
+        protected int _maxItems = BigNestedIntArray.MAX_ITEMS;
         protected bool _overflow = false;
 
         public MultiValueFacetDataCache()
