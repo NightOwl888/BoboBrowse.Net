@@ -332,7 +332,7 @@ namespace BoboBrowse.Net.Query.Scoring
             private readonly BoboDocScorer _scorer;
             private readonly FacetTermQuery _parent;
 
-            protected internal FacetTermScorer(FacetTermQuery parent, Similarity similarity, DocIdSetIterator docidsetIter, BoboDocScorer scorer)
+            public FacetTermScorer(FacetTermQuery parent, Similarity similarity, DocIdSetIterator docidsetIter, BoboDocScorer scorer)
                 : base(similarity)
             {
                 _parent = parent;

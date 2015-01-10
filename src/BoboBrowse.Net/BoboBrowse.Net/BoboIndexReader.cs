@@ -58,7 +58,7 @@ namespace BoboBrowse.Net
         protected WorkArea _workArea;
 
         protected IndexReader _srcReader;
-        internal readonly BoboIndexReader[] _subReaders = null;
+        protected readonly BoboIndexReader[] _subReaders = null;
         protected int[] _starts = null;
         private Directory _dir = null;
 
@@ -279,6 +279,13 @@ namespace BoboBrowse.Net
             return boboReader;
         }
 
+        /// <summary>
+        /// Added in .NET as an internal accessor to the _subReaders property.
+        /// </summary>
+        internal virtual BoboIndexReader[] SubReaders
+        {
+            get { return _subReaders; }
+        }
 
         public override long Version
         {

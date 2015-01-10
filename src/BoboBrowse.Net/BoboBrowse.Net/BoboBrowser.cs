@@ -45,7 +45,7 @@ namespace BoboBrowse.Net
 
         public static void GatherSubReaders(IList<BoboIndexReader> readerList, BoboIndexReader reader)
         {
-            BoboIndexReader[] subReaders = reader._subReaders;
+            BoboIndexReader[] subReaders = reader.SubReaders;
             if (subReaders == null)
             {
                 readerList.Add(reader);

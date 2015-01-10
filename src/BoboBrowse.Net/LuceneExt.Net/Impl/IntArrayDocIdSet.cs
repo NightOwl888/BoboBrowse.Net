@@ -37,7 +37,7 @@ namespace LuceneExt.Impl
             }
         }
 
-        protected internal virtual int BinarySearchForNearest(int val, int begin, int end)
+        protected virtual int BinarySearchForNearest(int val, int begin, int end)
         {
             int mid = (begin + end) / 2;
             int midval = array.Get(mid);
