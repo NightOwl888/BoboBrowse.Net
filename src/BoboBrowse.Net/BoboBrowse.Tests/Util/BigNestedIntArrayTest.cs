@@ -261,6 +261,7 @@ namespace BoboBrowse.Net.Util
         }
 
         [Test]
+        [Category("LongRunning")]
         public void TestMaxItems()
         {
             int maxId = 5000;
