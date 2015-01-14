@@ -97,11 +97,7 @@ namespace BoboBrowse.Net.Facets.Data
                     }
                     if (!string.IsNullOrEmpty(this.FormatString))
                     {
-                        if (this.FormatProvider != null)
-                        {
-                            return val.ToString(this.FormatString, this.FormatProvider);
-                        }
-                        return val.ToString(this.FormatString);
+                        return val.ToString(this.FormatString, this.FormatProvider);
                     }
                     return val.ToString();
                 }
