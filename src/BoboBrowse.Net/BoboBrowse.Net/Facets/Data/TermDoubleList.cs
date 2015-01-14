@@ -10,6 +10,7 @@ namespace BoboBrowse.Net.Facets.Data
     {
         private static ILog logger = LogManager.GetLogger(typeof(TermDoubleList));
         private double[] _elements;
+        private bool withDummy = true;
         public const double VALUE_MISSING = double.MinValue;
 
         private double Parse(string s)
@@ -63,10 +64,17 @@ namespace BoboBrowse.Net.Facets.Data
             : base(capacity, formatString, formatProvider)
         { }
 
-        
+
         public override void Add(string value)
         {
-            _innerList.Add(Parse(value));
+            if (_innerList.Count == 0 && value != null) withDummy = false; // the first value added is not null
+            double item = Parse(value);
+            _innerList.Add(item);
+        }
+
+        public override void Clear()
+        {
+            base.Clear();
         }
 
         public override string Get(int index)
@@ -81,13 +89,13 @@ namespace BoboBrowse.Net.Facets.Data
                 if (index < _innerList.Count)
                 {
                     double val = _elements[index];
+                    if (withDummy && index == 0)
+                    {
+                        val = 0;
+                    }
                     if (!string.IsNullOrEmpty(this.FormatString))
                     {
-                        if (this.FormatProvider != null)
-                        {
-                            return val.ToString(this.FormatString, this.FormatProvider);
-                        }
-                        return val.ToString(this.FormatString);
+                        return val.ToString(this.FormatString, this.FormatProvider);
                     }
                     return val.ToString();
                 }
@@ -109,28 +117,74 @@ namespace BoboBrowse.Net.Facets.Data
 
         public override int IndexOf(object o)
         {
-            double val;
-            if (o is string)
-                val = Parse((string)o);
+            if (withDummy)
+            {
+                if (o == null) return -1;
+                double val;
+                if (o is string)
+                    val = Parse((string)o);
+                else
+                    val = (int)o;
+                return Array.BinarySearch(_elements, 1, _elements.Length - 1, val);
+            }
             else
-                val = (double)o;
-            return _innerList.BinarySearch(val);
+            {
+                double val;
+                if (o is string)
+                    val = Parse((string)o);
+                else
+                    val = (int)o;
+                return Array.BinarySearch(_elements, val);
+            }
         }
 
-        public virtual int IndexOf(double val)
+        public virtual int IndexOf(double value)
         {
-            return Array.BinarySearch(_elements, val);
+            if (withDummy)
+                return Array.BinarySearch(_elements, 1, _elements.Length - 1, value);
+            else
+                return Array.BinarySearch(_elements, value);
+        }
+
+        public virtual int IndexOfWithOffset(object value, int offset)
+        {
+            if (withDummy)
+            {
+                if (value == null || offset >= _elements.Length)
+                    return -1;
+                double val = Parse(Convert.ToString(value));
+                return Array.BinarySearch(_elements, offset, _elements.Length, val);
+            }
+            else
+            {
+                double val = Parse(Convert.ToString(value));
+                return Array.BinarySearch(_elements, offset, _elements.Length, val);
+            }
+        }
+
+        public virtual int IndexOfWithOffset(int value, int offset)
+        {
+            if (withDummy)
+            {
+                if (offset >= _elements.Length)
+                    return -1;
+                return Array.BinarySearch(_elements, offset, _elements.Length - offset, value);
+            }
+            else
+            {
+                return Array.BinarySearch(_elements, offset, _elements.Length - offset, value);
+            }
         }
 
         public override void Seal()
         {
             _innerList.TrimExcess();
             _elements = _innerList.ToArray();
-            int negativeIndexCheck = 1;
+            int negativeIndexCheck = withDummy ? 1 : 0;
             //reverse negative elements, because string order and numeric orders are completely opposite
             if (_elements.Length > negativeIndexCheck && _elements[negativeIndexCheck] < 0)
             {
-                int endPosition = IndexOfWithType((short)0);
+                int endPosition = IndexOfWithType(0);
                 if (endPosition < 0)
                 {
                     endPosition = -1 * endPosition - 1;
@@ -152,17 +206,31 @@ namespace BoboBrowse.Net.Facets.Data
 
         public virtual bool Contains(double val)
         {
-            return Array.BinarySearch(_elements, val) >= 0;
+            if (withDummy)
+                return Array.BinarySearch(_elements, 1, _elements.Length - 1, val) >= 0;
+            else
+                return Array.BinarySearch(_elements, val) >= 0;
         }
 
         public override bool ContainsWithType(double val)
         {
-            return Array.BinarySearch(_elements, val) >= 0;
+            if (withDummy)
+                return Array.BinarySearch(_elements, 1, _elements.Length - 1, val) >= 0;
+            else
+                return Array.BinarySearch(_elements, val) >= 0;
         }
 
         public override int IndexOfWithType(double val)
         {
-            return Array.BinarySearch(_elements, val);
+            if (withDummy)
+                return Array.BinarySearch(_elements, 1, _elements.Length - 1, val);
+            else
+                return Array.BinarySearch(_elements, val);
+        }
+
+        public virtual double[] Elements
+        {
+            get { return _elements; }
         }
 
         public override double GetDoubleValue(int index)
