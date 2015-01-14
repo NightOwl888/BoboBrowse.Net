@@ -118,6 +118,7 @@
     <Compile Include="FacetNameTest.cs" />
     <Compile Include="FacetHandlerTest.cs" />
     <Compile Include="FacetNotValuesTest.cs" />
+    <Compile Include="FacetRangeTest.cs" />
     <Compile Include="Facets\Attribute\AttributesFacetHandlerTest.cs" />
     <Compile Include="Facets\Data\TermLongListTest.cs" />
     <Compile Include="MemoryUtil.cs" />
