@@ -83,11 +83,7 @@ namespace BoboBrowse.Net.Facets.Data
                     double val = _elements[index];
                     if (!string.IsNullOrEmpty(this.FormatString))
                     {
-                        if (this.FormatProvider != null)
-                        {
-                            return val.ToString(this.FormatString, this.FormatProvider);
-                        }
-                        return val.ToString(this.FormatString);
+                        return val.ToString(this.FormatString, this.FormatProvider);
                     }
                     return val.ToString();
                 }
@@ -130,7 +126,7 @@ namespace BoboBrowse.Net.Facets.Data
             //reverse negative elements, because string order and numeric orders are completely opposite
             if (_elements.Length > negativeIndexCheck && _elements[negativeIndexCheck] < 0)
             {
-                int endPosition = IndexOfWithType((short)0);
+                int endPosition = IndexOfWithType(0);
                 if (endPosition < 0)
                 {
                     endPosition = -1 * endPosition - 1;

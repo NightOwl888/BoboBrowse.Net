@@ -92,10 +92,6 @@ namespace BoboBrowse.Net.Facets.Data
             }
             else
             {
-                if (this.FormatProvider == null)
-                {
-                    return DateTime.FromBinary(val).ToString(this.FormatString);
-                }
                 return DateTime.FromBinary(val).ToString(this.FormatString, this.FormatProvider);
             }
         }

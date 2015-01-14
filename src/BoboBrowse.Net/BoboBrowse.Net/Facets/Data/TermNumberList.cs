@@ -53,12 +53,7 @@ namespace BoboBrowse.Net.Facets.Data
             }
             else
             {
-                if (this.FormatProvider != null)
-                {
-                    return Convert.ToDecimal(o, CultureInfo.InvariantCulture).ToString(this.FormatString, this.FormatProvider);
-                }
-
-                return Convert.ToDecimal(o).ToString(this.FormatString);
+                return Convert.ToDecimal(o, CultureInfo.InvariantCulture).ToString(this.FormatString, this.FormatProvider);
             }
         }
     }
