@@ -47,7 +47,7 @@ namespace BoboBrowse.Net.Facets.Attribute
             return browseSelection.SelectionProperties.Get(SEPARATOR_PROP_NAME)[0];
         }
 
-        public override RandomAccessFilter BuildRandomAccessFilter(string value, Properties prop)
+        public override RandomAccessFilter BuildRandomAccessFilter(string value, IDictionary<string, string> prop)
         {
             return base.BuildRandomAccessFilter(ConvertToRangeString(value, separator), prop);
         }
@@ -61,7 +61,7 @@ namespace BoboBrowse.Net.Facets.Attribute
             return "[" + key + separator + " TO " + key + (char)(separator + 1) + ")";
         }
 
-        public override RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, Properties prop, bool isNot)
+        public override RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, IDictionary<string, string> prop, bool isNot)
         {
             string[] ranges = new string[vals.Length];
             for (int i = 0; i < vals.Length; i++)

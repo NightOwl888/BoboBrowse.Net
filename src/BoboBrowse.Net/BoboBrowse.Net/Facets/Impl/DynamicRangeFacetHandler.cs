@@ -26,12 +26,12 @@ namespace BoboBrowse.Net.Facets.Impl
         protected abstract IEnumerable<string> BuildAllRangeStrings();
         protected abstract string GetValueFromRangeString(string rangeString);
 
-        public override RandomAccessFilter BuildRandomAccessFilter(string val, Properties props)
+        public override RandomAccessFilter BuildRandomAccessFilter(string val, IDictionary<string, string> props)
         {
             return _dataFacetHandler.BuildRandomAccessFilter(BuildRangeString(val), props);
         }
 
-        public override RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, Properties prop)
+        public override RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, IDictionary<string, string> prop)
         {
             List<string> valList = new List<string>(vals.Length);
             foreach (string val in vals)
@@ -42,7 +42,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return _dataFacetHandler.BuildRandomAccessAndFilter(valList.ToArray(), prop);
         }
 
-        public override RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, Properties prop, bool isNot)
+        public override RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, IDictionary<string, string> prop, bool isNot)
         {
             List<string> valList = new List<string>(vals.Length);
             foreach (string val in vals)

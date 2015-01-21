@@ -75,7 +75,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public override RandomAccessFilter BuildRandomAccessFilter(string value, Properties selectionProperty)
+        public override RandomAccessFilter BuildRandomAccessFilter(string value, IDictionary<string, string> selectionProperty)
         {
             RandomAccessFilter retFilter = EmptyFilter.Instance;
             ComboSelection comboSel = ComboSelection.Parse(value, _separator);
@@ -110,7 +110,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return retmap;
         }
 
-        public override RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, Properties prop)
+        public override RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, IDictionary<string, string> prop)
         {
             IDictionary<string, IList<string>> valMap = ConvertMap(vals, _separator);
 
@@ -141,7 +141,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return new RandomAccessAndFilter(filterList);
         }
 
-        public override RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, Properties prop, bool isNot)
+        public override RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, IDictionary<string, string> prop, bool isNot)
         {
             IDictionary<string, IList<string>> valMap = ConvertMap(vals, _separator);
 

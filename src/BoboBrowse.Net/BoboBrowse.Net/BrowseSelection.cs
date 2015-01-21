@@ -51,7 +51,7 @@ namespace BoboBrowse.Net
         /// A dictionary of custom properties that can be used by custom (or some built-in) 
         /// implementations of facet handlers, filters, and collectors.
         /// </summary>
-        public virtual Properties SelectionProperties { get; private set; }
+        public virtual IDictionary<string, string> SelectionProperties { get; private set; }
 
         /// <summary>
         /// Sets a specific selection property with the given key and value.
@@ -60,7 +60,7 @@ namespace BoboBrowse.Net
         /// <param name="val">The value for the property.</param>
         public virtual void SetSelectionProperty(string key, string val)
         {
-            SelectionProperties.SetProperty(key, val);
+            SelectionProperties.Put(key, val);
         }
 
         /// <summary>
@@ -79,8 +79,8 @@ namespace BoboBrowse.Net
         [Obsolete("use SelectionProperties")]
         public virtual bool IsStrict
         {
-            get { return Convert.ToBoolean(SelectionProperties.GetProperty(PathFacetHandler.SEL_PROP_NAME_STRICT)); }
-            set { SelectionProperties.SetProperty(PathFacetHandler.SEL_PROP_NAME_STRICT, value.ToString()); }
+            get { return Convert.ToBoolean(SelectionProperties.Get(PathFacetHandler.SEL_PROP_NAME_STRICT)); }
+            set { SelectionProperties.Put(PathFacetHandler.SEL_PROP_NAME_STRICT, value.ToString()); }
         }
 
         /// <summary>
@@ -93,13 +93,13 @@ namespace BoboBrowse.Net
             {
                 int value;
                 return
-                    int.TryParse(SelectionProperties.GetProperty(PathFacetHandler.SEL_PROP_NAME_DEPTH), out value)
+                    int.TryParse(SelectionProperties.Get(PathFacetHandler.SEL_PROP_NAME_DEPTH), out value)
                     ? value
                     : 0;
             }
             set
             {
-                SelectionProperties.SetProperty(PathFacetHandler.SEL_PROP_NAME_DEPTH, value.ToString());
+                SelectionProperties.Put(PathFacetHandler.SEL_PROP_NAME_DEPTH, value.ToString());
             }
         }
 
@@ -162,7 +162,7 @@ namespace BoboBrowse.Net
             this.values = new List<string>();
             this.notValues = new List<string>();
             this.SelectionOperation = ValueOperation.ValueOperationOr;
-            this.SelectionProperties = new Properties();
+            this.SelectionProperties = new Dictionary<string, string>();
         }
 
         /// <summary>

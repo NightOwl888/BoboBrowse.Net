@@ -139,12 +139,12 @@ namespace BoboBrowse.Net.Facets.Impl
             return new string[0];
         }
 
-        public override RandomAccessFilter BuildRandomAccessFilter(string value, Properties prop)
+        public override RandomAccessFilter BuildRandomAccessFilter(string value, IDictionary<string, string> prop)
         {
             return new FacetRangeFilter(this, value);
         }
 
-        public override RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, Properties prop, bool isNot)
+        public override RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, IDictionary<string, string> prop, bool isNot)
         {
             if (vals.Length > 1)
             {

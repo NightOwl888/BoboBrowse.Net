@@ -49,7 +49,7 @@ namespace BoboBrowse.Net.Facets.Impl
         {
         }
 
-        public override RandomAccessFilter BuildRandomAccessFilter(string value, Properties selectionProperty)
+        public override RandomAccessFilter BuildRandomAccessFilter(string value, IDictionary<string, string> selectionProperty)
         {
             List<RandomAccessFilter> filterList = new List<RandomAccessFilter>();
             string[] vals = value.Split(new string[] { _sep }, StringSplitOptions.RemoveEmptyEntries);

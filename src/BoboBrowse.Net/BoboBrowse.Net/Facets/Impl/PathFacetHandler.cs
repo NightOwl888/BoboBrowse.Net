@@ -77,26 +77,26 @@ namespace BoboBrowse.Net.Facets.Impl
         ///<summary>Sets is strict applied for counting. Used if the field is of type <b><i>path</i></b>. </summary>
         ///<param name="props">The properties dictionary to set the property value on.</param>
         ///<param name="strict"> is strict applied </param>
-        public static void SetStrict(Properties props, bool strict)
+        public static void SetStrict(IDictionary<string, string> props, bool strict)
         {
-            props.SetProperty(PathFacetHandler.SEL_PROP_NAME_STRICT, Convert.ToString(strict));
+            props.Put(PathFacetHandler.SEL_PROP_NAME_STRICT, Convert.ToString(strict));
         }
 
         ///<summary>Sets the depth.  Used if the field is of type <b><i>path</i></b>. </summary>
         ///<param name="props">The properties dictionary to set the property value on.</param>
         ///<param name="depth">depth </param>
-        public static void SetDepth(Properties props, int depth)
+        public static void SetDepth(IDictionary<string, string> props, int depth)
         {
-            props.SetProperty(PathFacetHandler.SEL_PROP_NAME_DEPTH, Convert.ToString(depth));
+            props.Put(PathFacetHandler.SEL_PROP_NAME_DEPTH, Convert.ToString(depth));
         }
 
         ///<summary> Gets if strict applied for counting. Used if the field is of type <b><i>path</i></b>. </summary>
         ///<returns> is strict applied </returns>
-        public static bool IsStrict(Properties selectionProp)
+        public static bool IsStrict(IDictionary<string, string> selectionProp)
         {
             try
             {
-                return Convert.ToBoolean(selectionProp.GetProperty(PathFacetHandler.SEL_PROP_NAME_STRICT));
+                return Convert.ToBoolean(selectionProp.Get(PathFacetHandler.SEL_PROP_NAME_STRICT));
             }
             catch
             {
@@ -113,11 +113,11 @@ namespace BoboBrowse.Net.Facets.Impl
 
         ///<summary> Gets the depth.  Used if the field is of type <b><i>path</i></b>. </summary>
         ///<returns> depth </returns>
-        public static int GetDepth(Properties selectionProp)
+        public static int GetDepth(IDictionary<string, string> selectionProp)
         {
             try
             {
-                return Convert.ToInt32(selectionProp.GetProperty(PathFacetHandler.SEL_PROP_NAME_DEPTH));
+                return Convert.ToInt32(selectionProp.Get(PathFacetHandler.SEL_PROP_NAME_DEPTH));
             }
             catch
             {
@@ -226,7 +226,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public override RandomAccessFilter BuildRandomAccessFilter(string value, Properties props)
+        public override RandomAccessFilter BuildRandomAccessFilter(string value, IDictionary<string, string> props)
         {
             int depth = GetDepth(props);
             bool strict = IsStrict(props);
@@ -242,7 +242,7 @@ namespace BoboBrowse.Net.Facets.Impl
             //return _multiValue ? new MultiValueORFacetFilter(this, vals, valConverter, false) : new FacetOrFilter(this, vals, false, valConverter);
         }
 
-        public override RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, Properties prop)
+        public override RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, IDictionary<string, string> prop)
         {
             if (vals.Length > 1)
             {
@@ -262,7 +262,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public override RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, Properties prop, bool isNot)
+        public override RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, IDictionary<string, string> prop, bool isNot)
         {
             if (vals.Length > 1)
             {

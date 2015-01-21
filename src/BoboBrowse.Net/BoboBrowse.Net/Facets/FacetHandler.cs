@@ -44,9 +44,9 @@ namespace BoboBrowse.Net.Facets
     public interface IFacetHandler
     {
         RandomAccessFilter BuildFilter(BrowseSelection sel);
-        RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, Properties prop);
-        RandomAccessFilter BuildRandomAccessFilter(string value, Properties selectionProperty);
-        RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, Properties prop, bool isNot);
+        RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, IDictionary<string, string> prop);
+        RandomAccessFilter BuildRandomAccessFilter(string value, IDictionary<string, string> selectionProperty);
+        RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, IDictionary<string, string> prop, bool isNot);
         IEnumerable<string> DependsOn { get; }
         IFacetHandler GetDependedFacetHandler(string name);
         DocComparatorSource GetDocComparatorSource();
@@ -193,7 +193,7 @@ namespace BoboBrowse.Net.Facets
         {
             string[] selections = sel.Values;
             string[] notSelections = sel.NotValues;
-            Properties prop = sel.SelectionProperties;
+            IDictionary<string, string> prop = sel.SelectionProperties;
 
             RandomAccessFilter filter = null;
             if (selections != null && selections.Length > 0)
@@ -234,9 +234,9 @@ namespace BoboBrowse.Net.Facets
             return filter;
         }
 
-        public abstract RandomAccessFilter BuildRandomAccessFilter(string value, Properties selectionProperty);
+        public abstract RandomAccessFilter BuildRandomAccessFilter(string value, IDictionary<string, string> selectionProperty);
 
-        public virtual RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, Properties prop)
+        public virtual RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, IDictionary<string, string> prop)
         {
             List<RandomAccessFilter> filterList = new List<RandomAccessFilter>(vals.Length);
 
@@ -258,7 +258,7 @@ namespace BoboBrowse.Net.Facets
             return new RandomAccessAndFilter(filterList);
         }
 
-        public virtual RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, Properties prop, bool isNot)
+        public virtual RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, IDictionary<string, string> prop, bool isNot)
         {
             List<RandomAccessFilter> filterList = new List<RandomAccessFilter>(vals.Length);
 

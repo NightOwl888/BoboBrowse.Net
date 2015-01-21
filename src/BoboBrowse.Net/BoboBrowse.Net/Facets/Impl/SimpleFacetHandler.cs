@@ -140,7 +140,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return new string[0];
         }
 
-        public override RandomAccessFilter BuildRandomAccessFilter(string value, Properties prop)
+        public override RandomAccessFilter BuildRandomAccessFilter(string value, IDictionary<string, string> prop)
         {
             FacetFilter f = new FacetFilter(this, value);
             AdaptiveFacetFilter af = new AdaptiveFacetFilter(
@@ -180,7 +180,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public override RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, Properties prop)
+        public override RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, IDictionary<string, string> prop)
         {
             if (vals.Length > 1)
             {
@@ -192,7 +192,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public override RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, Properties prop, bool isNot)
+        public override RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, IDictionary<string, string> prop, bool isNot)
         {
             RandomAccessFilter filter = null;
 

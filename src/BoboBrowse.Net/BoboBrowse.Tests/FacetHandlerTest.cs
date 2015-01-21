@@ -29,7 +29,7 @@ namespace BoboBrowse.Tests
             {
             }
 
-            public override RandomAccessFilter BuildRandomAccessFilter(string value, Properties selectionProperty)
+            public override RandomAccessFilter BuildRandomAccessFilter(string value, IDictionary<string, string> selectionProperty)
             {
                 return null;
             }

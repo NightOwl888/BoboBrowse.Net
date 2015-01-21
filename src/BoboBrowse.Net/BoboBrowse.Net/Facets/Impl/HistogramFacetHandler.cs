@@ -81,17 +81,17 @@ namespace BoboBrowse.Net.Facets.Impl
             return null;
         }
 
-        public override RandomAccessFilter BuildRandomAccessFilter(string value, Properties prop)
+        public override RandomAccessFilter BuildRandomAccessFilter(string value, IDictionary<string, string> prop)
         {
             return _dataFacetHandler.BuildRandomAccessFilter(value, prop);
         }
 
-        public override RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, Properties prop)
+        public override RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, IDictionary<string, string> prop)
         {
             return _dataFacetHandler.BuildRandomAccessAndFilter(vals, prop);
         }
 
-        public override RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, Properties prop, bool isNot)
+        public override RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, IDictionary<string, string> prop, bool isNot)
         {
             return _dataFacetHandler.BuildRandomAccessOrFilter(vals, prop, isNot);
         }
