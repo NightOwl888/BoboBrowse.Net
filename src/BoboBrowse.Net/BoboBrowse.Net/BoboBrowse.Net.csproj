@@ -275,6 +275,7 @@
     <Compile Include="Support\ParseException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DocIdSet\RandomAccessDocIdSet.cs" />
+    <Compile Include="Support\RangeStringFormatter.cs" />
     <Compile Include="Support\RuntimeException.cs" />
     <Compile Include="Query\Scoring\IFacetTermScoringFunction.cs" />
     <Compile Include="Query\Scoring\BoboDocScorer.cs" />
