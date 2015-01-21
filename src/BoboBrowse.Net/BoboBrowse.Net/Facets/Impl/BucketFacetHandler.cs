@@ -41,7 +41,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return dependOnFacetHandler.GetRawFieldValues(reader, id);
         }
 
-        public override RandomAccessFilter BuildRandomAccessFilter(string bucketString, Properties prop)
+        public override RandomAccessFilter BuildRandomAccessFilter(string bucketString, IDictionary<string, string> prop)
         {
             var dependOnFacetHandler = GetDependedFacetHandler(_dependsOnFacetName);
 
@@ -52,7 +52,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return dependOnFacetHandler.BuildRandomAccessOrFilter(elems, prop, false);
         }
 
-        public override RandomAccessFilter BuildRandomAccessAndFilter(string[] bucketStrings, Properties prop)
+        public override RandomAccessFilter BuildRandomAccessAndFilter(string[] bucketStrings, IDictionary<string, string> prop)
         {
             List<RandomAccessFilter> filterList = new List<RandomAccessFilter>();
             var dependOnFacetHandler = GetDependedFacetHandler(_dependsOnFacetName);
@@ -69,7 +69,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return new RandomAccessAndFilter(filterList);
         }
 
-        public override RandomAccessFilter BuildRandomAccessOrFilter(string[] bucketStrings, Properties prop, bool isNot)
+        public override RandomAccessFilter BuildRandomAccessOrFilter(string[] bucketStrings, IDictionary<string, string> prop, bool isNot)
         {
             if (isNot)
             {

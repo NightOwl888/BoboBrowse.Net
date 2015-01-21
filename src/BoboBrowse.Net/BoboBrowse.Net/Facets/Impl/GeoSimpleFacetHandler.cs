@@ -96,7 +96,7 @@ namespace BoboBrowse.Net.Facets.Impl
             _longFacetName = longFacetName;
         }
 
-        public override RandomAccessFilter BuildRandomAccessFilter(string val, Properties props)
+        public override RandomAccessFilter BuildRandomAccessFilter(string val, IDictionary<string, string> props)
         {
             GeoLatLonRange range = GeoLatLonRange.Parse(val);
 
@@ -105,7 +105,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return new RandomAccessAndFilter(new RandomAccessFilter[] { latFilter, longFilter });
         }
 
-        public override RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, Properties props)
+        public override RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, IDictionary<string, string> props)
         {
             List<string> latValList = new List<string>(vals.Length);
             List<string> longValList = new List<string>(vals.Length);
@@ -120,7 +120,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return new RandomAccessAndFilter(new RandomAccessFilter[] { latFilter, longFilter });
         }
 
-        public override RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, Properties props, bool isNot)
+        public override RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, IDictionary<string, string> props, bool isNot)
         {
             List<string> latValList = new List<string>(vals.Length);
             List<string> longValList = new List<string>(vals.Length);

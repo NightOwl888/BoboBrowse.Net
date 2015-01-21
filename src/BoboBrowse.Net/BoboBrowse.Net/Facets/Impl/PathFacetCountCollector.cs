@@ -377,7 +377,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public virtual IEnumerable<BrowseFacet> GetFacets()
         {
-            Properties props = _sel == null ? null : _sel.SelectionProperties;
+            IDictionary<string, string> props = _sel == null ? null : _sel.SelectionProperties;
             int depth = PathFacetHandler.GetDepth(props);
             bool strict = PathFacetHandler.IsStrict(props);
 
@@ -415,7 +415,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public virtual FacetIterator Iterator()
         {
-            Properties props = _sel == null ? null : _sel.SelectionProperties;
+            IDictionary<string, string> props = _sel == null ? null : _sel.SelectionProperties;
             int depth = PathFacetHandler.GetDepth(props);
             bool strict = PathFacetHandler.IsStrict(props);
             List<BrowseFacet> finalList;

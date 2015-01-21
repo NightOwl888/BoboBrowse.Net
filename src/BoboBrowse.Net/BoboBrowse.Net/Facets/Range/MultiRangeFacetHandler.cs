@@ -55,7 +55,7 @@ namespace BoboBrowse.Net.Facets.Range
             return (T)reader.GetFacetData(_name);
         }
 
-        public override RandomAccessFilter BuildRandomAccessFilter(string value, Properties prop)
+        public override RandomAccessFilter BuildRandomAccessFilter(string value, IDictionary<string, string> prop)
         {
  	         return new FacetRangeFilter(this, value);
         }

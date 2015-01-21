@@ -219,7 +219,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <param name="value">Should be of the form: lat, lon: rad</param>
         /// <param name="selectionProperty"></param>
         /// <returns></returns>
-        public override RandomAccessFilter BuildRandomAccessFilter(string value, Properties selectionProperty)
+        public override RandomAccessFilter BuildRandomAccessFilter(string value, IDictionary<string, string> selectionProperty)
         {
             GeoFacetCountCollector.GeoRange range = GeoFacetCountCollector.Parse(value);
             return new GeoFacetFilter(this, range.Lat, range.Lon, range.Rad, _miles);

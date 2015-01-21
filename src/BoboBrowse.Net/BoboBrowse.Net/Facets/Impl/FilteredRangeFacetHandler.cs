@@ -23,18 +23,18 @@ namespace BoboBrowse.Net.Facets.Impl
             _innerHandler = null;
         }
 
-	    public override RandomAccessFilter BuildRandomAccessFilter(string value, Properties selectionProperty)
+        public override RandomAccessFilter BuildRandomAccessFilter(string value, IDictionary<string, string> selectionProperty)
 		{
 			return _innerHandler.BuildRandomAccessFilter(value, selectionProperty);
 		}
 
 
-		public override RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, Properties prop)
+        public override RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, IDictionary<string, string> prop)
 		{
 			return _innerHandler.BuildRandomAccessAndFilter(vals, prop);
 		}
 
-		public override RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, Properties prop, bool isNot)
+        public override RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, IDictionary<string, string> prop, bool isNot)
 		{
 			return _innerHandler.BuildRandomAccessOrFilter(vals, prop, isNot);
 		}

@@ -5,6 +5,7 @@ namespace BoboBrowse.Net.Facets.Impl
     using BoboBrowse.Net.Facets.Filter;
     using BoboBrowse.Net.Facets.Range;
     using BoboBrowse.Net.Support;
+    using System.Collections.Generic;
 
     public class MultiValueWithWeightFacetHandler : MultiValueFacetHandler
     {
@@ -23,7 +24,7 @@ namespace BoboBrowse.Net.Facets.Impl
         {
         }
 
-        public override RandomAccessFilter BuildRandomAccessFilter(string value, Properties prop)
+        public override RandomAccessFilter BuildRandomAccessFilter(string value, IDictionary<string, string> prop)
         {
             MultiValueFacetFilter f = new MultiValueFacetFilter(new MultiDataCacheBuilder(Name, _indexFieldName), value);
             return f;

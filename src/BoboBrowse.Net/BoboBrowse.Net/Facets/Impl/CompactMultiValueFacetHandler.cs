@@ -81,12 +81,12 @@ namespace BoboBrowse.Net.Facets.Impl
             return new CompactMultiFacetDocComparatorSource(this);
         }
 
-        public override RandomAccessFilter BuildRandomAccessFilter(string value, Properties prop)
+        public override RandomAccessFilter BuildRandomAccessFilter(string value, IDictionary<string, string> prop)
         {
             return new CompactMultiValueFacetFilter(this, value);
         }
 
-        public override RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, Properties prop)
+        public override RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, IDictionary<string, string> prop)
         {
             List<RandomAccessFilter> filterList = new List<RandomAccessFilter>(vals.Length);
 
@@ -107,7 +107,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return new RandomAccessAndFilter(filterList);
         }
 
-        public override RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, Properties prop, bool isNot)
+        public override RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, IDictionary<string, string> prop, bool isNot)
         {
             RandomAccessFilter filter = null;
 

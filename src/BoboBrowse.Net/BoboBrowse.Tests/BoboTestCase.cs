@@ -939,7 +939,7 @@ namespace BoboBrowse.Net
 
             BrowseSelection sel = new BrowseSelection("path");
             sel.AddValue("a");
-            Properties prop = sel.SelectionProperties;
+            IDictionary<string, string> prop = sel.SelectionProperties;
             PathFacetHandler.SetDepth(prop, 1);
             br.AddSelection(sel);
 
@@ -1184,7 +1184,7 @@ namespace BoboBrowse.Net
 
             BrowseSelection sel = new BrowseSelection("multipath");
             sel.AddValue("a");
-            Properties prop = sel.SelectionProperties;
+            IDictionary<string, string> prop = sel.SelectionProperties;
             PathFacetHandler.SetDepth(prop, 1);
             br.AddSelection(sel);
 
@@ -1211,7 +1211,7 @@ namespace BoboBrowse.Net
             BrowseSelection sel = new BrowseSelection("path");
             sel.AddValue("a-c");
             sel.AddValue("a-e");
-            Properties prop = sel.SelectionProperties;
+            IDictionary<string, string> prop = sel.SelectionProperties;
             PathFacetHandler.SetDepth(prop, 1);
             PathFacetHandler.SetStrict(prop, true);
             br.AddSelection(sel);
@@ -1293,7 +1293,7 @@ namespace BoboBrowse.Net
             br.Offset = 0;
 
             BrowseSelection sel = new BrowseSelection("location");
-            Properties prop = sel.SelectionProperties;
+            IDictionary<string, string> prop = sel.SelectionProperties;
             PathFacetHandler.SetDepth(prop, 1);
             PathFacetHandler.SetStrict(prop, true);
             sel.AddValue("toy/lego");
@@ -2218,7 +2218,7 @@ namespace BoboBrowse.Net
             sel = new BrowseSelection("location");
             sel.AddValue("toy/lego");
 
-            Properties prop = sel.SelectionProperties;
+            IDictionary<string, string> prop = sel.SelectionProperties;
             PathFacetHandler.SetDepth(prop, 1);
             br.AddSelection(sel);
 
