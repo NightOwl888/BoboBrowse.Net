@@ -301,6 +301,11 @@ namespace BoboBrowse.Net
             return new PriceValueList();
         }
 
+        public override Type Type
+        {
+            get { return typeof(string); }
+        }
+
         private class PriceValueList : TermStringList
         {
             public override void Add(string o)

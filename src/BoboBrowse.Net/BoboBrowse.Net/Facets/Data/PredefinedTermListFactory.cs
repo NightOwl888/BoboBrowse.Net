@@ -65,6 +65,7 @@ namespace BoboBrowse.Net.Facets.Data
     /// </summary>
     public class PredefinedTermListFactory: TermListFactory
     {
+        private readonly Type type;
         private readonly Type listType;
         private readonly string formatString;
         private readonly IFormatProvider formatProvider;
@@ -93,6 +94,7 @@ namespace BoboBrowse.Net.Facets.Data
                 throw new ArgumentException(string.Format("Type '{0}' is not supported. The only supported types are:{2}{1}",
                     type.FullName, string.Join(Environment.NewLine, supportedTypes.Keys.Select(key => key.FullName).ToArray()), Environment.NewLine));
 
+            this.type = type;
             this.listType = supportedTypes[type];
             this.formatString = formatString;
             this.formatProvider = formatProvider;
@@ -101,34 +103,34 @@ namespace BoboBrowse.Net.Facets.Data
         /// <summary>
         /// Initializes a new instance of <see cref="T:PredefinedTermListFactory"/>.
         /// </summary>
-        /// <param name="listType">The native type of the values in the list. 
+        /// <param name="type">The native type of the values in the list. 
         /// Supported types are <see cref="T:System.Int32"/>, <see cref="T:System.Single"/>, <see cref="T:System.Char"/>, 
         /// <see cref="T:System.Double"/>, <see cref="T:System.Int16"/>, <see cref="T:System.Int64"/>, <see cref="T:System.DateTime"/>.</param>
         /// <param name="formatString">The format string that will be used to format each value in the list for output display.</param>
-        public PredefinedTermListFactory(Type listType, string formatString)
-            : this(listType, formatString, null)
+        public PredefinedTermListFactory(Type type, string formatString)
+            : this(type, formatString, null)
         { }
 
         /// <summary>
         /// Initializes a new instance of <see cref="T:PredefinedTermListFactory"/>.
         /// </summary>
-        /// <param name="listType">The native type of the values in the list. 
+        /// <param name="type">The native type of the values in the list. 
         /// Supported types are <see cref="T:System.Int32"/>, <see cref="T:System.Single"/>, <see cref="T:System.Char"/>, 
         /// <see cref="T:System.Double"/>, <see cref="T:System.Int16"/>, <see cref="T:System.Int64"/>, <see cref="T:System.DateTime"/>.</param>
-        public PredefinedTermListFactory(Type listType)
-            : this(listType, null, null)
+        public PredefinedTermListFactory(Type type)
+            : this(type, null, null)
         { }
 
         public override ITermValueList CreateTermList(int capacity)
         {
             // we treat char type separate as it does not have a format string
-            if (typeof(TermCharList).Equals(listType))
+            if (typeof(TermCharList).Equals(this.listType))
             {
                 return new TermCharList();
             }
             else
             {
-                return (ITermValueList)Activator.CreateInstance(listType, capacity, this.formatString, this.formatProvider);
+                return (ITermValueList)Activator.CreateInstance(this.listType, capacity, this.formatString, this.formatProvider);
             }
         }
 
@@ -136,6 +138,11 @@ namespace BoboBrowse.Net.Facets.Data
         {
             // In .NET, the initial capacity is 0.
             return CreateTermList(0);
+        }
+
+        public override Type Type
+        {
+            get { return this.type; }
         }
     }
 }
