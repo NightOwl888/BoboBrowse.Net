@@ -172,7 +172,20 @@ namespace BoboBrowse.Net
                 string name = entry.Key;
                 IFacetAccessible facetAccessor = entry.Value;
                 buffer.Append("name=").Append(name).Append(",");
-                buffer.Append("facets=").Append(facetAccessor.GetFacets()).Append(";");
+                buffer.Append("facets=").Append(ToString(facetAccessor.GetFacets())).Append(";");
+            }
+            buffer.Append("}").AppendLine();
+            return buffer.ToString();
+        }
+
+        private static string ToString(IEnumerable<BrowseFacet> facets)
+        {
+            StringBuilder buffer = new StringBuilder();
+
+            buffer.Append("{");
+            foreach (var facet in facets)
+            {
+                buffer.Append(facet.ToString()).Append(",");
             }
             buffer.Append("}").AppendLine();
             return buffer.ToString();
