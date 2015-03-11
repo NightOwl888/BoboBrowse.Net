@@ -16,7 +16,7 @@ Features Not Implemented:
 
 ###Status###
 
-All tests are now passing. We now in an incubation period to evaluate stability.
+Stable
 
 ###Documentation###
 
