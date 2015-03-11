@@ -31,11 +31,6 @@
     [Serializable]
     public class RangeStringFormatter<T> : RangeStringFormatter
     {
-        private readonly string format;
-        private readonly IFormatProvider provider;
-        private readonly string openLowerBoundFormat;
-        private readonly string openUpperBoundFormat;
-
         /// <summary>
         /// Initializes a new instance of <see cref="T:RangeFacetFormatter{T}"/>.
         /// </summary>
