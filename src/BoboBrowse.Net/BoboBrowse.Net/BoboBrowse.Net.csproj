@@ -72,6 +72,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\C5.1.0.2.0\lib\net35\C5.dll</HintPath>
     </Reference>
+    <Reference Include="Common.Logging">
+      <HintPath>..\packages\Common.Logging.3.0.0\lib\net35\Common.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Common.Logging.Core">
+      <HintPath>..\packages\Common.Logging.Core.3.0.0\lib\net35\Common.Logging.Core.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup Condition=" $(Configuration.Contains('NET40')) OR $(Configuration.Contains('NET45')) ">
     <Reference Include="Lucene.Net, Version=3.0.3.0, Culture=neutral, PublicKeyToken=85089178b9ac3181, processorArchitecture=MSIL">
@@ -82,13 +89,16 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\C5.2.2.4822.42600\lib\portable-win+net40+sl40+wp+Xbox40\C5.dll</HintPath>
     </Reference>
+    <Reference Include="Common.Logging">
+      <HintPath>..\packages\Common.Logging.3.0.0\lib\net40\Common.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Common.Logging.Core">
+      <HintPath>..\packages\Common.Logging.Core.3.0.0\lib\net40\Common.Logging.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Common.Logging">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Common.Logging.1.2.0\lib\1.0\Common.Logging.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
