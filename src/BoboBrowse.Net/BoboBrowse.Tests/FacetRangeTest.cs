@@ -61,33 +61,43 @@
 
             Document d1 = new Document();
             d1.Add(BuildField("price", "000010.789"));
+            d1.Add(BuildField("number", "000000100"));
             
             Document d2 = new Document();
             d2.Add(BuildField("price", "000099.222"));
+            d2.Add(BuildField("number", "000000101"));
 
             Document d3 = new Document();
             d3.Add(BuildField("price", "000050.200"));
-
+            d3.Add(BuildField("number", "000001000"));
+            
             Document d4 = new Document();
             d4.Add(BuildField("price", "000007.340"));
+            d4.Add(BuildField("number", "000001006"));
 
             Document d5 = new Document();
             d5.Add(BuildField("price", "002345.100"));
+            d5.Add(BuildField("number", "000010000"));
 
             Document d6 = new Document();
             d6.Add(BuildField("price", "000051.000"));
+            d6.Add(BuildField("number", "000100000"));
 
             Document d7 = new Document();
             d7.Add(BuildField("price", "001000.500"));
+            d7.Add(BuildField("number", "000100020"));
 
             Document d8 = new Document();
             d8.Add(BuildField("price", "000999.220"));
-
+            d8.Add(BuildField("number", "001000000"));
+            
             Document d9 = new Document();
             d9.Add(BuildField("price", "000898.334"));
+            d9.Add(BuildField("number", "001000003"));
 
             Document d10 = new Document();
             d10.Add(BuildField("price", "091100.500"));
+            d9.Add(BuildField("number", "001000048"));
 
             dataList.Add(d1);
             dataList.Add(d2);
@@ -131,6 +141,7 @@
             var facetHandlers = new List<IFacetHandler>();
             facetHandlers.Add(new RangeFacetHandler("pricedouble", "price", new PredefinedTermListFactory<double>("c"), new string[] { "[000000.000 TO 000999.220]", "[000999.230 TO 100000.000]" } ));
             facetHandlers.Add(new RangeFacetHandler("pricefloat", "price", new PredefinedTermListFactory<float>("c"), new string[] { "[000000.000 TO 000999.220]", "[000999.230 TO 100000.000]" }));
+            facetHandlers.Add(new RangeFacetHandler("number", new PredefinedTermListFactory<int>(), new string[] { "[0000000000 TO 0000001000]", "[0000001000 TO 0000010000]", "[0000010000 TO 0000100000]", "[0000100000 TO 0001000000]", "[0001000000 TO *]" }));
             return facetHandlers;
         }
 
@@ -337,6 +348,61 @@
                         Assert.AreEqual(7, totalHits);
                         Assert.AreEqual(1, facetVals.Count());
                         Assert.AreEqual("[000000.000 TO 000999.220](7)", facetVals[0].ToString());
+                    }
+                }
+            }
+        }
+
+        [Test]
+        public void TestNumberRangeWithInt()
+        {
+            // Field.
+            string field = "number";
+
+            // Lucene index.
+            using (IndexReader reader = IndexReader.Open(this._indexDir, true))
+            {
+                // Bobo reader.
+                using (BoboIndexReader boboReader = BoboIndexReader.GetInstance(reader, this._facetHandlers))
+                {
+                    // Request.
+                    BrowseRequest browseRequest = new BrowseRequest();
+                    browseRequest.Count = 10;
+                    browseRequest.Offset = 0;
+                    browseRequest.FetchStoredFields = true;
+
+                    // Selection.
+                    BrowseSelection sel = new BrowseSelection(field);
+                    browseRequest.AddSelection(sel);
+
+                    // Query.
+                    MatchAllDocsQuery query = new MatchAllDocsQuery();
+
+                    // Output.
+                    FacetSpec spec = new FacetSpec();
+                    spec.OrderBy = FacetSpec.FacetSortSpec.OrderValueAsc;
+                    spec.MaxCount = 10;
+                    browseRequest.SetFacetSpec(field, spec);
+
+                    // Browse.
+                    IBrowsable browser = new BoboBrowser(boboReader);
+                    using (BrowseResult result = browser.Browse(browseRequest))
+                    {
+                        // Results.
+                        int totalHits = result.NumHits;
+                        BrowseHit[] hits = result.Hits;
+                        IDictionary<String, IFacetAccessible> facetMap = result.FacetMap;
+                        IFacetAccessible facets = facetMap[field];
+                        List<BrowseFacet> facetVals = facets.GetFacets().ToList();
+
+                        // Check.
+                        Assert.AreEqual(10, totalHits);
+                        Assert.AreEqual(5, facetVals.Count());
+                        Assert.AreEqual("[0000000000 TO 0000001000](3)", facetVals[0].ToString());
+                        Assert.AreEqual("[0000001000 TO 0000010000](3)", facetVals[1].ToString());
+                        Assert.AreEqual("[0000010000 TO 0000100000](2)", facetVals[2].ToString());
+                        Assert.AreEqual("[0000100000 TO 0001000000](3)", facetVals[3].ToString());
+                        Assert.AreEqual("[0001000000 TO *](3)", facetVals[4].ToString());
                     }
                 }
             }
