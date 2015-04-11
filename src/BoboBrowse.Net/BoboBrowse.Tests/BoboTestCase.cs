@@ -1513,6 +1513,37 @@ namespace BoboBrowse.Net
 
             v = valComp.Compare(new BrowseFacet("red", 3), new BrowseFacet("blue", 3));
             Assert.True(v > 0);
+
+            // Test for a non-match (was throwing null reference exception - see #14).
+            br = new BrowseRequest();
+            br.Count = 10;
+            br.Offset = 0;
+
+            colorSpec = new FacetSpec();
+            colorSpec.OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc;
+            colorSpec.MaxCount = 5;
+            br.SetFacetSpec("color", colorSpec);
+
+            shapeSpec = new FacetSpec();
+            shapeSpec.OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc;
+            shapeSpec.MaxCount = 5;
+            br.SetFacetSpec("shape", shapeSpec);
+
+            BrowseSelection sel = new BrowseSelection("color");
+            sel.AddValue("red");
+            br.AddSelection(sel);
+
+            sel = new BrowseSelection("shape");
+            sel.AddValue("circle");
+            br.AddSelection(sel);
+
+            answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            {
+                { "color", new BrowseFacet[] { } },
+                { "shape", new BrowseFacet[] { } }
+            };
+
+            DoTest(br, 0, answer, null);
         }
 
         [Test]

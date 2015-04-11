@@ -129,7 +129,7 @@ namespace BoboBrowse.Net.Facets
                         queue.Add(new BrowseFacet(facet, iter.Count));
                         qsize++;
                     }
-                    if (facet != null)
+                    if (!string.IsNullOrEmpty(facet))
                     {
                         BrowseFacet rootFacet = (BrowseFacet)queue.Top();
                         minHits = rootFacet.FacetValueHitCount + 1;
@@ -172,7 +172,7 @@ namespace BoboBrowse.Net.Facets
                         queue.Add(new BrowseFacet(facet, iter.Count));
                         qsize++;
                     }
-                    if (facet != null)
+                    if (!string.IsNullOrEmpty(facet))
                     {
                         while (!string.IsNullOrEmpty((facet = iter.Next(minHits))))
                         {
