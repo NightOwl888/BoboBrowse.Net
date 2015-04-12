@@ -68,7 +68,10 @@ namespace BoboBrowse.Net.Facets.Impl
                         }
                         else if (val is IComparable)
                         {
-                            dataMap = new C5.TreeDictionary<object, List<int>>();
+                            // NOTE: In .NET 3.5, the default constructor doesn't work in this case. We therefore have a custom type
+                            // that converts the objects to IComparable before comparing them, falling back to a string comparison
+                            // if they don't convert. This differs from the Java implementation that uses the default constructor.
+                            dataMap = new C5.TreeDictionary<object, List<int>>(new VirtualSimpleFacetHandlerComparableComparator());
                         }
                         else
                         {
@@ -162,6 +165,21 @@ namespace BoboBrowse.Net.Facets.Impl
                     return -1;
 
                 return 0;
+            }
+        }
+
+        private class VirtualSimpleFacetHandlerComparableComparator : IComparer<object>
+        {
+            public virtual int Compare(object big, object small)
+            {
+                var bigComparable = big as IComparable;
+                var smallComparable = small as IComparable;
+                if (bigComparable != null && smallComparable != null)
+                {
+                    return bigComparable.CompareTo(smallComparable);
+                }
+
+                return string.CompareOrdinal(Convert.ToString(big), Convert.ToString(small));
             }
         }
 
