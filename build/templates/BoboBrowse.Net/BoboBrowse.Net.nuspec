@@ -10,7 +10,7 @@
 		<summary>BoboBrowse.Net is a faceted browse engine implemented on a top of Lucene.Net.</summary>
 		<description>BoboBrowse.Net is a faceted browse engine implemented on a top of Lucene.Net. Originally ported from wonderful Java library developed by John Wang (http://javasoze.github.com/bobo/ ). While Lucene.Net is good with unstructured data, BoboBrowse.Net fills in the missing piece to handle semi-structured and structured data.</description>
 		<language>en-US</language>
-		<tags>faceted search engine lucene lucene.net nosql text information retrieval apache drill down</tags>
+		<tags>faceted search engine lucene lucene.net nosql text information retrieval apache drill down checkbox navigation</tags>
 		<projectUrl>https://github.com/NightOwl888/BoboBrowse.Net</projectUrl>
     <licenseUrl>https://github.com/NightOwl888/BoboBrowse.Net/blob/master/LICENSE.md</licenseUrl>
 		<iconUrl>https://raw.githubusercontent.com/NightOwl888/BoboBrowse.Net/master/BoboBrowse.Net.png</iconUrl>
