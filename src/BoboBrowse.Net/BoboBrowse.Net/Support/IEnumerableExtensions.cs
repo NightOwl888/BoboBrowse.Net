@@ -21,5 +21,22 @@ namespace BoboBrowse.Net.Support
             else
                 return defaultValue;
         }
+
+        /// <summary>
+        /// Converts an IEnumerable to a display string by calling the ToString() method of the inner type.
+        /// Note that this won't work if the inner type is IEnumerable or IDictionary.
+        /// </summary>
+        /// <typeparam name="T">The enumerable object type that overrides ToString().</typeparam>
+        /// <param name="enumerable">An IEnumerable instance.</param>
+        /// <returns>A string suitable for display or debugging.</returns>
+        public static string ToDisplayString<T>(this IEnumerable<T> enumerable)
+        {
+            if (enumerable == null)
+            {
+                return string.Empty;
+            }
+
+            return "{" + string.Join(", ", enumerable.Select(x => x.ToString()).ToArray()) + "}";
+        }
     }
 }

@@ -2,6 +2,8 @@
 namespace BoboBrowse.Net.Support
 {
     using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
 
     public static class IDictionaryExtensions
     {
@@ -30,6 +32,23 @@ namespace BoboBrowse.Net.Support
             {
                 Put(dictionary, pair.Key, pair.Value);
             }
+        }
+
+        /// <summary>
+        /// Converts a dictionary of string, Type to a display string by calling ToString() on the inner type.
+        /// Note that this won't work if TValue is an IEnumerable or IDictionary.
+        /// </summary>
+        /// <typeparam name="TValue">The type of object in dictionary that overrides ToString().</typeparam>
+        /// <param name="dictionary">A dictionary with a string key.</param>
+        /// <returns>A string suitable for display or debugging.</returns>
+        public static string ToDisplayString<TValue>(this IDictionary<string, TValue> dictionary)
+        {
+            if (dictionary == null)
+            {
+                return string.Empty;
+            }
+
+            return "{" + string.Join(", ", dictionary.Select(kvp => string.Format("{0}={1}", kvp.Key, kvp.Value.ToString())).ToArray()) + "}";
         }
     }
 }
