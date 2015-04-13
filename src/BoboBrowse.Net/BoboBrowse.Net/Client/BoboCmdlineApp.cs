@@ -45,11 +45,12 @@
                 return (int)ResultCodes.NO_INDEX_PROVIDED;
             }
 
-            string path = args[0];
+            string path = string.Empty;
 
             try
             {
-                if (!Directory.Exists(Path.GetFullPath(path)))
+                path = Path.GetDirectoryName(Path.GetFullPath(args[0]));
+                if (!Directory.Exists(path))
                 {
                     Console.WriteLine("ERROR: The directory doesn't exist. Press a key to exit.");
                     Console.ReadKey();
@@ -64,7 +65,7 @@
                 return (int)ResultCodes.DIRECTORY_INVALID;
             }
 
-            DirectoryInfo idxDir = new DirectoryInfo(Path.GetDirectoryName(args[0]));
+            DirectoryInfo idxDir = new DirectoryInfo(path);
             Console.WriteLine("Index directory: " + idxDir.FullName);
             Console.WriteLine("Welcome to the bobo console utility. Type 'help' to see a list of supported commands.");
 
