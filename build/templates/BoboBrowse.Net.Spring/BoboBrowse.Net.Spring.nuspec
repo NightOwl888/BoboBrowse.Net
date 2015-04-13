@@ -16,15 +16,15 @@
 		<iconUrl>https://raw.githubusercontent.com/NightOwl888/BoboBrowse.Net/master/BoboBrowse.Net.png</iconUrl>
 		<dependencies>
 			<group targetFramework="net35">
-				<dependency id="BoboBrowse.Net" version="3.2#prerelease#" />
+				<dependency id="BoboBrowse.Net" version="$version$" />
 				<dependency id="Spring.Core" version="2.0" />
 			</group>
 			<group targetFramework="net40">
-				<dependency id="BoboBrowse.Net" version="3.2#prerelease#" />
+				<dependency id="BoboBrowse.Net" version="$version$" />
 				<dependency id="Spring.Core" version="2.0" />
 			</group>
 			<group targetFramework="net45">
-				<dependency id="BoboBrowse.Net" version="3.2#prerelease#" />
+				<dependency id="BoboBrowse.Net" version="$version$" />
 				<dependency id="Spring.Core" version="2.0" />
 			</group>
 		</dependencies>
