@@ -116,7 +116,7 @@
                 Console.WriteLine(@"help or ? - prints this message");
                 Console.WriteLine(@"exit or q - quits");
                 Console.WriteLine(@"query <query string> - sets query text");
-                Console.WriteLine(@"facetspec <name>:<minHitCount>:<maxCount>:<sort> - add facet spec");
+                Console.WriteLine(@"facetspec <name>:<minHitCount>,<maxCount>,<isExpand>,<orderby> - add facet spec");
                 Console.WriteLine(@"page <offset>:<count> - set paging parameters");
                 Console.WriteLine(@"select <name>:<value1>,<value2>... - add selection, with ! in front of value indicates a not");
                 Console.WriteLine(@"sort <name>:<dir>,... - set sort specs (false for ascending, true for descending)");
