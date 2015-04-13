@@ -328,13 +328,13 @@ namespace BoboBrowse.Net
         public override string ToString()
         {
             StringBuilder buf = new StringBuilder();
-            buf.Append("query: ").Append(Query).Append('\n');
-            buf.Append("page: [").Append(Offset).Append(',').Append(Count).Append("]\n");
-            buf.Append("sort spec: ").Append(_sortSpecs).Append('\n');
-            buf.Append("selections: ").Append(_selections).Append('\n');
-            buf.Append("facet spec: ").Append(FacetSpecs).Append('\n');
-            buf.Append("fetch stored fields: ").Append(FetchStoredFields);
-            buf.Append("group by: ").Append(string.Join(",", GroupBy));
+            buf.Append("query: ").Append(Query).AppendLine();
+            buf.Append("page: [").Append(Offset).Append(',').Append(Count).Append("]").AppendLine();
+            buf.Append("sort spec: ").Append(_sortSpecs.ToDisplayString()).AppendLine();
+            buf.Append("selections: ").Append(_selections.ToDisplayString()).AppendLine();
+            buf.Append("facet spec: ").Append(FacetSpecs.ToDisplayString()).AppendLine();
+            buf.Append("fetch stored fields: ").Append(FetchStoredFields).AppendLine();
+            buf.Append("group by: ").Append((GroupBy != null) ? string.Join(",", GroupBy) : string.Empty);
             return buf.ToString();
         }
     }
