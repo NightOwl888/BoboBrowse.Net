@@ -134,8 +134,8 @@ function Create-BoboBrowse-Spring-Package {
 	Remove-Item "$output_nuspec_file.template" -Force -ErrorAction SilentlyContinue
 
 	#copy sources for symbols package
-	Copy-Item -Recurse -Filter *.cs -Force "$source_directory\BoboBrowse.Net.Spring" "$release_directory\BoboBrowse.Net\src\BoboBrowse.Net.Spring"
-	
+	Copy-Item -Recurse -Filter *.cs -Force "$source_directory\BoboBrowse.Net.Spring" "$release_directory\BoboBrowse.Net.Spring\src\BoboBrowse.Net.Spring"
+
 	exec { 
 		&"$tools_directory\nuget\NuGet.exe" pack $output_nuspec_file -Symbols -Version $packageVersion -OutputDirectory $output_directory
 	}
