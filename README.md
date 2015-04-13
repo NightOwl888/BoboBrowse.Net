@@ -1,3 +1,5 @@
+[![bobobrowse_net MyGet Build Status](https://www.myget.org/BuildSource/Badge/bobobrowse_net?identifier=c6e386c8-91de-4709-9846-91574bcaf5db)](https://www.myget.org/)
+
 BoboBrowse.Net - Faceted Search for Lucene.Net
 ===============
 
