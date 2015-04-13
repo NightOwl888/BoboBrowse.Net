@@ -120,19 +120,8 @@ function Create-BoboBrowse-Package {
 
 function Create-BoboBrowse-Spring-Package {
 	$output_nuspec_file = "$release_directory\BoboBrowse.Net.Spring\BoboBrowse.Net.Spring.nuspec"
-	Copy-Item "$template_directory\BoboBrowse.Net.Spring\BoboBrowse.Net.Spring.nuspec" "$output_nuspec_file.template"
+	Copy-Item "$template_directory\BoboBrowse.Net.Spring\BoboBrowse.Net.Spring.nuspec" "$output_nuspec_file"
 	
-	$prerelease = Get-Prerelease-Text
-	$prerelease = ".0$prerelease"
-
-	#replace the tokens
-	(cat "$output_nuspec_file.template") `
-		-replace '#prerelease#', "$prerelease" `
-		> $output_nuspec_file 
-
-	#delete the template file
-	Remove-Item "$output_nuspec_file.template" -Force -ErrorAction SilentlyContinue
-
 	#copy sources for symbols package
 	Copy-Item -Recurse -Filter *.cs -Force "$source_directory\BoboBrowse.Net.Spring" "$release_directory\BoboBrowse.Net.Spring\src\BoboBrowse.Net.Spring"
 
@@ -249,12 +238,4 @@ function Is-Prerelease {
 		return $true
 	}
 	return $false
-}
-
-function Get-Prerelease-Text {
-	if ($packageVersion.Contains("-")) {
-		$prerelease = $packageVersion.SubString($packageVersion.IndexOf("-")) -replace "\d+", ""
-		return "$prerelease"
-	}
-	return ""
 }
