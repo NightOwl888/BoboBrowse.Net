@@ -351,4 +351,38 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Target Name="AfterBuild">
+    <PropertyGroup>
+      <ReferenceAssemblies Condition=" $(Configuration.Contains('NET35')) ">$(WinDir)\Microsoft.NET\Framework\v2.0.50727</ReferenceAssemblies>
+      <ReferenceAssemblies Condition=" $(Configuration.Contains('NET40')) ">$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0</ReferenceAssemblies>
+      <ReferenceAssemblies Condition=" $(Configuration.Contains('NET45')) ">$(MSBuildProgramFiles32)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5</ReferenceAssemblies>
+    </PropertyGroup>
+    <PropertyGroup>
+      <ILTempDir>$(MSBuildThisFileDirectory)bin\</ILTempDir>
+      <ILMergeLogFile>$(ILTempDir)Merge.log</ILMergeLogFile>
+      <ILMergeArgs>/out:&quot;$(ILTempDir)$(AssemblyName).dll&quot;</ILMergeArgs>
+      <ILMergeArgs Condition=" $(Configuration.Contains('NET35')) ">$(ILMergeArgs) /targetplatform:v2,&quot;$(ReferenceAssemblies)&quot;</ILMergeArgs>
+      <ILMergeArgs Condition=" $(Configuration.Contains('NET40')) ">$(ILMergeArgs) /targetplatform:v4,&quot;$(ReferenceAssemblies)&quot;</ILMergeArgs>
+      <ILMergeArgs Condition=" $(Configuration.Contains('NET45')) ">$(ILMergeArgs) /targetplatform:v4,&quot;$(ReferenceAssemblies)&quot;</ILMergeArgs>
+      <ILMergeArgs>$(ILMergeArgs) /log:&quot;$(ILMergeLogFile)&quot;</ILMergeArgs>
+      <ILMergeArgs>$(ILMergeArgs) /xmldocs</ILMergeArgs>
+      <ILMergeArgs>$(ILMergeArgs) /keyfile:&quot;$([System.IO.Path]::GetFullPath('..\Common\BoboBrowse.snk'))&quot;</ILMergeArgs>
+      <!-- Primary assembly -->
+      <ILMergeArgs>$(ILMergeArgs) &quot;$(OutDir)$(AssemblyName).dll&quot;</ILMergeArgs>
+      <!-- Merged assemblies -->
+      <ILMergeArgs>$(ILMergeArgs) &quot;$(OutDir)LuceneExt.Net.dll&quot;</ILMergeArgs>
+    </PropertyGroup>
+    <Message Importance="high" Text="Executing ILMerge...with target platform from $(ReferenceAssemblies)" />
+    <Exec Command="&quot;$([System.IO.Path]::GetFullPath('..\..\..\tools\ILMerge\ILMerge.exe'))&quot; $(ILMergeArgs)"/>
+    <Exec Command="type $(ILMergeLogFile)"/>
+    <ItemGroup>
+      <UnmergedFiles Include="$(OutDir)$(AssemblyName).*"/>
+      <UnmergedFiles Include="$(OutDir)LuceneExt.Net.*"/>
+    </ItemGroup>
+    <Delete Files="@(UnmergedFiles)"/>
+    <ItemGroup>
+      <MergedFiles Include="$(ILTempDir)*.*"/>
+    </ItemGroup>
+    <Move SourceFiles="@(MergedFiles)" DestinationFolder="$(OutDir)"/>
+  </Target>
 </Project>
