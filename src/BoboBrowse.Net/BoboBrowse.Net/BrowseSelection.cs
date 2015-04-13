@@ -177,11 +177,11 @@ namespace BoboBrowse.Net
         public override string ToString()
         {
             StringBuilder buf = new StringBuilder();
-            buf.Append("name: ").Append(FieldName);
-            buf.Append("values: " + string.Join(",", values.ToArray()));
-            buf.Append("nots: " + string.Join(",", notValues.ToArray()));
-            buf.Append("op: " + SelectionOperation.ToString());
-            buf.Append("sel props: " + SelectionProperties.ToString());
+            buf.Append("name: ").Append(FieldName).Append(" ");
+            buf.Append("values: " + string.Join(",", values.ToArray())).Append(" ");
+            buf.Append("nots: " + string.Join(",", notValues.ToArray())).Append(" ");
+            buf.Append("op: " + SelectionOperation.ToString()).Append(" ");
+            buf.Append("sel props: " + SelectionProperties.ToDisplayString());
             return buf.ToString();
         }
     }
