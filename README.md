@@ -30,7 +30,7 @@ Read the documentation on the wiki: https://github.com/NightOwl888/BoboBrowse.Ne
 
 ###Install Via NuGet###
 
-    PM> Install-Package BoboBrowse.Net -Pre
+    PM> Install-Package BoboBrowse.Net
 
 See [our page on the NuGet gallery](https://www.nuget.org/packages/BoboBrowse.Net/).
 
