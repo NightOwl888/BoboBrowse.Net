@@ -26,7 +26,7 @@ Read the documentation on the wiki: https://github.com/NightOwl888/BoboBrowse.Ne
 
 ###License###
 
-[GNU General Public License](https://github.com/NightOwl888/BoboBrowse.Net/blob/master/LICENSE.md)
+[Apache 2.0 License](https://github.com/NightOwl888/BoboBrowse.Net/blob/master/LICENSE.md)
 
 ###Install Via NuGet###
 
