@@ -1,4 +1,4 @@
-[![bobobrowse_net MyGet Build Status](https://www.myget.org/BuildSource/Badge/bobobrowse_net?identifier=c6e386c8-91de-4709-9846-91574bcaf5db)](https://www.myget.org/)
+[![bobobrowse_net MyGet Build Status](https://www.myget.org/BuildSource/Badge/bobobrowse_net?identifier=c6e386c8-91de-4709-9846-91574bcaf5db)](https://www.myget.org/) [![BoboBrowse.Net NuGet Package](https://badge.fury.io/nu/bobobrowse.net.svg)](https://www.nuget.org/packages/BoboBrowse.Net/)
 
 BoboBrowse.Net - Faceted Search for Lucene.Net
 ===============
