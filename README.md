@@ -1,7 +1,9 @@
 [![bobobrowse_net MyGet Build Status](https://www.myget.org/BuildSource/Badge/bobobrowse_net?identifier=c6e386c8-91de-4709-9846-91574bcaf5db)](https://www.myget.org/) [![BoboBrowse.Net NuGet Package](https://badge.fury.io/nu/bobobrowse.net.svg)](https://www.nuget.org/packages/BoboBrowse.Net/)
 
-BoboBrowse.Net - Faceted Search for Lucene.Net
-===============
+![BoboBrowse.Net](BoboBrowse.Net-logo.png)
+
+Faceted Search for Lucene.Net
+---
 
 Bobo-Browse is a powerful and extensible faceted search engine library built on top of Lucene.Net. It is a C# port of the [original Bobo-Browse project](https://github.com/senseidb/bobo) written in Java by John Wang.
 
