@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
@@ -34,7 +34,7 @@ namespace BoboBrowse.Net.Facets.Impl
         private readonly FacetSpec _ospec;
         private readonly IDictionary<string, string[]> _predefinedBuckets;
         private BigSegmentedArray _collapsedCounts;
-        private TermStringList _bucketValues;
+        private readonly TermStringList _bucketValues;
         private readonly int _numdocs;
 
         public BucketFacetCountCollector(string name, DefaultFacetCountCollector subCollector, FacetSpec ospec, IDictionary<string, string[]> predefinedBuckets, int numdocs)
@@ -64,10 +64,10 @@ namespace BoboBrowse.Net.Facets.Impl
             if (_collapsedCounts == null)
             {
                 _collapsedCounts = new LazyBigIntArray(_bucketValues.Count);
-                FacetDataCache dataCache = _subCollector.DataCache;
+                IFacetDataCache dataCache = _subCollector.DataCache;
                 ITermValueList subList = dataCache.ValArray;
                 BigSegmentedArray subcounts = _subCollector.Count;
-                BitVector indexSet = new BitVector(subcounts.Size());
+                FixedBitSet indexSet = new FixedBitSet(subcounts.Size());
                 int c = 0;
                 int i = 0;
                 foreach (string val in _bucketValues)
