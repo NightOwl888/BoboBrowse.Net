@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
@@ -31,9 +31,8 @@ namespace BoboBrowse.Net.Facets.Impl
 
     public class GeoFacetHandler : FacetHandler<GeoFacetHandler.GeoFacetData>
     {
-        private static ILog logger = LogManager.GetLogger(typeof(GeoFacetHandler));
-	    private string _latFieldName;
-	    private string _lonFieldName;
+	    private readonly string _latFieldName;
+	    private readonly string _lonFieldName;
 	    // variable to specify if the geo distance calculations are in miles. Default is miles
 	    private bool _miles;
 
@@ -171,7 +170,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 set { _zValArray = value; }
             }
 
-            public virtual void Load(string latFieldName, string lonFieldName, BoboIndexReader reader)
+            public virtual void Load(string latFieldName, string lonFieldName, BoboSegmentReader reader)
             {
                 if (reader == null) throw new ArgumentNullException("reader object is null");
 
@@ -268,14 +267,14 @@ namespace BoboBrowse.Net.Facets.Impl
                 _fspec = fspec;
             }
 
-            public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
+            public override IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase)
             {
                 GeoFacetData dataCache = _parent.GetFacetData<GeoFacetData>(reader);
                 return new GeoFacetCountCollector(_parent._name, dataCache, docBase, _fspec, _ranges, _parent._miles);
             }
         }
 
-        public override string[] GetFieldValues(BoboIndexReader reader, int id)
+        public override string[] GetFieldValues(BoboSegmentReader reader, int id)
         {
             GeoFacetData dataCache = GetFacetData<GeoFacetData>(reader);
             BigFloatArray xvals = dataCache.xValArray;
@@ -294,7 +293,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return fieldValues;
         }
 
-        public override GeoFacetData Load(BoboIndexReader reader)
+        public override GeoFacetData Load(BoboSegmentReader reader)
         {
             GeoFacetData dataCache = new GeoFacetData();
             dataCache.Load(_latFieldName, _lonFieldName, reader);
