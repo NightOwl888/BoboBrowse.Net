@@ -17,13 +17,14 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Support;
     using BoboBrowse.Net.Util;
     using Lucene.Net.Index;
+    using Lucene.Net.Util;
     using System;
     using System.Collections.Generic;
 
@@ -33,7 +34,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public VirtualSimpleFacetHandler(string name,
                                          string indexFieldName,
-                                         TermListFactory termListFactory,
+                                         ITermListFactory termListFactory,
                                          IFacetDataFetcher facetDataFetcher,
                                          IEnumerable<string> dependsOn)
             : base(name, null, termListFactory, dependsOn)
@@ -42,79 +43,74 @@ namespace BoboBrowse.Net.Facets.Impl
         }
 
         public VirtualSimpleFacetHandler(string name,
-                                   TermListFactory termListFactory,
+                                   ITermListFactory termListFactory,
                                    IFacetDataFetcher facetDataFetcher,
                                    IEnumerable<string> dependsOn)
             : this(name, null, termListFactory, facetDataFetcher, dependsOn)
         {
         }
 
-        public override FacetDataCache Load(BoboIndexReader reader)
+        public override IFacetDataCache Load(BoboSegmentReader reader)
         {
-            int doc = -1;
             C5.TreeDictionary<object, List<int>> dataMap = null;
             List<int> docList = null;
 
             int nullMinId = -1;
             int nullMaxId = -1;
             int nullFreq = 0;
+            int doc = -1;
 
-            TermDocs termDocs = reader.TermDocs(null);
-            try
+            Bits liveDocs = reader.GetLiveDocs();
+            for (int i = 0; i < reader.maxDoc(); ++i)
             {
-                while (termDocs.Next())
+                if (liveDocs != null && !liveDocs.Get(i))
                 {
-                    doc = termDocs.Doc;
-                    object val = _facetDataFetcher.Fetch(reader, doc);
-                    if (val == null)
-                    {
-                        if (nullMinId < 0)
-                            nullMinId = doc;
-                        nullMaxId = doc;
-                        ++nullFreq;
-                        continue;
-                    }
-                    if (dataMap == null)
-                    {
-                        // Initialize.
-                        if (val is long[])
-                        {
-                            if (_termListFactory == null)
-                                _termListFactory = new TermFixedLengthLongArrayListFactory(
-                                  ((long[])val).Length);
-
-                            dataMap = new C5.TreeDictionary<object, List<int>>(new VirtualSimpleFacetHandlerLongArrayComparator());
-                        }
-                        else if (val is IComparable)
-                        {
-                            // NOTE: In .NET 3.5, the default constructor doesn't work in this case. We therefore have a custom type
-                            // that converts the objects to IComparable before comparing them, falling back to a string comparison
-                            // if they don't convert. This differs from the Java implementation that uses the default constructor.
-                            dataMap = new C5.TreeDictionary<object, List<int>>(new VirtualSimpleFacetHandlerComparableComparator());
-                        }
-                        else
-                        {
-                            dataMap = new C5.TreeDictionary<object, List<int>>(new VirtualSimpleFacetHandlerObjectComparator());
-                        }
-                    }
-
-                    if (dataMap.Contains(val))
-                        docList = dataMap[val];
-                    else
-                        docList = null;
-
-                    if (docList == null)
-                    {
-                        docList = new List<int>();
-                        dataMap[val] = docList;
-                    }
-                    docList.Add(doc);
+                    continue;
                 }
+                doc = i;
+                object val = _facetDataFetcher.Fetch(reader, doc);
+                if (val == null)
+                {
+                    if (nullMinId < 0)
+                        nullMinId = doc;
+                    nullMaxId = doc;
+                    ++nullFreq;
+                    continue;
+                }
+                if (dataMap == null)
+                {
+                    // Initialize.
+                    if (val is long[])
+                    {
+                        if (_termListFactory == null)
+                            _termListFactory = new TermFixedLengthLongArrayListFactory(
+                              ((long[])val).Length);
+
+                        dataMap = new C5.TreeDictionary<object, List<int>>(new VirtualSimpleFacetHandlerLongArrayComparator());
+                    }
+                    else if (val is IComparable)
+                    {
+                        dataMap = new C5.TreeDictionary<object, List<int>>();
+                    }
+                    else
+                    {
+                        dataMap = new C5.TreeDictionary<object, List<int>>(new VirtualSimpleFacetHandlerObjectComparator());
+                    }
+                }
+
+                if (dataMap.Contains(val))
+                    docList = dataMap[val];
+                else
+                    docList = null;
+
+                if (docList == null)
+                {
+                    docList = new List<int>();
+                    dataMap[val] = docList;
+                }
+                docList.Add(doc);
             }
-            finally
-            {
-                termDocs.Dispose();
-            }
+
             _facetDataFetcher.Cleanup(reader);
 
             int maxDoc = reader.MaxDoc;
@@ -155,8 +151,8 @@ namespace BoboBrowse.Net.Facets.Impl
             }
             list.Seal();
 
-            FacetDataCache dataCache = new FacetDataCache(order, list, freqs, minIDs,
-              maxIDs, TermCountSize.Large);
+            FacetDataCache dataCache = new FacetDataCache(order, list, freqs, minIDs, maxIDs, 
+                TermCountSize.Large);
             return dataCache;
         }
 
@@ -184,21 +180,6 @@ namespace BoboBrowse.Net.Facets.Impl
                     return -1;
 
                 return 0;
-            }
-        }
-
-        private class VirtualSimpleFacetHandlerComparableComparator : IComparer<object>
-        {
-            public virtual int Compare(object big, object small)
-            {
-                var bigComparable = big as IComparable;
-                var smallComparable = small as IComparable;
-                if (bigComparable != null && smallComparable != null)
-                {
-                    return bigComparable.CompareTo(smallComparable);
-                }
-
-                return string.CompareOrdinal(Convert.ToString(big), Convert.ToString(small));
             }
         }
 
