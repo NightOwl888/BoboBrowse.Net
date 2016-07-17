@@ -17,17 +17,16 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Search.Section
 {
     using Lucene.Net.Index;
     using Lucene.Net.Search;
+    using Lucene.Net.Util;
     using System;
 
     public class IntMetaDataQuery : MetaDataQuery
-    {
-        //private static long serialVersionUID = 1L; // NOT USED
-  
+    { 
         private Validator _validator;
 
         public abstract class Validator
@@ -37,8 +36,6 @@ namespace BoboBrowse.Net.Search.Section
 
         public class SimpleValueValidator : Validator
         {
-            //private static long serialVersionUID = 1L; // NOT USED
-
             private readonly int _val;
 
             public SimpleValueValidator(int val)
@@ -59,8 +56,6 @@ namespace BoboBrowse.Net.Search.Section
 
         public class SimpleRangeValidator : Validator
         {
-            //private static long serialVersionUID = 1L; // NOT USED
-
             private readonly int _lower;
             private readonly int _upper;
 
@@ -97,7 +92,7 @@ namespace BoboBrowse.Net.Search.Section
             return "IntMetaDataQuery(" + _validator.ToString() + ")";
         }
 
-        public override Weight CreateWeight(Searcher searcher)
+        public override Weight CreateWeight(IndexSearcher searcher)
         {
             throw new NotSupportedException();
         }
@@ -107,7 +102,7 @@ namespace BoboBrowse.Net.Search.Section
             return this;
         }
 
-        public override SectionSearchQueryPlan GetPlan(IndexReader reader)
+        public override SectionSearchQueryPlan GetPlan(AtomicReader reader)
         {
             return new IntMetaDataNodeNoCache(_term, reader, _validator);
         }
@@ -123,7 +118,7 @@ namespace BoboBrowse.Net.Search.Section
             private byte[] _data;
             private int _dataLen;
 
-            public IntMetaDataNodeNoCache(Term term, IndexReader reader, Validator validator)
+            public IntMetaDataNodeNoCache(Term term, AtomicReader reader, Validator validator)
                 : base(term, reader)
             {
                 _validator = validator;
@@ -143,20 +138,21 @@ namespace BoboBrowse.Net.Search.Section
 
                 if (_dataLen == -1 && _posLeft > 0)
                 {
-                    _tp.NextPosition();
-                    if (_tp.IsPayloadAvailable)
+                    _dp.NextPosition();
+                    BytesRef payload = _dp.Payload;
+                    if (payload != null)
                     {
-                        _dataLen = _tp.PayloadLength;
-                        _data = _tp.GetPayload(_data, 0);
+                        _dataLen = payload.Length;
+                        _data = payload.Bytes;
                     }
                 }
                 int offset = targetSec * 4;
                 while (offset + 4 <= _dataLen)
                 {
-                    int datum = ((_data[offset] & 0xff) |
-                                 ((_data[offset + 1] & 0xff) << 8) |
-                                 ((_data[offset + 2] & 0xff) << 16) |
-                                 ((_data[offset + 3] & 0xff) << 24));
+                    int datum = ((_data[offset] & 0xff) | 
+                                ((_data[offset + 1] & 0xff) << 8) | 
+                                ((_data[offset + 2] & 0xff) << 16) | 
+                                ((_data[offset + 3] & 0xff) << 24));
 
                     if (_validator.Validate(datum))
                     {
