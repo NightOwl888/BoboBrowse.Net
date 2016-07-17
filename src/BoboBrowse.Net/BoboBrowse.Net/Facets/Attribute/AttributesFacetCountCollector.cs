@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Attribute
 {
     using BoboBrowse.Net.Facets.Data;
@@ -30,25 +30,22 @@ namespace BoboBrowse.Net.Facets.Attribute
 
     public class AttributesFacetCountCollector : DefaultFacetCountCollector
     {
-        private readonly AttributesFacetHandler attributesFacetHandler;
-        //public readonly BigNestedIntArray _array; // NOT USED
-        //private int[] buffer;    // NOT USED
+        public readonly BigNestedIntArray _array; // NOT USED
         private IEnumerable<BrowseFacet> cachedFacets;
         private readonly int numFacetsPerKey;
         private readonly char separator;
-        //private OpenBitSet excludes; // NOT USED
-        //private OpenBitSet includes; // NOT USED
-        private readonly MultiValueFacetDataCache dataCache;
+        private readonly IMultiValueFacetDataCache dataCache;
         private string[] values;
 
-        public AttributesFacetCountCollector(AttributesFacetHandler attributesFacetHandler, string name, MultiValueFacetDataCache dataCache, int docBase, BrowseSelection browseSelection, FacetSpec ospec, int numFacetsPerKey, char separator)
+        public AttributesFacetCountCollector(AttributesFacetHandler attributesFacetHandler, string name, 
+            IMultiValueFacetDataCache dataCache, int docBase, BrowseSelection browseSelection, 
+            FacetSpec ospec, int numFacetsPerKey, char separator)
             : base(name, dataCache, docBase, browseSelection, ospec)
         {
-            this.attributesFacetHandler = attributesFacetHandler;
             this.dataCache = dataCache;
             this.numFacetsPerKey = numFacetsPerKey;
             this.separator = separator;
-            //_array = dataCache.NestedArray; // NOT USED
+            _array = dataCache.NestedArray; // NOT USED
             if (browseSelection != null)
             {
                 values = browseSelection.Values;
