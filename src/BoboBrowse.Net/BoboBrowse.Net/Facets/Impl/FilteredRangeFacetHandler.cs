@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net;
@@ -77,19 +77,19 @@ namespace BoboBrowse.Net.Facets.Impl
                 this._fspec = fspec;
                 this._predefinedRanges = predefinedRanges;
             }
-            public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
+            public override IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase)
             {
-                FacetDataCache dataCache = _innerHandler.GetFacetData<FacetDataCache>(reader);
+                IFacetDataCache dataCache = _innerHandler.GetFacetData<IFacetDataCache>(reader);
                 return new RangeFacetCountCollector(_name, dataCache, docBase, _fspec, _predefinedRanges);
             }
         }
 
-		public override string[] GetFieldValues(BoboIndexReader reader, int id)
+        public override string[] GetFieldValues(BoboSegmentReader reader, int id)
 		{
 			return _innerHandler.GetFieldValues(reader, id);
 		}
 
-		public override object[] GetRawFieldValues(BoboIndexReader reader, int id)
+        public override object[] GetRawFieldValues(BoboSegmentReader reader, int id)
 		{
 			return _innerHandler.GetRawFieldValues(reader, id);
 		}
@@ -99,7 +99,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return _innerHandler.GetDocComparatorSource();
         }
 
-		public override FacetDataNone Load(BoboIndexReader reader)
+        public override FacetDataNone Load(BoboSegmentReader reader)
 		{
 			IFacetHandler handler = reader.GetFacetHandler(_inner);
 			if (handler is RangeFacetHandler)
