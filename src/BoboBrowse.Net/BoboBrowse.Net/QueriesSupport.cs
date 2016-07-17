@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net
 {
     using Lucene.Net.Search;
@@ -32,22 +32,23 @@ namespace BoboBrowse.Net
             for (int i = 0; i < queries.Length; i++)
             {
                 Lucene.Net.Search.Query query = queries[i];
-                List<BooleanClause> clauses = null;
+                BooleanClause[] clauses = null;
                 // check if we can split the query into clauses
                 bool splittable = (query is BooleanQuery);
                 if (splittable)
                 {
                     BooleanQuery bq = (BooleanQuery)query;
-                    splittable = bq.IsCoordDisabled();
+                    splittable = bq.CoordDisabled;
                     clauses = bq.Clauses;
-                    for (int j = 0; splittable && j < clauses.Count; j++)
+                    for (int j = 0; splittable && j < clauses.Length; j++)
                     {
-                        splittable = (clauses[j].Occur == Occur.MUST);
+                        // TODO: Fix lucene and issue pull request.
+                        splittable = (clauses[j].Occur_ == BooleanClause.Occur.MUST);
                     }
                 }
                 if (splittable)
                 {
-                    for (int j = 0; j < clauses.Count; j++)
+                    for (int j = 0; j < clauses.Length; j++)
                     {
                         uniques.Add(clauses[j].Query);
                     }
@@ -64,7 +65,7 @@ namespace BoboBrowse.Net
             }
             BooleanQuery result = new BooleanQuery(true);
             foreach (var query in uniques)
-                result.Add(query, Occur.MUST);
+                result.Add(query, BooleanClause.Occur.MUST);
             return result;
         }
     }
