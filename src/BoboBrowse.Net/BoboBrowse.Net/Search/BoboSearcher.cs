@@ -17,38 +17,39 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Search
 {
     using BoboBrowse.Net.DocIdSet;
     using BoboBrowse.Net.Facets;
     using BoboBrowse.Net.MapRed;
+    using BoboBrowse.Net.Support;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
     using Lucene.Net.Util;
     using System.Collections.Generic;
     using System.Linq;
 
-    public class BoboSearcher2 : IndexSearcher
+    public class BoboSearcher : IndexSearcher
     {
         protected IEnumerable<FacetHitCollector> _facetCollectors;
         protected BoboSegmentReader[] _subReaders;
-        protected int[] _docStarts;
 
-        public BoboSearcher2(BoboSegmentReader reader)
+        public BoboSearcher(BoboSegmentReader reader)
             : base(reader)
         {
             _facetCollectors = new List<FacetHitCollector>();
-            var readerList = new List<IndexReader>();
-            ReaderUtil.GatherSubReaders(readerList, reader);
-            _subReaders = readerList.Cast<BoboSegmentReader>().ToArray();
-            _docStarts = new int[_subReaders.Length];
-            int maxDoc = 0;
-            for (int i = 0; i < _subReaders.Length; ++i)
-            {
-                _docStarts[i] = maxDoc;
-                maxDoc += _subReaders[i].MaxDoc;
-            }
+            var readerList = new List<BoboSegmentReader>();
+            readerList.Add(reader);
+            _subReaders = readerList.ToArray();
+        }
+
+        public BoboSearcher(BoboMultiReader reader)
+            : base(reader)
+        {
+            _facetCollectors = new List<FacetHitCollector>();
+            IEnumerable<BoboSegmentReader> subReaders = reader.GetSubReaders();
+            _subReaders = subReaders.ToArray();
         }
 
         public virtual IEnumerable<FacetHitCollector> FacetHitCollectorList
@@ -206,7 +207,7 @@ namespace BoboBrowse.Net.Search
 
         private sealed class OnePostFilterFacetValidator : FacetValidator
         {
-            private FacetHitCollector _firsttime;
+            private readonly FacetHitCollector _firsttime;
 
             public OnePostFilterFacetValidator(FacetHitCollector[] collectors)
                 : base(collectors, 1)
@@ -297,8 +298,9 @@ namespace BoboBrowse.Net.Search
             }
         }
 
-        public override void Search(Weight weight, Filter filter, Collector collector)
+        public override void Search(Query query, Filter filter, Collector collector)
         {
+            Weight weight = CreateNormalizedWeight(query);
             this.Search(weight, filter, collector, 0, null);
         }
 
@@ -307,20 +309,37 @@ namespace BoboBrowse.Net.Search
             FacetValidator validator = CreateFacetValidator();
             int target = 0;
 
+            IndexReader reader = this.IndexReader;
+            IndexReaderContext indexReaderContext = reader.Context;
             if (filter == null)
             {
                 for (int i = 0; i < _subReaders.Length; i++)
-                { // search each subreader
-                    int docStart = start + _docStarts[i];
-                    collector.SetNextReader(_subReaders[i], docStart);
+                {
+                    AtomicReaderContext atomicContext = indexReaderContext.Children == null 
+                        ? (AtomicReaderContext)indexReaderContext
+                        : (AtomicReaderContext)(indexReaderContext.Children.Get(i));
+                    int docStart = start;
+
+                    // TODO: Need to contribute this to Lucene.net
+                    atomicContext = Lucene.Net.Index.AtomicReaderContextUtil.UpdateDocBase(atomicContext, docStart);
+
+
+                    if (reader is BoboMultiReader) 
+                    {
+                        docStart = start + ((BoboMultiReader) reader).SubReaderBase(i);
+                    }
+                    // TODO: Make these consistenly properties or methods
+                    collector.NextReader = atomicContext;
                     validator.SetNextReader(_subReaders[i], docStart);
 
-
-                    Scorer scorer = weight.Scorer(_subReaders[i], true, true);
+                    //// TODO: Check whether this overload is supposed to be supported by Lucene 4.8.0
+                    //Scorer scorer = weight.Scorer(atomicContext, true, true, _subReaders[i].LiveDocs);
+                    // TODO: Check whether this overload is supposed to be supported by Lucene 4.8.0
+                    Scorer scorer = weight.Scorer(atomicContext, _subReaders[i].LiveDocs);
                     if (scorer != null)
                     {
 
-                        collector.SetScorer(scorer);
+                        collector.Scorer = scorer;
                         target = scorer.NextDoc();
                         while (target != DocIdSetIterator.NO_MORE_DOCS)
                         {
@@ -346,16 +365,26 @@ namespace BoboBrowse.Net.Search
 
             for (int i = 0; i < _subReaders.Length; i++)
             {
-                DocIdSet filterDocIdSet = filter.GetDocIdSet(_subReaders[i]);
+                AtomicReaderContext atomicContext = indexReaderContext.Children == null
+                        ? (AtomicReaderContext)indexReaderContext
+                        : (AtomicReaderContext)(indexReaderContext.Children.Get(i));
+
+                DocIdSet filterDocIdSet = filter.GetDocIdSet(atomicContext, _subReaders[i].LiveDocs);
                 if (filterDocIdSet == null) return;  //shall we use return or continue here ??
-                int docStart = start + _docStarts[i];
-                collector.SetNextReader(_subReaders[i], docStart);
+                int docStart = start;
+                if (reader is BoboMultiReader)
+                {
+                    docStart = start + ((BoboMultiReader)reader).SubReaderBase(i);
+                }
+                collector.NextReader = atomicContext;
                 validator.SetNextReader(_subReaders[i], docStart);
-                Scorer scorer = weight.Scorer(_subReaders[i], true, false);
+                //// TODO: Check whether this overload is supposed to be supported by Lucene 4.8.0
+                //Scorer scorer = weight.Scorer(atomicContext, true, false, _subReaders[i].LiveDocs);
+                Scorer scorer = weight.Scorer(atomicContext, _subReaders[i].LiveDocs);
                 if (scorer != null)
                 {
-                    collector.SetScorer(scorer);
-                    DocIdSetIterator filterDocIdIterator = filterDocIdSet.Iterator(); // CHECKME: use ConjunctionScorer here?
+                    collector.Scorer = scorer;
+                    DocIdSetIterator filterDocIdIterator = filterDocIdSet.GetIterator(); // CHECKME: use ConjunctionScorer here?
 
                     if (filterDocIdIterator == null)
                         continue;

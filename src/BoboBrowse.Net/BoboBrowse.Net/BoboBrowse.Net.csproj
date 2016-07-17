@@ -231,7 +231,7 @@
     <Compile Include="BoboBrowser.cs" />
     <Compile Include="Query\Scoring\MultiplicativeFacetTermScoringFunction.cs" />
     <Compile Include="Query\Scoring\MultiplicativeFacetTermScoringFunctionFactory.cs" />
-    <Compile Include="Search\BoboSearcher2.cs" />
+    <Compile Include="Search\BoboSearcher.cs" />
     <Compile Include="BrowseHit.cs" />
     <Compile Include="BrowseResult.cs" />
     <Compile Include="Search\FacetHitCollector.cs" />
