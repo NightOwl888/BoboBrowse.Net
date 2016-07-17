@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Filter;
@@ -212,7 +212,7 @@ namespace BoboBrowse.Net.Facets.Impl
             throw new NotSupportedException("facet counting not supported for " + typeof(ComboFacetHandler));
         }
 
-        public override string[] GetFieldValues(BoboIndexReader reader, int id)
+        public override string[] GetFieldValues(BoboSegmentReader reader, int id)
         {
             IEnumerable<string> dependsOn = this.DependsOn;
             List<string> valueList = new List<string>();
@@ -230,10 +230,9 @@ namespace BoboBrowse.Net.Facets.Impl
             return valueList.ToArray();
         }
 
-        public override int GetNumItems(BoboIndexReader reader, int id)
+        public override int GetNumItems(BoboSegmentReader reader, int id)
         {
             IEnumerable<string> dependsOn = this.DependsOn;
-            List<string> valueList = new List<string>();
             int count = 0;
             foreach (string depends in dependsOn)
             {
@@ -247,7 +246,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return count;
         }
 
-        public override FacetDataNone Load(BoboIndexReader reader)
+        public override FacetDataNone Load(BoboSegmentReader reader)
         {
             return FacetDataNone.Instance;
         }
