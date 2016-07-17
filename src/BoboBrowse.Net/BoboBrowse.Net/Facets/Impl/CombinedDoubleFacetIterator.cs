@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
@@ -79,16 +79,6 @@ namespace BoboBrowse.Net.Facets.Impl
                 _curFacet = TermDoubleList.VALUE_MISSING;
                 _curFacetCount = 0;
                 return false;
-            }
-
-            public virtual string Peek()// bad
-            {
-                throw new NotSupportedException();
-                // if(_iterator.hasNext())
-                // {
-                // return _iterator.getFacet();
-                // }
-                // return null;
             }
         }
 
