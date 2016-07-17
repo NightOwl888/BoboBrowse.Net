@@ -17,17 +17,15 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version 3.2.0 compatibility
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
 
     public abstract class GroupByFacetCountCollector : DefaultFacetCountCollector
     {
-        //private int _totalGroups; // NOT USED
-
         public GroupByFacetCountCollector(string name,
-                                    FacetDataCache dataCache,
+                                    IFacetDataCache dataCache,
                                     int docBase,
                                     BrowseSelection sel,
                                     FacetSpec ospec)
