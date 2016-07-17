@@ -17,35 +17,52 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Query
 {
     using Lucene.Net.Index;
     using Lucene.Net.Search;
+    using Lucene.Net.Util;
 
     public class MatchAllDocIdSetIterator : DocIdSetIterator
     {
-        private readonly TermDocs _termDocs;
-        private int _docid;
-        public MatchAllDocIdSetIterator(IndexReader reader)
+        private readonly Bits _acceptDocs;
+        private readonly int _maxDoc;
+        private int _docID;
+        public MatchAllDocIdSetIterator(AtomicReader reader, Bits acceptDocs)
         {
-            _termDocs = reader.TermDocs(null);
-            _docid = -1;
+            _acceptDocs = acceptDocs;
+            _maxDoc = reader.MaxDoc;
+            _docID = -1;
         }
 
         public override int Advance(int target)
         {
-            return _docid = _termDocs.SkipTo(target) ? _termDocs.Doc : NO_MORE_DOCS;
+            _docID = target;
+            while (_docID < _maxDoc)
+            {
+                if (_acceptDocs == null || _acceptDocs.Get(_docID))
+                {
+                    return _docID;
+                }
+                _docID++;
+            }
+            return NO_MORE_DOCS;
         }
 
         public override int DocID()
         {
-            return _docid;
+            return _docID;
         }
 
         public override int NextDoc()
         {
-            return _docid = _termDocs.Next() ? _termDocs.Doc : NO_MORE_DOCS;
+            return Advance(_docID + 1);
+        }
+
+        public override long Cost()
+        {
+            return 0;
         }
     }
 }
