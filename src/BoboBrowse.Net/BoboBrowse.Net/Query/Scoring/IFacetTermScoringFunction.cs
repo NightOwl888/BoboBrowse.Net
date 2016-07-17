@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Query.Scoring
 {
     using Lucene.Net.Search;
@@ -25,10 +25,15 @@ namespace BoboBrowse.Net.Query.Scoring
     public interface IFacetTermScoringFunction
     {
         void ClearScores();
+
         float Score(int df, float boost);
+
         void ScoreAndCollect(int df, float boost);
+
         Explanation Explain(int df, float boost);
+
         float GetCurrentScore();
+
         Explanation Explain(params float[] scores);
     }
 }
