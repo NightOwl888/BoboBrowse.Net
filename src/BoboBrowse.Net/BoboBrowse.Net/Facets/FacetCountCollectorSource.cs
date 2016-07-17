@@ -24,6 +24,6 @@ namespace BoboBrowse.Net.Facets
 
     public abstract class FacetCountCollectorSource
     {
-        public abstract IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase);
+        public abstract IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase);
     }
 }

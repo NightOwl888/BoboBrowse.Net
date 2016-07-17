@@ -223,7 +223,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         private class CompactMultiValueFacetCountCollectorSource : FacetCountCollectorSource
         {
-            private readonly Func<BoboIndexReader, FacetDataCache> getFacetData;
+            private readonly Func<BoboSegmentReader, FacetDataCache> getFacetData;
             private readonly string _name;
             private readonly BrowseSelection _sel;
             private readonly FacetSpec _ospec;

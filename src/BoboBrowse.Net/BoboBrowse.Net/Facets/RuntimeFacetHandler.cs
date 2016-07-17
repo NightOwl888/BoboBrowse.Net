@@ -58,12 +58,12 @@ namespace BoboBrowse.Net.Facets
             : base(name)
         { }
 
-        public override T GetFacetData<T>(BoboIndexReader reader)
+        public override T GetFacetData<T>(BoboSegmentReader reader)
         {
             return (T)reader.GetRuntimeFacetData(_name);
         }
 
-        public override void LoadFacetData(BoboIndexReader reader)
+        public override void LoadFacetData(BoboSegmentReader reader)
         {
             reader.PutRuntimeFacetData(_name, Load(reader));
             reader.PutRuntimeFacetData(_name, this);

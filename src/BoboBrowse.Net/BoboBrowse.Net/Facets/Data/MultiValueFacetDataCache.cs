@@ -66,7 +66,7 @@ namespace BoboBrowse.Net.Facets.Data
 
         public override void Load(string fieldName, IndexReader reader, TermListFactory listFactory)
         {
-            this.Load(fieldName, reader, listFactory, new BoboIndexReader.WorkArea());
+            this.Load(fieldName, reader, listFactory, new BoboSegmentReader.WorkArea());
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace BoboBrowse.Net.Facets.Data
         /// <param name="reader"></param>
         /// <param name="listFactory"></param>
         /// <param name="workArea"></param>
-        public virtual void Load(string fieldName, IndexReader reader, TermListFactory listFactory, BoboIndexReader.WorkArea workArea)
+        public virtual void Load(string fieldName, IndexReader reader, TermListFactory listFactory, BoboSegmentReader.WorkArea workArea)
         {
             long t0 = Environment.TickCount;
             int maxdoc = reader.MaxDoc;
@@ -359,7 +359,7 @@ namespace BoboBrowse.Net.Facets.Data
             }
         }
 
-        protected virtual BigNestedIntArray.BufferedLoader GetBufferedLoader(int maxdoc, BoboIndexReader.WorkArea workArea)
+        protected virtual BigNestedIntArray.BufferedLoader GetBufferedLoader(int maxdoc, BoboSegmentReader.WorkArea workArea)
         {
             if (workArea == null)
             {
@@ -455,9 +455,9 @@ namespace BoboBrowse.Net.Facets.Data
 
         public override DocComparator GetComparator(IndexReader reader, int docbase)
         {
-            if (!reader.GetType().Equals(typeof(BoboIndexReader)))
+            if (!reader.GetType().Equals(typeof(BoboSegmentReader)))
                 throw new ArgumentException("reader must be instance of BoboIndexReader");
-            BoboIndexReader boboReader = (BoboIndexReader)reader;
+            BoboSegmentReader boboReader = (BoboSegmentReader)reader;
             MultiValueFacetDataCache dataCache = (MultiValueFacetDataCache)cacheBuilder.Build(boboReader);
             return new MultiFacetDocComparator(dataCache);
         }

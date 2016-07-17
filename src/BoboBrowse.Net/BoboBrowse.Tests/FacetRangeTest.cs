@@ -174,7 +174,7 @@ namespace BoboBrowse.Net
             using (IndexReader reader = IndexReader.Open(this._indexDir, true))
             {
                 // Bobo reader.
-                using (BoboIndexReader boboReader = BoboIndexReader.GetInstance(reader, this._facetHandlers))
+                using (BoboSegmentReader boboReader = BoboSegmentReader.GetInstance(reader, this._facetHandlers))
                 {
                     // Request.
                     BrowseRequest browseRequest = new BrowseRequest();
@@ -226,7 +226,7 @@ namespace BoboBrowse.Net
             using (IndexReader reader = IndexReader.Open(this._indexDir, true))
             {
                 // Bobo reader.
-                using (BoboIndexReader boboReader = BoboIndexReader.GetInstance(reader, this._facetHandlers))
+                using (BoboSegmentReader boboReader = BoboSegmentReader.GetInstance(reader, this._facetHandlers))
                 {
                     // Request.
                     BrowseRequest browseRequest = new BrowseRequest();
@@ -278,7 +278,7 @@ namespace BoboBrowse.Net
             using (IndexReader reader = IndexReader.Open(this._indexDir, true))
             {
                 // Bobo reader.
-                using (BoboIndexReader boboReader = BoboIndexReader.GetInstance(reader, this._facetHandlers))
+                using (BoboSegmentReader boboReader = BoboSegmentReader.GetInstance(reader, this._facetHandlers))
                 {
                     // Request.
                     BrowseRequest browseRequest = new BrowseRequest();
@@ -330,7 +330,7 @@ namespace BoboBrowse.Net
             using (IndexReader reader = IndexReader.Open(this._indexDir, true))
             {
                 // Bobo reader.
-                using (BoboIndexReader boboReader = BoboIndexReader.GetInstance(reader, this._facetHandlers))
+                using (BoboSegmentReader boboReader = BoboSegmentReader.GetInstance(reader, this._facetHandlers))
                 {
                     // Request.
                     BrowseRequest browseRequest = new BrowseRequest();
@@ -382,7 +382,7 @@ namespace BoboBrowse.Net
             using (IndexReader reader = IndexReader.Open(this._indexDir, true))
             {
                 // Bobo reader.
-                using (BoboIndexReader boboReader = BoboIndexReader.GetInstance(reader, this._facetHandlers))
+                using (BoboSegmentReader boboReader = BoboSegmentReader.GetInstance(reader, this._facetHandlers))
                 {
                     // Request.
                     BrowseRequest browseRequest = new BrowseRequest();

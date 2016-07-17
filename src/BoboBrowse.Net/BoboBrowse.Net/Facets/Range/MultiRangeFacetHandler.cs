@@ -50,7 +50,7 @@ namespace BoboBrowse.Net.Facets.Range
             return new MultiFacetDocComparatorSource(new MultiDataCacheBuilder(Name, _indexFieldName));
         }
 
-        public override string[] GetFieldValues(BoboIndexReader reader, int id)
+        public override string[] GetFieldValues(BoboSegmentReader reader, int id)
         {
             MultiValueFacetDataCache dataCache = GetFacetData<MultiValueFacetDataCache>(reader);
             if (dataCache != null)
@@ -60,7 +60,7 @@ namespace BoboBrowse.Net.Facets.Range
             return new string[0];
         }
 
-        public override object[] GetRawFieldValues(BoboIndexReader reader, int id)
+        public override object[] GetRawFieldValues(BoboSegmentReader reader, int id)
         {
             MultiValueFacetDataCache dataCache = GetFacetData<MultiValueFacetDataCache>(reader);
             if (dataCache != null) {
@@ -69,7 +69,7 @@ namespace BoboBrowse.Net.Facets.Range
             return new string[0];
         }
 
-        public override T GetFacetData<T>(BoboIndexReader reader)
+        public override T GetFacetData<T>(BoboSegmentReader reader)
         {
             return (T)reader.GetFacetData(_name);
         }
@@ -95,7 +95,7 @@ namespace BoboBrowse.Net.Facets.Range
                 this.ospec = ospec;
             }
 
-            public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
+            public override IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase)
             {
                 MultiValueFacetDataCache dataCache = parent.GetFacetData<MultiValueFacetDataCache>(reader);
                 BigNestedIntArray _nestedArray = dataCache.NestedArray;
@@ -120,7 +120,7 @@ namespace BoboBrowse.Net.Facets.Range
             }
         }
 
-        public override BoboDocScorer GetDocScorer(BoboIndexReader reader, IFacetTermScoringFunctionFactory scoringFunctionFactory,
+        public override BoboDocScorer GetDocScorer(BoboSegmentReader reader, IFacetTermScoringFunctionFactory scoringFunctionFactory,
             IDictionary<string, float> boostMap)
         {
             MultiValueFacetDataCache dataCache = GetFacetData<MultiValueFacetDataCache>(reader);
@@ -128,12 +128,12 @@ namespace BoboBrowse.Net.Facets.Range
             return new MultiValueFacetHandler.MultiValueDocScorer(dataCache, scoringFunctionFactory, boostList);
         }
 
-        public override FacetDataCache Load(BoboIndexReader reader)
+        public override FacetDataCache Load(BoboSegmentReader reader)
         {
- 	         return Load(reader, new BoboIndexReader.WorkArea());
+ 	         return Load(reader, new BoboSegmentReader.WorkArea());
         }
 
-        public override FacetDataCache Load(BoboIndexReader reader, BoboIndexReader.WorkArea workArea)
+        public override FacetDataCache Load(BoboSegmentReader reader, BoboSegmentReader.WorkArea workArea)
         {
             MultiValueFacetDataCache dataCache = new MultiValueFacetDataCache();
             dataCache.MaxItems = maxItems;

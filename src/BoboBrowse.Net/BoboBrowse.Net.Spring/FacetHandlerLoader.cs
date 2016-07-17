@@ -28,7 +28,7 @@ namespace BoboBrowse.Net.Spring
 
     public class FacetHandlerLoader
     {
-        public IEnumerable<IFacetHandler> LoadFacetHandlers(string springConfigFile, BoboIndexReader.WorkArea workArea)
+        public IEnumerable<IFacetHandler> LoadFacetHandlers(string springConfigFile, BoboSegmentReader.WorkArea workArea)
         {
             if (File.Exists(springConfigFile))
             {

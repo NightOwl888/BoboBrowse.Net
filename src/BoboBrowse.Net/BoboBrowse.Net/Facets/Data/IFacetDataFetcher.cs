@@ -22,7 +22,7 @@ namespace BoboBrowse.Net.Facets.Data
 {
     public interface IFacetDataFetcher
     {
-        object Fetch(BoboIndexReader reader, int doc);
-        void Cleanup(BoboIndexReader reader);
+        object Fetch(BoboSegmentReader reader, int doc);
+        void Cleanup(BoboSegmentReader reader);
     }
 }

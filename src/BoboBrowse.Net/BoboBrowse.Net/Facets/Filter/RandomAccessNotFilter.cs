@@ -35,14 +35,14 @@ namespace BoboBrowse.Net.Facets.Filter
             _innerFilter = innerFilter;
         }
 
-        public override double GetFacetSelectivity(BoboIndexReader reader)
+        public override double GetFacetSelectivity(BoboSegmentReader reader)
         {
             double selectivity = _innerFilter.GetFacetSelectivity(reader);
             selectivity = selectivity > 0.999 ? 0.0 : (1 - selectivity);
             return selectivity;
         }
 
-        public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboIndexReader reader)
+        public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboSegmentReader reader)
         {
             RandomAccessDocIdSet innerDocIdSet = _innerFilter.GetRandomAccessDocIdSet(reader);
             DocIdSet notInnerDocIdSet = new NotDocIdSet(innerDocIdSet, reader.MaxDoc);

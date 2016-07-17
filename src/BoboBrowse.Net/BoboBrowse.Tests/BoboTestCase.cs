@@ -94,15 +94,15 @@ namespace BoboBrowse.Net
             this._indexDir = null;
         }
 
-        private BoboIndexReader NewIndexReader()
+        private BoboSegmentReader NewIndexReader()
         {
             return NewIndexReader(true);
         }
 
-        private BoboIndexReader NewIndexReader(bool readOnly)
+        private BoboSegmentReader NewIndexReader(bool readOnly)
         {
             IndexReader srcReader = IndexReader.Open(_indexDir, readOnly);
-            return BoboIndexReader.GetInstance(srcReader, this._fconf, true);
+            return BoboSegmentReader.GetInstance(srcReader, this._fconf, true);
         }
 
         private BoboBrowser NewBrowser()
@@ -528,7 +528,7 @@ namespace BoboBrowse.Net
         // NOTE: This was an anonymous class in Java.
         private class VirtualFacetDataFetcher : IFacetDataFetcher
         {
-            public object Fetch(BoboIndexReader reader, int doc)
+            public object Fetch(BoboSegmentReader reader, int doc)
             {
                 FacetDataCache sourceCache = (FacetDataCache)reader.GetFacetData("number");
                 if (sourceCache == null)
@@ -537,7 +537,7 @@ namespace BoboBrowse.Net
                 return sourceCache.ValArray.GetRawValue(sourceCache.OrderArray.Get(doc));
             }
 
-            public void Cleanup(BoboIndexReader reader)
+            public void Cleanup(BoboSegmentReader reader)
             {
                 // do nothing here.
             }
@@ -1460,7 +1460,7 @@ namespace BoboBrowse.Net
                 var facetHandlers = new List<IFacetHandler>();
                 facetHandlers.Add(new SimpleFacetHandler("id"));
 
-                BoboIndexReader reader = BoboIndexReader.GetInstance(srcReader, facetHandlers);       // not facet handlers to help
+                BoboSegmentReader reader = BoboSegmentReader.GetInstance(srcReader, facetHandlers);       // not facet handlers to help
                 BoboBrowser browser = new BoboBrowser(reader);
 
                 BrowseRequest browseRequest = new BrowseRequest();
@@ -2052,7 +2052,7 @@ namespace BoboBrowse.Net
 
             using (IndexReader srcReader = IndexReader.Open(_indexDir, false))
             {
-                using (BoboIndexReader reader = BoboIndexReader.GetInstance(srcReader, this._fconf))
+                using (BoboSegmentReader reader = BoboSegmentReader.GetInstance(srcReader, this._fconf))
                 {
                     reader.DeleteDocuments(new Term("id", "1"));
                     reader.DeleteDocuments(new Term("id", "2"));
@@ -2676,14 +2676,14 @@ namespace BoboBrowse.Net
             writer.Commit();
 
             IndexReader idxReader = IndexReader.Open(idxDir, true);
-            BoboIndexReader boboReader = BoboIndexReader.GetInstance(idxReader, _fconf, true);
+            BoboSegmentReader boboReader = BoboSegmentReader.GetInstance(idxReader, _fconf, true);
 
 
             for (int i = 1; i < docs.Length; ++i)
             {
                 Document doc = docs[i];
                 numDocs = boboReader.NumDocs();
-                BoboIndexReader reader = (BoboIndexReader)boboReader.Reopen(true);
+                BoboSegmentReader reader = (BoboSegmentReader)boboReader.Reopen(true);
                 Assert.AreSame(boboReader, reader);
 
                 Lucene.Net.Store.Directory tmpDir = new RAMDirectory();
@@ -2693,7 +2693,7 @@ namespace BoboBrowse.Net
                 subWriter.Dispose();
                 writer.AddIndexesNoOptimize(new Lucene.Net.Store.Directory[] { tmpDir });
                 writer.Commit();
-                reader = (BoboIndexReader)boboReader.Reopen();
+                reader = (BoboSegmentReader)boboReader.Reopen();
                 Assert.AreNotSame(boboReader, reader);
                 Assert.AreEqual(numDocs + 1, reader.NumDocs());
                 boboReader = reader;
@@ -2701,7 +2701,7 @@ namespace BoboBrowse.Net
             writer.DeleteDocuments(new Term("id", "1"));
             writer.Commit();
             numDocs = boboReader.NumDocs();
-            BoboIndexReader newReader = (BoboIndexReader)boboReader.Reopen();
+            BoboSegmentReader newReader = (BoboSegmentReader)boboReader.Reopen();
             Assert.AreNotSame(newReader, boboReader);
             int numDocs2 = newReader.NumDocs();
             if (boboReader != newReader)
@@ -2736,7 +2736,7 @@ namespace BoboBrowse.Net
                 writer.Commit();
             }
             IndexReader idxReader = IndexReader.Open(idxDir, true);
-            BoboIndexReader boboReader = BoboIndexReader.GetInstance(idxReader, facetHandlers);
+            BoboSegmentReader boboReader = BoboSegmentReader.GetInstance(idxReader, facetHandlers);
             BoboBrowser browser = new BoboBrowser(boboReader);
             List<string> ranges = new List<string>();
             ranges.Add("000000001");

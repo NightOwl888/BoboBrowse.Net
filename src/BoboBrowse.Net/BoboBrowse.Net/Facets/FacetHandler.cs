@@ -48,13 +48,13 @@ namespace BoboBrowse.Net.Facets
         DocComparatorSource GetDocComparatorSource();
         FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec fspec);
         FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec ospec, bool groupMode);
-        T GetFacetData<T>(BoboIndexReader reader);
-        string GetFieldValue(BoboIndexReader reader, int id);
-        string[] GetFieldValues(BoboIndexReader reader, int id);
-        int GetNumItems(BoboIndexReader reader, int id);
-        object[] GetRawFieldValues(BoboIndexReader reader, int id);
-        void LoadFacetData(BoboIndexReader reader);
-        void LoadFacetData(BoboIndexReader reader, BoboIndexReader.WorkArea workArea);
+        T GetFacetData<T>(BoboSegmentReader reader);
+        string GetFieldValue(BoboSegmentReader reader, int id);
+        string[] GetFieldValues(BoboSegmentReader reader, int id);
+        int GetNumItems(BoboSegmentReader reader, int id);
+        object[] GetRawFieldValues(BoboSegmentReader reader, int id);
+        void LoadFacetData(BoboSegmentReader reader);
+        void LoadFacetData(BoboSegmentReader reader, BoboSegmentReader.WorkArea workArea);
         IFacetAccessible Merge(FacetSpec fspec, IEnumerable<IFacetAccessible> facetList);
         string Name { get; }
         void PutDependedFacetHandler(IFacetHandler facetHandler);
@@ -158,29 +158,29 @@ namespace BoboBrowse.Net.Facets
         /// Load information from an index reader, initialized by <see cref="T:BoboBrowse.Net.BoboIndexReader"/>.
         /// </summary>
         /// <param name="reader"></param>
-        public abstract D Load(BoboIndexReader reader);
+        public abstract D Load(BoboSegmentReader reader);
 
         public virtual IFacetAccessible Merge(FacetSpec fspec, IEnumerable<IFacetAccessible> facetList)
         {
             return new CombinedFacetAccessible(fspec, facetList);
         }
 
-        public virtual T GetFacetData<T>(BoboIndexReader reader)
+        public virtual T GetFacetData<T>(BoboSegmentReader reader)
         {
             return (T)reader.GetFacetData(_name);
         }
 
-        public virtual D Load(BoboIndexReader reader, BoboIndexReader.WorkArea workArea)
+        public virtual D Load(BoboSegmentReader reader, BoboSegmentReader.WorkArea workArea)
         {
             return Load(reader);
         }
 
-        public virtual void LoadFacetData(BoboIndexReader reader, BoboIndexReader.WorkArea workArea)
+        public virtual void LoadFacetData(BoboSegmentReader reader, BoboSegmentReader.WorkArea workArea)
         {
             reader.PutFacetData(_name, Load(reader, workArea));
         }
 
-        public virtual void LoadFacetData(BoboIndexReader reader)
+        public virtual void LoadFacetData(BoboSegmentReader reader)
         {
             reader.PutFacetData(_name, Load(reader));
         }
@@ -310,14 +310,14 @@ namespace BoboBrowse.Net.Facets
         /// <param name="reader">index reader</param>
         /// <param name="id">doc</param>
         /// <returns>array of field values</returns>
-        public abstract string[] GetFieldValues(BoboIndexReader reader, int id);
+        public abstract string[] GetFieldValues(BoboSegmentReader reader, int id);
 
-        public virtual int GetNumItems(BoboIndexReader reader, int id)
+        public virtual int GetNumItems(BoboSegmentReader reader, int id)
         {
             throw new NotImplementedException("GetNumItems is not supported for this facet handler: " + this.GetType().FullName);
         }
 
-        public virtual object[] GetRawFieldValues(BoboIndexReader reader, int id)
+        public virtual object[] GetRawFieldValues(BoboSegmentReader reader, int id)
         {
             return GetFieldValues(reader, id);
         }
@@ -328,7 +328,7 @@ namespace BoboBrowse.Net.Facets
         /// <param name="reader">index reader</param>
         /// <param name="id">doc</param>
         /// <returns>first field value</returns>
-        public virtual string GetFieldValue(BoboIndexReader reader, int id)
+        public virtual string GetFieldValue(BoboSegmentReader reader, int id)
         {
             return GetFieldValues(reader, id)[0];
         }

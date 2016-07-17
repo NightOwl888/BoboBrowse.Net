@@ -81,7 +81,7 @@ namespace BoboBrowse.Net
         public void TestMultiValPath()
         {
             IndexReader reader = IndexReader.Open(directory, true);
-            BoboIndexReader boboReader = BoboIndexReader.GetInstance(reader, facetHandlers);
+            BoboSegmentReader boboReader = BoboSegmentReader.GetInstance(reader, facetHandlers);
 
             BoboBrowser browser = new BoboBrowser(boboReader);
             BrowseRequest req = new BrowseRequest();

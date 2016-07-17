@@ -46,7 +46,7 @@ namespace BoboBrowse.Net.Facets.Filter
             _takeCompliment = takeCompliment;
         }
 
-        public override double GetFacetSelectivity(BoboIndexReader reader)
+        public override double GetFacetSelectivity(BoboSegmentReader reader)
         {
             double selectivity = 0;
             MultiValueFacetDataCache dataCache = _facetHandler.GetFacetData<MultiValueFacetDataCache>(reader);
@@ -96,7 +96,7 @@ namespace BoboBrowse.Net.Facets.Filter
             }            
         }
 
-        public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboIndexReader reader)
+        public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboSegmentReader reader)
         {
             MultiValueFacetDataCache dataCache = _facetHandler.GetFacetData<MultiValueFacetDataCache>(reader);
             int[] index = _valueConverter.Convert(dataCache, _vals);

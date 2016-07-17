@@ -48,7 +48,7 @@ namespace BoboBrowse.Net.Facets.Filter
             _valueConverter = valueConverter;
         }
 
-        public override double GetFacetSelectivity(BoboIndexReader reader)
+        public override double GetFacetSelectivity(BoboSegmentReader reader)
         {
             double selectivity = 0;
             FacetDataCache dataCache = _facetHandler.GetFacetData<FacetDataCache>(reader);
@@ -75,7 +75,7 @@ namespace BoboBrowse.Net.Facets.Filter
             return selectivity;
         }
 
-        public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboIndexReader reader)
+        public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboSegmentReader reader)
         {
             if (_vals.Length == 0)
             {
@@ -94,7 +94,7 @@ namespace BoboBrowse.Net.Facets.Filter
 	        private readonly FacetDataCache _dataCache;
             private readonly int[] _index;
 
-            internal FacetOrRandomAccessDocIdSet(IFacetHandler facetHandler, BoboIndexReader reader, 
+            internal FacetOrRandomAccessDocIdSet(IFacetHandler facetHandler, BoboSegmentReader reader, 
                 string[] vals, IFacetValueConverter valConverter, bool takeCompliment)
             {
 		        _dataCache = facetHandler.GetFacetData<FacetDataCache>(reader);

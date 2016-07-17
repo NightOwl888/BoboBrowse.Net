@@ -55,7 +55,7 @@ namespace BoboBrowse.Net.Facets.Filter
             _miles = miles;
         }
 
-        public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboIndexReader reader)
+        public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboSegmentReader reader)
         {
             int maxDoc = reader.MaxDoc;
 

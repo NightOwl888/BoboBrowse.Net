@@ -51,7 +51,7 @@ namespace BoboBrowse.Net.Facets.Filter
             return bitSet;
         }
 
-        public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboIndexReader reader)
+        public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboSegmentReader reader)
         {
             FacetDataCache dataCache = facetDataCacheBuilder.Build(reader);
             OpenBitSet openBitSet = GetBitSet(dataCache);
@@ -108,7 +108,7 @@ namespace BoboBrowse.Net.Facets.Filter
             }
         }
 
-        public override double GetFacetSelectivity(BoboIndexReader reader)
+        public override double GetFacetSelectivity(BoboSegmentReader reader)
         {
             FacetDataCache dataCache = facetDataCacheBuilder.Build(reader);
             OpenBitSet openBitSet = GetBitSet(dataCache);

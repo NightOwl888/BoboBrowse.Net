@@ -87,7 +87,7 @@ namespace BoboBrowse.Net.Sort
         private DocComparator _currentComparator;
         private DocComparatorSource _compSource;
         private DocIDPriorityQueue _currentQueue;
-        private BoboIndexReader _currentReader = null;
+        private BoboSegmentReader _currentReader = null;
         private IFacetCountCollector _facetCountCollector;
         private IFacetCountCollector[] _facetCountCollectorMulti = null;
 
@@ -110,7 +110,7 @@ namespace BoboBrowse.Net.Sort
             //private static long serialVersionUID = 1L; // NOT USED
 
             public DocIDPriorityQueue queue;
-            public BoboIndexReader reader;
+            public BoboSegmentReader reader;
             public IComparable sortValue;
 
             public MyScoreDoc()
@@ -118,7 +118,7 @@ namespace BoboBrowse.Net.Sort
             {
             }
 
-            public MyScoreDoc(int docid, float score, DocIDPriorityQueue queue, BoboIndexReader reader)
+            public MyScoreDoc(int docid, float score, DocIDPriorityQueue queue, BoboSegmentReader reader)
                 : base(docid, score)
             {
                 this.queue = queue;
@@ -400,9 +400,9 @@ namespace BoboBrowse.Net.Sort
 
         public override void SetNextReader(IndexReader reader, int docBase)
         {
-            if (!(reader is BoboIndexReader))
+            if (!(reader is BoboSegmentReader))
                 throw new ArgumentException("reader must be a BoboIndexReader");
-            _currentReader = (BoboIndexReader)reader;
+            _currentReader = (BoboSegmentReader)reader;
             _currentComparator = _compSource.GetComparator(reader, docBase);
             _currentQueue = new DocIDPriorityQueue(_currentComparator, _numHits, docBase);
             if (groupBy != null)
@@ -568,7 +568,7 @@ namespace BoboBrowse.Net.Sort
             for (int i = scoreDocs.Length - 1; i >= 0; i--)
             {
                 MyScoreDoc fdoc = scoreDocs[i];
-                BoboIndexReader reader = fdoc.reader;
+                BoboSegmentReader reader = fdoc.reader;
                 BrowseHit hit = new BrowseHit();
                 if (fetchStoredFields)
                 {

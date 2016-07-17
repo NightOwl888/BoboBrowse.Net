@@ -47,7 +47,7 @@ namespace BoboBrowse.Net.Facets.Data
             get { return _weightArray; }
         }
 
-        public override void Load(string fieldName, IndexReader reader, TermListFactory listFactory, BoboIndexReader.WorkArea workArea)
+        public override void Load(string fieldName, IndexReader reader, TermListFactory listFactory, BoboSegmentReader.WorkArea workArea)
         {
             long t0 = System.Environment.TickCount;
             int maxdoc = reader.MaxDoc;

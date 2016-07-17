@@ -31,17 +31,17 @@ namespace BoboBrowse.Net.Facets.Filter
 
         public override DocIdSet GetDocIdSet(IndexReader reader)
         {
-            if (reader is BoboIndexReader)
+            if (reader is BoboSegmentReader)
             {
-                return GetRandomAccessDocIdSet((BoboIndexReader)reader);
+                return GetRandomAccessDocIdSet((BoboSegmentReader)reader);
             }
             else
             {
-                throw new ArgumentException("reader not instance of " + typeof(BoboIndexReader));
+                throw new ArgumentException("reader not instance of " + typeof(BoboSegmentReader));
             }
         }
 
-        public abstract RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboIndexReader reader);
-        public virtual double GetFacetSelectivity(BoboIndexReader reader) { return 0.50; }
+        public abstract RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboSegmentReader reader);
+        public virtual double GetFacetSelectivity(BoboSegmentReader reader) { return 0.50; }
     }
 }

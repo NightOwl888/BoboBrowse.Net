@@ -42,7 +42,7 @@ namespace BoboBrowse.Net.Facets.Filter
             _filters = filters;
         }
 
-        public override double GetFacetSelectivity(BoboIndexReader reader)
+        public override double GetFacetSelectivity(BoboSegmentReader reader)
         {
             double selectivity = 0;
             foreach (RandomAccessFilter filter in _filters)
@@ -57,7 +57,7 @@ namespace BoboBrowse.Net.Facets.Filter
             return selectivity;
         }
 
-        public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboIndexReader reader)
+        public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboSegmentReader reader)
         {
             var count = _filters.Count();
             if (count == 1)

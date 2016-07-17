@@ -33,7 +33,7 @@ namespace BoboBrowse.Net.Impl
     {
         private static readonly ILog logger = LogManager.GetLogger(typeof(BrowseServiceImpl));
         private readonly DirectoryInfo _idxDir;
-        private readonly BoboIndexReader _reader;
+        private readonly BoboSegmentReader _reader;
 
         public BrowseServiceImpl(DirectoryInfo idxDir)
         {
@@ -53,13 +53,13 @@ namespace BoboBrowse.Net.Impl
         {
         }*/
 
-        private BoboIndexReader NewIndexReader()
+        private BoboSegmentReader NewIndexReader()
         {
             Directory idxDir = FSDirectory.Open(_idxDir);
             return NewIndexReader(idxDir);
         }
 
-        public static BoboIndexReader NewIndexReader(Directory idxDir)
+        public static BoboSegmentReader NewIndexReader(Directory idxDir)
         {
             if (!IndexReader.IndexExists(idxDir))
             {
@@ -69,11 +69,11 @@ namespace BoboBrowse.Net.Impl
             long start = System.Environment.TickCount;
 
             IndexReader ir = IndexReader.Open(idxDir, true);
-            BoboIndexReader reader;
+            BoboSegmentReader reader;
 
             try
             {
-                reader = BoboIndexReader.GetInstance(ir);
+                reader = BoboSegmentReader.GetInstance(ir);
             }
             catch (IOException ioe)
             {

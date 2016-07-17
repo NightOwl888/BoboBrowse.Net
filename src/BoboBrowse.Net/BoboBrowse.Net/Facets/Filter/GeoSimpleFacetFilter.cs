@@ -119,7 +119,7 @@ namespace BoboBrowse.Net.Facets.Filter
             }
         }
 
-        public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboIndexReader reader)
+        public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboSegmentReader reader)
         {
             FacetDataCache latDataCache = _latFacetHandler.GetFacetData<FacetDataCache>(reader);
 		    FacetDataCache longDataCache = _longFacetHandler.GetFacetData<FacetDataCache>(reader);

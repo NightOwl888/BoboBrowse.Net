@@ -36,7 +36,7 @@ namespace BoboBrowse.Net.Search
 	    public List<IFacetCountCollector> _countCollectorList = new List<IFacetCountCollector>();
 	    public List<IFacetCountCollector> _collectAllCollectorList = new List<IFacetCountCollector>();
 
-        public void SetNextReader(BoboIndexReader reader, int docBase)
+        public void SetNextReader(BoboSegmentReader reader, int docBase)
         {
             if (_collectAllSource != null)
             {

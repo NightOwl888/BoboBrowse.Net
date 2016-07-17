@@ -121,7 +121,7 @@ namespace BoboBrowse.Net
             //Console.WriteLine("=============================");
 
             var faceHandlers = new IFacetHandler[] { new SimpleFacetHandler("name") };
-            var browser = new BoboBrowser(BoboIndexReader.GetInstance(IndexReader.Open(_indexDir, true), faceHandlers));
+            var browser = new BoboBrowser(BoboSegmentReader.GetInstance(IndexReader.Open(_indexDir, true), faceHandlers));
             var factSpec = new FacetSpec() { OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc };
             request.SetFacetSpec("name", factSpec);
 
@@ -147,7 +147,7 @@ namespace BoboBrowse.Net
             };
 
             var faceHandlers = new IFacetHandler[] { new SimpleFacetHandler("category") };
-            var browser = new BoboBrowser(BoboIndexReader.GetInstance(IndexReader.Open(_indexDir, true), faceHandlers));
+            var browser = new BoboBrowser(BoboSegmentReader.GetInstance(IndexReader.Open(_indexDir, true), faceHandlers));
             var factSpec = new FacetSpec() { OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc, MinHitCount = 1 };
             request.SetFacetSpec("category", factSpec);
 
@@ -185,7 +185,7 @@ namespace BoboBrowse.Net
             sectionFilter.SelectionOperation = BrowseSelection.ValueOperation.ValueOperationAnd;
             request.AddSelection(sectionFilter);
 
-            var browser = new BoboBrowser(BoboIndexReader.GetInstance(IndexReader.Open(_indexDir, true), new IFacetHandler[] { new MultiValueFacetHandler("author") }));
+            var browser = new BoboBrowser(BoboSegmentReader.GetInstance(IndexReader.Open(_indexDir, true), new IFacetHandler[] { new MultiValueFacetHandler("author") }));
             var result = browser.Browse(request);
             Console.WriteLine("===========================");
             for (var i = 0; i < result.Hits.Length; i++)
@@ -210,7 +210,7 @@ namespace BoboBrowse.Net
             };
 
             var faceHandlers = new IFacetHandler[] { new MultiValueFacetHandler("path") };
-            var browser = new BoboBrowser(BoboIndexReader.GetInstance(IndexReader.Open(_indexDir, true), faceHandlers));
+            var browser = new BoboBrowser(BoboSegmentReader.GetInstance(IndexReader.Open(_indexDir, true), faceHandlers));
             var factSpec = new FacetSpec() { OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc };
             request.SetFacetSpec("path", factSpec);
 
@@ -258,7 +258,7 @@ namespace BoboBrowse.Net
 
                 var faceHandler = testRangeFacetHandlers[i];
                 var faceHandlers = new IFacetHandler[] { faceHandler, new SimpleFacetHandler("category") };
-                var browser = new BoboBrowser(BoboIndexReader.GetInstance(IndexReader.Open(_indexDir, true), faceHandlers));
+                var browser = new BoboBrowser(BoboSegmentReader.GetInstance(IndexReader.Open(_indexDir, true), faceHandlers));
                 var factSpec = new FacetSpec() { OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc };
                 request.SetFacetSpec(faceHandler.Name, factSpec);
                 var result = browser.Browse(request);
@@ -285,7 +285,7 @@ namespace BoboBrowse.Net
             };
 
             var facetHandlers = new IFacetHandler[] { new SimpleFacetHandler("category") };
-            var browser = new BoboBrowser(BoboIndexReader.GetInstance(IndexReader.Open(_indexDir, true), facetHandlers));
+            var browser = new BoboBrowser(BoboSegmentReader.GetInstance(IndexReader.Open(_indexDir, true), facetHandlers));
             var facetSpec = new FacetSpec() { OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc, MinHitCount = 1 };
             request.SetFacetSpec("category", facetSpec);
 

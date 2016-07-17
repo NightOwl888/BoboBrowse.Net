@@ -45,16 +45,16 @@ namespace BoboBrowse.Net.Query
 
         public virtual Scorer CreateScorer(Scorer innerScorer, IndexReader reader, bool scoreDocsInOrder, bool topScorer)
         {
-            if(!(reader is BoboIndexReader)) 
+            if(!(reader is BoboSegmentReader)) 
                 throw new ArgumentException("IndexReader is not BoboIndexReader");
     
-            return new FacetBasedBoostingScorer(this, (BoboIndexReader)reader, innerScorer.Similarity, innerScorer);
+            return new FacetBasedBoostingScorer(this, (BoboSegmentReader)reader, innerScorer.Similarity, innerScorer);
         }
 
         public virtual Explanation Explain(IndexReader indexReader, int docid, Explanation innerExplaination)
         {
-            if (!(indexReader is BoboIndexReader)) throw new ArgumentException("IndexReader is not BoboIndexReader");
-            BoboIndexReader reader = (BoboIndexReader)indexReader;
+            if (!(indexReader is BoboSegmentReader)) throw new ArgumentException("IndexReader is not BoboIndexReader");
+            BoboSegmentReader reader = (BoboSegmentReader)indexReader;
 
             Explanation exp = new Explanation();
             exp.Description = "FacetBasedBoost";
@@ -90,7 +90,7 @@ namespace BoboBrowse.Net.Query
     
             private int _docid;
 
-            public FacetBasedBoostingScorer(FacetBasedBoostScorerBuilder parent, BoboIndexReader reader, Similarity similarity, Scorer innerScorer)
+            public FacetBasedBoostingScorer(FacetBasedBoostScorerBuilder parent, BoboSegmentReader reader, Similarity similarity, Scorer innerScorer)
                 : base(similarity)
             {
                 _innerScorer = innerScorer;

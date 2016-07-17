@@ -117,7 +117,7 @@ namespace BoboBrowse.Net.Facets.Attribute
                 _ospec = ospec;
             }
 
-            public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
+            public override IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase)
             {
                 int facetsPerKey = _parent.GetFacetsPerKey(_browseSelection);
                 if (_ospec.Properties != null && _ospec.Properties.ContainsKey(MAX_FACETS_PER_KEY_PROP_NAME))

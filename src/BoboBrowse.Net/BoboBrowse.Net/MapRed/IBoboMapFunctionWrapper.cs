@@ -32,21 +32,21 @@ namespace BoboBrowse.Net.MapRed
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="facetCountCollectors"></param>
-        void MapFullIndexReader(BoboIndexReader reader, IFacetCountCollector[] facetCountCollectors);
+        void MapFullIndexReader(BoboSegmentReader reader, IFacetCountCollector[] facetCountCollectors);
 
         /// <summary>
         /// The basic callback method for a single doc
         /// </summary>
         /// <param name="docId"></param>
         /// <param name="reader"></param>
-        void MapSingleDocument(int docId, BoboIndexReader reader);
+        void MapSingleDocument(int docId, BoboSegmentReader reader);
 
         /// <summary>
         /// The callback method, after the segment was processed
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="facetCountCollectors"></param>
-        void FinalizeSegment(BoboIndexReader reader, IFacetCountCollector[] facetCountCollectors);
+        void FinalizeSegment(BoboSegmentReader reader, IFacetCountCollector[] facetCountCollectors);
 
         /// <summary>
         /// The callback method, after the partition was processed

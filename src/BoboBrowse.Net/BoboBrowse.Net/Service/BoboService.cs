@@ -32,7 +32,7 @@ namespace BoboBrowse.Net.Service
         private static ILog logger = LogManager.GetLogger(typeof(BoboService));
 
         private readonly DirectoryInfo _idxDir;
-        private BoboIndexReader _boboReader;
+        private BoboSegmentReader _boboReader;
 
         public BoboService(string path)
             : this(new DirectoryInfo(path))
@@ -79,7 +79,7 @@ namespace BoboBrowse.Net.Service
             IndexReader reader = IndexReader.Open(FSDirectory.Open(_idxDir), true);
             try
             {
-                _boboReader = BoboIndexReader.GetInstance(reader);
+                _boboReader = BoboSegmentReader.GetInstance(reader);
             }
             catch
             {

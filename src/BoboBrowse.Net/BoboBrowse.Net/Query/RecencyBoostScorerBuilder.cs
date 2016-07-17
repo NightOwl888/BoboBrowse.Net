@@ -57,9 +57,9 @@ namespace BoboBrowse.Net.Query
 
         public virtual Explanation Explain(IndexReader reader, int doc, Explanation innerExplanation)
         {
-            if (reader is BoboIndexReader)
+            if (reader is BoboSegmentReader)
             {
-                BoboIndexReader boboReader = (BoboIndexReader)reader;
+                BoboSegmentReader boboReader = (BoboSegmentReader)reader;
                 object dataObj = boboReader.GetFacetData(_timeFacetName);
                 if (dataObj is FacetDataCache)
                 {
@@ -84,15 +84,15 @@ namespace BoboBrowse.Net.Query
             }
             else
             {
-                throw new ArgumentException("reader not instance of " + typeof(BoboIndexReader));
+                throw new ArgumentException("reader not instance of " + typeof(BoboSegmentReader));
             }
         }
 
         public virtual Scorer CreateScorer(Scorer innerScorer, IndexReader reader, bool scoreDocsInOrder, bool topScorer)
         {
-            if (reader is BoboIndexReader)
+            if (reader is BoboSegmentReader)
             {
-                BoboIndexReader boboReader = (BoboIndexReader)reader;
+                BoboSegmentReader boboReader = (BoboSegmentReader)reader;
                 object dataObj = boboReader.GetFacetData(_timeFacetName);
                 if (dataObj is FacetDataCache)
                 {
@@ -108,7 +108,7 @@ namespace BoboBrowse.Net.Query
             }
             else
             {
-                throw new ArgumentException("reader not instance of " + typeof(BoboIndexReader));
+                throw new ArgumentException("reader not instance of " + typeof(BoboSegmentReader));
             }
         }
 

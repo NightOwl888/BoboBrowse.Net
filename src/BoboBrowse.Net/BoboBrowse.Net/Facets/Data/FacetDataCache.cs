@@ -329,9 +329,9 @@ namespace BoboBrowse.Net.Facets.Data
 
         public override DocComparator GetComparator(IndexReader reader, int docbase)
         {
-            if (!(reader.GetType().Equals(typeof(BoboIndexReader))))
+            if (!(reader.GetType().Equals(typeof(BoboSegmentReader))))
                 throw new ArgumentException("reader not instance of BoboIndexReader");
-            BoboIndexReader boboReader = (BoboIndexReader)reader;
+            BoboSegmentReader boboReader = (BoboSegmentReader)reader;
             FacetDataCache dataCache = _facetHandler.GetFacetData<FacetDataCache>(boboReader);
             BigSegmentedArray orderArray = dataCache.OrderArray;
             return new FacetDocComparator(dataCache, orderArray);

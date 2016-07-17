@@ -181,7 +181,7 @@ namespace BoboBrowse.Net.Query.Scoring
 
             public override Explanation Explain(IndexReader reader, int docid)
             {
-                BoboIndexReader boboReader = (BoboIndexReader)reader;
+                BoboSegmentReader boboReader = (BoboSegmentReader)reader;
                 IFacetHandler fhandler = boboReader.GetFacetHandler(parent._name);
                 if (fhandler != null)
                 {
@@ -299,9 +299,9 @@ namespace BoboBrowse.Net.Query.Scoring
 
             public override Scorer Scorer(IndexReader reader, bool scoreDocsInOrder, bool topScorer)
             {
-                if (reader is BoboIndexReader)
+                if (reader is BoboSegmentReader)
                 {
-                    BoboIndexReader boboReader = (BoboIndexReader)reader;
+                    BoboSegmentReader boboReader = (BoboSegmentReader)reader;
                     TermDocs termDocs = boboReader.TermDocs(null);
                     IFacetHandler fhandler = boboReader.GetFacetHandler(parent._name);
                     if (fhandler != null)
@@ -335,7 +335,7 @@ namespace BoboBrowse.Net.Query.Scoring
                 }
                 else
                 {
-                    throw new IOException("index reader not instance of " + typeof(BoboIndexReader));
+                    throw new IOException("index reader not instance of " + typeof(BoboSegmentReader));
                 }
             }
 

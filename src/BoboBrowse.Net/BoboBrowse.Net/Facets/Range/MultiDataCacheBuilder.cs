@@ -35,7 +35,7 @@ namespace BoboBrowse.Net.Facets.Range
             this.indexFieldName = indexFieldName;
         }
 
-        public virtual FacetDataCache Build(BoboIndexReader reader)
+        public virtual FacetDataCache Build(BoboSegmentReader reader)
         {
             return (FacetDataCache)reader.GetFacetData(name);
         }

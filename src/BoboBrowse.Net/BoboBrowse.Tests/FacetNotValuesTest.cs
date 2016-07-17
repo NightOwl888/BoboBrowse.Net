@@ -184,7 +184,7 @@ namespace BoboBrowse.Tests
             {
                 using (IndexReader srcReader = IndexReader.Open(ramIndexDir, true))
                 {
-                    using (boboBrowser = new BoboBrowser(BoboIndexReader.GetInstance(srcReader, _facetHandlers, null)))
+                    using (boboBrowser = new BoboBrowser(BoboSegmentReader.GetInstance(srcReader, _facetHandlers, null)))
                     {
                         result = boboBrowser.Browse(br);
 
@@ -222,7 +222,7 @@ namespace BoboBrowse.Tests
                 using (IndexReader srcReader = IndexReader.Open(ramIndexDir, true))
                 {
 
-                    using (boboBrowser = new BoboBrowser(BoboIndexReader.GetInstance(srcReader, _facetHandlers, null)))
+                    using (boboBrowser = new BoboBrowser(BoboSegmentReader.GetInstance(srcReader, _facetHandlers, null)))
                     {
 
                         BrowseRequest br = new BrowseRequest();

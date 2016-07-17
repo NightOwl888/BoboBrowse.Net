@@ -36,18 +36,18 @@ namespace BoboBrowse.Net
     public class BoboSubBrowser : BoboSearcher2, IBrowsable, IDisposable
     {
         private static ILog logger = LogManager.GetLogger(typeof(BoboSubBrowser));
-        private readonly BoboIndexReader _reader;
+        private readonly BoboSegmentReader _reader;
         private readonly IDictionary<string, IRuntimeFacetHandlerFactory> _runtimeFacetHandlerFactoryMap;
         private readonly IDictionary<string, IFacetHandler> _runtimeFacetHandlerMap;
         private IDictionary<string, IFacetHandler> _allFacetHandlerMap;
         private IList<IRuntimeFacetHandler> _runtimeFacetHandlers = null;
 
-        new public BoboIndexReader IndexReader
+        new public BoboSegmentReader IndexReader
         {
             get { return _reader; }
         }
 
-        public BoboSubBrowser(BoboIndexReader reader)
+        public BoboSubBrowser(BoboSegmentReader reader)
             : base(reader)
         {
             _reader = reader;
@@ -84,7 +84,7 @@ namespace BoboBrowse.Net
         public virtual void SetFacetHandler(IFacetHandler facetHandler)
         {
             IEnumerable<string> dependsOn = facetHandler.DependsOn;
-            BoboIndexReader reader = (BoboIndexReader)IndexReader;
+            BoboSegmentReader reader = (BoboSegmentReader)IndexReader;
             if (dependsOn.Count() > 0)
             {
                 foreach (var fn in dependsOn)

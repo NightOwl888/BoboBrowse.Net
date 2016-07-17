@@ -58,7 +58,7 @@ namespace BoboBrowse.Tests
                 return null;
             }
 
-            public override string[] GetFieldValues(BoboIndexReader reader, int id)
+            public override string[] GetFieldValues(BoboSegmentReader reader, int id)
             {
                 return null;
             }
@@ -68,12 +68,12 @@ namespace BoboBrowse.Tests
                 return null;
             }
 
-            public override FacetDataNone Load(BoboIndexReader reader)
+            public override FacetDataNone Load(BoboSegmentReader reader)
             {
                 return null;
             }
 
-            public override object[] GetRawFieldValues(BoboIndexReader reader, int id)
+            public override object[] GetRawFieldValues(BoboSegmentReader reader, int id)
             {
                 return null;
             }
@@ -127,7 +127,7 @@ namespace BoboBrowse.Tests
             list.Add(h5);
 
 
-            using (var boboReader = BoboIndexReader.GetInstance(reader, list, null))
+            using (var boboReader = BoboSegmentReader.GetInstance(reader, list, null))
             {
 
                 using (var browser = new BoboBrowser(boboReader))
@@ -203,7 +203,7 @@ namespace BoboBrowse.Tests
             var h5 = new NoopFacetHandler("E", s5);
             list.Add(h5);
 
-            using (var boboReader = BoboIndexReader.GetInstance(reader, list, null))
+            using (var boboReader = BoboSegmentReader.GetInstance(reader, list, null))
             {
 
                 using (var browser = new BoboBrowser(boboReader))

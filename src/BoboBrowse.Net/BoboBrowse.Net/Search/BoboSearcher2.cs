@@ -32,16 +32,16 @@ namespace BoboBrowse.Net.Search
     public class BoboSearcher2 : IndexSearcher
     {
         protected IEnumerable<FacetHitCollector> _facetCollectors;
-        protected BoboIndexReader[] _subReaders;
+        protected BoboSegmentReader[] _subReaders;
         protected int[] _docStarts;
 
-        public BoboSearcher2(BoboIndexReader reader)
+        public BoboSearcher2(BoboSegmentReader reader)
             : base(reader)
         {
             _facetCollectors = new List<FacetHitCollector>();
             var readerList = new List<IndexReader>();
             ReaderUtil.GatherSubReaders(readerList, reader);
-            _subReaders = readerList.Cast<BoboIndexReader>().ToArray();
+            _subReaders = readerList.Cast<BoboSegmentReader>().ToArray();
             _docStarts = new int[_subReaders.Length];
             int maxDoc = 0;
             for (int i = 0; i < _subReaders.Length; ++i)
@@ -69,7 +69,7 @@ namespace BoboBrowse.Net.Search
             protected IFacetCountCollector[] _countCollectors;
             public int _nextTarget;
 
-            private void SortPostCollectors(BoboIndexReader reader)
+            private void SortPostCollectors(BoboSegmentReader reader)
             {
                 var comparator = new SortPostCollectorsComparator(reader);
                 System.Array.Sort(_collectors, 0, _numPostFilters, comparator);
@@ -77,9 +77,9 @@ namespace BoboBrowse.Net.Search
 
             private class SortPostCollectorsComparator : IComparer<FacetHitCollector>
             {
-                private readonly BoboIndexReader reader;
+                private readonly BoboSegmentReader reader;
 
-                public SortPostCollectorsComparator(BoboIndexReader reader)
+                public SortPostCollectorsComparator(BoboSegmentReader reader)
                 {
                     this.reader = reader;
                 }
@@ -113,7 +113,7 @@ namespace BoboBrowse.Net.Search
             ///<returns> true if all fields matched </returns>
             public abstract bool Validate(int docid);
 
-            public virtual void SetNextReader(BoboIndexReader reader, int docBase)
+            public virtual void SetNextReader(BoboSegmentReader reader, int docBase)
             {
                 List<IFacetCountCollector> collectorList = new List<IFacetCountCollector>();
                 SortPostCollectors(reader);

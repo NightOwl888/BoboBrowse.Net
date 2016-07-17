@@ -218,7 +218,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override IMultiValueFacetDataCache Load(BoboSegmentReader reader)
         {
-            return Load(reader, new BoboIndexReader.WorkArea());
+            return Load(reader, new BoboSegmentReader.WorkArea());
         }
 
         public override MultiValueFacetDataCache Load(BoboSegmentReader reader, BoboSegmentReader.WorkArea workArea)

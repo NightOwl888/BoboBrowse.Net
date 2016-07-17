@@ -40,7 +40,7 @@ namespace BoboBrowse.Net.Facets.Attribute
         private List<IFacetHandler> facetHandlers;
         private AttributesFacetHandler attributesFacetHandler;
         private BoboBrowser browser;
-        private BoboIndexReader boboReader;
+        private BoboSegmentReader boboReader;
         private IDictionary<string, string> selectionProperties;
         private const string AttributeHandlerName = "attributes";
 
@@ -76,7 +76,7 @@ namespace BoboBrowse.Net.Facets.Attribute
                 new Dictionary<string, string>());
             facetHandlers.Add(attributesFacetHandler);
             IndexReader reader = IndexReader.Open(directory, true);
-            boboReader = BoboIndexReader.GetInstance(reader, facetHandlers);
+            boboReader = BoboSegmentReader.GetInstance(reader, facetHandlers);
             attributesFacetHandler.LoadFacetData(boboReader);
             browser = new BoboBrowser(boboReader);
         }
@@ -316,7 +316,7 @@ namespace BoboBrowse.Net.Facets.Attribute
                 facetProps);
             facetHandlers.Add(attributesFacetHandler);
             IndexReader reader = IndexReader.Open(directory, true);
-            boboReader = BoboIndexReader.GetInstance(reader, facetHandlers);
+            boboReader = BoboSegmentReader.GetInstance(reader, facetHandlers);
             attributesFacetHandler.LoadFacetData(boboReader);
             browser = new BoboBrowser(boboReader);
         }

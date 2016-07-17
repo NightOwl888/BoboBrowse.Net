@@ -40,16 +40,16 @@ namespace BoboBrowse.Net.Service
             return new BrowseServiceImpl(idxDir);
         }
 
-        public static IBrowseService CreateBrowseService(BoboIndexReader bReader)
+        public static IBrowseService CreateBrowseService(BoboSegmentReader bReader)
         {
             return new DefaultBrowseServiceImpl(bReader);
         }
 
-        public static BoboIndexReader GetBoboIndexReader(Directory idxDir)
+        public static BoboSegmentReader GetBoboIndexReader(Directory idxDir)
         {
             try
             {
-                if (!BoboIndexReader.IndexExists(idxDir))
+                if (!BoboSegmentReader.IndexExists(idxDir))
                 {
                     throw new BrowseException("Index does not exist at: " + idxDir);
                 }
@@ -69,10 +69,10 @@ namespace BoboBrowse.Net.Service
                 throw new BrowseException(ioe.Message, ioe);
             }
 
-            BoboIndexReader bReader = null;
+            BoboSegmentReader bReader = null;
             try
             {
-                bReader = BoboIndexReader.GetInstance(reader);
+                bReader = BoboSegmentReader.GetInstance(reader);
             }
             catch (Exception ioe)
             {
@@ -94,7 +94,7 @@ namespace BoboBrowse.Net.Service
 
         public static IBrowseService CreateBrowseService(Directory idxDir) // throws BrowseException
         {
-            BoboIndexReader bReader = GetBoboIndexReader(idxDir);
+            BoboSegmentReader bReader = GetBoboIndexReader(idxDir);
 
             DefaultBrowseServiceImpl bs = (DefaultBrowseServiceImpl)CreateBrowseService(bReader);
             bs.CloseReaderOnCleanup = true;

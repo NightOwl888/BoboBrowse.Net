@@ -28,10 +28,10 @@ namespace BoboBrowse.Net.Impl
     public class DefaultBrowseServiceImpl : IBrowseService
     {
         private static ILog logger = LogManager.GetLogger(typeof(DefaultBrowseServiceImpl));
-        private BoboIndexReader _reader;
+        private BoboSegmentReader _reader;
         private bool _closeReader;
 
-        public DefaultBrowseServiceImpl(BoboIndexReader reader)
+        public DefaultBrowseServiceImpl(BoboSegmentReader reader)
         {
             _reader = reader;
             _closeReader = false;

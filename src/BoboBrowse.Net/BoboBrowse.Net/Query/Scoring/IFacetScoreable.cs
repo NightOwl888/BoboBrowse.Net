@@ -25,7 +25,7 @@ namespace BoboBrowse.Net.Query.Scoring
     public interface IFacetScoreable
     {
         BoboDocScorer GetDocScorer(
-            BoboIndexReader reader, 
+            BoboSegmentReader reader, 
             IFacetTermScoringFunctionFactory scoringFunctionFactory, 
             IDictionary<string, float> boostMap);
     }

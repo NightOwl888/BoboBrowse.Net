@@ -163,7 +163,7 @@ namespace BoboBrowse.Tests
             Directory ramIndexDir = CreateIndex();
             using (IndexReader srcReader = IndexReader.Open(ramIndexDir, true))
             {
-                using (BoboIndexReader boboReader = BoboIndexReader.GetInstance(srcReader, _facetHandlers, null))
+                using (BoboSegmentReader boboReader = BoboSegmentReader.GetInstance(srcReader, _facetHandlers, null))
                 {
                     using (BoboBrowser boboBrowser = new BoboBrowser(boboReader))
                     {

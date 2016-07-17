@@ -31,7 +31,7 @@ namespace BoboBrowse.Net.Facets.Filter
 
     public interface IFacetDataCacheBuilder
     {
-        FacetDataCache Build(BoboIndexReader reader);
+        FacetDataCache Build(BoboSegmentReader reader);
         string Name { get; }
         string IndexFieldName { get; }
     }
@@ -64,7 +64,7 @@ namespace BoboBrowse.Net.Facets.Filter
             _takeComplement = takeComplement;
         }
 
-        public override double GetFacetSelectivity(BoboIndexReader reader)
+        public override double GetFacetSelectivity(BoboSegmentReader reader)
         {
             double selectivity = _facetFilter.GetFacetSelectivity(reader);
             if (_takeComplement)
@@ -72,7 +72,7 @@ namespace BoboBrowse.Net.Facets.Filter
             return selectivity;
         }
 
-        public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboIndexReader reader)
+        public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboSegmentReader reader)
         {
             RandomAccessDocIdSet innerDocSet = _facetFilter.GetRandomAccessDocIdSet(reader);
             if (innerDocSet == EmptyDocIdSet.Instance)
