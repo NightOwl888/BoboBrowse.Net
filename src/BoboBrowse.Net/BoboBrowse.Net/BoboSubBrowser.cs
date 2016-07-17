@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-﻿// Version compatibility level: 3.2.0
+﻿// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net
 {
     using BoboBrowse.Net.Facets;
@@ -27,13 +27,14 @@ namespace BoboBrowse.Net
     using BoboBrowse.Net.Support;
     using Common.Logging;
     using Lucene.Net.Documents;
+    using Lucene.Net.Index;
     using Lucene.Net.Search;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
 
-    public class BoboSubBrowser : BoboSearcher2, IBrowsable, IDisposable
+    public class BoboSubBrowser : BoboSearcher, IBrowsable, IDisposable
     {
         private static ILog logger = LogManager.GetLogger(typeof(BoboSubBrowser));
         private readonly BoboSegmentReader _reader;
@@ -42,11 +43,15 @@ namespace BoboBrowse.Net
         private IDictionary<string, IFacetHandler> _allFacetHandlerMap;
         private IList<IRuntimeFacetHandler> _runtimeFacetHandlers = null;
 
-        new public BoboSegmentReader IndexReader
+        public override IndexReader IndexReader
         {
             get { return _reader; }
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="reader">A bobo reader instance</param>
         public BoboSubBrowser(BoboSegmentReader reader)
             : base(reader)
         {
@@ -147,40 +152,9 @@ namespace BoboBrowse.Net
         /// <param name="req">browse request</param>
         /// <param name="collector">collector for the hits</param>
         /// <param name="facetMap">map to gather facet data</param>
+        /// <param name="start"></param>
         public virtual void Browse(
             BrowseRequest req,
-            Collector collector,
-            IDictionary<string, IFacetAccessible> facetMap)
-        {
-            Browse(req, collector, facetMap, 0);
-        }
-
-        public virtual void Browse(
-            BrowseRequest req,
-            Collector collector,
-            IDictionary<string, IFacetAccessible> facetMap,
-            int start)
-        {
-            Weight w = null;
-            try
-            {
-                var q = req.Query;
-                if (q == null)
-                {
-                    q = new MatchAllDocsQuery();
-                }
-                w = CreateWeight(q);
-            }
-            catch (Exception ioe)
-            {
-            throw new BrowseException(ioe.Message, ioe);
-            }
-            Browse(req, w, collector, facetMap, start);
-        }
-
-        public virtual void Browse(
-            BrowseRequest req,
-            Weight weight,
             Collector collector,
             IDictionary<string, IFacetAccessible> facetMap,
             int start)
@@ -191,13 +165,13 @@ namespace BoboBrowse.Net
 
     
             //      initialize all RuntimeFacetHandlers with data supplied by user at run-time.
-            _runtimeFacetHandlers = new List<IRuntimeFacetHandler>(_runtimeFacetHandlerFactoryMap.Count());
+            _runtimeFacetHandlers = new List<IRuntimeFacetHandler>(_runtimeFacetHandlerFactoryMap.Count);
 
             IEnumerable<string> runtimeFacetNames = _runtimeFacetHandlerFactoryMap.Keys;
             foreach (string facetName in runtimeFacetNames)
             {
                 var sfacetHandler = this.GetFacetHandler(facetName);
-                if (sfacetHandler!=null)
+                if (sfacetHandler != null)
                 {
                     logger.Warn("attempting to reset facetHandler: " + sfacetHandler);
                     continue;
@@ -342,15 +316,8 @@ namespace BoboBrowse.Net
 
                 try
                 {
-                    if (weight == null)
-                    {
-                        var q = req.Query;
-                        if (q == null)
-                        {
-                            q = new MatchAllDocsQuery();
-                        }
-                        weight = CreateWeight(q);
-                    }
+                    var query = req.Query;
+                    weight = CreateNormalizedWeight(query);
                     Search(weight, finalFilter, collector, start, req.MapReduceWrapper);
                 }
                 finally
@@ -393,13 +360,12 @@ namespace BoboBrowse.Net
         }
 
         public virtual SortCollector GetSortCollector(
-            SortField[] sort, 
+            SortField[] sort,
             Lucene.Net.Search.Query q, 
             int offset, 
             int count, 
             bool fetchStoredFields, 
             IEnumerable<string> termVectorsToFetch, 
-            bool forceScoring, 
             string[] groupBy, 
             int maxPerGroup, 
             bool collectDocIdCache)
@@ -410,7 +376,6 @@ namespace BoboBrowse.Net
                 sort, 
                 offset, 
                 count, 
-                forceScoring, 
                 fetchStoredFields, 
                 termVectorsToFetch, 
                 groupBy, 
@@ -418,61 +383,14 @@ namespace BoboBrowse.Net
                 collectDocIdCache);
         }
 
+        /// <summary>
+        /// Browses the index
+        /// </summary>
+        /// <param name="req">Browse request</param>
+        /// <returns>Browse result</returns>
         public virtual BrowseResult Browse(BrowseRequest req)
         {
-            if (_reader == null)
-                return new BrowseResult();
-
-            BrowseResult result = new BrowseResult();
-
-            long start = System.Environment.TickCount;
-
-            SortCollector collector = GetSortCollector(req.Sort, req.Query, req.Offset, req.Count, req.FetchStoredFields, req.TermVectorsToFetch, false, req.GroupBy, req.MaxPerGroup, req.CollectDocIdCache);
-    
-            IDictionary<string, IFacetAccessible> facetCollectors = new Dictionary<string, IFacetAccessible>();
-            Browse(req, collector, facetCollectors);
-            BrowseHit[] hits = null;
-
-            try
-            {
-                hits = collector.TopDocs;
-            }
-            catch (Exception e)
-            {
-                logger.Error(e.Message, e);
-                hits = new BrowseHit[0];
-            }
-    
-            var q = req.Query;
-            if (q == null)
-            {
-    	        q = new MatchAllDocsQuery();
-            }
-            if (req.ShowExplanation)
-            {
-    	        foreach (BrowseHit hit in hits)
-                {
-    		        try 
-                    {
-				        Explanation expl = Explain(q, hit.DocId);
-				        hit.Explanation = expl;
-			        } 
-                    catch (Exception e) 
-                    {
-				        logger.Error(e.Message, e);
-			        }
-    	        }
-            }
-            result.Hits = hits;
-            result.NumHits = collector.TotalHits;
-            result.NumGroups = collector.TotalGroups;
-            result.GroupAccessibles = collector.GroupAccessibles;
-            result.SortCollector = collector;
-            result.TotalDocs = _reader.NumDocs();
-            result.AddAll(facetCollectors);
-            long end = System.Environment.TickCount;
-            result.Time = (end - start);
-            return result;
+            throw new NotSupportedException();
         }
 
         public virtual IDictionary<string, IFacetHandler> RuntimeFacetHandlerMap
@@ -480,9 +398,9 @@ namespace BoboBrowse.Net
             get { return _runtimeFacetHandlerMap; }
         }
 
-        public virtual int NumDocs()
+        public virtual int NumDocs
         {
-            return _reader.NumDocs();
+            get { return _reader.NumDocs; }
         }
 
         public override Document Doc(int docid)
@@ -493,10 +411,7 @@ namespace BoboBrowse.Net
                 string[] vals = handler.GetFieldValues(_reader, docid);
                 foreach (var val in vals)
                 {
-                    doc.Add(new Field(handler.Name,
-                          val,
-                          Field.Store.NO,
-                          Field.Index.NOT_ANALYZED));
+                    doc.Add(new StringField(handler.Name, val, Field.Store.NO));
                 }
             }
             return doc;
@@ -520,35 +435,12 @@ namespace BoboBrowse.Net
                 logger.Warn("facet handler: " + fieldname
                     + " not defined, looking at stored field.");
                 // this is not predefined, so it will be slow
-                Document doc = _reader.Document(docid, new BoboSubBrowserFieldSelector(fieldname));
-      
-                return doc.GetValues(fieldname);
+
+                return _reader.GetStoredFieldValue(docid, fieldname);
             }
         }
 
-        private class BoboSubBrowserFieldSelector : FieldSelector
-        {
-            //private static long serialVersionUID = 1L; // NOT USED
-            private readonly string _field;
-
-            public BoboSubBrowserFieldSelector(string fieldName)
-            {
-                this._field = fieldName;
-            }
-
-            public FieldSelectorResult Accept(string fieldName)
-            {
- 	            if (fieldName.Equals(_field))
-                {
-                    return FieldSelectorResult.LOAD_AND_BREAK;
-                }
-                else
-                {
-                    return FieldSelectorResult.NO_LOAD;
-                }
-            }
-        }
-
+        // Analagous to the DoClose() method in Java
         protected override void Dispose(bool disposing)
         {
             if (disposing)
