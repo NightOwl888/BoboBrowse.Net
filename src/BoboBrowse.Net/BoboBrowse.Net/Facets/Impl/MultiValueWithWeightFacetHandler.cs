@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
@@ -28,7 +28,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
     public class MultiValueWithWeightFacetHandler : MultiValueFacetHandler
     {
-        public MultiValueWithWeightFacetHandler(string name, string indexFieldName, TermListFactory termListFactory)
+        public MultiValueWithWeightFacetHandler(string name, string indexFieldName, ITermListFactory termListFactory)
             : base(name, indexFieldName, termListFactory, null, null)
         {
         }
@@ -49,7 +49,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return f;
         }
 
-        public override MultiValueFacetDataCache Load(BoboIndexReader reader, BoboIndexReader.WorkArea workArea)
+        public override MultiValueFacetDataCache Load(BoboSegmentReader reader, BoboSegmentReader.WorkArea workArea)
         {
             MultiValueWithWeightFacetDataCache dataCache = new MultiValueWithWeightFacetDataCache();
 
