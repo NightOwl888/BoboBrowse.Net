@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Util
 {
     using Lucene.Net.Util;
@@ -70,8 +70,6 @@ namespace BoboBrowse.Net.Util
         public abstract int FindValue(int val, int id, int maxId);
 
         public abstract int FindValues(OpenBitSet bitset, int id, int maxId);
-
-        public abstract int FindValues(BitVector bitset, int id, int maxId);
 
         public abstract int FindValueRange(int minVal, int maxVal, int id, int maxId);
 
