@@ -24,6 +24,27 @@ namespace BoboBrowse.Net.Support
 
     public class NumericUtil
     {
+        public static bool IsNumeric(object value)
+        {
+            if (Equals(value, null))
+            {
+                return false;
+            }
+
+            Type objType = value.GetType();
+            objType = Nullable.GetUnderlyingType(objType) ?? objType;
+
+            if (objType.IsPrimitive)
+            {
+                return objType != typeof(bool) &&
+                    objType != typeof(char) &&
+                    objType != typeof(IntPtr) &&
+                    objType != typeof(UIntPtr);
+            }
+
+            return objType == typeof(decimal);
+        }
+
         public static bool IsPrefixCodedInt(string prefixCoded)
         {
             try
