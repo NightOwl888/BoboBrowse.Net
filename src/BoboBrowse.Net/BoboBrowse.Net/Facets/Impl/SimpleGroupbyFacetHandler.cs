@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net;
@@ -104,7 +104,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 _fspec = fspec;
             }
 
-            public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
+            public override IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase)
             {
                 var collectorList = new List<DefaultFacetCountCollector>(_facetHandlers.Count());
                 foreach (var facetHandler in _facetHandlers)
@@ -115,7 +115,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public override string[] GetFieldValues(BoboIndexReader reader, int id)
+        public override string[] GetFieldValues(BoboSegmentReader reader, int id)
         {
             List<string> valList = new List<string>();
             foreach (IFacetHandler handler in _facetHandlers)
@@ -143,7 +143,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return valList.ToArray();
         }
 
-        public override object[] GetRawFieldValues(BoboIndexReader reader, int id)
+        public override object[] GetRawFieldValues(BoboSegmentReader reader, int id)
         {
             return GetFieldValues(reader, id);
         }
@@ -164,7 +164,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 _facetHandlers = facetHandlers;
             }
 
-            public override DocComparator GetComparator(IndexReader reader, int docbase)
+            public override DocComparator GetComparator(AtomicReader reader, int docbase)
             {
                 var comparatorList = new List<DocComparator>(_fieldsSet.Count());
                 foreach (var handler in _facetHandlers)
@@ -175,7 +175,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public override FacetDataNone Load(BoboIndexReader reader)
+        public override FacetDataNone Load(BoboSegmentReader reader)
         {
             _facetHandlers = new List<SimpleFacetHandler>(_fieldsSet.Count());
             _facetHandlerMap = new Dictionary<string, SimpleFacetHandler>(_fieldsSet.Count());
