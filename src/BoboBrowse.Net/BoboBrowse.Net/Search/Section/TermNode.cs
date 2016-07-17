@@ -17,25 +17,24 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Search.Section
 {
     using Lucene.Net.Index;
+    using Lucene.Net.Util;
 
     public class TermNode : AbstractTerminalNode
     {
-        private byte[] _payloadBuf;
         protected int _positionInPhrase;
 
-        public TermNode(Term term, IndexReader reader)
+        public TermNode(Term term, AtomicReader reader)
             : this(term, 0, reader)
         {
         }
 
-        public TermNode(Term term, int positionInPhrase, IndexReader reader)
+        public TermNode(Term term, int positionInPhrase, AtomicReader reader)
             : base(term, reader)
         {
-            _payloadBuf = new byte[4];
             _positionInPhrase = positionInPhrase; // relative position in a phrase
         }
 
@@ -53,7 +52,7 @@ namespace BoboBrowse.Net.Search.Section
             {
                 while (true)
                 {
-                    _curPos = _tp.NextPosition();
+                    _curPos = _dp.NextPosition();
                     _posLeft--;
 
                     if (ReadSecId() >= targetSec) return _curSec;
@@ -76,7 +75,7 @@ namespace BoboBrowse.Net.Search.Section
         {
             if (_posLeft > 0)
             {
-                _curPos = _tp.NextPosition();
+                _curPos = _dp.NextPosition();
                 _posLeft--;
                 return _curPos;
             }
@@ -86,9 +85,10 @@ namespace BoboBrowse.Net.Search.Section
 
         public virtual int ReadSecId()
         {
-            if (_tp.IsPayloadAvailable)
+            BytesRef payload = _dp.Payload;
+            if (payload != null)
             {
-                _curSec = intDecoders[_tp.PayloadLength].Decode(_tp.GetPayload(_payloadBuf, 0));
+                _curSec = intDecoders[payload.Length].Decode(payload.Bytes);
             }
             else
             {
