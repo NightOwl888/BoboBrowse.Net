@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Impl
 {
     using System;
@@ -29,7 +29,7 @@ namespace BoboBrowse.Net.Facets.Impl
     /// </summary>
     public class PathFacetIterator : FacetIterator
     {
-        private BrowseFacet[] _facets;
+        private readonly BrowseFacet[] _facets;
         private int _index;
 
         /// <summary>
