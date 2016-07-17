@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
@@ -30,18 +30,19 @@ namespace BoboBrowse.Net.Facets.Impl
     public class DefaultFacetIterator : FacetIterator
     {
         private readonly ITermValueList _valList;
-        private BigSegmentedArray _count;
-        private int _countlength;
+        private readonly BigSegmentedArray _count;
+        private readonly int _countlength;
+        private readonly int _countLengthMinusOne;
         private int _index;
-        private int _lastIndex;
 
-        public DefaultFacetIterator(ITermValueList valList, BigSegmentedArray counts, int countlength, bool zeroBased)
+
+        public DefaultFacetIterator(ITermValueList valList, BigSegmentedArray countarray, int countlength, bool zeroBased)
         {
             _valList = valList;
-            _count = counts;
+            _count = countarray;
             _countlength = countlength;
             _index = -1;
-            _lastIndex = _countlength - 1;
+            _countLengthMinusOne = _countlength - 1;
             if (!zeroBased)
                 _index++;
             facet = null;
@@ -63,7 +64,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <returns></returns>
         public override bool HasNext()
         {
-            return (_index < _lastIndex);
+            return (_index < _countLengthMinusOne);
         }
 
         /// <summary>
