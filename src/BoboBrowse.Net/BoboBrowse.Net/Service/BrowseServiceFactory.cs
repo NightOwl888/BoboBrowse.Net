@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Service
 {
     using BoboBrowse.Net.Impl;
@@ -40,16 +40,16 @@ namespace BoboBrowse.Net.Service
             return new BrowseServiceImpl(idxDir);
         }
 
-        public static IBrowseService CreateBrowseService(BoboSegmentReader bReader)
+        public static IBrowseService CreateBrowseService(BoboMultiReader bReader)
         {
             return new DefaultBrowseServiceImpl(bReader);
         }
 
-        public static BoboSegmentReader GetBoboIndexReader(Directory idxDir)
+        public static BoboMultiReader GetBoboIndexReader(Directory idxDir)
         {
             try
             {
-                if (!BoboSegmentReader.IndexExists(idxDir))
+                if (!BoboMultiReader.IndexExists(idxDir))
                 {
                     throw new BrowseException("Index does not exist at: " + idxDir);
                 }
@@ -59,20 +59,20 @@ namespace BoboBrowse.Net.Service
                 throw new BrowseException(ioe.Message, ioe);
             }
 
-            IndexReader reader = null;
+            DirectoryReader reader = null;
             try
             {
-                reader = IndexReader.Open(idxDir, true);
+                reader = DirectoryReader.Open(idxDir);
             }
             catch (Exception ioe)
             {
                 throw new BrowseException(ioe.Message, ioe);
             }
 
-            BoboSegmentReader bReader = null;
+            BoboMultiReader bReader = null;
             try
             {
-                bReader = BoboSegmentReader.GetInstance(reader);
+                bReader = BoboMultiReader.GetInstance(reader);
             }
             catch (Exception ioe)
             {
@@ -92,9 +92,9 @@ namespace BoboBrowse.Net.Service
             return bReader;
         }
 
-        public static IBrowseService CreateBrowseService(Directory idxDir) // throws BrowseException
+        public static IBrowseService CreateBrowseService(Directory idxDir)
         {
-            BoboSegmentReader bReader = GetBoboIndexReader(idxDir);
+            BoboMultiReader bReader = GetBoboIndexReader(idxDir);
 
             DefaultBrowseServiceImpl bs = (DefaultBrowseServiceImpl)CreateBrowseService(bReader);
             bs.CloseReaderOnCleanup = true;
