@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.DocIdSet
 {
     using Lucene.Net.Search;
@@ -42,6 +42,11 @@ namespace BoboBrowse.Net.DocIdSet
             {
                 return DocIdSetIterator.NO_MORE_DOCS;
             }
+
+            public override long Cost()
+            {
+                return 0;
+            }
         }
 
         private static EmptyDocIdSetIterator SINGLETON_ITERATOR = new EmptyDocIdSetIterator();
@@ -55,10 +60,16 @@ namespace BoboBrowse.Net.DocIdSet
             get { return SINGLETON; }
         }
 
-        public override DocIdSetIterator Iterator()
+        // TODO: Submit pull request to Lucene to fix this name
+        public override DocIdSetIterator GetIterator()
         {
             return SINGLETON_ITERATOR;
         }
+
+        //public override DocIdSetIterator Iterator()
+        //{
+        //    return SINGLETON_ITERATOR;
+        //}
 
         public override bool Get(int docId)
         {
