@@ -208,9 +208,6 @@
     <Compile Include="Facets\Range\SimpleDataCacheBuilder.cs" />
     <Compile Include="Facets\Range\ValueConverterBitSetBuilder.cs" />
     <Compile Include="Facets\RuntimeFacetHandler.cs" />
-    <Compile Include="Facets\Statistics\ChiSquaredFacetCountStatisticsGenerator.cs" />
-    <Compile Include="Facets\Statistics\FacetCountStatisicsGenerator.cs" />
-    <Compile Include="Facets\Statistics\FacetCountStatistics.cs" />
     <Compile Include="IFacetAccessible.cs" />
     <Compile Include="IComparatorFactory.cs" />
     <Compile Include="IFieldValueAccessor.cs" />
