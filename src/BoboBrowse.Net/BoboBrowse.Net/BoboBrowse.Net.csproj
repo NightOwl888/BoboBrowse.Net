@@ -85,6 +85,7 @@
     <Compile Include="Analysis\Section\SectionTokenStream.cs" />
     <Compile Include="BoboCustomSortField.cs" />
     <Compile Include="BoboIndexReader.cs" />
+    <Compile Include="BoboMultiReader.cs" />
     <Compile Include="BoboSubBrowser.cs" />
     <Compile Include="BrowseException.cs" />
     <Compile Include="BrowseFacet.cs" />
