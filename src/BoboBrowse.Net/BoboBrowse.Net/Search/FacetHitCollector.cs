@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Search
 {
     using BoboBrowse.Net.DocIdSet;
@@ -49,7 +49,7 @@ namespace BoboBrowse.Net.Search
                 if (_filter != null)
                 {
                     _currentPointers.DocIdSet = _filter.GetRandomAccessDocIdSet(reader);
-                    _currentPointers.PostDocIDSetIterator = _currentPointers.DocIdSet.Iterator();
+                    _currentPointers.PostDocIDSetIterator = _currentPointers.DocIdSet.GetIterator();
                     _currentPointers.Doc = _currentPointers.PostDocIDSetIterator.NextDoc();
                 }
                 if (_facetCountCollectorSource != null)
