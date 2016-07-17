@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
@@ -38,10 +38,8 @@ namespace BoboBrowse.Net.Facets.Impl
     /// When being indexed, this field can be tokenized. Or alternatively, one can index multiple 
     /// values in multiple document fields under the same field name.
     /// </summary>
-    public class MultiValueFacetHandler : FacetHandler<MultiValueFacetDataCache>, IFacetScoreable
+    public class MultiValueFacetHandler : FacetHandler<IMultiValueFacetDataCache>, IFacetScoreable
     {
-        private static ILog logger = LogManager.GetLogger(typeof(MultiValueFacetHandler));       
-
         protected readonly TermListFactory _termListFactory;
         protected readonly string _indexFieldName;
 
@@ -60,7 +58,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
         /// <param name="sizePayloadTerm"></param>
         /// <param name="dependsOn">List of facets this one depends on for loading.</param>
-        public MultiValueFacetHandler(string name, string indexFieldName, TermListFactory termListFactory, Term sizePayloadTerm, IEnumerable<string> dependsOn)
+        public MultiValueFacetHandler(string name, string indexFieldName, ITermListFactory termListFactory, Term sizePayloadTerm, IEnumerable<string> dependsOn)
             : base(name, dependsOn)
         {
             _depends = dependsOn;
@@ -69,9 +67,9 @@ namespace BoboBrowse.Net.Facets.Impl
             _sizePayloadTerm = sizePayloadTerm;
         }
 
-        public override int GetNumItems(BoboIndexReader reader, int id)
+        public override int GetNumItems(BoboSegmentReader reader, int id)
         {
-            MultiValueFacetDataCache data = GetFacetData<MultiValueFacetDataCache>(reader);
+            IMultiValueFacetDataCache data = GetFacetData<IMultiValueFacetDataCache>(reader);
 	        if (data==null) return 0;
 	        return data.GetNumItems(id);
         }
@@ -85,7 +83,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <param name="termListFactory">A <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance that will create a 
         /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
         /// <param name="sizePayloadTerm"></param>
-        public MultiValueFacetHandler(string name, string indexFieldName, TermListFactory termListFactory, Term sizePayloadTerm)
+        public MultiValueFacetHandler(string name, string indexFieldName, ITermListFactory termListFactory, Term sizePayloadTerm)
             : this(name, indexFieldName, termListFactory, sizePayloadTerm, null)
         {
         }
@@ -98,7 +96,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <param name="termListFactory">A <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance that will create a 
         /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
         /// <param name="sizePayloadTerm"></param>
-        public MultiValueFacetHandler(string name, TermListFactory termListFactory, Term sizePayloadTerm)
+        public MultiValueFacetHandler(string name, ITermListFactory termListFactory, Term sizePayloadTerm)
             : this(name, name, termListFactory, sizePayloadTerm, null)
         {
         }
@@ -111,7 +109,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <param name="indexFieldName">The name of the Lucene.Net index field this handler will utilize.</param>
         /// <param name="termListFactory">A <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance that will create a 
         /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
-        public MultiValueFacetHandler(string name, string indexFieldName, TermListFactory termListFactory)
+        public MultiValueFacetHandler(string name, string indexFieldName, ITermListFactory termListFactory)
             : this(name, indexFieldName, termListFactory, null, null)
         {
         }
@@ -124,7 +122,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <param name="name">The facet handler name. Must be the same value as the Lucene.Net index field name.</param>
         /// <param name="termListFactory">A <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance that will create a 
         /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
-        public MultiValueFacetHandler(string name, TermListFactory termListFactory)
+        public MultiValueFacetHandler(string name, ITermListFactory termListFactory)
             : this(name, name, termListFactory)
         {
         }
@@ -171,9 +169,9 @@ namespace BoboBrowse.Net.Facets.Impl
             set { _maxItems = Math.Min(value, BigNestedIntArray.MAX_ITEMS); }
         }
 
-        public override string[] GetFieldValues(BoboIndexReader reader, int id)
+        public override string[] GetFieldValues(BoboSegmentReader reader, int id)
         {
-            MultiValueFacetDataCache dataCache = GetFacetData<MultiValueFacetDataCache>(reader);
+            IMultiValueFacetDataCache dataCache = GetFacetData<IMultiValueFacetDataCache>(reader);
             if (dataCache != null)
             {
                 return dataCache.NestedArray.GetTranslatedData(id, dataCache.ValArray);
@@ -181,9 +179,9 @@ namespace BoboBrowse.Net.Facets.Impl
             return new string[0];
         }
 
-        public override object[] GetRawFieldValues(BoboIndexReader reader, int id)
+        public override object[] GetRawFieldValues(BoboSegmentReader reader, int id)
         {
-            MultiValueFacetDataCache dataCache = GetFacetData<MultiValueFacetDataCache>(reader);
+            IMultiValueFacetDataCache dataCache = GetFacetData<IMultiValueFacetDataCache>(reader);
             if (dataCache != null)
             {
                 return dataCache.NestedArray.GetRawData(id, dataCache.ValArray);
@@ -211,19 +209,19 @@ namespace BoboBrowse.Net.Facets.Impl
                 this._ospec = ospec;
             }
 
-            public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
+            public override IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase)
             {
-                MultiValueFacetDataCache dataCache = _parent.GetFacetData<MultiValueFacetDataCache>(reader);
+                IMultiValueFacetDataCache dataCache = _parent.GetFacetData<IMultiValueFacetDataCache>(reader);
                 return new MultiValueFacetCountCollector(_name, dataCache, docBase, _sel, _ospec);
             }
         }
 
-        public override MultiValueFacetDataCache Load(BoboIndexReader reader)
+        public override IMultiValueFacetDataCache Load(BoboSegmentReader reader)
         {
             return Load(reader, new BoboIndexReader.WorkArea());
         }
 
-        public override MultiValueFacetDataCache Load(BoboIndexReader reader, BoboIndexReader.WorkArea workArea)
+        public override MultiValueFacetDataCache Load(BoboSegmentReader reader, BoboSegmentReader.WorkArea workArea)
         {
             var dataCache = new MultiValueFacetDataCache();
 
@@ -301,19 +299,19 @@ namespace BoboBrowse.Net.Facets.Impl
             return filter;
         }
 
-        public virtual BoboDocScorer GetDocScorer(BoboIndexReader reader, IFacetTermScoringFunctionFactory scoringFunctionFactory, IDictionary<string, float> boostMap)
+        public virtual BoboDocScorer GetDocScorer(BoboSegmentReader reader, IFacetTermScoringFunctionFactory scoringFunctionFactory, IDictionary<string, float> boostMap)
         {
-            MultiValueFacetDataCache dataCache = GetFacetData<MultiValueFacetDataCache>(reader);
+            IMultiValueFacetDataCache dataCache = GetFacetData<IMultiValueFacetDataCache>(reader);
             float[] boostList = BoboDocScorer.BuildBoostList(dataCache.ValArray, boostMap);
             return new MultiValueDocScorer(dataCache, scoringFunctionFactory, boostList);
         }
 
         public sealed class MultiValueDocScorer : BoboDocScorer
         {
-            private readonly MultiValueFacetDataCache _dataCache;
+            private readonly IMultiValueFacetDataCache _dataCache;
             private readonly BigNestedIntArray _array;
 
-            public MultiValueDocScorer(MultiValueFacetDataCache dataCache, IFacetTermScoringFunctionFactory scoreFunctionFactory, float[] boostList)
+            public MultiValueDocScorer(IMultiValueFacetDataCache dataCache, IFacetTermScoringFunctionFactory scoreFunctionFactory, float[] boostList)
                 : base(scoreFunctionFactory.GetFacetTermScoringFunction(dataCache.ValArray.Count, dataCache.NestedArray.Size), boostList)
             {
                 _dataCache = dataCache;
