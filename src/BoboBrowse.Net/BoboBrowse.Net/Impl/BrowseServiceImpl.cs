@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Impl
 {
     using BoboBrowse.Net;
@@ -33,7 +33,7 @@ namespace BoboBrowse.Net.Impl
     {
         private static readonly ILog logger = LogManager.GetLogger(typeof(BrowseServiceImpl));
         private readonly DirectoryInfo _idxDir;
-        private readonly BoboSegmentReader _reader;
+        private readonly BoboMultiReader _reader;
 
         public BrowseServiceImpl(DirectoryInfo idxDir)
         {
@@ -53,38 +53,35 @@ namespace BoboBrowse.Net.Impl
         {
         }*/
 
-        private BoboSegmentReader NewIndexReader()
+        private BoboMultiReader NewIndexReader()
         {
             Directory idxDir = FSDirectory.Open(_idxDir);
             return NewIndexReader(idxDir);
         }
 
-        public static BoboSegmentReader NewIndexReader(Directory idxDir)
+        public static BoboMultiReader NewIndexReader(Directory idxDir)
         {
-            if (!IndexReader.IndexExists(idxDir))
+            if (!DirectoryReader.IndexExists(idxDir))
             {
                 return null;
             }
 
             long start = System.Environment.TickCount;
 
-            IndexReader ir = IndexReader.Open(idxDir, true);
-            BoboSegmentReader reader;
+            DirectoryReader directoryReader = DirectoryReader.Open(idxDir);
+            BoboMultiReader reader;
 
             try
             {
-                reader = BoboSegmentReader.GetInstance(ir);
+                reader = BoboMultiReader.GetInstance(directoryReader);
             }
             catch (IOException ioe)
             {
-                try
-                {
-                    ir.Dispose();
-                }
-                catch
-                {
-                }
                 throw ioe;
+            }
+            finally
+            {
+                directoryReader.Dispose();
             }
 
             long end = System.Environment.TickCount;
