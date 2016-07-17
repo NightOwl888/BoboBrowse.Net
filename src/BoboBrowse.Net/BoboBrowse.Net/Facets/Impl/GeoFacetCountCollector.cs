@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
@@ -30,17 +30,15 @@ namespace BoboBrowse.Net.Facets.Impl
     {
         private readonly string _name;
 	    private readonly FacetSpec _spec;
-	    private BigSegmentedArray _count;
-	    private int _countlength;
-	    private GeoFacetHandler.GeoFacetData _dataCache;
+	    private readonly BigSegmentedArray _count;
+	    private readonly int _countlength;
         private readonly TermStringList _predefinedRanges;
-	    private int _docBase;
-	    private GeoRange[] _ranges;
-	    private BigFloatArray _xvals;
-	    private BigFloatArray _yvals;
-	    private BigFloatArray _zvals;
+	    private readonly GeoRange[] _ranges;
+	    private readonly BigFloatArray _xvals;
+	    private readonly BigFloatArray _yvals;
+	    private readonly BigFloatArray _zvals;
         // variable to specify if the geo distance calculations are in miles. Default is miles
-        private bool _miles;
+        private readonly bool _miles;
 
         public class GeoRange
         {
@@ -89,11 +87,10 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <param name="fspec">the facet spec for this facet</param>
         /// <param name="predefinedRanges">List of ranges, where each range looks like &lt;lat, lon: rad&gt;</param>
         /// <param name="miles">variable to specify if the geo distance calculations are in miles. False indicates distance calculation is in kilometers</param>
-        public GeoFacetCountCollector(string name, GeoFacetHandler.GeoFacetData dataCache,
-            int docBase, FacetSpec fspec, IEnumerable<string> predefinedRanges, bool miles)
+        public GeoFacetCountCollector(string name, GeoFacetHandler.GeoFacetData dataCache, int docBase, 
+            FacetSpec fspec, IEnumerable<string> predefinedRanges, bool miles)
         {
             _name = name;
-            _dataCache = dataCache;
             _xvals = dataCache.xValArray;
             _yvals = dataCache.yValArray;
             _zvals = dataCache.zValArray;
@@ -102,7 +99,6 @@ namespace BoboBrowse.Net.Facets.Impl
             var predefinedTemp = new List<string>(predefinedRanges);
             predefinedTemp.Sort();
             _predefinedRanges.AddAll(predefinedTemp);
-            _docBase = docBase;
             _countlength = predefinedTemp.Count;
             _count = new LazyBigIntArray(_countlength);
             _ranges = new GeoRange[predefinedTemp.Count];
