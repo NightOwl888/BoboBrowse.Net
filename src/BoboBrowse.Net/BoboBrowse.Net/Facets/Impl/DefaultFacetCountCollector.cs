@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
@@ -33,17 +33,15 @@ namespace BoboBrowse.Net.Facets.Impl
         protected BigSegmentedArray _count;
 
         protected int _countlength;
-        protected readonly FacetDataCache _dataCache;
+        protected readonly IFacetDataCache _dataCache;
         private readonly string _name;
         protected readonly BrowseSelection _sel;
         protected readonly BigSegmentedArray _array;
-        private int _docBase;
         // NOTE: Removed memory manager implementation
         //protected readonly List<BigSegmentedArray> intarraylist = new List<BigSegmentedArray>();
-        //private Iterator _iterator; // NOT USED
         private bool _closed = false;
 
-        public DefaultFacetCountCollector(string name, FacetDataCache dataCache, int docBase, BrowseSelection sel, FacetSpec ospec)
+        public DefaultFacetCountCollector(string name, IFacetDataCache dataCache, int docBase, BrowseSelection sel, FacetSpec ospec)
         {
             _sel = sel;
             _ospec = ospec;
@@ -65,7 +63,6 @@ namespace BoboBrowse.Net.Facets.Impl
             }
 
             _array = _dataCache.OrderArray;
-            _docBase = docBase;
         }
 
         /// <summary>
@@ -103,6 +100,10 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public virtual BrowseFacet GetFacet(string value)
         {
+            if (_closed)
+            {
+                throw new InvalidOperationException("This instance of count collector for " + _name + " was already closed");
+            }
             BrowseFacet facet = null;
             int index = _dataCache.ValArray.IndexOf(value);
             if (index >= 0)
