@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Query.Scoring
 {
     using BoboBrowse.Net.DocIdSet;
@@ -27,14 +27,15 @@ namespace BoboBrowse.Net.Query.Scoring
     using Common.Logging;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
+    using Lucene.Net.Search.Similarities;
+    using Lucene.Net.Support;
+    using Lucene.Net.Util;
     using System.Collections;
     using System.Collections.Generic;
     using System.IO;
 
     public class FacetTermQuery : Query
     {
-        //private static long serialVersionUID = 1L; // NOT USED
-
         private static ILog logger = LogManager.GetLogger(typeof(FacetTermQuery));
 
         private readonly string _name;
@@ -70,7 +71,7 @@ namespace BoboBrowse.Net.Query.Scoring
             return _sel.ToString();
         }
 
-        public override Weight CreateWeight(Searcher searcher)
+        public override Weight CreateWeight(IndexSearcher searcher)
         {
             return new FacetTermWeight(this, searcher.Similarity);
         }
@@ -116,7 +117,7 @@ namespace BoboBrowse.Net.Query.Scoring
                     float boost_1 = _boostMap_1.Get(key_1);
                     float boost_2 = _boostMap_2.Get(key_1);
 
-                    if (Lucene.Net.Support.Single.FloatToIntBits(boost_1) != Lucene.Net.Support.Single.FloatToIntBits(boost_2))
+                    if (Number.FloatToIntBits(boost_1) != Number.FloatToIntBits(boost_2))
                         return false;
                 }
             }
@@ -179,9 +180,9 @@ namespace BoboBrowse.Net.Query.Scoring
                 _similarity = sim;
             }
 
-            public override Explanation Explain(IndexReader reader, int docid)
+            public override Explanation Explain(AtomicReaderContext context, int docid)
             {
-                BoboSegmentReader boboReader = (BoboSegmentReader)reader;
+                BoboSegmentReader boboReader = (BoboSegmentReader)context.Reader;
                 IFacetHandler fhandler = boboReader.GetFacetHandler(parent._name);
                 if (fhandler != null)
                 {
@@ -211,57 +212,47 @@ namespace BoboBrowse.Net.Query.Scoring
                 get { return parent; }
             }
 
-            public override float Value
-            {
-                get { return value; }
-            }
-
-            public override void Normalize(float score)
-            {
-                value = parent.Boost;
-            }
-
-            private DocIdSetIterator BuildIterator(RandomAccessDocIdSet docset, TermDocs td)
+            private DocIdSetIterator BuildIterator(RandomAccessDocIdSet docset, BoboSegmentReader reader, Bits acceptDocs)
             {
                 return new FacetTermQueryDocIdSetIterator(docset, td);
             }
 
             private class FacetTermQueryDocIdSetIterator : DocIdSetIterator
             {
-                private int doc = DocIdSetIterator.NO_MORE_DOCS;
+                private int doc = -1;
                 private readonly RandomAccessDocIdSet _docset;
-                private readonly TermDocs _td;
+                private readonly int _maxDoc;
+                private readonly Bits _acceptDocs;
 
-                public FacetTermQueryDocIdSetIterator(RandomAccessDocIdSet docset, TermDocs td)
+                public FacetTermQueryDocIdSetIterator(RandomAccessDocIdSet docset, BoboSegmentReader reader, Bits acceptDocs)
                 {
                     _docset = docset;
-                    _td = td;
+                    _maxDoc = reader.MaxDoc;
+                    _acceptDocs = acceptDocs;
                 }
 
                 public override int Advance(int target)
                 {
-                    if (_td.SkipTo(target))
+                    doc = target;
+                    while (doc < _maxDoc)
                     {
-                        doc = _td.Doc;
-                        while (!_docset.Get(doc))
+                        if (_acceptDocs != null && !_acceptDocs.Get(doc))
                         {
-                            if (_td.Next())
-                            {
-                                doc = _td.Doc;
-                            }
-                            else
-                            {
-                                doc = DocIdSetIterator.NO_MORE_DOCS;
-                                break;
-                            }
+                            ++doc;
+                            continue;
                         }
-                        return doc;
+                        if (!_docset.Get(doc))
+                        {
+                            ++doc;
+                            continue;
+                        }
+                        break;
                     }
-                    else
+                    if (doc >= _maxDoc)
                     {
                         doc = DocIdSetIterator.NO_MORE_DOCS;
-                        return doc;
                     }
+                    return doc;
                 }
 
                 public override int DocID()
@@ -271,38 +262,41 @@ namespace BoboBrowse.Net.Query.Scoring
 
                 public override int NextDoc()
                 {
-                    if (_td.Next())
+                    ++doc;
+                    while (doc < _maxDoc)
                     {
-                        doc = _td.Doc;
-                        while (!_docset.Get(doc))
+                        if (_acceptDocs != null && !_acceptDocs.Get(doc))
                         {
-                            if (_td.Next())
-                            {
-                                doc = _td.Doc;
-                            }
-                            else
-                            {
-                                doc = DocIdSetIterator.NO_MORE_DOCS;
-                                break;
-                            }
+                            ++doc;
+                            continue;
                         }
-                        return doc;
+                        if (!_docset.Get(doc))
+                        {
+                            ++doc;
+                            continue;
+                        }
+                        break;
                     }
-                    else
+                    if (doc >= _maxDoc)
                     {
                         doc = DocIdSetIterator.NO_MORE_DOCS;
-                        return doc;
                     }
+                    return doc;
+                }
+
+                public override long Cost()
+                {
+                    return 0;
                 }
             }
 
 
-            public override Scorer Scorer(IndexReader reader, bool scoreDocsInOrder, bool topScorer)
+            public override Scorer Scorer(AtomicReaderContext context, bool scoreDocsInOrder, bool topScorer, Bits acceptDocs)
             {
+                AtomicReader reader = context.AtomicReader;
                 if (reader is BoboSegmentReader)
                 {
                     BoboSegmentReader boboReader = (BoboSegmentReader)reader;
-                    TermDocs termDocs = boboReader.TermDocs(null);
                     IFacetHandler fhandler = boboReader.GetFacetHandler(parent._name);
                     if (fhandler != null)
                     {
@@ -313,12 +307,12 @@ namespace BoboBrowse.Net.Query.Scoring
                             RandomAccessDocIdSet docset = filter.GetRandomAccessDocIdSet(boboReader);
                             if (docset != null)
                             {
-                                dociter = BuildIterator(docset, termDocs);
+                                dociter = BuildIterator(docset, boboReader, acceptDocs);
                             }
                         }
                         if (dociter == null)
                         {
-                            dociter = new MatchAllDocIdSetIterator(reader);
+                            dociter = new MatchAllDocIdSetIterator(reader, acceptDocs);
                         }
                         BoboDocScorer scorer = null;
                         if (fhandler is IFacetScoreable)
@@ -339,9 +333,14 @@ namespace BoboBrowse.Net.Query.Scoring
                 }
             }
 
-            public override float GetSumOfSquaredWeights()
+            public override float ValueForNormalization
             {
-                return 0;
+                get { return 0; }
+            }
+
+            public override void Normalize(float norm, float topLevelBoost)
+            {
+                // Do nothing
             }
         }
 
@@ -352,7 +351,7 @@ namespace BoboBrowse.Net.Query.Scoring
             private readonly FacetTermQuery _parent;
 
             public FacetTermScorer(FacetTermQuery parent, Similarity similarity, DocIdSetIterator docidsetIter, BoboDocScorer scorer)
-                : base(similarity)
+                : base(new FacetTermWeight(parent, similarity))
             {
                 _parent = parent;
                 _docSetIter = docidsetIter;
@@ -377,7 +376,17 @@ namespace BoboBrowse.Net.Query.Scoring
             public override int Advance(int target)
             {
                 return _docSetIter.Advance(target);
-            }   
+            }
+
+            public override int Freq()
+            {
+                return 0;
+            }
+
+            public override long Cost()
+            {
+                return 0;
+            }
         }
     }
 }
