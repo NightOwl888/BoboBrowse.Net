@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net
 {
     using BoboBrowse.Net.MapRed;
@@ -52,7 +52,7 @@ namespace BoboBrowse.Net
         [NonSerialized]
         private SortCollector _sortCollector;
         //private int totalGroups;
-	    private IDictionary<string, IFacetAccessible> _facetMap;
+	    private readonly IDictionary<string, IFacetAccessible> _facetMap;
 	    private BrowseHit[] hits;
         private IList<string> errors = new List<string>();
 	    private static BrowseHit[] NO_HITS = new BrowseHit[0];
