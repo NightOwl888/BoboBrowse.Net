@@ -53,7 +53,7 @@ namespace BoboBrowse.Net
         /// Gets the Index Reader.
         /// </summary>
         /// <returns></returns>
-        IndexReader IndexReader { get; };
+        IndexReader IndexReader { get; }
 
         /// <summary>
         /// Gets a set of facet names.
