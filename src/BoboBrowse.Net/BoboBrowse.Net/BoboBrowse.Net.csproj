@@ -142,7 +142,6 @@
     <Compile Include="MapRed\IBoboMapFunctionWrapper.cs" />
     <Compile Include="MapRed\MapReduceResult.cs" />
     <Compile Include="QueriesSupport.cs" />
-    <Compile Include="DocIdSet\BitsetDocSet.cs" />
     <Compile Include="DocIdSet\EmptyDocIdSet.cs" />
     <Compile Include="FacetSpec.cs" />
     <Compile Include="Facets\AbstractRuntimeFacetHandlerFactory.cs" />
@@ -228,7 +227,6 @@
     <Compile Include="BrowseHit.cs" />
     <Compile Include="BrowseResult.cs" />
     <Compile Include="Search\FacetHitCollector.cs" />
-    <Compile Include="DocIdSet\FilteredDocSetIterator.cs" />
     <Compile Include="IBrowsable.cs" />
     <Compile Include="Query\Scoring\IFacetScoreable.cs" />
     <Compile Include="MultiBoboBrowser.cs" />
