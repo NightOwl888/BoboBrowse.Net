@@ -17,21 +17,19 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Impl
 {
     using BoboBrowse.Net;
     using BoboBrowse.Net.Service;
-    using Common.Logging;
     using System;
 
     public class DefaultBrowseServiceImpl : IBrowseService
     {
-        private static ILog logger = LogManager.GetLogger(typeof(DefaultBrowseServiceImpl));
-        private BoboSegmentReader _reader;
+        private BoboMultiReader _reader;
         private bool _closeReader;
 
-        public DefaultBrowseServiceImpl(BoboSegmentReader reader)
+        public DefaultBrowseServiceImpl(BoboMultiReader reader)
         {
             _reader = reader;
             _closeReader = false;
@@ -42,7 +40,7 @@ namespace BoboBrowse.Net.Impl
             set { _closeReader = value; }
         }
 
-        public virtual BrowseResult Browse(BrowseRequest req) // throws BrowseException
+        public virtual BrowseResult Browse(BrowseRequest req)
         {
             BrowseResult result = BrowseService_Fields.EMPTY_RESULT;
             if (req.Offset < 0)
