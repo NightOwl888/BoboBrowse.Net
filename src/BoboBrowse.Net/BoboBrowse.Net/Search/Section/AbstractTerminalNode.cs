@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Search.Section
 {
     using Lucene.Net.Index;
@@ -28,14 +28,13 @@ namespace BoboBrowse.Net.Search.Section
     /// </summary>
     public abstract class AbstractTerminalNode : SectionSearchQueryPlan
     {
-        protected TermPositions _tp;
+        protected DocsAndPositionsEnum _dp;
         protected int _posLeft;
         protected int _curPos;
 
-        public AbstractTerminalNode(Term term, IndexReader reader)
+        public AbstractTerminalNode(Term term, AtomicReader reader)
         {
-            _tp = reader.TermPositions();
-            _tp.Seek(term);
+            _dp = reader.TermPositionsEnum(term);
             _posLeft = 0;
         }
 
@@ -48,10 +47,9 @@ namespace BoboBrowse.Net.Search.Section
         {
             if (targetDoc <= _curDoc) targetDoc = _curDoc + 1;
 
-            if (_tp.SkipTo(targetDoc))
+            if ((_curDoc = _dp.Advance(targetDoc)) != DocsEnum.NO_MORE_DOCS)
             {
-                _curDoc = _tp.Doc;
-                _posLeft = _tp.Freq;
+                _posLeft = _dp.Freq();
                 _curSec = -1;
                 _curPos = -1;
                 return _curDoc;
@@ -59,9 +57,12 @@ namespace BoboBrowse.Net.Search.Section
             else
             {
                 _curDoc = DocIdSetIterator.NO_MORE_DOCS;
-                _tp.Dispose();
                 return _curDoc;
             }
         }
+
+        // NOTE: This is already declared in the base class, no need to 
+        // do it again.
+        // public abstract int FetchSec(int targetSec);
     }
 }
