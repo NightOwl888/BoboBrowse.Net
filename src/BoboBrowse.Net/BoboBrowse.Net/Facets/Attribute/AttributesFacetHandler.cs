@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Attribute
 {
     using BoboBrowse.Net.Facets.Data;
@@ -35,7 +35,8 @@ namespace BoboBrowse.Net.Facets.Attribute
         public const string SEPARATOR_PROP_NAME = "separator";
         public const string MAX_FACETS_PER_KEY_PROP_NAME = "maxFacetsPerKey";
 
-        public AttributesFacetHandler(string name, string indexFieldName, TermListFactory termListFactory, Term sizePayloadTerm, IDictionary<string, string> facetProps)
+        public AttributesFacetHandler(string name, string indexFieldName, 
+            TermListFactory termListFactory, Term sizePayloadTerm, IDictionary<string, string> facetProps)
             : base(name, indexFieldName, sizePayloadTerm, termListFactory, new string[0])
         {
             if (facetProps.ContainsKey(SEPARATOR_PROP_NAME))
@@ -124,7 +125,7 @@ namespace BoboBrowse.Net.Facets.Attribute
                 {
                     facetsPerKey = int.Parse(_ospec.Properties.Get(MAX_FACETS_PER_KEY_PROP_NAME));
                 }
-                MultiValueFacetDataCache dataCache = (MultiValueFacetDataCache)reader.GetFacetData(_parent.Name);
+                IMultiValueFacetDataCache dataCache = (IMultiValueFacetDataCache)reader.GetFacetData(_parent.Name);
                 return new AttributesFacetCountCollector(_parent, _parent.Name, dataCache, docBase, _browseSelection, _ospec, facetsPerKey, _parent.GetSeparator(_browseSelection));
             }
         }
