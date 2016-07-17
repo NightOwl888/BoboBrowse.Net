@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net;
@@ -30,6 +30,7 @@ namespace BoboBrowse.Net.Facets.Impl
     using Common.Logging;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
+    using Lucene.Net.Util;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -38,12 +39,10 @@ namespace BoboBrowse.Net.Facets.Impl
     /// Same as <see cref="T:MultiValueFacetHandler"/>, multiple values are allowed, but the total possible values are limited to 32. 
     /// This is more efficient than <see cref="T:MultiValueFacetHandler"/> and has a smaller memory footprint.
     /// </summary>
-    public class CompactMultiValueFacetHandler : FacetHandler<FacetDataCache>, IFacetScoreable
+    public class CompactMultiValueFacetHandler : FacetHandler<IFacetDataCache>, IFacetScoreable
     {
-        private static ILog logger = LogManager.GetLogger(typeof(CompactMultiValueFacetHandler));
-
         private const int MAX_VAL_COUNT = 32;
-        private readonly TermListFactory _termListFactory;
+        private readonly ITermListFactory _termListFactory;
         private readonly string _indexFieldName;
 
         /// <summary>
@@ -54,7 +53,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <param name="indexFieldName">The name of the Lucene.Net index field this handler will utilize.</param>
         /// <param name="termListFactory">A <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance that will create a 
         /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
-        public CompactMultiValueFacetHandler(string name, string indexFieldName, TermListFactory termListFactory)
+        public CompactMultiValueFacetHandler(string name, string indexFieldName, ITermListFactory termListFactory)
             : base(name)
         {
             _indexFieldName = indexFieldName;
@@ -69,7 +68,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <param name="name">The facet handler name. Must be the same value as the Lucene.Net index field name.</param>
         /// <param name="termListFactory">A <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance that will create a 
         /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
-        public CompactMultiValueFacetHandler(string name, TermListFactory termListFactory)
+        public CompactMultiValueFacetHandler(string name, ITermListFactory termListFactory)
             : this(name, name, termListFactory)
         {
         }
@@ -155,17 +154,17 @@ namespace BoboBrowse.Net.Facets.Impl
             return c;
         }
 
-        public override int GetNumItems(BoboIndexReader reader, int id)
+        public override int GetNumItems(BoboSegmentReader reader, int id)
         {
-            FacetDataCache dataCache = GetFacetData<FacetDataCache>(reader);
+            IFacetDataCache dataCache = GetFacetData<IFacetDataCache>(reader);
             if (dataCache == null) return 0;
             int encoded = dataCache.OrderArray.Get(id);
             return CountBits(encoded);
         }
 
-        public override string[] GetFieldValues(BoboIndexReader reader, int id)
+        public override string[] GetFieldValues(BoboSegmentReader reader, int id)
         {
-            FacetDataCache dataCache = GetFacetData<FacetDataCache>(reader);
+            IFacetDataCache dataCache = GetFacetData<IFacetDataCache>(reader);
             if (dataCache == null) return new string[0];
             int encoded = dataCache.OrderArray.Get(id);
             if (encoded == 0)
@@ -190,9 +189,9 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public override object[] GetRawFieldValues(BoboIndexReader reader, int id)
+        public override object[] GetRawFieldValues(BoboSegmentReader reader, int id)
         {
-            FacetDataCache dataCache = GetFacetData<FacetDataCache>(reader);
+            IFacetDataCache dataCache = GetFacetData<IFacetDataCache>(reader);
             if (dataCache == null) return new string[0];
             int encoded = dataCache.OrderArray.Get(id);
             if (encoded == 0)
@@ -228,8 +227,8 @@ namespace BoboBrowse.Net.Facets.Impl
             private readonly string _name;
             private readonly BrowseSelection _sel;
             private readonly FacetSpec _ospec;
-            
-            public CompactMultiValueFacetCountCollectorSource(Func<BoboIndexReader, FacetDataCache> getFacetData, string name, BrowseSelection sel, FacetSpec ospec)
+
+            public CompactMultiValueFacetCountCollectorSource(Func<BoboSegmentReader, IFacetDataCache> getFacetData, string name, BrowseSelection sel, FacetSpec ospec)
             {
                 this.getFacetData = getFacetData;
                 _name = name;
@@ -237,14 +236,14 @@ namespace BoboBrowse.Net.Facets.Impl
                 _sel = sel;
             }
 
-            public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
+            public override IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase)
             {
-                FacetDataCache dataCache = getFacetData(reader);
+                IFacetDataCache dataCache = getFacetData(reader);
                 return new CompactMultiValueFacetCountCollector(_name, _sel, dataCache, docBase, _ospec);
             }
         }
 
-        public override FacetDataCache Load(BoboIndexReader reader)
+        public override FacetDataCache Load(BoboSegmentReader reader)
         {
             int maxDoc = reader.MaxDoc;
 
@@ -256,75 +255,53 @@ namespace BoboBrowse.Net.Facets.Impl
             List<int> maxIDList = new List<int>();
             List<int> freqList = new List<int>();
 
-            TermDocs termDocs = null;
-            TermEnum termEnum = null;
             int t = 0; // current term number
             mterms.Add(null);
             minIDList.Add(-1);
             maxIDList.Add(-1);
             freqList.Add(0);
             t++;
-            try
+            Terms terms = reader.Terms(_indexFieldName);
+            if (terms != null)
             {
-                termDocs = reader.TermDocs();
-                termEnum = reader.Terms(new Term(_indexFieldName, ""));
-                do
+                TermsEnum termsEnum = terms.Iterator(null);
+                BytesRef text;
+                while ((text = termsEnum.Next()) != null)
                 {
-                    if (termEnum == null)
-                        break;
-                    Term term = termEnum.Term;
-                    if (term == null || !_indexFieldName.Equals(term.Field))
-                        break;
-
                     // store term text
                     // we expect that there is at most one term per document
                     if (t > MAX_VAL_COUNT)
                     {
                         throw new IOException("maximum number of value cannot exceed: " + MAX_VAL_COUNT);
                     }
-                    string val = term.Text;
+                    string val = text.Utf8ToString();
                     mterms.Add(val);
                     int bit = (0x00000001 << (t - 1));
-                    termDocs.Seek(termEnum);
-                    //freqList.add(termEnum.docFreq());  // removed because the df doesn't take into account the num of deletedDocs
+                    Term term = new Term(_indexFieldName, val);
+                    DocsEnum docsEnum = reader.TermDocsEnum(term);
+                    //freqList.add(termEnum.docFreq());  // removed because the df doesn't take into account the 
+                    // num of deletedDocs
                     int df = 0;
                     int minID = -1;
                     int maxID = -1;
-                    if (termDocs.Next())
+                    int docID = -1;
+                    while ((docID = docsEnum.NextDoc()) != DocsEnum.NO_MORE_DOCS)
                     {
                         df++;
-                        int docid = termDocs.Doc;
-                        order.Add(docid, order.Get(docid) | bit);
-                        minID = docid;
-                        while (termDocs.Next())
+                        order.Add(docID, order.Get(docID) | bit);
+                        minID = docID;
+                        while (docsEnum.NextDoc() != DocsEnum.NO_MORE_DOCS)
                         {
+                            docID = docsEnum.DocID();
                             df++;
-                            docid = termDocs.Doc;
-                            order.Add(docid, order.Get(docid) | bit);
+                            order.Add(docID, order.Get(docID) | bit);
                         }
-                        maxID = docid;
+                        maxID = docID;
                     }
                     freqList.Add(df);
                     minIDList.Add(minID);
                     maxIDList.Add(maxID);
                     t++;
-                } while (termEnum.Next());
-            }
-            finally
-            {
-                try
-                {
-                    if (termDocs != null)
-                    {
-                        termDocs.Dispose();
-                    }
-                }
-                finally
-                {
-                    if (termEnum != null)
-                    {
-                        termEnum.Dispose();
-                    }
                 }
             }
 
@@ -341,12 +318,12 @@ namespace BoboBrowse.Net.Facets.Impl
                 _facetHandler = facetHandler;
             }
 
-            public override DocComparator GetComparator(IndexReader reader, int docbase)
+            public override DocComparator GetComparator(AtomicReader reader, int docbase)
             {
-                if (!(reader is BoboIndexReader))
-                    throw new InvalidOperationException("reader must be instance of BoboIndexReader");
-                var boboReader = (BoboIndexReader)reader;
-                FacetDataCache dataCache = _facetHandler.GetFacetData<FacetDataCache>(boboReader);
+                if (!(reader is BoboSegmentReader))
+                    throw new InvalidOperationException("reader must be instance of BoboSegmentReader");
+                var boboReader = (BoboSegmentReader)reader;
+                IFacetDataCache dataCache = _facetHandler.GetFacetData<IFacetDataCache>(boboReader);
                 return new CompactMultiValueDocComparator(dataCache, _facetHandler, boboReader);
             }
 
@@ -354,9 +331,9 @@ namespace BoboBrowse.Net.Facets.Impl
             {
                 private readonly FacetDataCache _dataCache;
                 private readonly IFacetHandler _facetHandler;
-                private readonly BoboIndexReader _reader;
+                private readonly BoboSegmentReader _reader;
 
-                public CompactMultiValueDocComparator(FacetDataCache dataCache, IFacetHandler facetHandler, BoboIndexReader reader)
+                public CompactMultiValueDocComparator(FacetDataCache dataCache, IFacetHandler facetHandler, BoboSegmentReader reader)
                 {
                     _dataCache = dataCache;
                     _facetHandler = facetHandler;
@@ -377,17 +354,17 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public virtual BoboDocScorer GetDocScorer(BoboIndexReader reader, IFacetTermScoringFunctionFactory scoringFunctionFactory, IDictionary<string, float> boostMap)
+        public virtual BoboDocScorer GetDocScorer(BoboSegmentReader reader, IFacetTermScoringFunctionFactory scoringFunctionFactory, IDictionary<string, float> boostMap)
         {
-            FacetDataCache dataCache = GetFacetData<FacetDataCache>(reader);
+            IFacetDataCache dataCache = GetFacetData<IFacetDataCache>(reader);
             float[] boostList = BoboDocScorer.BuildBoostList(dataCache.ValArray, boostMap);
             return new CompactMultiValueDocScorer(dataCache, scoringFunctionFactory, boostList);
         }
 
         private sealed class CompactMultiValueDocScorer : BoboDocScorer
         {
-            private readonly FacetDataCache _dataCache;
-            internal CompactMultiValueDocScorer(FacetDataCache dataCache, IFacetTermScoringFunctionFactory scoreFunctionFactory, float[] boostList)
+            private readonly IFacetDataCache _dataCache;
+            internal CompactMultiValueDocScorer(IFacetDataCache dataCache, IFacetTermScoringFunctionFactory scoreFunctionFactory, float[] boostList)
                 : base(scoreFunctionFactory.GetFacetTermScoringFunction(dataCache.ValArray.Count, dataCache.OrderArray.Size()), boostList)
             {
                 _dataCache = dataCache;
@@ -448,7 +425,7 @@ namespace BoboBrowse.Net.Facets.Impl
             private bool _aggregated = false;
 
 
-            internal CompactMultiValueFacetCountCollector(string name, BrowseSelection sel, FacetDataCache dataCache, int docBase, FacetSpec ospec)
+            internal CompactMultiValueFacetCountCollector(string name, BrowseSelection sel, IFacetDataCache dataCache, int docBase, FacetSpec ospec)
                 : base(name, dataCache, docBase, sel, ospec)
             {
                 _array = _dataCache.OrderArray;
