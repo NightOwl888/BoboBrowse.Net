@@ -17,13 +17,14 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Query
 {
     using BoboBrowse.Net.Facets;
     using BoboBrowse.Net.Query.Scoring;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
+    using Lucene.Net.Search.Similarities;
     using System;
     using System.Collections.Generic;
 
@@ -43,17 +44,17 @@ namespace BoboBrowse.Net.Query
             _scoringFunctionFactory = scoringFunctionFactory;
         }
 
-        public virtual Scorer CreateScorer(Scorer innerScorer, IndexReader reader, bool scoreDocsInOrder, bool topScorer)
+        public virtual Scorer CreateScorer(Scorer innerScorer, AtomicReader reader, bool scoreDocsInOrder, bool topScorer)
         {
-            if(!(reader is BoboSegmentReader)) 
-                throw new ArgumentException("IndexReader is not BoboIndexReader");
+            if(!(reader is BoboSegmentReader))
+                throw new ArgumentException("IndexReader is not BoboSegmentReader");
     
-            return new FacetBasedBoostingScorer(this, (BoboSegmentReader)reader, innerScorer.Similarity, innerScorer);
+            return new FacetBasedBoostingScorer(this, (BoboSegmentReader)reader, innerScorer);
         }
 
-        public virtual Explanation Explain(IndexReader indexReader, int docid, Explanation innerExplaination)
+        public virtual Explanation Explain(AtomicReader indexReader, int docid, Explanation innerExplaination)
         {
-            if (!(indexReader is BoboSegmentReader)) throw new ArgumentException("IndexReader is not BoboIndexReader");
+            if (!(indexReader is BoboSegmentReader)) throw new ArgumentException("IndexReader is not BoboSegmentReader");
             BoboSegmentReader reader = (BoboSegmentReader)indexReader;
 
             Explanation exp = new Explanation();
@@ -90,8 +91,8 @@ namespace BoboBrowse.Net.Query
     
             private int _docid;
 
-            public FacetBasedBoostingScorer(FacetBasedBoostScorerBuilder parent, BoboSegmentReader reader, Similarity similarity, Scorer innerScorer)
-                : base(similarity)
+            public FacetBasedBoostingScorer(FacetBasedBoostScorerBuilder parent, BoboSegmentReader reader, Scorer innerScorer)
+                : base(innerScorer.Weight)
             {
                 _innerScorer = innerScorer;
 
@@ -102,7 +103,7 @@ namespace BoboBrowse.Net.Query
                     string facetName = boostEntry.Key;
                     IFacetHandler handler = reader.GetFacetHandler(facetName);
                     if (!(handler is IFacetScoreable))
-                        throw new ArgumentException(facetName + " does not implement FacetScoreable");
+                        throw new ArgumentException(facetName + " does not implement IFacetScoreable");
                     IFacetScoreable facetScoreable = (IFacetScoreable)handler;
                     BoboDocScorer scorer = facetScoreable.GetDocScorer(reader, parent._scoringFunctionFactory, boostEntry.Value);
                     if (scorer != null) list.Add(scorer);
@@ -138,6 +139,16 @@ namespace BoboBrowse.Net.Query
             public override int Advance(int target)
             {
                 return (_docid = _innerScorer.Advance(target));
+            }
+
+            public override int Freq()
+            {
+                return 0;
+            }
+
+            public override long Cost()
+            {
+                return 0;
             }
         }
     }
