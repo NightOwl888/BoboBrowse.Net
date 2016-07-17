@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
@@ -37,15 +37,14 @@ namespace BoboBrowse.Net.Facets.Impl
 	    private int[] _latCount;
 	    private int[] _longCount;
 	    private readonly BigSegmentedArray _latOrderArray;
-	    private FacetDataCache _latDataCache;
+	    private readonly IFacetDataCache _latDataCache;
 	    private readonly TermStringList _predefinedRanges;
 	    private int[][] _latPredefinedRangeIndexes;
         private readonly BigSegmentedArray _longOrderArray;
-	    private FacetDataCache _longDataCache;
+	    private readonly IFacetDataCache _longDataCache;
 	    private int[][] _longPredefinedRangeIndexes;
-	    private int _docBase;
 
-        public GeoSimpleFacetCountCollector(string name, FacetDataCache latDataCache, FacetDataCache longDataCache, int docBase, FacetSpec spec, IEnumerable<string> predefinedRanges)
+        public GeoSimpleFacetCountCollector(string name, IFacetDataCache latDataCache, IFacetDataCache longDataCache, int docBase, FacetSpec spec, IEnumerable<string> predefinedRanges)
         {
             _name = name;
             _latDataCache = latDataCache;
@@ -55,7 +54,6 @@ namespace BoboBrowse.Net.Facets.Impl
             log.Info("latCount: " + _latDataCache.Freqs.Length + " longCount: " + _longDataCache.Freqs.Length);
             _latOrderArray = _latDataCache.OrderArray;
             _longOrderArray = _longDataCache.OrderArray;
-            _docBase = docBase;
             _spec = spec;
             _predefinedRanges = new TermStringList();
             var predefinedRangesTemp = new List<string>(predefinedRanges);
