@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Search.Section
 {
     using BoboBrowse.Net.Support;
@@ -40,10 +40,10 @@ namespace BoboBrowse.Net.Search.Section
             }
         }
 
-        protected readonly IndexReader _reader;
+        protected readonly AtomicReader _reader;
         protected readonly IMetaDataCacheProvider _cacheProvider;
 
-        public SectionSearchQueryPlanBuilder(IndexReader reader)
+        public SectionSearchQueryPlanBuilder(AtomicReader reader)
         {
             _reader = reader;
             _cacheProvider = (reader is IMetaDataCacheProvider ? (IMetaDataCacheProvider)reader : null);
@@ -114,9 +114,9 @@ namespace BoboBrowse.Net.Search.Section
 
         private SectionSearchQueryPlan TranslatePhraseQuery(PhraseQuery query)
         {
-            Term[] terms = query.GetTerms();
+            Term[] terms = query.Terms;
             TermNode[] nodes = new TermNode[terms.Length];
-            int[] positions = query.GetPositions();
+            int[] positions = query.Positions;
             for (int i = 0; i < terms.Length; i++)
             {
                 nodes[i] = new TermNode(terms[i], positions[i], _reader);
@@ -129,14 +129,14 @@ namespace BoboBrowse.Net.Search.Section
             List<Query> requiredClauses = new List<Query>();
             List<Query> prohibitedClauses = new List<Query>();
             List<Query> optionalClauses = new List<Query>();
-            BooleanClause[] clauses = query.GetClauses();
+            BooleanClause[] clauses = query.Clauses;
             foreach (BooleanClause clause in clauses)
             {
-                if (clause.IsRequired)
+                if (clause.Required)
                 {
                     requiredClauses.Add(clause.Query);
                 }
-                else if (clause.IsProhibited)
+                else if (clause.Prohibited)
                 {
                     prohibitedClauses.Add(clause.Query);
                 }
