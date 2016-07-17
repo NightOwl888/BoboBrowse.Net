@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Search.Section
 {
     using Lucene.Net.Search;
@@ -37,8 +37,8 @@ namespace BoboBrowse.Net.Search.Section
         public class NodeQueue : PriorityQueue<SectionSearchQueryPlan>
         {
             public NodeQueue(int size)
+                : base(size)
             {
-                Initialize(size);
             }
 
             public override bool LessThan(SectionSearchQueryPlan nodeA, SectionSearchQueryPlan nodeB)
