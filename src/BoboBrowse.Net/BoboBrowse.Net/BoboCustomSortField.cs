@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net
 {
     using BoboBrowse.Net.Sort;
@@ -25,12 +25,10 @@ namespace BoboBrowse.Net
 
     public class BoboCustomSortField : SortField
     {
-        //private static long serialVersionUID = 1L; // NOT USED
-
 	    private readonly DocComparatorSource _factory;
 
         public BoboCustomSortField(string field, bool reverse, DocComparatorSource factory)
-            : base(field, SortField.CUSTOM, reverse)
+            : base(field, SortField.Type_e.CUSTOM, reverse)
         {
             _factory = factory;
         }
