@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Service
 {
     using BoboBrowse.Net;
@@ -32,7 +32,7 @@ namespace BoboBrowse.Net.Service
         private static ILog logger = LogManager.GetLogger(typeof(BoboService));
 
         private readonly DirectoryInfo _idxDir;
-        private BoboSegmentReader _boboReader;
+        private BoboMultiReader _boboReader;
 
         public BoboService(string path)
             : this(new DirectoryInfo(path))
@@ -76,10 +76,10 @@ namespace BoboBrowse.Net.Service
 
         public virtual void Start()
         {
-            IndexReader reader = IndexReader.Open(FSDirectory.Open(_idxDir), true);
+            DirectoryReader reader = DirectoryReader.Open(FSDirectory.Open(_idxDir));
             try
             {
-                _boboReader = BoboSegmentReader.GetInstance(reader);
+                _boboReader = BoboMultiReader.GetInstance(reader);
             }
             catch
             {
