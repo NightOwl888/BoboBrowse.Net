@@ -17,31 +17,27 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Search.Section
 {
     using Lucene.Net.Index;
     using Lucene.Net.Search;
+    using Lucene.Net.Search.Similarities;
     using System.Text;
 
     public class SectionSearchQuery : Query
-    {
-        //private static long serialVersionUID = 1L; // NOT USED
-  
+    { 
         private Query _query;
 
         private class SectionSearchWeight : Weight
         {
-            //private static long serialVersionUID = 1L; // NOT USED
-
-            float _weight;
-            Similarity _similarity;
+            Weight _weight;
             private readonly SectionSearchQuery _parent;
 
-            public SectionSearchWeight(SectionSearchQuery parent, Searcher searcher)
+            public SectionSearchWeight(SectionSearchQuery parent, IndexSearcher searcher, Query query)
             {
                 _parent = parent;
-                _similarity = _parent.GetSimilarity(searcher);
+                _weight = searcher.CreateNormalizedWeight(query);
             }
 
             public override string ToString()
@@ -51,7 +47,7 @@ namespace BoboBrowse.Net.Search.Section
 
             public override Query Query
             {
-                get { return _parent._query; }
+                get { return _parent; }
             }
 
             public override float Value
@@ -59,36 +55,21 @@ namespace BoboBrowse.Net.Search.Section
                 get { return _parent.Boost; }
             }
 
-            public override float GetSumOfSquaredWeights()
+            public override Scorer Scorer(AtomicReaderContext context, Lucene.Net.Util.Bits acceptDocs)
             {
-                _weight = _parent.Boost;
-                return _weight * _weight;
-            }
-
-            public override void Normalize(float queryNorm)
-            {
-                _weight *= queryNorm;
-            }
-
-            public virtual Scorer Scorer(IndexReader reader)
-            {
-                SectionSearchScorer scorer = new SectionSearchScorer(this.Query, _similarity, Value, reader);
-
+                SectionSearchScorer scorer = new SectionSearchScorer(this.Query, _weight, this.Value, context.AtomicReader);
                 return scorer;
             }
 
-            public override Explanation Explain(IndexReader reader, int doc)
+            public override float ValueForNormalization
             {
-                Explanation result = new Explanation();
-                result.Value = _weight;
-                result.Description = _parent.ToString();
-
-                return result;
+                get { return _weight.ValueForNormalization; }
             }
 
-            public override Scorer Scorer(IndexReader reader, bool scoreDocsInOrder, bool topScorer)
+
+            public override void Normalize(float norm, float topLevelBoost)
             {
-                return Scorer(reader);
+                _weight.Normalize(norm, topLevelBoost);
             }
         }
 
@@ -99,8 +80,8 @@ namespace BoboBrowse.Net.Search.Section
             //private bool _more = true; // more hits // NOT USED
             private SectionSearchQueryPlan _plan;
 
-            public SectionSearchScorer(Query query, Similarity similarity, float score, IndexReader reader)
-                : base(similarity)
+            public SectionSearchScorer(Query query, Weight weight, float score, AtomicReader reader)
+                : base(weight)
             {
                 _curScr = score;
 
@@ -109,12 +90,10 @@ namespace BoboBrowse.Net.Search.Section
                 if (_plan != null)
                 {
                     _curDoc = -1;
-                    //_more = true; // NOT USED
                 }
                 else
                 {
                     _curDoc = DocIdSetIterator.NO_MORE_DOCS;
-                    //_more = false;  // NOT USED
                 }
             }
 
@@ -143,6 +122,16 @@ namespace BoboBrowse.Net.Search.Section
                 }
                 return _curDoc;
             }
+
+            public override int Freq()
+            {
+                return 0;
+            }
+
+            public override long Cost()
+            {
+                return 0;
+            }
         }
 
         /// <summary>
@@ -161,9 +150,9 @@ namespace BoboBrowse.Net.Search.Section
             return buffer.ToString();
         }
 
-        public override Weight CreateWeight(Searcher searcher)
+        public override Weight CreateWeight(IndexSearcher searcher)
         {
-            return new SectionSearchWeight(this, searcher);
+            return new SectionSearchWeight(this, searcher, _query);
         }
 
         public override Query Rewrite(IndexReader reader)
