@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net
 {
     using System;
@@ -122,7 +122,6 @@ namespace BoboBrowse.Net
 
         public virtual IEnumerable<BrowseFacet> Merge(IEnumerable<BrowseFacet> v, IComparer<BrowseFacet> comparator)
         {
-            int i = 0;
             foreach (var facet in v)
             {
                 int val = comparator.Compare(this, facet);
@@ -131,7 +130,11 @@ namespace BoboBrowse.Net
                     facet._hitcount += _hitcount;
                     return v;
                 }
-                i++;
+                // This seems pointless from the Java code. Commented.
+                //if (val > 0)
+                //{
+
+                //}
             }
             var result = new List<BrowseFacet>(v);
             result.Add(this);
