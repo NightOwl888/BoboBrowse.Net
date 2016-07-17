@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
@@ -27,11 +27,11 @@ namespace BoboBrowse.Net.Facets.Impl
     {
         private readonly BigNestedIntArray _array;
 
-        public MultiValuedPathFacetCountCollector(string name, string sep,
-            BrowseSelection sel, FacetSpec ospec, FacetDataCache dataCache)
+        public MultiValuedPathFacetCountCollector(string name, string sep, BrowseSelection sel, 
+            FacetSpec ospec, IFacetDataCache dataCache)
             : base(name, sep, sel, ospec, dataCache)
         {
-            _array = ((MultiValueFacetDataCache)(dataCache)).NestedArray;
+            _array = ((IMultiValueFacetDataCache)(dataCache)).NestedArray;
         }
 
         public override sealed void Collect(int docid) 
