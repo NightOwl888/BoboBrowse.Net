@@ -126,7 +126,6 @@
     <Compile Include="Facets\Impl\DefaultLongFacetIterator.cs" />
     <Compile Include="Facets\Impl\DefaultShortFacetIterator.cs" />
     <Compile Include="Facets\Impl\DynamicTimeRangeFacetHandler.cs" />
-    <Compile Include="Facets\Impl\FacetHandlerLoader.cs" />
     <Compile Include="Facets\Impl\FacetValueComparatorFactory.cs" />
     <Compile Include="Facets\Impl\GeoFacetCountCollector.cs" />
     <Compile Include="Facets\Impl\GeoFacetHandler.cs" />
