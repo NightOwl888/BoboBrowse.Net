@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-﻿// Version compatibility level: 3.2.0
+﻿// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net
 {
     using BoboBrowse.Net.Facets;
@@ -53,8 +53,8 @@ namespace BoboBrowse.Net
         }
 
         // Fields
-        private readonly Dictionary<string, BrowseSelection> _selections;
-        private readonly List<SortField> _sortSpecs;
+        private readonly IDictionary<string, BrowseSelection> _selections;
+        private readonly IList<SortField> _sortSpecs;
 
         /// <summary>
         /// Gets or sets a list of term vectors to fetch from the Lucene.Net index. The values are populated in the <see cref="P:BrowseHit.TermFreqMap"/>.
