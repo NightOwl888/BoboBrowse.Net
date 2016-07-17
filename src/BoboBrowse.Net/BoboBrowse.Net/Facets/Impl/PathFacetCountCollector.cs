@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
@@ -34,7 +34,6 @@ namespace BoboBrowse.Net.Facets.Impl
     {
         private static ILog log = LogManager.GetLogger(typeof(PathFacetCountCollector));
         private readonly BrowseSelection _sel;
-        private readonly FacetSpec _ospec;
         protected BigSegmentedArray _count;
         private readonly string _name;
         private readonly string _sep;
@@ -43,16 +42,14 @@ namespace BoboBrowse.Net.Facets.Impl
         private readonly IComparatorFactory _comparatorFactory;
         private readonly int _minHitCount;
 	    private int _maxCount;
-	    private static Regex _splitPat;
 	    private string[] _stringData;
-	    private char[] _sepArray;
+	    private readonly char[] _sepArray;
 	    private int _patStart;
 	    private int _patEnd;
 
-        internal PathFacetCountCollector(string name, string sep, BrowseSelection sel, FacetSpec ospec, FacetDataCache dataCache)
+        internal PathFacetCountCollector(string name, string sep, BrowseSelection sel, FacetSpec ospec, IFacetDataCache dataCache)
         {
             _sel = sel;
-            _ospec = ospec;
             _name = name;
             _dataCache = dataCache;
             _sep = sep;
@@ -69,12 +66,20 @@ namespace BoboBrowse.Net.Facets.Impl
             FacetSpec.FacetSortSpec sortOption = ospec.OrderBy;
             switch (sortOption)
             {
-                case FacetSpec.FacetSortSpec.OrderHitsDesc: _comparatorFactory = new FacetHitcountComparatorFactory(); break;
-                case FacetSpec.FacetSortSpec.OrderValueAsc: _comparatorFactory = null; break;
-                case FacetSpec.FacetSortSpec.OrderByCustom: _comparatorFactory = ospec.CustomComparatorFactory; break;
-                default: throw new ArgumentOutOfRangeException("invalid sort option: " + sortOption);
+                case FacetSpec.FacetSortSpec.OrderHitsDesc: 
+                    _comparatorFactory = new FacetHitcountComparatorFactory(); 
+                    break;
+                case FacetSpec.FacetSortSpec.OrderValueAsc: 
+                    _comparatorFactory = null; 
+                    break;
+                case FacetSpec.FacetSortSpec.OrderByCustom: 
+                    _comparatorFactory = ospec.CustomComparatorFactory; 
+                    break;
+                default: 
+                    throw new ArgumentOutOfRangeException("invalid sort option: " + sortOption);
             }
-            _splitPat = new Regex(_sep, RegexOptions.Compiled);
+            // Doesn't make much sense to do this, so it is commented.
+            // new Regex(_sep, RegexOptions.Compiled);
             _stringData = new string[10];
             _patStart = 0;
             _patEnd = 0;
@@ -142,7 +147,9 @@ namespace BoboBrowse.Net.Facets.Impl
             int tokEnd = 0;
             while (index < input.Length)
             {
-                for (sepindex = 0; (sepindex < _sepArray.Length) && (str[index + sepindex] == _sepArray[sepindex]); sepindex++) ;
+                for (sepindex = 0; (sepindex < _sepArray.Length) 
+                    && (str[index + sepindex] == _sepArray[sepindex]); sepindex++) 
+                    ;
                 if (sepindex == _sepArray.Length)
                 {
                     index += _sepArray.Length;
@@ -230,7 +237,6 @@ namespace BoboBrowse.Net.Facets.Impl
                 }
             }
 
-            //string[] pathParts; // NOT USED
             StringBuilder buf = new StringBuilder();
             for (int i = index; i < _count.Size(); ++i)
             {
