@@ -50,6 +50,12 @@ namespace BoboBrowse.Net
         BrowseResult Browse(BrowseRequest req);
 
         /// <summary>
+        /// Gets the Index Reader.
+        /// </summary>
+        /// <returns></returns>
+        IndexReader IndexReader { get; };
+
+        /// <summary>
         /// Gets a set of facet names.
         /// </summary>
         /// <returns>set of facet names</returns>
@@ -92,13 +98,13 @@ namespace BoboBrowse.Net
         /// Gets the total number of documents in all sub browser instances.
         /// </summary>
         /// <returns>The total number of documents.</returns>
-        int NumDocs();
+        int NumDocs { get; }
+
+        void DoClose(); // TODO: Should this be IDisposable?
 
         SortCollector GetSortCollector(SortField[] sort, Lucene.Net.Search.Query q, int offset, int count, 
             bool fetchStoredFields, IEnumerable<string> termVectorsToFetch, string[] groupBy, int maxPerGroup, 
             bool collectDocIdCache);
-
-        void DoClose(); // TODO: Should this be IDisposable?
 
         Explanation Explain(Lucene.Net.Search.Query q, int docid);
     }
