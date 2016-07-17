@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Search.Section
 {
     using Lucene.Net.Index;
@@ -25,8 +25,6 @@ namespace BoboBrowse.Net.Search.Section
 
     public abstract class MetaDataQuery : Query
     {
-        //private static long serialVersionUID = 1L; // NOT USED
-
         protected Term _term;
 
         public MetaDataQuery(Term term)
@@ -39,7 +37,7 @@ namespace BoboBrowse.Net.Search.Section
             get { return _term; }
         }
 
-        public abstract SectionSearchQueryPlan GetPlan(IndexReader reader);
+        public abstract SectionSearchQueryPlan GetPlan(AtomicReader reader);
         public abstract SectionSearchQueryPlan GetPlan(IMetaDataCache cache);
     }
 }
