@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
@@ -33,7 +33,7 @@ namespace BoboBrowse.Net.Facets.Impl
     /// Multiple values in this field are allowed if constructor parameter multiValue is set to true. 
     /// When being indexed, this field should not be tokenized.
     /// </summary>
-    public class PathFacetHandler : FacetHandler<FacetDataCache>
+    public class PathFacetHandler : FacetHandler<IFacetDataCache>
     {
         private const string DEFAULT_SEP = "/";
 
@@ -113,9 +113,9 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public override int GetNumItems(BoboIndexReader reader, int id)
+        public override int GetNumItems(BoboSegmentReader reader, int id)
         {
-            FacetDataCache data = GetFacetData<FacetDataCache>(reader);
+            IFacetDataCache data = GetFacetData<IFacetDataCache>(reader);
             if (data == null) return 0;
             return data.GetNumItems(id);
         }
@@ -139,13 +139,13 @@ namespace BoboBrowse.Net.Facets.Impl
             return new FacetDocComparatorSource(this);
         }
 
-        public override string[] GetFieldValues(BoboIndexReader reader, int id)
+        public override string[] GetFieldValues(BoboSegmentReader reader, int id)
         {
             FacetDataCache dataCache = GetFacetData<FacetDataCache>(reader);
             if (dataCache == null) return new string[0];
             if (_multiValue)
             {
-                return ((MultiValueFacetDataCache)dataCache).NestedArray.GetTranslatedData(id, dataCache.ValArray);
+                return ((IMultiValueFacetDataCache)dataCache).NestedArray.GetTranslatedData(id, dataCache.ValArray);
             }
             else
             {
@@ -154,7 +154,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public override object[] GetRawFieldValues(BoboIndexReader reader, int id)
+        public override object[] GetRawFieldValues(BoboSegmentReader reader, int id)
         {
             return GetFieldValues(reader, id);
         }
@@ -177,7 +177,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 _depth = depth;
             }
 
-            private void GetFilters(FacetDataCache dataCache, IList<int> intSet, string[] vals, int depth, bool strict)
+            private void GetFilters(IFacetDataCache dataCache, IList<int> intSet, string[] vals, int depth, bool strict)
             {
                 foreach (string val in vals)
                 {
@@ -185,7 +185,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 }
             }
 
-            private void GetFilters(FacetDataCache dataCache, IList<int> intSet, string val, int depth, bool strict)
+            private void GetFilters(IFacetDataCache dataCache, IList<int> intSet, string val, int depth, bool strict)
             {
                 IList<string> termList = dataCache.ValArray;
                 int index = termList.IndexOf(val);
@@ -220,7 +220,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 }
             }
 
-            public virtual int[] Convert(FacetDataCache dataCache, string[] vals)
+            public virtual int[] Convert(IFacetDataCache dataCache, string[] vals)
             {
                 IList<int> intSet = new List<int>();
                 GetFilters(dataCache, intSet, vals, _depth, _strict);
@@ -336,9 +336,9 @@ namespace BoboBrowse.Net.Facets.Impl
                 _multiValue = multiValue;
             }
 
-            public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
+            public override IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase)
             {
-                FacetDataCache dataCache = _parent.GetFacetData<FacetDataCache>(reader);
+                IFacetDataCache dataCache = _parent.GetFacetData<IFacetDataCache>(reader);
 				if (_multiValue)
                 {
 					return new MultiValuedPathFacetCountCollector(_name, _separator, _sel, _ospec, dataCache);
@@ -350,17 +350,17 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public override FacetDataCache Load(BoboIndexReader reader)
+        public override IFacetDataCache Load(BoboSegmentReader reader)
         {
             if (!_multiValue)
             {
-                FacetDataCache dataCache = new FacetDataCache();
+                IFacetDataCache dataCache = new FacetDataCache();
                 dataCache.Load(_indexedName, reader, _termListFactory);
                 return dataCache;
             }
             else
             {
-                MultiValueFacetDataCache dataCache = new MultiValueFacetDataCache();
+                IMultiValueFacetDataCache dataCache = new MultiValueFacetDataCache();
                 dataCache.Load(_indexedName, reader, _termListFactory);
                 return dataCache;
             }
