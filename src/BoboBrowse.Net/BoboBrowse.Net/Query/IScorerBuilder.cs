@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Query
 {
     using Lucene.Net.Index;
@@ -25,7 +25,7 @@ namespace BoboBrowse.Net.Query
 
     public interface IScorerBuilder
     {
-        Scorer CreateScorer(Scorer innerScorer, IndexReader reader, bool scoreDocsInOrder, bool topScorer);
-        Explanation Explain(IndexReader reader, int doc, Explanation innerExplanation);
+        Scorer CreateScorer(Scorer innerScorer, AtomicReader reader, bool scoreDocsInOrder, bool topScorer);
+        Explanation Explain(AtomicReader reader, int doc, Explanation innerExplanation);
     }
 }
