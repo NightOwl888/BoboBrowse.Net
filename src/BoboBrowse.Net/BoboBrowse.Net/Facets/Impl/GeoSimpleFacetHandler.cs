@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
@@ -55,7 +55,6 @@ namespace BoboBrowse.Net.Facets.Impl
     /// </summary>
     public class GeoSimpleFacetHandler : RuntimeFacetHandler<FacetDataNone>
     {
-        private static ILog logger = LogManager.GetLogger(typeof(GeoSimpleFacetHandler));
 	    protected readonly string _latFacetName;
         protected readonly string _longFacetName;
 	    protected RangeFacetHandler _latFacetHandler;
@@ -191,15 +190,15 @@ namespace BoboBrowse.Net.Facets.Impl
                 _list = list;
             }
 
-            public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
+            public override IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase)
             {
-                FacetDataCache latDataCache = _latFacetHandler.GetFacetData<FacetDataCache>(reader);
-                FacetDataCache longDataCache = _longFacetHandler.GetFacetData<FacetDataCache>(reader);
+                IFacetDataCache latDataCache = _latFacetHandler.GetFacetData<IFacetDataCache>(reader);
+                IFacetDataCache longDataCache = _longFacetHandler.GetFacetData<IFacetDataCache>(reader);
                 return new GeoSimpleFacetCountCollector(_name, latDataCache, longDataCache, docBase, _fspec, _list);
             }
         }
 
-        public override string[] GetFieldValues(BoboIndexReader reader, int docid)
+        public override string[] GetFieldValues(BoboSegmentReader reader, int docid)
         {
             string[] latValues = _latFacetHandler.GetFieldValues(reader, docid);
             string[] longValues = _longFacetHandler.GetFieldValues(reader, docid);
@@ -216,7 +215,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return allValues;
         }
 
-        public override object[] GetRawFieldValues(BoboIndexReader reader, int docid)
+        public override object[] GetRawFieldValues(BoboSegmentReader reader, int docid)
         {
             object[] latValues = _latFacetHandler.GetRawFieldValues(reader, docid);
             object[] longValues = _longFacetHandler.GetRawFieldValues(reader, docid);
@@ -233,7 +232,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return allValues;
         }
 
-        public override FacetDataNone Load(BoboIndexReader reader)
+        public override FacetDataNone Load(BoboSegmentReader reader)
         {
             _latFacetHandler = (RangeFacetHandler)GetDependedFacetHandler(_latFacetName);
             _longFacetHandler = (RangeFacetHandler)GetDependedFacetHandler(_longFacetName);
@@ -247,18 +246,13 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public class GeoFacetDocComparatorSource : DocComparatorSource
         {
-            private FacetHandler<FacetDataNone> _facetHandler;
-
             public GeoFacetDocComparatorSource(GeoSimpleFacetHandler geoSimpleFacetHandler)
             {
-                _facetHandler = geoSimpleFacetHandler;
             }
 
-            public override DocComparator GetComparator(IndexReader reader, int docbase)
+            public override DocComparator GetComparator(AtomicReader reader, int docbase)
             {
-                if (!(reader is BoboIndexReader)) throw new ArgumentException("reader not instance of " + typeof(BoboIndexReader));
-                //BoboIndexReader boboReader = (BoboIndexReader)reader;  // NOT USED
-                //FacetDataNone dataCache = _facetHandler.GetFacetData<FacetDataNone>((BoboIndexReader)reader);  // NOT USED
+                if (!(reader is BoboSegmentReader)) throw new ArgumentException("reader not instance of " + typeof(BoboSegmentReader));
                 return new GeoSimpleFacetHandlerDocComparator();
             }
 
