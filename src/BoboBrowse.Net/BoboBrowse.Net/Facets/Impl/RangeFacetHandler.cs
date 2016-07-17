@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
@@ -36,9 +36,8 @@ namespace BoboBrowse.Net.Facets.Impl
     /// ensure sorting by lexical order is the same as the value order. IMPORTANT: <see cref="T:Lucene.Net.Documents.NumericField"/> 
     /// in the Lucene.Net index is not supported, use <see cref="T:Lucene.Net.Documents.Field"/> with a formatted string instead.
     /// </summary>
-    public class RangeFacetHandler : FacetHandler<FacetDataCache>, IFacetScoreable
+    public class RangeFacetHandler : FacetHandler<IFacetDataCache>, IFacetScoreable
     {
-        private static ILog logger = LogManager.GetLogger(typeof(RangeFacetHandler));
         protected readonly string _indexFieldName;
         protected readonly TermListFactory _termListFactory;
         protected readonly IEnumerable<string> _predefinedRanges;
@@ -54,7 +53,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <param name="predefinedRanges">A set of range strings denoting the beginning and ending of each range, e.g. "[2010/1/1 TO 2012/12/31], [2013/1/1 TO 2015/12/31]".
         /// Date and numeric types are supported. The range values are sorted in lexicographical order, so if you want them formatted a different way, you should provide them in
         /// a specific order. It is valid for the ranges to overlap.</param>
-        public RangeFacetHandler(string name, string indexFieldName, TermListFactory termListFactory, IEnumerable<string> predefinedRanges)
+        public RangeFacetHandler(string name, string indexFieldName, ITermListFactory termListFactory, IEnumerable<string> predefinedRanges)
             : base(name)
         {
             _indexFieldName = indexFieldName;
@@ -73,7 +72,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <param name="predefinedRanges">A set of range strings denoting the beginning and ending of each range, e.g. "[2010/1/1 TO 2012/12/31], [2013/1/1 TO 2015/12/31]".
         /// Date and numeric types are supported. The range values are sorted in lexicographical order, so if you want them formatted a different way, you should provide them in
         /// a specific order. It is valid for the ranges to overlap.</param>
-        public RangeFacetHandler(string name, TermListFactory termListFactory, IEnumerable<string> predefinedRanges)
+        public RangeFacetHandler(string name, ITermListFactory termListFactory, IEnumerable<string> predefinedRanges)
             : this(name, name, termListFactory, predefinedRanges)
         {
         }
@@ -110,16 +109,16 @@ namespace BoboBrowse.Net.Facets.Impl
             return new FacetDocComparatorSource(this);
         }
 
-        public override int GetNumItems(BoboIndexReader reader, int id)
+        public override int GetNumItems(BoboSegmentReader reader, int id)
         {
-            FacetDataCache data = GetFacetData<FacetDataCache>(reader);
+            IFacetDataCache data = GetFacetData<IFacetDataCache>(reader);
             if (data == null) return 0;
             return data.GetNumItems(id);
         }
 
-        public override string[] GetFieldValues(BoboIndexReader reader, int id)
+        public override string[] GetFieldValues(BoboSegmentReader reader, int id)
         {
-            FacetDataCache dataCache = GetFacetData<FacetDataCache>(reader);
+            IFacetDataCache dataCache = GetFacetData<IFacetDataCache>(reader);
             if (dataCache != null)
             {
                 return new string[] { dataCache.ValArray.Get(dataCache.OrderArray.Get(id)) };
@@ -127,9 +126,9 @@ namespace BoboBrowse.Net.Facets.Impl
             return new string[0];
         }
 
-        public override object[] GetRawFieldValues(BoboIndexReader reader, int id)
+        public override object[] GetRawFieldValues(BoboSegmentReader reader, int id)
         {
-            FacetDataCache dataCache = GetFacetData<FacetDataCache>(reader);
+            IFacetDataCache dataCache = GetFacetData<IFacetDataCache>(reader);
             if (dataCache != null)
             {
                 return new object[] { dataCache.ValArray.GetRawValue(dataCache.OrderArray.Get(id)) };
@@ -181,9 +180,9 @@ namespace BoboBrowse.Net.Facets.Impl
                 _predefinedRanges = predefinedRanges;
             }
 
-            public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
+            public override IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase)
             {
-                FacetDataCache dataCache = _parent.GetFacetData<FacetDataCache>(reader);
+                IFacetDataCache dataCache = _parent.GetFacetData<IFacetDataCache>(reader);
                 return new RangeFacetCountCollector(_name, dataCache, docBase, _ospec, _predefinedRanges);
             }
         }
@@ -193,27 +192,27 @@ namespace BoboBrowse.Net.Facets.Impl
             get { return (_predefinedRanges != null); }
         }
 
-        public override FacetDataCache Load(BoboIndexReader reader)
+        public override IFacetDataCache Load(BoboSegmentReader reader)
         {
-            FacetDataCache dataCache = new FacetDataCache();
+            IFacetDataCache dataCache = new FacetDataCache();
             dataCache.Load(_indexFieldName, reader, _termListFactory);
             return dataCache;
         }
 
-        public virtual BoboDocScorer GetDocScorer(BoboIndexReader reader,
+        public virtual BoboDocScorer GetDocScorer(BoboSegmentReader reader,
             IFacetTermScoringFunctionFactory scoringFunctionFactory,
             IDictionary<string, float> boostMap)
         {
-            FacetDataCache dataCache = GetFacetData<FacetDataCache>(reader);
+            IFacetDataCache dataCache = GetFacetData<IFacetDataCache>(reader);
             float[] boostList = BoboDocScorer.BuildBoostList(dataCache.ValArray, boostMap);
             return new RangeBoboDocScorer(dataCache, scoringFunctionFactory, boostList);
         }
 
         public sealed class RangeBoboDocScorer : BoboDocScorer
         {
-            private readonly FacetDataCache _dataCache;
+            private readonly IFacetDataCache _dataCache;
 
-            public RangeBoboDocScorer(FacetDataCache dataCache, IFacetTermScoringFunctionFactory scoreFunctionFactory, float[] boostList)
+            public RangeBoboDocScorer(IFacetDataCache dataCache, IFacetTermScoringFunctionFactory scoreFunctionFactory, float[] boostList)
                 : base(scoreFunctionFactory.GetFacetTermScoringFunction(dataCache.ValArray.Count, dataCache.OrderArray.Size()), boostList)
             {
                 _dataCache = dataCache;
