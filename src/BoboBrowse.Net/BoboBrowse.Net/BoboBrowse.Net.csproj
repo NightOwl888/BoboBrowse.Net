@@ -91,6 +91,17 @@
     <Compile Include="BrowseSelection.cs" />
     <Compile Include="Client\BrowseRequestBuilder.cs" />
     <Compile Include="Client\BrowseResultFormatter.cs" />
+    <Compile Include="DocIdSet\AndDocIdSet.cs" />
+    <Compile Include="DocIdSet\Conversion.cs" />
+    <Compile Include="DocIdSet\DocSet.cs" />
+    <Compile Include="DocIdSet\ImmutableDocSet.cs" />
+    <Compile Include="DocIdSet\IntArray.cs" />
+    <Compile Include="DocIdSet\IntArrayDocIdSet.cs" />
+    <Compile Include="DocIdSet\NotDocIdSet.cs" />
+    <Compile Include="DocIdSet\OrDocIdSet.cs" />
+    <Compile Include="DocIdSet\OrDocIdSetIterator.cs" />
+    <Compile Include="DocIdSet\PrimitiveArray.cs" />
+    <Compile Include="DocIdSet\StatefulDSIterator.cs" />
     <Compile Include="DoubleFacetIterator.cs" />
     <Compile Include="FacetIterator.cs" />
     <Compile Include="Facets\Attribute\AttributesFacetCountCollector.cs" />
