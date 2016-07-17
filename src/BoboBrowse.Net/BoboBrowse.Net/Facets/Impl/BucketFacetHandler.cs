@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
@@ -31,7 +31,6 @@ namespace BoboBrowse.Net.Facets.Impl
 
     public class BucketFacetHandler : FacetHandler<FacetDataNone>
     {
-        private static ILog logger = LogManager.GetLogger(typeof(BucketFacetHandler));
         private readonly IDictionary<string, string[]> _predefinedBuckets;
         private readonly string _dependsOnFacetName;
 
@@ -48,13 +47,13 @@ namespace BoboBrowse.Net.Facets.Impl
             return dependOnFacetHandler.GetDocComparatorSource();
         }
 
-        public override string[] GetFieldValues(BoboIndexReader reader, int id)
+        public override string[] GetFieldValues(BoboSegmentReader reader, int id)
         {
             var dependOnFacetHandler = GetDependedFacetHandler(_dependsOnFacetName);
 	        return dependOnFacetHandler.GetFieldValues(reader, id);
         }
 
-        public override object[] GetRawFieldValues(BoboIndexReader reader, int id)
+        public override object[] GetRawFieldValues(BoboSegmentReader reader, int id)
         {
             var dependOnFacetHandler = GetDependedFacetHandler(_dependsOnFacetName);
             return dependOnFacetHandler.GetRawFieldValues(reader, id);
@@ -130,10 +129,10 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public override int GetNumItems(BoboIndexReader reader, int id)
+        public override int GetNumItems(BoboSegmentReader reader, int id)
         {
             var dependOnFacetHandler = GetDependedFacetHandler(_dependsOnFacetName);
-            FacetDataCache data = dependOnFacetHandler.GetFacetData<FacetDataCache>(reader);
+            IFacetDataCache data = dependOnFacetHandler.GetFacetData<IFacetDataCache>(reader);
             return data.GetNumItems(id);
         }
 
@@ -160,7 +159,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 _dependOnFacetHandler = dependOnFacetHandler;
             }
 
-            public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
+            public override IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase)
             {
                 IFacetCountCollector defaultCollector = _dependOnFacetHandler.GetFacetCountCollectorSource(_sel, _ospec).GetFacetCountCollector(reader, docBase);
                 if (defaultCollector is DefaultFacetCountCollector)
@@ -174,7 +173,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public override FacetDataNone Load(BoboIndexReader reader)
+        public override FacetDataNone Load(BoboSegmentReader reader)
         {
             return FacetDataNone.Instance;
         }
