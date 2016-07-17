@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Util
 {
     using BoboBrowse.Net.Support;
@@ -26,8 +26,6 @@ namespace BoboBrowse.Net.Util
 
     public class BigShortArray : BigSegmentedArray
     {
-        //private static long serialVersionUID = 1L; // NOT USED
-
         private short[][] _array;
 
         // Remember that 2^SHIFT_SIZE = BLOCK_SIZE 
@@ -70,16 +68,6 @@ namespace BoboBrowse.Net.Util
             while (true)
             {
                 if (bitset.FastGet(_array[docId >> SHIFT_SIZE][docId & MASK])) return docId;
-                if (docId++ >= maxId) break;
-            }
-            return DocIdSetIterator.NO_MORE_DOCS;
-        }
-
-        public override sealed int FindValues(BitVector bitset, int docId, int maxId)
-        {
-            while (true)
-            {
-                if (bitset.Get(_array[docId >> SHIFT_SIZE][docId & MASK])) return docId;
                 if (docId++ >= maxId) break;
             }
             return DocIdSetIterator.NO_MORE_DOCS;
