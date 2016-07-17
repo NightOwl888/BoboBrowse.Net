@@ -89,7 +89,6 @@
     <Compile Include="BrowseFacet.cs" />
     <Compile Include="BrowseRequest.cs" />
     <Compile Include="BrowseSelection.cs" />
-    <Compile Include="Client\BoboCmdlineApp.cs" />
     <Compile Include="Client\BrowseRequestBuilder.cs" />
     <Compile Include="Client\BrowseResultFormatter.cs" />
     <Compile Include="DoubleFacetIterator.cs" />
