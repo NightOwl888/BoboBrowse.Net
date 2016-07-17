@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
@@ -34,20 +34,18 @@ namespace BoboBrowse.Net.Facets.Impl
         protected BigSegmentedArray _count;
         private int _countLength;
         private readonly BigSegmentedArray _array;
-        protected FacetDataCache _dataCache;
+        protected IFacetDataCache _dataCache;
         private readonly string _name;
         private readonly TermStringList _predefinedRanges;
         private int[][] _predefinedRangeIndexes;
-        private int _docBase;
 
-        public RangeFacetCountCollector(string name, FacetDataCache dataCache, int docBase, FacetSpec ospec, IEnumerable<string> predefinedRanges)
+        public RangeFacetCountCollector(string name, IFacetDataCache dataCache, int docBase, FacetSpec ospec, IEnumerable<string> predefinedRanges)
         {
             _name = name;
             _dataCache = dataCache;
             _countLength = _dataCache.Freqs.Length;
             _count = new LazyBigIntArray(_countLength);
             _array = _dataCache.OrderArray;
-            _docBase = docBase;
             _ospec = ospec;
             if (predefinedRanges != null)
             {
@@ -173,64 +171,6 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <remarks>
-        /// This method was internal in the original design, but made it
-        /// protected to make it easy to bring back the auto ranges feature if so desired.
-        /// </remarks>
-        /// <param name="choices"></param>
-        /// <param name="max"></param>
-        /// <returns></returns>
-        // this is really crappy, need to fix it
-        protected BrowseFacet[] FoldChoices(BrowseFacet[] choices, int max)
-        {
-            if (max == 0 || choices.Length <= max)
-                return choices;
-            List<RangeFacet> list = new List<RangeFacet>();
-
-            for (int i = 0; i < choices.Length; i += 2)
-            {
-                RangeFacet rangeChoice = new RangeFacet();
-                if ((i + 1) < choices.Length)
-                {
-                    if (choices is RangeFacet[])
-                    {
-                        RangeFacet[] rChoices = (RangeFacet[])choices;
-                        string val1 = rChoices[i].Lower;
-                        string val2 = rChoices[i + 1].Upper;
-                        rangeChoice.SetValues(val1, val2);
-                        rangeChoice.FacetValueHitCount = choices[i].FacetValueHitCount + choices[i + 1].FacetValueHitCount;
-                    }
-                    else
-                    {
-                        rangeChoice.SetValues(choices[i].Value, choices[i + 1].Value);
-                        rangeChoice.FacetValueHitCount = choices[i].FacetValueHitCount + choices[i + 1].FacetValueHitCount;
-                    }
-
-                }
-                else
-                {
-                    if (choices is RangeFacet[])
-                    {
-                        RangeFacet[] rChoices = (RangeFacet[])choices;
-                        rangeChoice.SetValues(rChoices[i].Lower, rChoices[i].Upper);
-                    }
-                    else
-                    {
-                        rangeChoice.SetValues(choices[i].Value, choices[i].Value);
-                    }
-                    rangeChoice.FacetValueHitCount = choices[i].FacetValueHitCount;
-                }
-                list.Add(rangeChoice);
-            }
-
-            RangeFacet[] result = list.ToArray();
-            return FoldChoices(result, max);
-        }
-
         public virtual IEnumerable<BrowseFacet> GetFacets()
         {
             if (_ospec != null)
@@ -239,7 +179,8 @@ namespace BoboBrowse.Net.Facets.Impl
                 {
                     int minCount = _ospec.MinHitCount;
                     //int maxNumOfFacets = _ospec.getMaxCount();
-                    //if (maxNumOfFacets <= 0 || maxNumOfFacets > _predefinedRangeIndexes.length) maxNumOfFacets = _predefinedRangeIndexes.length;
+                    //if (maxNumOfFacets <= 0 || maxNumOfFacets > _predefinedRangeIndexes.length) 
+                    //    maxNumOfFacets = _predefinedRangeIndexes.length;
 
                     int[] rangeCount = new int[_predefinedRangeIndexes.Length];
                     for (int k = 0; k < _predefinedRangeIndexes.Length; ++k)
