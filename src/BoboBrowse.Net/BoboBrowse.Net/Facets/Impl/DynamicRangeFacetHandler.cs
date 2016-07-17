@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net;
@@ -94,20 +94,20 @@ namespace BoboBrowse.Net.Facets.Impl
                 this._predefinedList = predefinedList;
             }
 
-            public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
+            public override IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase)
             {
-                FacetDataCache dataCache = this._dataFacetHandler.GetFacetData<FacetDataCache>(reader);
+                IFacetDataCache dataCache = this._dataFacetHandler.GetFacetData<IFacetDataCache>(reader);
                 return new DynamicRangeFacetCountCollector(_parent, _name, dataCache, docBase, _fspec, _predefinedList);
             }
 
         }
 
-        public override string[] GetFieldValues(BoboIndexReader reader, int docid)
+        public override string[] GetFieldValues(BoboSegmentReader reader, int docid)
         {
             return _dataFacetHandler.GetFieldValues(reader, docid);
         }
 
-        public override object[] GetRawFieldValues(BoboIndexReader reader, int docid)
+        public override object[] GetRawFieldValues(BoboSegmentReader reader, int docid)
         {
             return _dataFacetHandler.GetRawFieldValues(reader, docid);
         }
@@ -117,7 +117,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return _dataFacetHandler.GetDocComparatorSource();
         }
 
-        public override FacetDataNone Load(BoboIndexReader reader)
+        public override FacetDataNone Load(BoboSegmentReader reader)
         {
             _dataFacetHandler = (RangeFacetHandler)GetDependedFacetHandler(_dataFacetName);
             return FacetDataNone.Instance;
@@ -127,7 +127,7 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             private readonly DynamicRangeFacetHandler parent;
 
-            internal DynamicRangeFacetCountCollector(DynamicRangeFacetHandler parent, string name, FacetDataCache dataCache, int docBase, FacetSpec fspec, IEnumerable<string> predefinedList)
+            internal DynamicRangeFacetCountCollector(DynamicRangeFacetHandler parent, string name, IFacetDataCache dataCache, int docBase, FacetSpec fspec, IEnumerable<string> predefinedList)
                 : base(name, dataCache, docBase, fspec, predefinedList)
             {
                 this.parent = parent;
