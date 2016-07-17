@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Util
 {
     using BoboBrowse.Net.Facets.Data;
@@ -655,31 +655,6 @@ namespace BoboBrowse.Net.Util
             return false;
         }
 
-        public bool Contains(int id, BitVector values)
-        {
-            // NOTE: Added Get() extension method call because 
-            // the default .NET behavior throws an exception if the
-            // index is out of bounds, rather than returning null.
-            int[] page = _list.Get(id >> PAGEID_SHIFT);
-            if (page == null) return false;
-
-            int val = page[id & SLOTID_MASK];
-            if (val >= 0)
-            {
-                return (values.Get(val));
-            }
-            else if (val != MISSING)
-            {
-                int idx = -(val >> VALIDX_SHIFT);// signed shift, remember this is a negative number
-                int end = idx + (val & COUNT_MASK);
-                while (idx < end)
-                {
-                    if (values.Get(page[idx++])) return true;
-                }
-            }
-            return false;
-        }
-
         public bool ContainsValueInRange(int id, int startValueId, int endValueId)
         {
             // NOTE: Added Get() extension method call because 
@@ -767,54 +742,6 @@ namespace BoboBrowse.Net.Util
                 if (id >= maxID) break;
 
                 if (((++id) & SLOTID_MASK) == 0)
-                {
-                    // NOTE: Added Get() extension method call because 
-                    // the default .NET behavior throws an exception if the
-                    // index is out of bounds, rather than returning null.
-                    page = _list.Get(id >> PAGEID_SHIFT);
-                    if (page == null) page = MISSING_PAGE;
-                }
-            }
-
-            return DocIdSetIterator.NO_MORE_DOCS;
-        }
-
-        public int FindValues(BitVector values, int id, int maxID)
-        {
-            return FindValues(values, id, maxID, false);
-        }
-
-        public int FindValues(BitVector values, int id, int maxID, bool withMissing)
-        {
-            // NOTE: Added Get() extension method call because 
-            // the default .NET behavior throws an exception if the
-            // index is out of bounds, rather than returning null.
-            int[] page = _list.Get(id >> PAGEID_SHIFT);
-            if (page == null) page = MISSING_PAGE;
-
-            while (true)
-            {
-                int val = page[id & SLOTID_MASK];
-                if (val >= 0)
-                {
-                    if (values.Get(val)) return id;
-                }
-                else if (val != MISSING)
-                {
-                    int idx = -(val >> VALIDX_SHIFT);// signed shift, remember this is a negative number
-                    int end = idx + (val & COUNT_MASK);
-                    while (idx < end)
-                    {
-                        if (values.Get(page[idx++])) return id;
-                    }
-                }
-                else if (withMissing)
-                {
-                    if (values.Get(0)) return id;
-                }
-                if (id >= maxID) break;
-
-                if ((++id & SLOTID_MASK) == 0)
                 {
                     // NOTE: Added Get() extension method call because 
                     // the default .NET behavior throws an exception if the
@@ -1009,46 +936,6 @@ namespace BoboBrowse.Net.Util
                 return;
             }
             count.Add(0, count.Get(0) + 1);
-            return;
-        }
-
-        public void CountNoReturnWithFilter(int id, int[] count, BitVector filter)
-        {
-            // NOTE: Added Get() extension method call because 
-            // the default .NET behavior throws an exception if the
-            // index is out of bounds, rather than returning null.
-            int[] page = _list.Get(id >> PAGEID_SHIFT);
-            if (page == null)
-            {
-                count[0]++;
-                return;
-            }
-
-            int val = page[id & SLOTID_MASK];
-            if (val >= 0)
-            {
-                if (filter.Get(val))
-                {
-                    count[val]++;
-                }
-                return;
-            }
-            else if (val != MISSING)
-            {
-                int idx = -(val >> VALIDX_SHIFT); // signed shift, remember val is a negative number
-                int cnt = (val & COUNT_MASK);
-                int end = idx + cnt;
-                while (idx < end)
-                {
-                    int value = page[idx++];
-                    if (filter.Get(value))
-                    {
-                        count[value]++;
-                    }
-                }
-                return;
-            }
-            count[0]++;
             return;
         }
 
