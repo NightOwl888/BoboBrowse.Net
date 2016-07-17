@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
@@ -72,7 +72,7 @@ namespace BoboBrowse.Net.Facets.Impl
             _unit = unit;
         }
 
-        public override FacetDataNone Load(BoboIndexReader reader)
+        public override FacetDataNone Load(BoboSegmentReader reader)
         {
             _dataFacetHandler = reader.GetFacetHandler(_dataHandlerName);
             if (_dataFacetHandler is RangeFacetHandler)
@@ -90,12 +90,12 @@ namespace BoboBrowse.Net.Facets.Impl
             throw new NotSupportedException();
         }
 
-        public override string[] GetFieldValues(BoboIndexReader reader, int id)
+        public override string[] GetFieldValues(BoboSegmentReader reader, int id)
         {
             return null;
         }
 
-        public override object[] GetRawFieldValues(BoboIndexReader reader, int id)
+        public override object[] GetRawFieldValues(BoboSegmentReader reader, int id)
         {
             return null;
         }
@@ -150,9 +150,9 @@ namespace BoboBrowse.Net.Facets.Impl
                 _unit = unit;
             }
 
-            public override IFacetCountCollector GetFacetCountCollector(BoboIndexReader reader, int docBase)
+            public override IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase)
             {
-                FacetDataCache dataCache = (FacetDataCache)reader.GetFacetData(_dataHandlerName);
+                IFacetDataCache dataCache = (IFacetDataCache)reader.GetFacetData(_dataHandlerName);
                 IFacetCountCollector baseCollector = _baseCollectorSrc.GetFacetCountCollector(reader, docBase);
                 return new HistogramCollector(_name, baseCollector, dataCache, _ospec, _start, _end, _unit);
             }
@@ -172,7 +172,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
             private bool _isAggregated;
 
-            public HistogramCollector(string facetName, IFacetCountCollector baseCollector, FacetDataCache dataCache, FacetSpec ospec, T start, T end, T unit)
+            public HistogramCollector(string facetName, IFacetCountCollector baseCollector, IFacetDataCache dataCache, FacetSpec ospec, T start, T end, T unit)
             {
                 _facetName = facetName;
                 _baseCollector = baseCollector;
