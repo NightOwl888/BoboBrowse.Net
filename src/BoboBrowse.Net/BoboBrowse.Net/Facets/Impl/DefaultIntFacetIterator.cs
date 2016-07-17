@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
@@ -27,9 +27,9 @@ namespace BoboBrowse.Net.Facets.Impl
     public class DefaultIntFacetIterator : IntFacetIterator
     {
         private readonly TermIntList _valList;
-        private BigSegmentedArray _count;
-        private int _countlength;
-        private int _countLengthMinusOne;
+        private readonly BigSegmentedArray _count;
+        private readonly int _countlength;
+        private readonly int _countLengthMinusOne;
         private int _index;
 
         public DefaultIntFacetIterator(TermIntList valList, BigSegmentedArray countarray, int countlength, bool zeroBased)
