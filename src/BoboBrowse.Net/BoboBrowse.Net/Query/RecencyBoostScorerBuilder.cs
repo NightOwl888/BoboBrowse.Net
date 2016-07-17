@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Query
 {
     using BoboBrowse.Net.Facets.Data;
@@ -66,7 +66,6 @@ namespace BoboBrowse.Net.Query
                     FacetDataCache facetDataCache = (FacetDataCache)(boboReader.GetFacetData(_timeFacetName));
                     BigSegmentedArray orderArray = facetDataCache.OrderArray;
                     TermLongList termList = (TermLongList)facetDataCache.ValArray;
-                    long now = System.Environment.TickCount;
                     Explanation finalExpl = new Explanation();
                     finalExpl.AddDetail(innerExplanation);
                     float rawScore = innerExplanation.Value;
@@ -88,7 +87,7 @@ namespace BoboBrowse.Net.Query
             }
         }
 
-        public virtual Scorer CreateScorer(Scorer innerScorer, IndexReader reader, bool scoreDocsInOrder, bool topScorer)
+        public virtual Scorer CreateScorer(Scorer innerScorer, AtomicReader reader, bool scoreDocsInOrder, bool topScorer)
         {
             if (reader is BoboSegmentReader)
             {
@@ -120,7 +119,7 @@ namespace BoboBrowse.Net.Query
             private readonly TermLongList _termList;
 
             public RecencyBoostScorer(RecencyBoostScorerBuilder parent, Scorer innerScorer, BigSegmentedArray orderArray, TermLongList termList)
-                : base(innerScorer.Similarity)
+                : base(innerScorer.Weight)
             {
                 _parent = parent;
                 _innerScorer = innerScorer;
@@ -150,6 +149,16 @@ namespace BoboBrowse.Net.Query
             {
                 return _innerScorer.NextDoc();
             }
+
+            public override int Freq()
+            {
+                return 0;
+            }
+
+            public override long Cost()
+            {
+                return 0;
+            }
         }
 
 
@@ -162,7 +171,7 @@ namespace BoboBrowse.Net.Query
             }
             else
             {
-                float xValFloat = (float)xVal;
+                float xValFloat = xVal;
                 return _A * xValFloat * xValFloat + _max;
             }
         }
