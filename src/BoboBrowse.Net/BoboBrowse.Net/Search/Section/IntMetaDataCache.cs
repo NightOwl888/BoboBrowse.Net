@@ -17,10 +17,11 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Search.Section
 {
     using Lucene.Net.Index;
+    using Lucene.Net.Util;
     using System;
 
     public class IntMetaDataCache : IMetaDataCache
@@ -28,7 +29,7 @@ namespace BoboBrowse.Net.Search.Section
         private static readonly int MAX_SLOTS = 1024;
         private static readonly int MISSING = int.MinValue;
 
-        private readonly IndexReader _reader;
+        private readonly AtomicReader _reader;
         private int[][] _list;
 
         private int _curPageNo;
@@ -36,7 +37,7 @@ namespace BoboBrowse.Net.Search.Section
         private int _curSlot;
         private int _curData;
 
-        public IntMetaDataCache(Term term, IndexReader reader)
+        public IntMetaDataCache(Term term, AtomicReader reader)
         {
             _reader = reader;
 
@@ -152,19 +153,17 @@ namespace BoboBrowse.Net.Search.Section
 
         protected virtual void LoadPayload(Term term)
         {
-            byte[] payloadBuf = null;
-            TermPositions tp = _reader.TermPositions();
-            tp.Seek(term);
-            while (tp.Next())
+            DocsAndPositionsEnum dp = _reader.TermPositionsEnum(term);
+            int docID = -1;
+            while ((docID = dp.NextDoc()) != DocsEnum.NO_MORE_DOCS)
             {
-                if (tp.Freq > 0)
+                if (dp.Freq() > 0)
                 {
-                    tp.NextPosition();
-                    if (tp.IsPayloadAvailable)
+                    dp.NextPosition();
+                    BytesRef payload = dp.Payload;
+                    if (payload != null)
                     {
-                        int len = tp.PayloadLength;
-                        payloadBuf = tp.GetPayload(payloadBuf, 0);
-                        Add(tp.Doc, payloadBuf, len);
+                        Add(docID, payload.Bytes, payload.Length);
                     }
                 }
             }
