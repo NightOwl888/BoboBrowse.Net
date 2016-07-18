@@ -35,11 +35,6 @@ namespace Lucene.Net.QueryParser.Classic
         { 
         }
 
-        public override string ToString(string field)
-        {
-            return null;
-        }
-
         public Query Parse(string queryString)
         {
             return null;
