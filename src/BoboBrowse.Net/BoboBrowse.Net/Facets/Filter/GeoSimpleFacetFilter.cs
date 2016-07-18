@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Filter
 {
     using BoboBrowse.Net.DocIdSet;
@@ -32,7 +32,6 @@ namespace BoboBrowse.Net.Facets.Filter
     /// </summary>
     public class GeoSimpleFacetFilter : RandomAccessFilter
     {
-        //private static long serialVersionUID = 1L; // NOT USED
 	    private readonly FacetHandler<FacetDataCache> _latFacetHandler;
 	    private readonly FacetHandler<FacetDataCache> _longFacetHandler;
 	    private readonly string _latRangeString;
@@ -49,7 +48,6 @@ namespace BoboBrowse.Net.Facets.Filter
         private sealed class GeoSimpleDocIdSetIterator : DocIdSetIterator
         {
             private int _doc = -1;
-            //private int _totalFreq; // NOT USED
 		    private int _minID = int.MaxValue;
 		    private int _maxID = -1;
 		    private readonly int _latStart;
@@ -57,11 +55,9 @@ namespace BoboBrowse.Net.Facets.Filter
 		    private readonly int _longStart;
 		    private readonly int _longEnd;
 		    private readonly BigSegmentedArray _latOrderArray;
-		    private readonly BigSegmentedArray _longOrderArray;
 
             internal GeoSimpleDocIdSetIterator(int latStart, int latEnd, int longStart, int longEnd, FacetDataCache latDataCache, FacetDataCache longDataCache)
             {
-                //_totalFreq = 0; // NOT USED
                 _latStart = latStart;
                 _longStart = longStart;
                 _latEnd = latEnd;
@@ -78,7 +74,6 @@ namespace BoboBrowse.Net.Facets.Filter
                 }
                 _doc = Math.Max(-1, _minID - 1);
                 _latOrderArray = latDataCache.OrderArray;
-                _longOrderArray = longDataCache.OrderArray;
             }
 
             public override int DocID()
@@ -116,6 +111,11 @@ namespace BoboBrowse.Net.Facets.Filter
                         return _doc;
                 }
                 return DocIdSetIterator.NO_MORE_DOCS;
+            }
+
+            public override long Cost()
+            {
+                return 0;
             }
         }
 
@@ -157,7 +157,7 @@ namespace BoboBrowse.Net.Facets.Filter
                 return latIndex >= _latStart && latIndex <= _latEnd && longIndex >= _longStart && longIndex <= _longEnd;
             }
 
-            public override DocIdSetIterator Iterator()
+            public override DocIdSetIterator GetIterator()
             {
                 return new GeoSimpleDocIdSetIterator(_latStart, _latEnd, _longStart, _longEnd, _latDataCache, _longDataCache);
             }
