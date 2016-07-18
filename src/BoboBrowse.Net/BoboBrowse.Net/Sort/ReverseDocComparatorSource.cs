@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Sort
 {
     using Lucene.Net.Index;
@@ -33,7 +33,7 @@ namespace BoboBrowse.Net.Sort
             _inner = inner;
         }
 
-        public override DocComparator GetComparator(IndexReader reader, int docbase)
+        public override DocComparator GetComparator(AtomicReader reader, int docbase)
         {
             return new ReverseDocComparator(_inner.GetComparator(reader, docbase));
         }
