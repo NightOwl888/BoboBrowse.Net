@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Data
 {
     using BoboBrowse.Net.Support;
@@ -47,22 +47,20 @@ namespace BoboBrowse.Net.Facets.Data
             get { return _weightArray; }
         }
 
-        public override void Load(string fieldName, IndexReader reader, TermListFactory listFactory, BoboSegmentReader.WorkArea workArea)
+        public override void Load(string fieldName, AtomicReader reader, TermListFactory listFactory, BoboSegmentReader.WorkArea workArea)
         {
-            long t0 = System.Environment.TickCount;
+            string field = string.Intern(fieldName);
             int maxdoc = reader.MaxDoc;
             BigNestedIntArray.BufferedLoader loader = GetBufferedLoader(maxdoc, workArea);
             BigNestedIntArray.BufferedLoader weightLoader = GetBufferedLoader(maxdoc, null);
 
-            TermEnum tenum = null;
-            TermDocs tdoc = null;
             var list = (listFactory == null ? new TermStringList() : listFactory.CreateTermList());
             List<int> minIDList = new List<int>();
             List<int> maxIDList = new List<int>();
             List<int> freqList = new List<int>();
             OpenBitSet bitset = new OpenBitSet(maxdoc + 1);
             int negativeValueCount = GetNegativeValueCount(reader, string.Intern(fieldName));
-            int t = 0; // current term number
+            int t = 1; // valid term id starts from 1
             list.Add(null);
             minIDList.Add(-1);
             maxIDList.Add(-1);
@@ -76,100 +74,89 @@ namespace BoboBrowse.Net.Facets.Data
             int df = 0;
             int minID = -1;
             int maxID = -1;
+            int docID = -1;
             int valId = 0;
 
-            try
+            Terms terms = reader.Terms(field);
+            if (terms != null)
             {
-                tdoc = reader.TermDocs();
-                tenum = reader.Terms(new Term(fieldName, ""));
-                if (tenum != null)
+                TermsEnum termsEnum = terms.Iterator(null);
+                BytesRef text;
+                while ((text = termsEnum.Next()) != null)
                 {
-                    do
+                    string strText = text.Utf8ToString();
+                    string val = null;
+                    int weight = 0;
+                    string[] split = strText.Split(new char[] { '\0' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (split.Length > 1)
                     {
-                        Term term = tenum.Term;
-                        if (term == null || !fieldName.Equals(term.Field))
-                            break;
+                        val = split[0];
+                        weight = int.Parse(split[split.Length - 1]);
+                    }
+                    else
+                    {
+                        continue;
+                    }
 
-                        string val = term.Text;
-
-                        if (val != null)
+                    if (pre == null || !val.Equals(pre))
+                    {
+                        if (pre != null)
                         {
-                            int weight = 0;
-                            string[] split = val.Split(new char[] { '\0' }, StringSplitOptions.RemoveEmptyEntries);
-                            if (split.Length > 1)
-                            {
-                                val = split[0];
-                                weight = int.Parse(split[split.Length - 1]);
-                            }
-                            if (pre == null || !val.Equals(pre))
-                            {
-                                if (pre != null)
-                                {
-                                    freqList.Add(df);
-                                    minIDList.Add(minID);
-                                    maxIDList.Add(maxID);
-                                }
-
-                                list.Add(val);
-
-                                df = 0;
-                                minID = -1;
-                                maxID = -1;
-                                valId = (t - 1 < negativeValueCount) ? (negativeValueCount - t + 1) : t;
-                                t++;
-                            }
-
-                            tdoc.Seek(tenum);
-                            if (tdoc.Next())
-                            {
-                                df++;
-                                int docid = tdoc.Doc;
-
-                                if (!loader.Add(docid, valId)) LogOverflow(fieldName);
-                                else weightLoader.Add(docid, weight);
-
-                                if (docid < minID) minID = docid;
-                                bitset.FastSet(docid);
-                                while (tdoc.Next())
-                                {
-                                    df++;
-                                    docid = tdoc.Doc;
-
-                                    if (!loader.Add(docid, valId)) LogOverflow(fieldName);
-                                    else weightLoader.Add(docid, weight);
-
-                                    bitset.FastSet(docid);
-                                }
-                                if (docid > maxID) maxID = docid;
-                            }
-                            pre = val;
+                            freqList.Add(df);
+                            minIDList.Add(minID);
+                            maxIDList.Add(maxID);
                         }
+                        list.Add(val);
+                        df = 0;
+                        minID = -1;
+                        maxID = -1;
+                        valId = (t - 1 < negativeValueCount) ? (negativeValueCount - t + 1) : t;
+                        t++;
+                    }
 
-                    }
-                    while (tenum.Next());
-                    if (pre != null)
+                    Term term = new Term(field, strText);
+                    DocsEnum docsEnum = reader.TermDocsEnum(term);
+                    if (docsEnum != null)
                     {
-                        freqList.Add(df);
-                        minIDList.Add(minID);
-                        maxIDList.Add(maxID);
+                        while ((docID = docsEnum.NextDoc()) != DocsEnum.NO_MORE_DOCS)
+                        {
+                            df++;
+
+                            if (!loader.Add(docID, valId))
+                            {
+                                LogOverflow(fieldName);
+                            }
+                            else
+                            {
+                                weightLoader.Add(docID, weight);
+                            }
+
+                            if (docID < minID) minID = docID;
+                            bitset.FastSet(docID);
+                            while (docsEnum.NextDoc() != DocsEnum.NO_MORE_DOCS)
+                            {
+                                docID = docsEnum.DocID();
+                                df++;
+                                if (!loader.Add(docID, valId))
+                                {
+                                    LogOverflow(fieldName);
+                                }
+                                else
+                                {
+                                    weightLoader.Add(docID, weight);
+                                }
+                                bitset.FastSet(docID);
+                            }
+                            if (docID > maxID) maxID = docID;
+                        }
                     }
+                    pre = val;
                 }
-            }
-            finally
-            {
-                try
+                if (pre != null)
                 {
-                    if (tdoc != null)
-                    {
-                        tdoc.Dispose();
-                    }
-                }
-                finally
-                {
-                    if (tenum != null)
-                    {
-                        tenum.Dispose();
-                    }
+                    freqList.Add(df);
+                    minIDList.Add(minID);
+                    maxIDList.Add(maxID);
                 }
             }
 
@@ -179,10 +166,6 @@ namespace BoboBrowse.Net.Facets.Data
             {
                 _nestedArray.Load(maxdoc + 1, loader);
                 _weightArray.Load(maxdoc + 1, weightLoader);
-            }
-            catch (System.IO.IOException e)
-            {
-                throw e;
             }
             catch (Exception e)
             {
@@ -195,24 +178,21 @@ namespace BoboBrowse.Net.Facets.Data
             this.maxIDs = maxIDList.ToArray();
 
             int doc = 0;
-            while (doc <= maxdoc && !_nestedArray.Contains(doc, 0, true))
+            while (doc < maxdoc && !_nestedArray.Contains(doc, 0, true))
             {
                 ++doc;
             }
-            if (doc <= maxdoc)
+            if (doc < maxdoc)
             {
                 this.minIDs[0] = doc;
-                doc = maxdoc;
-                while (doc > 0 && !_nestedArray.Contains(doc, 0, true))
+                doc = maxdoc - 1;
+                while (doc >= 0 && !_nestedArray.Contains(doc, 0, true))
                 {
                     --doc;
                 }
-                if (doc > 0)
-                {
-                    this.maxIDs[0] = doc;
-                }
+                this.maxIDs[0] = doc;
             }
-            this.freqs[0] = maxdoc + 1 - (int)bitset.Cardinality();   
+            this.freqs[0] = maxdoc - (int)bitset.Cardinality();   
         }
     }
 }
