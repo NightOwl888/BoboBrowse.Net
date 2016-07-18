@@ -111,10 +111,6 @@
       <Project>{8eeff620-0996-4b6a-b23c-7d73beccf73c}</Project>
       <Name>BoboBrowse.Net</Name>
     </ProjectReference>
-    <ProjectReference Include="..\LuceneExt.Net\LuceneExt.Net.csproj">
-      <Project>{58bd9712-0338-4dd7-9f03-1808a9287421}</Project>
-      <Name>LuceneExt.Net</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\packages\ICU4NET-ICU4C55.1-bin32.1.0.0\ref\icudt55.dll">

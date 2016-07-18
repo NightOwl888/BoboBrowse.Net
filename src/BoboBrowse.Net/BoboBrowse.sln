@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoboBrowse.Net", "BoboBrowse.Net\BoboBrowse.Net.csproj", "{8EEFF620-0996-4B6A-B23C-7D73BECCF73C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LuceneExt.Net", "LuceneExt.Net\LuceneExt.Net.csproj", "{58BD9712-0338-4DD7-9F03-1808A9287421}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoboBrowse.Tests", "BoboBrowse.Tests\BoboBrowse.Tests.csproj", "{F016F5E0-E8C3-4ECE-B677-AAA8DDF9A1D8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{74606D3E-1C8F-401F-95E1-F4F78C5CBD18}"
@@ -39,10 +37,6 @@ Global
 		{8EEFF620-0996-4B6A-B23C-7D73BECCF73C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8EEFF620-0996-4B6A-B23C-7D73BECCF73C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8EEFF620-0996-4B6A-B23C-7D73BECCF73C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{58BD9712-0338-4DD7-9F03-1808A9287421}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{58BD9712-0338-4DD7-9F03-1808A9287421}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{58BD9712-0338-4DD7-9F03-1808A9287421}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{58BD9712-0338-4DD7-9F03-1808A9287421}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F016F5E0-E8C3-4ECE-B677-AAA8DDF9A1D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F016F5E0-E8C3-4ECE-B677-AAA8DDF9A1D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F016F5E0-E8C3-4ECE-B677-AAA8DDF9A1D8}.Release|Any CPU.ActiveCfg = Release|Any CPU

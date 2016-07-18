@@ -314,12 +314,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LuceneExt.Net\LuceneExt.Net.csproj">
-      <Project>{58bd9712-0338-4dd7-9f03-1808a9287421}</Project>
-      <Name>LuceneExt.Net</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="..\packages\ICU4NET-ICU4C55.1-bin32.1.0.0\ref\icudt55.dll">
       <Link>icudt55.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
