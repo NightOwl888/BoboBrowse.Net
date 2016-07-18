@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Index.Digest
 {
     using BoboBrowse.Net.Facets;
@@ -49,7 +49,7 @@ namespace BoboBrowse.Net.Index.Digest
                     doc.RemoveFields(name);
                     foreach (string value in values)
                     {
-                        doc.Add(new Field(name, value, Field.Store.NO, Field.Index.NOT_ANALYZED));
+                        doc.Add(new StringField(name, value, Field.Store.NO));
                         tokenBuffer.Append(' ').Append(value);
                     }
                 }
