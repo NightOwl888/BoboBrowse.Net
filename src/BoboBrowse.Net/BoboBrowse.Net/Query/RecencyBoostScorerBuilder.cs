@@ -55,7 +55,7 @@ namespace BoboBrowse.Net.Query
             _now = timeunit.ToMillis(from);
         }
 
-        public virtual Explanation Explain(IndexReader reader, int doc, Explanation innerExplanation)
+        public virtual Explanation Explain(AtomicReader reader, int doc, Explanation innerExplanation)
         {
             if (reader is BoboSegmentReader)
             {
