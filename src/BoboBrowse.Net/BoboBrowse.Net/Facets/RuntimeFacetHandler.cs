@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets
 {
     using System;
@@ -67,6 +67,12 @@ namespace BoboBrowse.Net.Facets
         {
             reader.PutRuntimeFacetData(_name, Load(reader));
             reader.PutRuntimeFacetData(_name, this);
+        }
+
+        public override void LoadFacetData(BoboSegmentReader reader, BoboSegmentReader.WorkArea workArea)
+        {
+            reader.PutRuntimeFacetData(_name, Load(reader, workArea));
+            reader.PutRuntimeFacetHandler(_name, this);
         }
 
         public virtual void Dispose()
