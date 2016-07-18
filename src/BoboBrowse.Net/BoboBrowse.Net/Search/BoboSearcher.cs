@@ -332,9 +332,11 @@ namespace BoboBrowse.Net.Search
                     collector.NextReader = atomicContext;
                     validator.SetNextReader(_subReaders[i], docStart);
 
-                    //// TODO: Check whether this overload is supposed to be supported by Lucene 4.8.0
-                    //Scorer scorer = weight.Scorer(atomicContext, true, true, _subReaders[i].LiveDocs);
-                    // TODO: Check whether this overload is supposed to be supported by Lucene 4.8.0
+                    // NOTE: The Weight.Scorer method lost the scoreDocsInOrder and topScorer parameters between
+                    // Lucene 4.3.0 and 4.8.0. They are not used by BoboBrowse anyway, so the code here diverges 
+                    // from the original Java source to remove these two parameters.
+
+                    // Scorer scorer = weight.Scorer(atomicContext, true, true, _subReaders[i].LiveDocs);
                     Scorer scorer = weight.Scorer(atomicContext, _subReaders[i].LiveDocs);
                     if (scorer != null)
                     {
@@ -378,8 +380,12 @@ namespace BoboBrowse.Net.Search
                 }
                 collector.NextReader = atomicContext;
                 validator.SetNextReader(_subReaders[i], docStart);
-                //// TODO: Check whether this overload is supposed to be supported by Lucene 4.8.0
-                //Scorer scorer = weight.Scorer(atomicContext, true, false, _subReaders[i].LiveDocs);
+
+                // NOTE: The Weight.Scorer method lost the scoreDocsInOrder and topScorer parameters between
+                // Lucene 4.3.0 and 4.8.0. They are not used by BoboBrowse anyway, so the code here diverges 
+                // from the original Java source to remove these two parameters.
+
+                // Scorer scorer = weight.Scorer(atomicContext, true, false, _subReaders[i].LiveDocs);
                 Scorer scorer = weight.Scorer(atomicContext, _subReaders[i].LiveDocs);
                 if (scorer != null)
                 {

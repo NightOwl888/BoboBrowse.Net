@@ -55,6 +55,10 @@ namespace BoboBrowse.Net.Search.Section
                 get { return _parent.Boost; }
             }
 
+            // NOTE: The Weight.Scorer method lost the scoreDocsInOrder and topScorer parameters between
+            // Lucene 4.3.0 and 4.8.0. They are not used by BoboBrowse anyway, so the code here diverges 
+            // from the original Java source to remove these two parameters.
+
             public override Scorer Scorer(AtomicReaderContext context, Lucene.Net.Util.Bits acceptDocs)
             {
                 SectionSearchScorer scorer = new SectionSearchScorer(this.Query, _weight, this.Value, context.AtomicReader);

@@ -290,8 +290,12 @@ namespace BoboBrowse.Net.Query.Scoring
                 }
             }
 
+            // NOTE: The Weight.Scorer method lost the scoreDocsInOrder and topScorer parameters between
+            // Lucene 4.3.0 and 4.8.0. They are not used by BoboBrowse anyway, so the code here diverges 
+            // from the original Java source to remove these two parameters.
 
-            public override Scorer Scorer(AtomicReaderContext context, bool scoreDocsInOrder, bool topScorer, Bits acceptDocs)
+            // public override Scorer Scorer(AtomicReaderContext context, bool scoreDocsInOrder, bool topScorer, Bits acceptDocs)
+            public override Scorer Scorer(AtomicReaderContext context, Bits acceptDocs)
             {
                 AtomicReader reader = context.AtomicReader;
                 if (reader is BoboSegmentReader)

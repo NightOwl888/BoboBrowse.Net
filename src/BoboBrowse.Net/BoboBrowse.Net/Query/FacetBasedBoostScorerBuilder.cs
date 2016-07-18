@@ -44,7 +44,12 @@ namespace BoboBrowse.Net.Query
             _scoringFunctionFactory = scoringFunctionFactory;
         }
 
-        public virtual Scorer CreateScorer(Scorer innerScorer, AtomicReader reader, bool scoreDocsInOrder, bool topScorer)
+        // NOTE: The Weight.Scorer method lost the scoreDocsInOrder and topScorer parameters between
+        // Lucene 4.3.0 and 4.8.0. They are not used by BoboBrowse anyway, so the code here diverges 
+        // from the original Java source to remove these two parameters.
+
+        // public virtual Scorer CreateScorer(Scorer innerScorer, AtomicReader reader, bool scoreDocsInOrder, bool topScorer)
+        public virtual Scorer CreateScorer(Scorer innerScorer, AtomicReader reader)
         {
             if(!(reader is BoboSegmentReader))
                 throw new ArgumentException("IndexReader is not BoboSegmentReader");

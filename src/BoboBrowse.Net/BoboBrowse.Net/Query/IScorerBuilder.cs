@@ -25,7 +25,12 @@ namespace BoboBrowse.Net.Query
 
     public interface IScorerBuilder
     {
-        Scorer CreateScorer(Scorer innerScorer, AtomicReader reader, bool scoreDocsInOrder, bool topScorer);
+        // NOTE: The Weight.Scorer method lost the scoreDocsInOrder and topScorer parameters between
+        // Lucene 4.3.0 and 4.8.0. They are not used by BoboBrowse anyway, so the code here diverges 
+        // from the original Java source to remove these two parameters.
+
+        // Scorer CreateScorer(Scorer innerScorer, AtomicReader reader, bool scoreDocsInOrder, bool topScorer);
+        Scorer CreateScorer(Scorer innerScorer, AtomicReader reader);
         Explanation Explain(AtomicReader reader, int doc, Explanation innerExplanation);
     }
 }

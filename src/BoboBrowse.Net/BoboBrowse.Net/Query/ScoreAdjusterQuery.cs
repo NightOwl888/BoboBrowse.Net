@@ -48,10 +48,20 @@ namespace BoboBrowse.Net.Query
                 get { return _innerWeight.Query; }
             }
 
-            public override Scorer Scorer(AtomicReaderContext context, bool scoreDocsInOrder, bool topScorer, Bits acceptDocs)
+            // NOTE: The Weight.Scorer method lost the scoreDocsInOrder and topScorer parameters between
+            // Lucene 4.3.0 and 4.8.0. They are not used by BoboBrowse anyway, so the code here diverges 
+            // from the original Java source to remove these two parameters.
+
+            //public override Scorer Scorer(AtomicReaderContext context, bool scoreDocsInOrder, bool topScorer, Bits acceptDocs)
+            //{
+            //    Scorer innerScorer = _innerWeight.Scorer(context, scoreDocsInOrder, topScorer, acceptDocs);
+            //    return _parent._scorerBuilder.CreateScorer(innerScorer, context.AtomicReader, scoreDocsInOrder, topScorer);
+            //}
+
+            public override Scorer Scorer(AtomicReaderContext context, Bits acceptDocs)
             {
-                Scorer innerScorer = _innerWeight.Scorer(context, scoreDocsInOrder, topScorer, acceptDocs);
-                return _parent._scorerBuilder.CreateScorer(innerScorer, context.AtomicReader, scoreDocsInOrder, topScorer);
+                Scorer innerScorer = _innerWeight.Scorer(context, acceptDocs);
+                return _parent._scorerBuilder.CreateScorer(innerScorer, context.AtomicReader);
             }
 
             public override Explanation Explain(AtomicReaderContext context, int doc)
