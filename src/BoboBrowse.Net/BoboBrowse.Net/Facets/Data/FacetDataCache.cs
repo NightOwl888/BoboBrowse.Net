@@ -17,14 +17,15 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Data
 {
     using BoboBrowse.Net.Sort;
+    using BoboBrowse.Net.Support;
     using BoboBrowse.Net.Util;
-    using Common.Logging;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
+    using Lucene.Net.Util;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -32,8 +33,6 @@ namespace BoboBrowse.Net.Facets.Data
     [Serializable]
     public class FacetDataCache
     {
-        private static ILog logger = LogManager.GetLogger(typeof(FacetDataCache));
-
         //private readonly static long serialVersionUID = 1L; // NOT USED
 
         protected BigSegmentedArray orderArray;
@@ -114,58 +113,46 @@ namespace BoboBrowse.Net.Facets.Data
                 return new BigIntArray(maxDoc);
         }
 
-        protected int GetDictValueCount(IndexReader reader, string field)
+        protected int GetDictValueCount(AtomicReader reader, string field)
         {
             int ret = 0;
-            using (TermEnum termEnum = reader.Terms(new Term(field, "")))
+            Terms terms = reader.Terms(field);
+            if (terms == null)
             {
-                do
+                return ret;
+            }
+            return (int)terms.Size();
+        }
+
+        protected int GetNegativeValueCount(AtomicReader reader, string field)
+        {
+            int ret = 0;
+            Terms terms = reader.Terms(field);
+            if (terms == null)
+            {
+                return ret;
+            }
+            TermsEnum termsEnum = terms.Iterator(null);
+            BytesRef text;
+            while ((text = termsEnum.Next()) != null)
+            {
+                if (!text.Utf8ToString().StartsWith("-"))
                 {
-                    Term term = termEnum.Term;
-                    if (term == null || string.CompareOrdinal(term.Field, field) != 0)
-                        break;
-                    ret++;
-                } while (termEnum.Next());
+                    break;
+                }
+                ret++;
             }
             return ret;
         }
 
-        protected int GetNegativeValueCount(IndexReader reader, string field)
-        {
-            int ret = 0;
-            using (TermEnum termEnum = reader.Terms(new Term(field, "")))
-            {
-                do
-                {
-                    Term term = termEnum.Term;
-                    if (term == null || string.CompareOrdinal(term.Field, field) != 0)
-                        break;
-                    if (!term.Text.StartsWith("-"))
-                    {
-                        break;
-                    }
-                    ret++;
-                } while (termEnum.Next());
-            }
-            return ret;
-        }
-
-        public virtual void Load(string fieldName, IndexReader reader, TermListFactory listFactory)
+        public virtual void Load(string fieldName, AtomicReader reader, TermListFactory listFactory)
         {
             string field = string.Intern(fieldName);
             int maxDoc = reader.MaxDoc;
 
-            BigSegmentedArray order = this.orderArray;
-            if (order == null) // we want to reuse the memory
-            {
-                int dictValueCount = GetDictValueCount(reader, fieldName);
-                order = NewInstance(dictValueCount, maxDoc);
-            }
-            else
-            {
-                order.EnsureCapacity(maxDoc); // no need to fill to 0, we are reseting the 
-                                              // data anyway
-            }
+            int dictValueCount = GetDictValueCount(reader, fieldName);
+            BigSegmentedArray order = NewInstance(dictValueCount, maxDoc);
+
             this.orderArray = order;
 
             List<int> minIDList = new List<int>();
@@ -176,68 +163,57 @@ namespace BoboBrowse.Net.Facets.Data
             ITermValueList list = listFactory == null ? (ITermValueList)new TermStringList() : listFactory.CreateTermList();
             int negativeValueCount = GetNegativeValueCount(reader, field);
 
-            TermDocs termDocs = reader.TermDocs();
-            TermEnum termEnum = reader.Terms(new Term(field, ""));
-            int t = 0; // current term number
+            int t = 1; // valid term id starts from 1
 
             list.Add(null);
             minIDList.Add(-1);
             maxIDList.Add(-1);
             freqList.Add(0);
             int totalFreq = 0;
-            //int df = 0;
-            t++;
-            try
-            {
-                do
-                {
-                    Term term = termEnum.Term;
-                    if (term == null || string.CompareOrdinal(term.Field, field) != 0)
-                        break;
-
-                    // store term text
-                    // we expect that there is at most one term per document
-
-                    // Alexey: well, we could get now more than one term per document. Effectively, we could build facet against tokenized field
-                    //if (t >= length)
-                    //{
-                    //    throw new RuntimeException("there are more terms than " + "documents in field \"" + field 
-                    //        + "\", but it's impossible to sort on " + "tokenized fields");
-                    //}
-                    list.Add(term.Text);
-                    termDocs.Seek(termEnum);
-                    // freqList.add(termEnum.docFreq()); // doesn't take into account deldocs
-                    int minID = -1;
-                    int maxID = -1;
-                    int df = 0;
-                    int valId = (t - 1 < negativeValueCount) ? (negativeValueCount - t + 1) : t;
-                    if (termDocs.Next())
-                    {
-                        df++;
-                        int docid = termDocs.Doc;
-                        order.Add(docid, valId);
-                        minID = docid;
-                        while (termDocs.Next())
-                        {
-                            df++;
-                            docid = termDocs.Doc;
-                            order.Add(docid, valId);
-                        }
-                        maxID = docid;
-                    }
-                    freqList.Add(df);
-                    totalFreq += df;
-                    minIDList.Add(minID);
-                    maxIDList.Add(maxID);
-
-                    t++;
-                } while (termEnum.Next());
+            Terms terms = reader.Terms(field);
+            if (terms != null) 
+            { 
+                TermsEnum termsEnum = terms.Iterator(null);
+                  BytesRef text;
+                  while ((text = termsEnum.Next()) != null)
+                  {
+                      // store term text
+                      // we expect that there is at most one term per document
+                      if (t >= length) throw new RuntimeException("there are more terms than "
+                        + "documents in field \"" + field + "\", but it's impossible to sort on "
+                        + "tokenized fields");
+                      string strText = text.Utf8ToString();
+                      list.Add(strText);
+                      Term term = new Term(field, strText);
+                      DocsEnum docsEnum = reader.TermDocsEnum(term);
+                      // freqList.add(termEnum.docFreq()); // doesn't take into account
+                      // deldocs
+                      int minID = -1;
+                      int maxID = -1;
+                      int docID = -1;
+                      int df = 0;
+                      int valId = (t - 1 < negativeValueCount) ? (negativeValueCount - t + 1) : t;
+                      while ((docID = docsEnum.NextDoc()) != DocsEnum.NO_MORE_DOCS)
+                      {
+                          df++;
+                          order.Add(docID, valId);
+                          minID = docID;
+                          while (docsEnum.NextDoc() != DocsEnum.NO_MORE_DOCS)
+                          {
+                              docID = docsEnum.DocID();
+                              df++;
+                              order.Add(docID, valId);
+                          }
+                          maxID = docID;
+                      }
+                      freqList.Add(df);
+                      totalFreq += df;
+                      minIDList.Add(minID);
+                      maxIDList.Add(maxID);
+                      t++;
+                  }
             }
-            finally
-            {
-                termDocs.Dispose();
-                termEnum.Dispose();
-            }
+
             list.Seal();
             this.valArray = list;
             this.freqs = freqList.ToArray();
@@ -245,25 +221,22 @@ namespace BoboBrowse.Net.Facets.Data
             this.maxIDs = maxIDList.ToArray();
 
             int doc = 0;
-            while (doc <= maxDoc && order.Get(doc) != 0)
+            while (doc < maxDoc && order.Get(doc) != 0)
             {
                 ++doc;
             }
-            if (doc <= maxDoc)
+            if (doc < maxDoc)
             {
                 this.minIDs[0] = doc;
                 // Try to get the max
-                doc = maxDoc;
-                while (doc > 0 && order.Get(doc) != 0)
+                doc = maxDoc - 1;
+                while (doc >= 0 && order.Get(doc) != 0)
                 {
                     --doc;
                 }
-                if (doc > 0)
-                {
-                    this.maxIDs[0] = doc;
-                }
+                this.maxIDs[0] = doc;
             }
-            this.freqs[0] = maxDoc + 1 - totalFreq;
+            this.freqs[0] = reader.NumDocs - totalFreq;
         }
 
         private static int[] ConvertString(FacetDataCache dataCache, string[] vals)
@@ -320,17 +293,17 @@ namespace BoboBrowse.Net.Facets.Data
 
     public class FacetDocComparatorSource : DocComparatorSource
     {
-        private IFacetHandler _facetHandler;
+        private readonly IFacetHandler _facetHandler;
 
         public FacetDocComparatorSource(IFacetHandler facetHandler)
         {
             _facetHandler = facetHandler;
         }
 
-        public override DocComparator GetComparator(IndexReader reader, int docbase)
+        public override DocComparator GetComparator(AtomicReader reader, int docbase)
         {
-            if (!(reader.GetType().Equals(typeof(BoboSegmentReader))))
-                throw new ArgumentException("reader not instance of BoboIndexReader");
+            if (!(reader is BoboSegmentReader))
+                throw new ArgumentException("reader not instance of BoboSegmentReader");
             BoboSegmentReader boboReader = (BoboSegmentReader)reader;
             FacetDataCache dataCache = _facetHandler.GetFacetData<FacetDataCache>(boboReader);
             BigSegmentedArray orderArray = dataCache.OrderArray;
