@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.MapRed
 {
     using System;
@@ -26,6 +26,8 @@ namespace BoboBrowse.Net.MapRed
     [Serializable]
     public class MapReduceResult
     {
+        // private static long serialVersionUID = 1L; // NOT USED
+
         public MapReduceResult()
         {
             MapResults = new ArrayList(200);
