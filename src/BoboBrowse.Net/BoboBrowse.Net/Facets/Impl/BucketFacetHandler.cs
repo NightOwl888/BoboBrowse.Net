@@ -164,7 +164,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 IFacetCountCollector defaultCollector = _dependOnFacetHandler.GetFacetCountCollectorSource(_sel, _ospec).GetFacetCountCollector(reader, docBase);
                 if (defaultCollector is DefaultFacetCountCollector)
                 {
-                    return new BucketFacetCountCollector(_name, (DefaultFacetCountCollector)defaultCollector, _ospec, _predefinedBuckets, reader.NumDocs());
+                    return new BucketFacetCountCollector(_name, (DefaultFacetCountCollector)defaultCollector, _ospec, _predefinedBuckets, reader.NumDocs);
                 }
                 else
                 {
