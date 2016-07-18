@@ -311,7 +311,7 @@ namespace BoboBrowse.Net
             _workArea = workArea;
         }
 
-        protected virtual void FacetInit()
+        protected internal virtual void FacetInit()
         {
             Initialize(ref _facetHandlers);
             LoadFacetHandlers(_workArea);
