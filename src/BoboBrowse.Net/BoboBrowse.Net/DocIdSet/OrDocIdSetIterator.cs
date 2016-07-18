@@ -20,6 +20,7 @@
 // Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.DocIdSet
 {
+    using BoboBrowse.Net.Support;
     using Lucene.Net.Search;
     using System.Collections.Generic;
 
@@ -48,7 +49,11 @@ namespace BoboBrowse.Net.DocIdSet
             _size = 0;
             foreach (DocIdSet set in sets)
             {
-                _heap[_size++] = new Item(set.GetIterator() == null ? DocIdSet.EMPTY_DOCIDSET.GetIterator() : set.GetIterator());
+                // Note: EMPTY_DOCIDSET has been removed in Lucene 4.8, so made an
+                // iterator that can be used in its place.
+                //_heap[_size++] = new Item(set.GetIterator() == null ? DocIdSet.EMPTY_DOCIDSET.GetIterator() : set.GetIterator());
+                _heap[_size++] = new Item(set.GetIterator() == null ? new EmptyDocIdSetIterator() : set.GetIterator());
+                
             }
             if (_size == 0) _curDoc = DocIdSetIterator.NO_MORE_DOCS;
         }

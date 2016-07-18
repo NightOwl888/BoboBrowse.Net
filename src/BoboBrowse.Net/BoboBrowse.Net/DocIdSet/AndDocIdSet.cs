@@ -20,9 +20,10 @@
 // Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.DocIdSet
 {
+    using BoboBrowse.Net.Support;
+    using Lucene.Net.Search;
     using System;
     using System.Collections.Generic;
-    using Lucene.Net.Search;
 
     [Serializable]
     public class AndDocIdSet : ImmutableDocSet
@@ -35,7 +36,7 @@ namespace BoboBrowse.Net.DocIdSet
         {
             // private static long serialVersionUID = 1L; // NOT USED
 
-            public override int Compare(StatefulDSIterator o1, StatefulDSIterator o2)
+            public int Compare(StatefulDSIterator o1, StatefulDSIterator o2)
             {
                 return o2.DocID() - o1.DocID();
             }
@@ -80,8 +81,10 @@ namespace BoboBrowse.Net.DocIdSet
                     {
                         DocIdSetIterator dcit = set.GetIterator();
 
-                        // TODO: Fix the EMPTY_DOCIDSET an submit to lucene
-                        if (dcit == null) dcit = DocIdSet.EMPTY_DOCIDSET.GetIterator();
+                        // Note: EMPTY_DOCIDSET has been removed in Lucene 4.8, so made an
+                        // iterator that can be used in its place.
+                        //if (dcit == null) dcit = DocIdSet.EMPTY_DOCIDSET.GetIterator();
+                        if (dcit == null) dcit = new EmptyDocIdSetIterator();
                         iterators[j++] = dcit;
                     }
                 }
@@ -220,6 +223,5 @@ namespace BoboBrowse.Net.DocIdSet
                 return false;
             }
         }
-
     }
 }
