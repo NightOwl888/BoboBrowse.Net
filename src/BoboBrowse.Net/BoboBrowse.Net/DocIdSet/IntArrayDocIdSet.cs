@@ -149,9 +149,9 @@ namespace BoboBrowse.Net.DocIdSet
             return new IntArrayDocIdSetIterator(() => pos, () => array, (val, begin, end) => BinarySearchForNearest(val, begin, end));
         }
 
-        public override int Size()
+        public override int Size
         {
-            return pos + 1;
+            get { return pos + 1; }
         }
 
         public override int FindWithIndex(int target)
@@ -169,10 +169,10 @@ namespace BoboBrowse.Net.DocIdSet
             return -1;
         }
 
-        public override long SizeInBytes()
+        public override long SizeInBytes
         {
             // Object Overhead
-            return array.Length() * 4 + 64;
+            get { return array.Length() * 4 + 64; }
         }
 
         public override void Optimize()

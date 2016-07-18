@@ -95,24 +95,27 @@ namespace BoboBrowse.Net.DocIdSet
             return -1;
         }
 
-        public override int Size()
+        public override int Size
         {
-            if (_size == INVALID)
+            get 
             {
-                _size = 0;
-                DocIdSetIterator it = this.GetIterator();
+                if (_size == INVALID)
+                {
+                    _size = 0;
+                    DocIdSetIterator it = this.GetIterator();
 
-                try
-                {
-                    while (it.NextDoc() != DocIdSetIterator.NO_MORE_DOCS)
-                        _size++;
+                    try
+                    {
+                        while (it.NextDoc() != DocIdSetIterator.NO_MORE_DOCS)
+                            _size++;
+                    }
+                    catch
+                    {
+                        _size = INVALID;
+                    }
                 }
-                catch
-                {
-                    _size = INVALID;
-                }
+                return _size;
             }
-            return _size;
         }
     }
 }

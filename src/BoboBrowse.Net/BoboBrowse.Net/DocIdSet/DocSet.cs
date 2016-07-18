@@ -69,18 +69,18 @@ namespace BoboBrowse.Net.DocIdSet
         /// Gets the number of ids in the set
         /// return size of the docset
         /// </summary>
-        public virtual int Size()
+        public virtual int Size
         {
-            return 0;
+            get { return 0; }
         }
 
         /// <summary>
         /// Return the set size in bytes
         /// </summary>
         /// <returns></returns>
-        public virtual long SizeInBytes()
+        public virtual long SizeInBytes
         {
-            return 0;
+            get { return 0; }
         }
 
         /// <summary>
