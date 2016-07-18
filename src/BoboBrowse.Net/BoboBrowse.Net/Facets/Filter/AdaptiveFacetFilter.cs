@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Filter
 {
     using BoboBrowse.Net.DocIdSet;
@@ -25,7 +25,6 @@ namespace BoboBrowse.Net.Facets.Filter
     using Common.Logging;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
-    using LuceneExt.Impl;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -38,10 +37,6 @@ namespace BoboBrowse.Net.Facets.Filter
 
     public class AdaptiveFacetFilter : RandomAccessFilter
     {
-        //private static long serialVersionUID = 1L; // NOT USED
-
-        private static ILog logger = LogManager.GetLogger(typeof(AdaptiveFacetFilter));
-
         private readonly RandomAccessFilter _facetFilter;
 	    private readonly IFacetDataCacheBuilder _facetDataCacheBuilder;
         private readonly IEnumerable<string> _valSet;
@@ -118,11 +113,11 @@ namespace BoboBrowse.Net.Facets.Filter
         {
             private readonly RandomAccessDocIdSet _innerSet;
 		    private readonly IEnumerable<string> _vals;
-		    private readonly IndexReader _reader;
+		    private readonly AtomicReader _reader;
 		    private readonly string _name;
             private const int OR_THRESHOLD = 5;
 
-            internal TermListRandomAccessDocIdSet(string name, RandomAccessDocIdSet innerSet, IEnumerable<string> vals, IndexReader reader)
+            internal TermListRandomAccessDocIdSet(string name, RandomAccessDocIdSet innerSet, IEnumerable<string> vals, AtomicReader reader)
             {
                 _name = name;
                 _innerSet = innerSet;
@@ -133,66 +128,22 @@ namespace BoboBrowse.Net.Facets.Filter
             public class TermDocIdSet : DocIdSet
             {
                 private readonly Term term;
-                private readonly IndexReader reader;
+                private readonly AtomicReader reader;
 
-                public TermDocIdSet(IndexReader reader, string name, string val)
+                public TermDocIdSet(AtomicReader reader, string name, string val)
                 {
                     this.reader = reader;
                     term = new Term(name, val);
                 }
 
-                public override DocIdSetIterator Iterator()
+                public override DocIdSetIterator GetIterator()
                 {
-                    TermDocs td = reader.TermDocs(term);
-                    if (td == null)
+                    DocsEnum docsEnum = reader.TermDocsEnum(term);
+                    if (docsEnum == null)
                     {
-                        return EmptyDocIdSet.Instance.Iterator();
+                        return EmptyDocIdSet.Instance.GetIterator();
                     }
-                    return new TermDocIdSetIterator(td);
-                }
-
-                private class TermDocIdSetIterator : DocIdSetIterator
-                {
-                    private int _doc = -1;
-                    private readonly TermDocs _td;
-
-                    public TermDocIdSetIterator(TermDocs td)
-                    {
-                        _td = td;
-                    }
-
-                    public override int Advance(int target)
-                    {
-                        if (_td.SkipTo(target))
-                        {
-                            _doc = _td.Doc;
-                        }
-                        else
-                        {
-                            _td.Dispose();
-                            _doc = DocIdSetIterator.NO_MORE_DOCS;
-                        }
-                        return _doc;
-                    }
-
-                    public override int DocID()
-                    {
-                        return _doc;
-                    }
-
-                    public override int NextDoc()
-                    {
-                        if (_td.Next())
-                        {
-                            _doc = _td.Doc;
-                        }
-                        else
-                        {
-                            _td.Dispose();
-                            _doc = DocIdSetIterator.NO_MORE_DOCS;
-                        }
-                        return _doc;
-                    }
+                    return docsEnum;
                 }
             }
 
@@ -201,15 +152,15 @@ namespace BoboBrowse.Net.Facets.Filter
                 return _innerSet.Get(docId);
             }
 
-            public override DocIdSetIterator Iterator()
+            public override DocIdSetIterator GetIterator()
             {
                 if (_vals.Count() == 0)
                 {
-                    return EmptyDocIdSet.Instance.Iterator();
+                    return EmptyDocIdSet.Instance.GetIterator();
                 }
                 if (_vals.Count() == 1)
                 {
-                    return new TermDocIdSet(_reader, _name, _vals.ElementAt(0)).Iterator();
+                    return new TermDocIdSet(_reader, _name, _vals.ElementAt(0)).GetIterator();
                 }
                 else
                 {
@@ -220,11 +171,11 @@ namespace BoboBrowse.Net.Facets.Filter
                         {
                             docSetList.Add(new TermDocIdSet(_reader, _name, val));
                         }
-                        return new OrDocIdSet(docSetList).Iterator();
+                        return new OrDocIdSet(docSetList).GetIterator();
                     }
                     else
                     {
-                        return _innerSet.Iterator();
+                        return _innerSet.GetIterator();
                     }
                 }
             }
