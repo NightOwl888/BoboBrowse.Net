@@ -21,7 +21,9 @@
 namespace BoboBrowse.Net.Impl
 {
     using Lucene.Net.Analysis.Standard;
+    using Lucene.Net.QueryParser.Classic;
     using Lucene.Net.Search;
+    using Lucene.Net.Util;
 
     public class QueryProducer
     {
@@ -35,10 +37,9 @@ namespace BoboBrowse.Net.Impl
             }
             else
             {
-                var version = Lucene.Net.Util.LuceneVersion.LUCENE_43;
-                var analyzer = new StandardAnalyzer(version);
+                var analyzer = new StandardAnalyzer(LuceneVersion.LUCENE_48);
                 if (string.IsNullOrEmpty(defaultField)) defaultField = "contents";
-                return new QueryParser(version, defaultField, analyzer).Parse(queryString);
+                return new QueryParser(LuceneVersion.LUCENE_48, defaultField, analyzer).Parse(queryString);
             }
         }
 
