@@ -17,21 +17,21 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-﻿// Version compatibility level: 3.2.0
+﻿// Version compatibility level: 4.2.0
 namespace BoboBrowse.Net.Sort
 {
     using Lucene.Net.Index;
 
     public class MultiDocIdComparatorSource : DocComparatorSource
     {
-        private DocComparatorSource[] _compSources;
+        private readonly DocComparatorSource[] _compSources;
 
         public MultiDocIdComparatorSource(DocComparatorSource[] compSources)
         {
             _compSources = compSources;
         }
 
-        public override DocComparator GetComparator(IndexReader reader, int docbase)
+        public override DocComparator GetComparator(AtomicReader reader, int docbase)
         {
             DocComparator[] comparators = new DocComparator[_compSources.Length];
             for (int i = 0; i < _compSources.Length; ++i)
