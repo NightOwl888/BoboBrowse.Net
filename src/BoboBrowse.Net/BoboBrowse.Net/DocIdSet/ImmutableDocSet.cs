@@ -24,7 +24,7 @@ namespace BoboBrowse.Net.DocIdSet
     using Common.Logging;
     using Lucene.Net.Search;
 
-    public class ImmutableDocSet : DocSet
+    public abstract class ImmutableDocSet : DocSet
     {
         private int size = -1;
         private static ILog log = LogManager.GetLogger(typeof(ImmutableDocSet));
