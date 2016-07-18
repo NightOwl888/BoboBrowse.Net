@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Filter
 {
     using BoboBrowse.Net.DocIdSet;
@@ -30,8 +30,6 @@ namespace BoboBrowse.Net.Facets.Filter
 
     public sealed class FacetRangeFilter : RandomAccessFilter
     {
-        //private static long serialVersionUID = 1L; // NOT USED
-
         private readonly IFacetHandler _facetHandler;
         private readonly string _rangeString;
 
@@ -107,6 +105,11 @@ namespace BoboBrowse.Net.Facets.Filter
                 }
                 return NextDoc();
             }
+
+            public override long Cost()
+            {
+                return 0;
+            }
         }
 
         private sealed class MultiFacetRangeDocIdSetIterator : DocIdSetIterator
@@ -151,6 +154,11 @@ namespace BoboBrowse.Net.Facets.Filter
                     return _doc;
                 }
                 return NextDoc();
+            }
+
+            public override long Cost()
+            {
+                return 0;
             }
         }
 
@@ -249,8 +257,7 @@ namespace BoboBrowse.Net.Facets.Filter
                 end = dataCache.ValArray.IndexOf(upper);
                 if (end < 0)
                 {
-                    end = -(end + 1);
-                    end = Math.Max(0, end - 1);
+                    end = -(end + 1) - 1;
                 }
                 else
                 {
@@ -310,16 +317,12 @@ namespace BoboBrowse.Net.Facets.Filter
             BigNestedIntArray nestedArray = multi ? ((MultiValueFacetDataCache)dataCache).NestedArray : null;
             int[] range = Parse(dataCache, _rangeString);
     
-            if (range == null) return null;
+            if (range == null) 
+                return null;
     
             if (range[0] > range[1])
             {
                 return EmptyDocIdSet.Instance;
-            }
-    
-            if (range[0] == range[1] && range[0] < 0)
-            {
-	            return EmptyDocIdSet.Instance;
             }
 
             int start = range[0];
@@ -355,7 +358,7 @@ namespace BoboBrowse.Net.Facets.Filter
                 return index >= _start && index <= _end;
             }
 
-            public override DocIdSetIterator Iterator()
+            public override DocIdSetIterator GetIterator()
             {
                 if (_multi)
                 {
