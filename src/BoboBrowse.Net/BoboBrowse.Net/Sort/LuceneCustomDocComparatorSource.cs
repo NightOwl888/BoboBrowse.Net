@@ -17,9 +17,10 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Sort
 {
+    using Lucene.Net.Index;
     using Lucene.Net.Search;
     using System;
 
@@ -34,9 +35,9 @@ namespace BoboBrowse.Net.Sort
             _luceneComparator = luceneComparator;
         }
 
-        public override DocComparator GetComparator(Lucene.Net.Index.IndexReader reader, int docbase)
+        public override DocComparator GetComparator(AtomicReader reader, int docbase)
         {
-            _luceneComparator.SetNextReader(reader, docbase);
+            _luceneComparator.SetNextReader(reader.AtomicContext);
             return new LuceneCustomDocComparator(_luceneComparator);
         }
 
@@ -49,19 +50,19 @@ namespace BoboBrowse.Net.Sort
                 this._luceneComparator = luceneComparator;
             }
 
+            public override IComparable Value(ScoreDoc doc)
+            {
+                return _luceneComparator.Value(doc.Doc);
+            }
+
             public override int Compare(ScoreDoc doc1, ScoreDoc doc2)
             {
                 return _luceneComparator.Compare(doc1.Doc, doc2.Doc);
             }
 
-            public override IComparable Value(ScoreDoc doc)
-            {
-                return _luceneComparator[doc.Doc];
-            }
-
             public override void SetScorer(Scorer scorer)
             {
-                _luceneComparator.SetScorer(scorer);
+                _luceneComparator.Scorer = scorer;
             }
         }
     }
