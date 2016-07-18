@@ -54,11 +54,11 @@ namespace BoboBrowse.Net
         protected WorkArea _workArea;
 
         private readonly IDictionary<string, object> _facetDataMap = new Dictionary<string, object>();
-        private readonly IDisposableThreadLocal<IDictionary<string, object>> _runtimeFacetDataMap = new RuntimeFacetDataMap();
-        private readonly IDisposableThreadLocal<IDictionary<string, IRuntimeFacetHandler>> _runtimeFacetHandlerMap = new RuntimeFacetHandlerMap();
+        private readonly IDisposableThreadLocal<IDictionary<string, object>> _runtimeFacetDataMap = new RuntimeFacetDataMapWrapper();
+        private readonly IDisposableThreadLocal<IDictionary<string, IRuntimeFacetHandler>> _runtimeFacetHandlerMap = new RuntimeFacetHandlerMapWrapper();
 
         // TODO: Fix this IDisposableThreadLocal (it is a class, so should be named DisposableThreadLocal) and push to Lucene.Net
-        private class RuntimeFacetDataMap : IDisposableThreadLocal<IDictionary<string, object>>
+        private class RuntimeFacetDataMapWrapper : IDisposableThreadLocal<IDictionary<string, object>>
         {
             protected override IDictionary<string, object> InitialValue()
             {
@@ -66,7 +66,7 @@ namespace BoboBrowse.Net
             }
         }
 
-        private class RuntimeFacetHandlerMap : IDisposableThreadLocal<IDictionary<string, IRuntimeFacetHandler>>
+        private class RuntimeFacetHandlerMapWrapper : IDisposableThreadLocal<IDictionary<string, IRuntimeFacetHandler>>
         {
             protected override IDictionary<string, IRuntimeFacetHandler> InitialValue()
             {
