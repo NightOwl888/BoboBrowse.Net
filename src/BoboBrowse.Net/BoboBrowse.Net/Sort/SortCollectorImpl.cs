@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 // EXCEPTION: MemoryCache
 namespace BoboBrowse.Net.Sort
 {
@@ -28,6 +28,7 @@ namespace BoboBrowse.Net.Sort
     using BoboBrowse.Net.Util;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
+    using Lucene.Net.Util;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -80,12 +81,11 @@ namespace BoboBrowse.Net.Sort
         private readonly List<DocIDPriorityQueue> _pqList;
         private readonly int _numHits;
         private int _totalHits;
-        private int _totalGroups;
         private ScoreDoc _bottom;
         private ScoreDoc _tmpScoreDoc;
         private bool _queueFull;
         private DocComparator _currentComparator;
-        private DocComparatorSource _compSource;
+        private readonly DocComparatorSource _compSource;
         private DocIDPriorityQueue _currentQueue;
         private BoboSegmentReader _currentReader = null;
         private IFacetCountCollector _facetCountCollector;
@@ -168,7 +168,6 @@ namespace BoboBrowse.Net.Sort
             _offset = offset;
             _count = count;
             _totalHits = 0;
-            _totalGroups = 0;
             _queueFull = false;
             _doScoring = doScoring;
             _tmpScoreDoc = new MyScoreDoc();
@@ -236,7 +235,7 @@ namespace BoboBrowse.Net.Sort
 
         public override bool AcceptsDocsOutOfOrder
         {
-            get { return this.Collector == null ? true : this.Collector.AcceptsDocsOutOfOrder; }
+            get { return this.Collector == null ? true : this.Collector.AcceptsDocsOutOfOrder(); }
         }
 
         public override void Collect(int doc)
@@ -284,9 +283,6 @@ namespace BoboBrowse.Net.Sort
                 }
                 else
                 {
-                    //if (_facetCountCollector != null)
-                    //_facetCountCollector.collect(doc);
-
                     if (_count > 0)
                     {
                         float score = (_doScoring ? _scorer.Score() : 0.0f);
@@ -381,29 +377,14 @@ namespace BoboBrowse.Net.Sort
             if (this.Collector != null) this.Collector.Collect(doc);
         }
 
-        private void CollectTotalGroups()
+        public override void SetNextReader(AtomicReaderContext context)
         {
-            if (_facetCountCollector is GroupByFacetCountCollector)
-            {
-                _totalGroups += ((GroupByFacetCountCollector)_facetCountCollector).GetTotalGroups();
-                return;
-            }
-
-            BigSegmentedArray count = _facetCountCollector.GetCountDistribution();
-            for (int i = 0; i < count.Size(); i++)
-            {
-                int c = count.Get(i);
-                if (c > 0)
-                    ++_totalGroups;
-            }
-        }
-
-        public override void SetNextReader(IndexReader reader, int docBase)
-        {
+            AtomicReader reader = context.AtomicReader;
             if (!(reader is BoboSegmentReader))
                 throw new ArgumentException("reader must be a BoboIndexReader");
             _currentReader = (BoboSegmentReader)reader;
-            _currentComparator = _compSource.GetComparator(reader, docBase);
+            int docBase = context.DocBase;
+            _currentComparator = _compSource.GetComparator(_currentReader, docBase);
             _currentQueue = new DocIDPriorityQueue(_currentComparator, _numHits, docBase);
             if (groupBy != null)
             {
@@ -456,7 +437,7 @@ namespace BoboBrowse.Net.Sort
 
         public override int TotalGroups
         {
-            get { return _totalGroups; }
+            get { return _totalHits; }
         }
 
         public override IFacetAccessible[] GroupAccessibles
@@ -572,21 +553,48 @@ namespace BoboBrowse.Net.Sort
                 BrowseHit hit = new BrowseHit();
                 if (fetchStoredFields)
                 {
-                    hit.StoredFields = reader.Document(fdoc.Doc);
+                    hit.SetStoredFields(reader.Document(fdoc.Doc));
                 }
                 if (termVectorsToFetch != null && termVectorsToFetch.Count() > 0)
                 {
-                    var tvMap = new Dictionary<string, BrowseHit.TermFrequencyVector>();
-                    hit.TermFreqMap = tvMap;
+                    var tvMap = new Dictionary<string, IList<BrowseHit.BoboTerm>>();
+                    hit.TermVectorMap = tvMap;
+                    Fields fds = reader.GetTermVectors(fdoc.Doc);
                     foreach (string field in termVectorsToFetch)
                     {
-                        ITermFreqVector tv = reader.GetTermFreqVector(fdoc.Doc, field);
-                        if (tv != null)
+                        Terms terms = fds.Terms(field);
+                        if (terms == null)
                         {
-                            int[] freqs = tv.GetTermFrequencies();
-                            string[] terms = tv.GetTerms();
-                            tvMap[field] = new BrowseHit.TermFrequencyVector(terms, freqs);
+                            continue;
                         }
+
+                        TermsEnum termsEnum = terms.Iterator(null);
+                        BytesRef text;
+                        DocsAndPositionsEnum docsAndPositions = null;
+                        List<BrowseHit.BoboTerm> boboTermList = new List<BrowseHit.BoboTerm>();
+
+                        while ((text = termsEnum.Next()) != null)
+                        {
+                            BrowseHit.BoboTerm boboTerm = new BrowseHit.BoboTerm();
+                            boboTerm.Term = text.Utf8ToString();
+                            boboTerm.Freq = (int)termsEnum.TotalTermFreq();
+                            docsAndPositions = termsEnum.DocsAndPositions(null, docsAndPositions);
+                            if (docsAndPositions != null)
+                            {
+                                docsAndPositions.NextDoc();
+                                boboTerm.Positions = new List<int>();
+                                boboTerm.StartOffsets = new List<int>();
+                                boboTerm.EndOffsets = new List<int>();
+                                for (int t = 0; t < boboTerm.Freq; ++t)
+                                {
+                                    boboTerm.Positions.Add(docsAndPositions.NextPosition());
+                                    boboTerm.StartOffsets.Add(docsAndPositions.StartOffset());
+                                    boboTerm.EndOffsets.Add(docsAndPositions.EndOffset());
+                                }
+                            }
+                            boboTermList.Add(boboTerm);
+                        }
+                        tvMap.Put(field, boboTermList);
                     }
                 }
                 var map = new Dictionary<string, string[]>();
