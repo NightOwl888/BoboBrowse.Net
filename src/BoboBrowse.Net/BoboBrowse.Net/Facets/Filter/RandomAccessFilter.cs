@@ -17,20 +17,20 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Filter
 {
     using BoboBrowse.Net.DocIdSet;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
+    using Lucene.Net.Util;
     using System;
     
     public abstract class RandomAccessFilter : Filter
     {
-        //private static long serialVersionUID = 1L; // NOT USED
-
-        public override DocIdSet GetDocIdSet(IndexReader reader)
+        public override DocIdSet GetDocIdSet(AtomicReaderContext context, Bits acceptDocs)
         {
+            AtomicReader reader = context.AtomicReader;
             if (reader is BoboSegmentReader)
             {
                 return GetRandomAccessDocIdSet((BoboSegmentReader)reader);
@@ -42,6 +42,10 @@ namespace BoboBrowse.Net.Facets.Filter
         }
 
         public abstract RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboSegmentReader reader);
-        public virtual double GetFacetSelectivity(BoboSegmentReader reader) { return 0.50; }
+
+        public virtual double GetFacetSelectivity(BoboSegmentReader reader) 
+        { 
+            return 0.50; 
+        }
     }
 }
