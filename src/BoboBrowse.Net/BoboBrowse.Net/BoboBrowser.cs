@@ -21,7 +21,7 @@
 namespace BoboBrowse.Net
 {
     using BoboBrowse.Net.Facets;
-    using Common.Logging;
+    using BoboBrowse.Net.Support;
     using Lucene.Net.Index;
     using Lucene.Net.Util;
     using System.Collections.Generic;
@@ -38,15 +38,15 @@ namespace BoboBrowse.Net
         /// </summary>
         /// <param name="reader">An open <see cref="T:BoboIndexReader"/> instance.</param>
         public BoboBrowser(BoboMultiReader reader)
-            : base(CreateBrowsables(reader.SubReaders))
+            : base(CreateBrowsables(reader.GetSubReaders()))
         {}
 
-        public static IList<BoboSegmentReader> GatherSubReaders(IList<BoboMultiReader> readerList)
+        public static IEnumerable<BoboSegmentReader> GatherSubReaders(IEnumerable<BoboMultiReader> readerList)
         {
             IList<BoboSegmentReader> subReaderList = new List<BoboSegmentReader>();
             foreach (BoboMultiReader reader in readerList)
             {
-                foreach (BoboSegmentReader subReader in reader.SubReaders)
+                foreach (BoboSegmentReader subReader in reader.GetSubReaders())
                 {
                     subReaderList.Add(subReader);
                 }
@@ -54,12 +54,12 @@ namespace BoboBrowse.Net
             return subReaderList;
         }
 
-        public static IBrowsable[] CreateBrowsables(List<BoboSegmentReader> readerList)
+        public static IBrowsable[] CreateBrowsables(IEnumerable<BoboSegmentReader> readerList)
         {
-            BoboSubBrowser[] browsables = new BoboSubBrowser[readerList.Count];
-            for (int i = 0; i < readerList.Count; ++i)
+            BoboSubBrowser[] browsables = new BoboSubBrowser[readerList.Count()];
+            for (int i = 0; i < readerList.Count(); ++i)
             {
-                browsables[i] = new BoboSubBrowser(readerList[i]);
+                browsables[i] = new BoboSubBrowser(readerList.Get(i));
             }
             return browsables;
         }
