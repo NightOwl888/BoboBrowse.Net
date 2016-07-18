@@ -42,7 +42,7 @@ namespace BoboBrowse.Net.Facets.Impl
     public class CompactMultiValueFacetHandler : FacetHandler<IFacetDataCache>, IFacetScoreable
     {
         private const int MAX_VAL_COUNT = 32;
-        private readonly ITermListFactory _termListFactory;
+        private readonly TermListFactory _termListFactory;
         private readonly string _indexFieldName;
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <param name="indexFieldName">The name of the Lucene.Net index field this handler will utilize.</param>
         /// <param name="termListFactory">A <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance that will create a 
         /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
-        public CompactMultiValueFacetHandler(string name, string indexFieldName, ITermListFactory termListFactory)
+        public CompactMultiValueFacetHandler(string name, string indexFieldName, TermListFactory termListFactory)
             : base(name)
         {
             _indexFieldName = indexFieldName;
@@ -68,7 +68,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <param name="name">The facet handler name. Must be the same value as the Lucene.Net index field name.</param>
         /// <param name="termListFactory">A <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance that will create a 
         /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
-        public CompactMultiValueFacetHandler(string name, ITermListFactory termListFactory)
+        public CompactMultiValueFacetHandler(string name, TermListFactory termListFactory)
             : this(name, name, termListFactory)
         {
         }

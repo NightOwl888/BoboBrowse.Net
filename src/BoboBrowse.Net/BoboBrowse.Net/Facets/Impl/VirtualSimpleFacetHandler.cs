@@ -34,7 +34,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public VirtualSimpleFacetHandler(string name,
                                          string indexFieldName,
-                                         ITermListFactory termListFactory,
+                                         TermListFactory termListFactory,
                                          IFacetDataFetcher facetDataFetcher,
                                          IEnumerable<string> dependsOn)
             : base(name, null, termListFactory, dependsOn)
@@ -43,7 +43,7 @@ namespace BoboBrowse.Net.Facets.Impl
         }
 
         public VirtualSimpleFacetHandler(string name,
-                                   ITermListFactory termListFactory,
+                                   TermListFactory termListFactory,
                                    IFacetDataFetcher facetDataFetcher,
                                    IEnumerable<string> dependsOn)
             : this(name, null, termListFactory, facetDataFetcher, dependsOn)

@@ -49,7 +49,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <param name="termListFactory">A <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance that will create a 
         /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
         /// <param name="dependsOn">List of facets this one depends on for loading.</param>
-        public SimpleFacetHandler(string name, string indexFieldName, ITermListFactory termListFactory, IEnumerable<string> dependsOn)
+        public SimpleFacetHandler(string name, string indexFieldName, TermListFactory termListFactory, IEnumerable<string> dependsOn)
             : base(name, dependsOn)
         {
             _indexFieldName = indexFieldName;
@@ -64,7 +64,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <param name="termListFactory">A <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance that will create a 
         /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
         /// <param name="dependsOn">List of facets this one depends on for loading.</param>
-        public SimpleFacetHandler(string name, ITermListFactory termListFactory, IEnumerable<string> dependsOn)
+        public SimpleFacetHandler(string name, TermListFactory termListFactory, IEnumerable<string> dependsOn)
             : this(name, name, termListFactory, dependsOn)
         {
         }
@@ -77,7 +77,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <param name="indexFieldName">The name of the Lucene.Net index field this handler will utilize.</param>
         /// <param name="termListFactory">A <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance that will create a 
         /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
-        public SimpleFacetHandler(string name, string indexFieldName, ITermListFactory termListFactory)
+        public SimpleFacetHandler(string name, string indexFieldName, TermListFactory termListFactory)
             : this(name, indexFieldName, termListFactory, null)
         {
         }
@@ -89,7 +89,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <param name="name">The facet handler name. Must be the same value as the Lucene.Net index field name.</param>
         /// <param name="termListFactory">A <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance that will create a 
         /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
-        public SimpleFacetHandler(string name, ITermListFactory termListFactory)
+        public SimpleFacetHandler(string name, TermListFactory termListFactory)
             : this(name, name, termListFactory)
         {
         }

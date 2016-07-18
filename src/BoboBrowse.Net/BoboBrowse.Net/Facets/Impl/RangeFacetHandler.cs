@@ -53,7 +53,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <param name="predefinedRanges">A set of range strings denoting the beginning and ending of each range, e.g. "[2010/1/1 TO 2012/12/31], [2013/1/1 TO 2015/12/31]".
         /// Date and numeric types are supported. The range values are sorted in lexicographical order, so if you want them formatted a different way, you should provide them in
         /// a specific order. It is valid for the ranges to overlap.</param>
-        public RangeFacetHandler(string name, string indexFieldName, ITermListFactory termListFactory, IEnumerable<string> predefinedRanges)
+        public RangeFacetHandler(string name, string indexFieldName, TermListFactory termListFactory, IEnumerable<string> predefinedRanges)
             : base(name)
         {
             _indexFieldName = indexFieldName;
@@ -72,7 +72,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <param name="predefinedRanges">A set of range strings denoting the beginning and ending of each range, e.g. "[2010/1/1 TO 2012/12/31], [2013/1/1 TO 2015/12/31]".
         /// Date and numeric types are supported. The range values are sorted in lexicographical order, so if you want them formatted a different way, you should provide them in
         /// a specific order. It is valid for the ranges to overlap.</param>
-        public RangeFacetHandler(string name, ITermListFactory termListFactory, IEnumerable<string> predefinedRanges)
+        public RangeFacetHandler(string name, TermListFactory termListFactory, IEnumerable<string> predefinedRanges)
             : this(name, name, termListFactory, predefinedRanges)
         {
         }

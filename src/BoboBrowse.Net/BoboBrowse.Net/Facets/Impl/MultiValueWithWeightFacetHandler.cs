@@ -28,7 +28,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
     public class MultiValueWithWeightFacetHandler : MultiValueFacetHandler
     {
-        public MultiValueWithWeightFacetHandler(string name, string indexFieldName, ITermListFactory termListFactory)
+        public MultiValueWithWeightFacetHandler(string name, string indexFieldName, TermListFactory termListFactory)
             : base(name, indexFieldName, termListFactory, null, null)
         {
         }

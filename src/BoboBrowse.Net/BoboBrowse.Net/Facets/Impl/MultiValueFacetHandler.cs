@@ -58,7 +58,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
         /// <param name="sizePayloadTerm"></param>
         /// <param name="dependsOn">List of facets this one depends on for loading.</param>
-        public MultiValueFacetHandler(string name, string indexFieldName, ITermListFactory termListFactory, Term sizePayloadTerm, IEnumerable<string> dependsOn)
+        public MultiValueFacetHandler(string name, string indexFieldName, TermListFactory termListFactory, Term sizePayloadTerm, IEnumerable<string> dependsOn)
             : base(name, dependsOn)
         {
             _depends = dependsOn;
@@ -83,7 +83,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <param name="termListFactory">A <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance that will create a 
         /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
         /// <param name="sizePayloadTerm"></param>
-        public MultiValueFacetHandler(string name, string indexFieldName, ITermListFactory termListFactory, Term sizePayloadTerm)
+        public MultiValueFacetHandler(string name, string indexFieldName, TermListFactory termListFactory, Term sizePayloadTerm)
             : this(name, indexFieldName, termListFactory, sizePayloadTerm, null)
         {
         }
@@ -96,7 +96,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <param name="termListFactory">A <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance that will create a 
         /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
         /// <param name="sizePayloadTerm"></param>
-        public MultiValueFacetHandler(string name, ITermListFactory termListFactory, Term sizePayloadTerm)
+        public MultiValueFacetHandler(string name, TermListFactory termListFactory, Term sizePayloadTerm)
             : this(name, name, termListFactory, sizePayloadTerm, null)
         {
         }
@@ -109,7 +109,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <param name="indexFieldName">The name of the Lucene.Net index field this handler will utilize.</param>
         /// <param name="termListFactory">A <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance that will create a 
         /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
-        public MultiValueFacetHandler(string name, string indexFieldName, ITermListFactory termListFactory)
+        public MultiValueFacetHandler(string name, string indexFieldName, TermListFactory termListFactory)
             : this(name, indexFieldName, termListFactory, null, null)
         {
         }
@@ -122,7 +122,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <param name="name">The facet handler name. Must be the same value as the Lucene.Net index field name.</param>
         /// <param name="termListFactory">A <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance that will create a 
         /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
-        public MultiValueFacetHandler(string name, ITermListFactory termListFactory)
+        public MultiValueFacetHandler(string name, TermListFactory termListFactory)
             : this(name, name, termListFactory)
         {
         }
