@@ -17,20 +17,17 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Filter
 {
     using BoboBrowse.Net.DocIdSet;
     using Lucene.Net.Search;
-    using LuceneExt.Impl;
     using System;
     using System.Collections.Generic;
     using System.Linq;
 
     public class RandomAccessOrFilter : RandomAccessFilter
     {
-        //private static long serialVersionUID = 1L; // NOT USED
-
         protected readonly IEnumerable<RandomAccessFilter> _filters;
 
         public RandomAccessOrFilter(IEnumerable<RandomAccessFilter> filters)
@@ -100,9 +97,9 @@ namespace BoboBrowse.Net.Facets.Filter
                 return false;
             }
 
-            public override DocIdSetIterator Iterator()
+            public override DocIdSetIterator GetIterator()
             {
-                return orDocIdSet.Iterator();
+                return orDocIdSet.GetIterator();
             }
         }  
     }
