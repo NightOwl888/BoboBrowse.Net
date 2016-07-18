@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Filter
 {
     using BoboBrowse.Net.DocIdSet;
@@ -28,8 +28,6 @@ namespace BoboBrowse.Net.Facets.Filter
 
     public class MultiValueFacetFilter : RandomAccessFilter
     {
-        //private static long serialVersionUID = 1L; // NOT USED
-
         private readonly string _val;
         private readonly MultiDataCacheBuilder multiDataCacheBuilder;
 
@@ -108,10 +106,11 @@ namespace BoboBrowse.Net.Facets.Filter
                 _nestedArray = dataCache.NestedArray;
             }
 
-            public override DocIdSetIterator Iterator()
+            public override DocIdSetIterator GetIterator()
             {
                 return new MultiValueFacetDocIdSetIterator(_dataCache, _index);
             }
+
             public override bool Get(int docId)
             {
                 return _nestedArray.Contains(docId, _index);
