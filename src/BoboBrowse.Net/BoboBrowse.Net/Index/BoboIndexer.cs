@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Index
 {
     using BoboBrowse.Net.Index.Digest;
@@ -26,17 +26,19 @@ namespace BoboBrowse.Net.Index
     using Lucene.Net.Documents;
     using Lucene.Net.Index;
     using Lucene.Net.Store;
+    using Lucene.Net.Util;
 
     public class BoboIndexer
     {
-        private Directory _index;
-	    private DataDigester _digester;
+        private readonly Directory _index;
+	    private readonly DataDigester _digester;
 	    private IndexWriter _writer;	
 	    private Analyzer _analyzer;
 	
 	    private class MyDataHandler : DataDigester.IDataHandler
         {
-		    private IndexWriter _writer;
+		    private readonly IndexWriter _writer;
+
             public MyDataHandler(IndexWriter writer)
             {
                 _writer = writer;
@@ -49,7 +51,7 @@ namespace BoboBrowse.Net.Index
 
         public virtual Analyzer Analyzer
         {
-            get { return _analyzer == null ? new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_CURRENT) : _analyzer; }
+            get { return _analyzer == null ? new StandardAnalyzer(LuceneVersion.LUCENE_48) : _analyzer; }
             set { _analyzer = value; }
         }
 	
@@ -62,11 +64,12 @@ namespace BoboBrowse.Net.Index
 
 	    public virtual void Index() 
         {
-            using (_writer = new IndexWriter(_index, this.Analyzer, IndexWriter.MaxFieldLength.UNLIMITED))
+            IndexWriterConfig config = new IndexWriterConfig(LuceneVersion.LUCENE_48, Analyzer);
+            using (_writer = new IndexWriter(_index, config))
             {
                 MyDataHandler handler = new MyDataHandler(_writer);
                 _digester.Digest(handler);
-                _writer.Optimize();
+                _writer.ForceMerge(1);
             }
 	    }	
     }
