@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Util
 {
     using BoboBrowse.Net.Support;
@@ -77,16 +77,6 @@ namespace BoboBrowse.Net.Util
             while (true)
             {
                 if (bitset.FastGet(_array[docId >> SHIFT_SIZE][docId & MASK])) return docId;
-                if (docId++ >= maxId) break;
-            }
-            return DocIdSetIterator.NO_MORE_DOCS;
-        }
-
-        public override sealed int FindValues(BitVector bitset, int docId, int maxId)
-        {
-            while (true)
-            {
-                if (bitset.Get(_array[docId >> SHIFT_SIZE][docId & MASK])) return docId;
                 if (docId++ >= maxId) break;
             }
             return DocIdSetIterator.NO_MORE_DOCS;
