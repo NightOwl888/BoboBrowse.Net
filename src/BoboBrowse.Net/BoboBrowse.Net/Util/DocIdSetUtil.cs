@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Util
 {
     using Lucene.Net.Search;
@@ -32,7 +32,7 @@ namespace BoboBrowse.Net.Util
 
         public static string AsString(this DocIdSet docIdSet)
         {
-            DocIdSetIterator iter = docIdSet.Iterator();
+            DocIdSetIterator iter = docIdSet.GetIterator();
             StringBuilder buf = new StringBuilder();
             bool firstTime = true;
             buf.Append("[");
