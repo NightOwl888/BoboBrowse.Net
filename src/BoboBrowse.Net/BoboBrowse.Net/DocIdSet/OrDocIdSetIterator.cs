@@ -49,10 +49,11 @@ namespace BoboBrowse.Net.DocIdSet
             _size = 0;
             foreach (DocIdSet set in sets)
             {
-                // Note: EMPTY_DOCIDSET has been removed in Lucene 4.8, so made an
-                // iterator that can be used in its place.
+                // Note: EMPTY_DOCIDSET has been removed in Lucene 4.8, so using
+                // the built-in EmptyDocIdSet class.
+
                 //_heap[_size++] = new Item(set.GetIterator() == null ? DocIdSet.EMPTY_DOCIDSET.GetIterator() : set.GetIterator());
-                _heap[_size++] = new Item(set.GetIterator() == null ? new EmptyDocIdSetIterator() : set.GetIterator());
+                _heap[_size++] = new Item(set.GetIterator() == null ? EmptyDocIdSet.Instance.GetIterator() : set.GetIterator());
                 
             }
             if (_size == 0) _curDoc = DocIdSetIterator.NO_MORE_DOCS;

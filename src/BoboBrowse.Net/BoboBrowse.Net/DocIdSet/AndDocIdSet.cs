@@ -81,10 +81,10 @@ namespace BoboBrowse.Net.DocIdSet
                     {
                         DocIdSetIterator dcit = set.GetIterator();
 
-                        // Note: EMPTY_DOCIDSET has been removed in Lucene 4.8, so made an
-                        // iterator that can be used in its place.
+                        // Note: EMPTY_DOCIDSET has been removed in Lucene 4.8, so using
+                        // the built-in EmptyDocIdSet class.
                         //if (dcit == null) dcit = DocIdSet.EMPTY_DOCIDSET.GetIterator();
-                        if (dcit == null) dcit = new EmptyDocIdSetIterator();
+                        if (dcit == null) dcit = EmptyDocIdSet.Instance.GetIterator();
                         iterators[j++] = dcit;
                     }
                 }
