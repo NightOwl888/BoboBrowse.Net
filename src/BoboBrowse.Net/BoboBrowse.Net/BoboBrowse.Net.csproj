@@ -286,6 +286,8 @@
     <Compile Include="Sort\SortCollectorImpl.cs" />
     <Compile Include="Support\IEnumerableExtensions.cs" />
     <Compile Include="Support\Arrays.cs" />
+    <Compile Include="Support\Stub\QueryParser.cs" />
+    <Compile Include="Support\Stub\StandardAnalyzer.cs" />
     <Compile Include="Support\TimeUnit.cs" />
     <Compile Include="Util\BigByteArray.cs" />
     <Compile Include="Util\BigFloatArray.cs" />
