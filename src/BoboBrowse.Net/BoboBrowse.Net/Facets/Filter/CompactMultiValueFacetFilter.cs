@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Filter
 {
     using BoboBrowse.Net.DocIdSet;
@@ -27,8 +27,7 @@ namespace BoboBrowse.Net.Facets.Filter
 
     public class CompactMultiValueFacetFilter : RandomAccessFilter
     {
-        //private static long serialVersionUID = 1L; // NOT USED
-        private FacetHandler<FacetDataCache> _facetHandler;
+        private readonly FacetHandler<FacetDataCache> _facetHandler;
 
         private readonly string[] _vals;
 
@@ -117,6 +116,11 @@ namespace BoboBrowse.Net.Facets.Filter
                 }
                 return NextDoc();
             }
+
+            public override long Cost()
+            {
+                return 0;
+            }
         }
 
         public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboSegmentReader reader)
@@ -161,7 +165,7 @@ namespace BoboBrowse.Net.Facets.Filter
                 this.orderArray = orderArray;
             }
 
-            public override DocIdSetIterator Iterator()
+            public override DocIdSetIterator GetIterator()
             {
                 return new CompactMultiValueFacetDocIdSetIterator(this.dataCache, this.indexes, this.finalBits);
             }
