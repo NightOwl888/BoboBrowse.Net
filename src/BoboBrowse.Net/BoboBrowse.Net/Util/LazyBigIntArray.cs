@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Util
 {
     using BoboBrowse.Net.Support;
@@ -203,37 +203,6 @@ namespace BoboBrowse.Net.Util
                 else
                 {
                     if (bitset.FastGet(_array[i][id & MASK]))
-                        return id;
-                    else
-                        id++;
-                }
-            }
-            return DocIdSetIterator.NO_MORE_DOCS;
-        }
-
-        /// <summary>
-        /// (non-Javadoc)
-        /// see com.browseengine.bobo.util.BigSegmentedArray#findValues(org.apache.lucene.util.BitVector, int, int)
-        /// </summary>
-        /// <param name="bitset"></param>
-        /// <param name="id"></param>
-        /// <param name="maxId"></param>
-        /// <returns></returns>
-        public override int FindValues(BitVector bitset, int id, int maxId)
-        {
-            while (id <= maxId)
-            {
-                int i = id >> SHIFT_SIZE;
-                if (_array[i] == null)
-                {
-                    if (bitset.Get(_fillValue))
-                        return id;
-                    else
-                        id = (i + 1) << SHIFT_SIZE; // jump to next segment
-                }
-                else
-                {
-                    if (bitset.Get(_array[i][id & MASK]))
                         return id;
                     else
                         id++;
