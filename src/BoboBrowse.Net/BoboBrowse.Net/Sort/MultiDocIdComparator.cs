@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-﻿// Version compatibility level: 3.2.0
+﻿// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Sort
 {
     using Lucene.Net.Search;
@@ -57,8 +57,8 @@ namespace BoboBrowse.Net.Sort
 
         public class MultiDocIdComparable : IComparable
         {
-            private ScoreDoc _doc;
-            private DocComparator[] _comparators;
+            private readonly ScoreDoc _doc;
+            private readonly DocComparator[] _comparators;
 
             public MultiDocIdComparable(ScoreDoc doc, DocComparator[] comparators)
             {
