@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Data
 {
     using BoboBrowse.Net.Facets.Range;
@@ -64,7 +64,7 @@ namespace BoboBrowse.Net.Facets.Data
             return _nestedArray.GetNumItems(docid);
         } 
 
-        public override void Load(string fieldName, IndexReader reader, TermListFactory listFactory)
+        public override void Load(string fieldName, AtomicReader reader, TermListFactory listFactory)
         {
             this.Load(fieldName, reader, listFactory, new BoboSegmentReader.WorkArea());
         }
@@ -76,97 +76,61 @@ namespace BoboBrowse.Net.Facets.Data
         /// <param name="reader"></param>
         /// <param name="listFactory"></param>
         /// <param name="workArea"></param>
-        public virtual void Load(string fieldName, IndexReader reader, TermListFactory listFactory, BoboSegmentReader.WorkArea workArea)
+        public virtual void Load(string fieldName, AtomicReader reader, TermListFactory listFactory, BoboSegmentReader.WorkArea workArea)
         {
-            long t0 = Environment.TickCount;
+            string field = string.Intern(fieldName);
             int maxdoc = reader.MaxDoc;
             BigNestedIntArray.BufferedLoader loader = GetBufferedLoader(maxdoc, workArea);
 
-            TermEnum tenum = null;
-            TermDocs tdoc = null;
             ITermValueList list = (listFactory == null ? (ITermValueList)new TermStringList() : listFactory.CreateTermList());
             List<int> minIDList = new List<int>();
             List<int> maxIDList = new List<int>();
             List<int> freqList = new List<int>();
             OpenBitSet bitset = new OpenBitSet();
-            int negativeValueCount = GetNegativeValueCount(reader, string.Intern(fieldName));
-            int t = 0; // current term number
+            int negativeValueCount = GetNegativeValueCount(reader, field);
+            int t = 1; // valid term id starts from 1
             list.Add(null);
             minIDList.Add(-1);
             maxIDList.Add(-1);
             freqList.Add(0);
-            t++;
 
             _overflow = false;
-            try
-            {
-                tdoc = reader.TermDocs();
-                tenum = reader.Terms(new Term(fieldName, ""));
-                if (tenum != null)
+            Terms terms = reader.Terms(field);
+            if (terms != null) 
+            { 
+                TermsEnum termsEnum = terms.Iterator(null);
+                BytesRef text;
+                while ((text = termsEnum.Next()) != null)
                 {
-                    do
+                    string strText = text.Utf8ToString();
+                    list.Add(strText);
+
+                    Term term = new Term(field, strText);
+                    DocsEnum docsEnum = reader.TermDocsEnum(term);
+                    int df = 0;
+                    int minID = -1;
+                    int maxID = -1;
+                    int docID = -1;
+                    int valId = (t - 1 < negativeValueCount) ? (negativeValueCount - t + 1) : t;
+                    while ((docID = docsEnum.NextDoc()) != DocsEnum.NO_MORE_DOCS)
                     {
-                        Term term = tenum.Term;
-                        if (term == null || !fieldName.Equals(term.Field))
-                            break;
-
-                        string val = term.Text;
-
-                        if (val != null)
+                        df++;
+                        if (!loader.Add(docID, valId)) LogOverflow(fieldName);
+                        minID = docID;
+                        bitset.FastSet(docID);
+                        while (docsEnum.NextDoc() != DocsEnum.NO_MORE_DOCS)
                         {
-                            list.Add(val);
-
-                            tdoc.Seek(tenum);
-                            //freqList.add(tenum.docFreq()); // removed because the df doesn't take into account the num of deletedDocs
-                            int df = 0;
-                            int minID = -1;
-                            int maxID = -1;
-                            int valId = (t - 1 < negativeValueCount) ? (negativeValueCount - t + 1) : t;
-                            if (tdoc.Next())
-                            {
-                                df++;
-                                int docid = tdoc.Doc;
-
-                                if (!loader.Add(docid, valId))
-                                    LogOverflow(fieldName);
-                                minID = docid;
-                                bitset.Set(docid);
-                                while (tdoc.Next())
-                                {
-                                    df++;
-                                    docid = tdoc.Doc;
-
-                                    if (!loader.Add(docid, valId))
-                                        LogOverflow(fieldName);
-                                    bitset.Set(docid);
-                                }
-                                maxID = docid;
-                            }
-                            freqList.Add(df);
-                            minIDList.Add(minID);
-                            maxIDList.Add(maxID);
+                            docID = docsEnum.DocID();
+                            df++;
+                            if (!loader.Add(docID, valId)) LogOverflow(fieldName);
+                            bitset.FastSet(docID);
                         }
-
-                        t++;
+                        maxID = docID;
                     }
-                    while (tenum.Next());
-                }
-            }
-            finally
-            {
-                try
-                {
-                    if (tdoc != null)
-                    {
-                        tdoc.Dispose();
-                    }
-                }
-                finally
-                {
-                    if (tenum != null)
-                    {
-                        tenum.Dispose();
-                    }
+                    freqList.Add(df);
+                    minIDList.Add(minID);
+                    maxIDList.Add(maxID);
+                    t++;
                 }
             }
 
@@ -175,10 +139,6 @@ namespace BoboBrowse.Net.Facets.Data
             try
             {
                 _nestedArray.Load(maxdoc + 1, loader);
-            }
-            catch (System.IO.IOException e)
-            {
-                throw e;
             }
             catch (Exception e)
             {
@@ -191,24 +151,21 @@ namespace BoboBrowse.Net.Facets.Data
             this.maxIDs = maxIDList.ToArray();
 
             int doc = 0;
-            while (doc <= maxdoc && !_nestedArray.Contains(doc, 0, true))
+            while (doc < maxdoc && !_nestedArray.Contains(doc, 0, true))
             {
                 ++doc;
             }
-            if (doc <= maxdoc)
+            if (doc < maxdoc)
             {
                 this.minIDs[0] = doc;
-                doc = maxdoc;
-                while (doc > 0 && !_nestedArray.Contains(doc, 0, true))
+                doc = maxdoc - 1;
+                while (doc >= 0 && !_nestedArray.Contains(doc, 0, true))
                 {
                     --doc;
                 }
-                if (doc > 0)
-                {
-                    this.maxIDs[0] = doc;
-                }
+                this.maxIDs[0] = doc;
             }
-            this.freqs[0] = maxdoc + 1 - (int)bitset.Cardinality();
+            this.freqs[0] = maxdoc - (int)bitset.Cardinality();
         }
 
         /// <summary>
@@ -218,33 +175,28 @@ namespace BoboBrowse.Net.Facets.Data
         /// <param name="reader"></param>
         /// <param name="listFactory"></param>
         /// <param name="sizeTerm"></param>
-        public virtual void Load(string fieldName, IndexReader reader, TermListFactory listFactory, Term sizeTerm)
+        public virtual void Load(string fieldName, AtomicReader reader, TermListFactory listFactory, Term sizeTerm)
         {
+            string field = string.Intern(fieldName);
             int maxdoc = reader.MaxDoc;
             BigNestedIntArray.Loader loader = new AllocOnlyLoader(_maxItems, sizeTerm, reader);
-            int negativeValueCount = GetNegativeValueCount(reader, string.Intern(fieldName));
+            int negativeValueCount = GetNegativeValueCount(reader, field);
             try
             {
                 _nestedArray.Load(maxdoc + 1, loader);
-            }
-            catch (System.IO.IOException e)
-            {
-                throw e;
             }
             catch (Exception e)
             {
                 throw new RuntimeException("failed to load due to " + e.ToString(), e);
             }
 
-            TermEnum tenum = null;
-            TermDocs tdoc = null;
             ITermValueList list = (listFactory == null ? (ITermValueList)new TermStringList() : listFactory.CreateTermList());
             List<int> minIDList = new List<int>();
             List<int> maxIDList = new List<int>();
             List<int> freqList = new List<int>();
             OpenBitSet bitset = new OpenBitSet();
 
-            int t = 0; // current term number
+            int t = 1; // valid term id starts from 1
             list.Add(null);
             minIDList.Add(-1);
             maxIDList.Add(-1);
@@ -252,73 +204,44 @@ namespace BoboBrowse.Net.Facets.Data
             t++;
 
             _overflow = false;
-            try
+
+            Terms terms = reader.Terms(field);
+            if (terms != null)
             {
-                tdoc = reader.TermDocs();
-                tenum = reader.Terms(new Term(fieldName, ""));
-                if (tenum != null)
+                TermsEnum termsEnum = terms.Iterator(null);
+                BytesRef text;
+                while ((text = termsEnum.Next()) != null)
                 {
-                    do
+                    string strText = text.Utf8ToString();
+                    list.Add(strText);
+
+                    Term term = new Term(field, strText);
+                    DocsEnum docsEnum = reader.TermDocsEnum(term);
+
+                    int df = 0;
+                    int minID = -1;
+                    int maxID = -1;
+                    int docID = -1;
+                    while ((docID = docsEnum.NextDoc()) != DocsEnum.NO_MORE_DOCS)
                     {
-                        Term term = tenum.Term;
-                        if (term == null || !fieldName.Equals(term.Field))
-                            break;
-
-                        string val = term.Text;
-
-                        if (val != null)
+                        df++;
+                        if (!_nestedArray.AddData(docID, t)) LogOverflow(fieldName);
+                        minID = docID;
+                        bitset.FastSet(docID);
+                        int valId = (t - 1 < negativeValueCount) ? (negativeValueCount - t + 1) : t;
+                        while (docsEnum.NextDoc() != DocsEnum.NO_MORE_DOCS)
                         {
-                            list.Add(val);
-
-                            tdoc.Seek(tenum);
-                            //freqList.add(tenum.docFreq()); // removed because the df doesn't take into account the num of deletedDocs
-                            int df = 0;
-                            int minID = -1;
-                            int maxID = -1;
-                            if (tdoc.Next())
-                            {
-                                df++;
-                                int docid = tdoc.Doc;
-                                if (!_nestedArray.AddData(docid, t))
-                                    LogOverflow(fieldName);
-                                minID = docid;
-                                bitset.FastSet(docid);
-                                int valId = (t - 1 < negativeValueCount) ? (negativeValueCount - t + 1) : t;
-                                while (tdoc.Next())
-                                {
-                                    df++;
-                                    docid = tdoc.Doc;
-                                    if (!_nestedArray.AddData(docid, valId))
-                                        LogOverflow(fieldName);
-                                    bitset.FastSet(docid);
-                                }
-                                maxID = docid;
-                            }
-                            freqList.Add(df);
-                            minIDList.Add(minID);
-                            maxIDList.Add(maxID);
+                            docID = docsEnum.DocID();
+                            df++;
+                            if (!_nestedArray.AddData(docID, valId)) LogOverflow(fieldName);
+                            bitset.FastSet(docID);
                         }
-
-                        t++;
+                        maxID = docID;
                     }
-                    while (tenum.Next());
-                }
-            }
-            finally
-            {
-                try
-                {
-                    if (tdoc != null)
-                    {
-                        tdoc.Dispose();
-                    }
-                }
-                finally
-                {
-                    if (tenum != null)
-                    {
-                        tenum.Dispose();
-                    }
+                    freqList.Add(df);
+                    minIDList.Add(minID);
+                    maxIDList.Add(maxID);
+                    t++;
                 }
             }
 
@@ -330,24 +253,21 @@ namespace BoboBrowse.Net.Facets.Data
             this.maxIDs = maxIDList.ToArray();
 
             int doc = 0;
-            while (doc <= maxdoc && !_nestedArray.Contains(doc, 0, true))
+            while (doc < maxdoc && !_nestedArray.Contains(doc, 0, true))
             {
                 ++doc;
             }
-            if (doc <= maxdoc)
+            if (doc < maxdoc)
             {
                 this.minIDs[0] = doc;
-                doc = maxdoc;
-                while (doc > 0 && !_nestedArray.Contains(doc, 0, true))
+                doc = maxdoc - 1;
+                while (doc >= 0 && !_nestedArray.Contains(doc, 0, true))
                 {
                     --doc;
                 }
-                if (doc > 0)
-                {
-                    this.maxIDs[0] = doc;
-                }
+                this.maxIDs[0] = doc;
             }
-            this.freqs[0] = maxdoc + 1 - (int)bitset.Cardinality();
+            this.freqs[0] = maxdoc - (int)bitset.Cardinality();
         }
 
         protected virtual void LogOverflow(string fieldName)
@@ -398,11 +318,11 @@ namespace BoboBrowse.Net.Facets.Data
         /// </summary>
         public sealed class AllocOnlyLoader : BigNestedIntArray.Loader
         {
-            private IndexReader _reader;
-            private Term _sizeTerm;
-            private int _maxItems;
+            private readonly AtomicReader _reader;
+            private readonly Term _sizeTerm;
+            private readonly int _maxItems;
 
-            public AllocOnlyLoader(int maxItems, Term sizeTerm, IndexReader reader)
+            public AllocOnlyLoader(int maxItems, Term sizeTerm, AtomicReader reader)
             {
                 _maxItems = Math.Min(maxItems, BigNestedIntArray.MAX_ITEMS);
                 _sizeTerm = sizeTerm;
@@ -411,30 +331,20 @@ namespace BoboBrowse.Net.Facets.Data
 
             public override void Load()
             {
-                TermPositions tp = null;
-                byte[] payloadBuffer = new byte[4]; // four bytes for an int
-                try
+                DocsAndPositionsEnum docPosEnum = _reader.TermPositionsEnum(_sizeTerm);
+                if (docPosEnum == null)
                 {
-                    tp = _reader.TermPositions(_sizeTerm);
-
-                    if (tp == null)
-                        return;
-
-                    while (tp.Next())
-                    {
-                        if (tp.Freq > 0)
-                        {
-                            tp.NextPosition();
-                            tp.GetPayload(payloadBuffer, 0);
-                            int len = BytesToInt(payloadBuffer);
-                            Allocate(tp.Doc, Math.Min(len, _maxItems), true);
-                        }
-                    }
+                    return;
                 }
-                finally
+                int docID = -1;
+                while ((docID = docPosEnum.NextDoc()) != DocsEnum.NO_MORE_DOCS)
                 {
-                    if (tp != null)
-                        tp.Dispose();
+                    if (docPosEnum.Freq() > 0)
+                    {
+                        docPosEnum.NextPosition();
+                        int len = BytesToInt(docPosEnum.Payload.Bytes);
+                        Allocate(docID, Math.Min(len, _maxItems), true);
+                    }
                 }
             }
 
@@ -447,16 +357,16 @@ namespace BoboBrowse.Net.Facets.Data
 
     public sealed class MultiFacetDocComparatorSource : DocComparatorSource
     {
-        private MultiDataCacheBuilder cacheBuilder;
+        private readonly MultiDataCacheBuilder cacheBuilder;
         public MultiFacetDocComparatorSource(MultiDataCacheBuilder multiDataCacheBuilder)
         {
             cacheBuilder = multiDataCacheBuilder;
         }
 
-        public override DocComparator GetComparator(IndexReader reader, int docbase)
+        public override DocComparator GetComparator(AtomicReader reader, int docbase)
         {
-            if (!reader.GetType().Equals(typeof(BoboSegmentReader)))
-                throw new ArgumentException("reader must be instance of BoboIndexReader");
+            if (!(reader is BoboSegmentReader))
+                throw new ArgumentException("reader must be instance of " + typeof(BoboSegmentReader).Name);
             BoboSegmentReader boboReader = (BoboSegmentReader)reader;
             MultiValueFacetDataCache dataCache = (MultiValueFacetDataCache)cacheBuilder.Build(boboReader);
             return new MultiFacetDocComparator(dataCache);
