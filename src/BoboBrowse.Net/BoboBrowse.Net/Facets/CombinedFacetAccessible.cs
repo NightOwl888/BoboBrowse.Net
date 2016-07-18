@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets
 {
     using BoboBrowse.Net.Facets.Impl;
@@ -123,7 +123,7 @@ namespace BoboBrowse.Net.Facets
 
             int cnt = 0;
             string facet = null;
-            FacetIterator iter = (FacetIterator)this.GetIterator();
+            FacetIterator iter = this.GetIterator();
             IComparer<BrowseFacet> comparator;
             if (FacetSpec.FacetSortSpec.OrderValueAsc.Equals(_fspec.OrderBy))
             {
@@ -245,7 +245,6 @@ namespace BoboBrowse.Net.Facets
             public BrowseFacetPriorityQueue(int max, IComparer<BrowseFacet> comparator)
             {
                 this.comparator = comparator;
-                this.Initialize(max);
             }
 
             public override bool LessThan(BrowseFacet a, BrowseFacet b)
