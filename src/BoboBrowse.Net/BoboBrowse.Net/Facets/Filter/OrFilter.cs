@@ -17,19 +17,18 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Filter
 {
+    using BoboBrowse.Net.DocIdSet;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
-    using LuceneExt.Impl;
+    using Lucene.Net.Util;
     using System.Collections.Generic;
     using System.Linq;
 
     public class OrFilter : Filter
     {
-        //private static long serialVersionUID = 1L; // NOT USED
-
         private readonly IEnumerable<Filter> _filters;
 
         public OrFilter(IEnumerable<Filter> filters)
@@ -37,19 +36,19 @@ namespace BoboBrowse.Net.Facets.Filter
             _filters = filters;
         }
 
-        public override DocIdSet GetDocIdSet(IndexReader reader)
+        public override DocIdSet GetDocIdSet(AtomicReaderContext context, Bits acceptDocs)
         {
             var count = _filters.Count();
             if (count == 1)
             {
-                return _filters.ElementAt(0).GetDocIdSet(reader);
+                return _filters.ElementAt(0).GetDocIdSet(context, acceptDocs);
             }
             else
             {
                 List<DocIdSet> list = new List<DocIdSet>(count);
                 foreach (Filter f in _filters)
                 {
-                    list.Add(f.GetDocIdSet(reader));
+                    list.Add(f.GetDocIdSet(context, acceptDocs));
                 }
                 return new OrDocIdSet(list);
             }
