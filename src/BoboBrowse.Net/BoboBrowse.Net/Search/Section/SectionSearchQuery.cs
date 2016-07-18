@@ -50,9 +50,17 @@ namespace BoboBrowse.Net.Search.Section
                 get { return _parent; }
             }
 
-            public override float Value
+            public float Value
             {
                 get { return _parent.Boost; }
+            }
+
+            public override Explanation Explain(AtomicReaderContext context, int doc)
+            {
+                Explanation result = new Explanation();
+                result.Value = _parent.Boost;
+                result.Description = _parent.ToString();
+                return result;
             }
 
             // NOTE: The Weight.Scorer method lost the scoreDocsInOrder and topScorer parameters between
