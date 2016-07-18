@@ -69,7 +69,7 @@ namespace BoboBrowse.Net
             return _subReaders;
         }
 
-        public sealed int SubReaderBase(int readerIndex)
+        public int SubReaderBase(int readerIndex)
         {
             return ReaderBase(readerIndex);
         }
