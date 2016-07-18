@@ -287,7 +287,7 @@ namespace BoboBrowse.Net
             return _subBrowsers[i];
         }
 
-        public override Similarity Similarity
+        public virtual Similarity Similarity
         {
             set
             {
