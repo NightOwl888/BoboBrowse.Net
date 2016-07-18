@@ -60,8 +60,8 @@ namespace BoboBrowse.Net.Facets.Impl
             int nullFreq = 0;
             int doc = -1;
 
-            Bits liveDocs = reader.GetLiveDocs();
-            for (int i = 0; i < reader.maxDoc(); ++i)
+            Bits liveDocs = reader.LiveDocs;
+            for (int i = 0; i < reader.MaxDoc; ++i)
             {
                 if (liveDocs != null && !liveDocs.Get(i))
                 {
