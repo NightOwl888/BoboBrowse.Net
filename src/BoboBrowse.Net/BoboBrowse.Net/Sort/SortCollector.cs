@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 // EXCEPTION: MemoryCache
 namespace BoboBrowse.Net.Sort
 {
@@ -47,7 +47,7 @@ namespace BoboBrowse.Net.Sort
         //    private IDictionary<string, IRuntimeFacetHandler> _runtimeFacetMap;
         //    private IDictionary<string, object> _runtimeFacetDataMap;
 
-        //    public CollectorContext(BoboIndexReader reader, int @base, DocComparator comparator)
+        //    public CollectorContext(BoboSegmentReader reader, int @base, DocComparator comparator)
         //    {
         //        this.reader = reader;
         //        this.@base = @base;
@@ -102,42 +102,36 @@ namespace BoboBrowse.Net.Sort
         private static DocComparatorSource GetNonFacetComparatorSource(SortField sf)
         {
             string fieldname = sf.Field;
-            CultureInfo locale = sf.Locale;
-            if (locale != null)
-            {
-                return new DocComparatorSource.StringLocaleComparatorSource(fieldname, locale);
-            }
-
-            int type = sf.Type;
+            SortField.Type_e type = sf.Type;
 
             switch (type)
             {
-                case SortField.INT:
+                case SortField.Type_e.INT:
                     return new DocComparatorSource.IntDocComparatorSource(fieldname);
 
-                case SortField.FLOAT:
+                case SortField.Type_e.FLOAT:
                     return new DocComparatorSource.FloatDocComparatorSource(fieldname);
 
-                case SortField.LONG:
+                case SortField.Type_e.LONG:
                     return new DocComparatorSource.LongDocComparatorSource(fieldname);
 
-                case SortField.DOUBLE:
+                case SortField.Type_e.DOUBLE:
                     return new DocComparatorSource.LongDocComparatorSource(fieldname);
 
-                case SortField.BYTE:
+                case SortField.Type_e.BYTE:
                     return new DocComparatorSource.ByteDocComparatorSource(fieldname);
 
-                case SortField.SHORT:
+                case SortField.Type_e.SHORT:
                     return new DocComparatorSource.ShortDocComparatorSource(fieldname);
 
-                case SortField.CUSTOM:
-                    throw new InvalidOperationException("lucene custom sort no longer supported: " + fieldname);
-
-                case SortField.STRING:
+                case SortField.Type_e.STRING:
                     return new DocComparatorSource.StringOrdComparatorSource(fieldname);
 
-                case SortField.STRING_VAL:
+                case SortField.Type_e.STRING_VAL:
                     return new DocComparatorSource.StringValComparatorSource(fieldname);
+
+                case SortField.Type_e.CUSTOM:
+                    throw new InvalidOperationException("lucene custom sort no longer supported: " + fieldname);
 
                 default:
                     throw new InvalidOperationException("Illegal sort type: " + type + ", for field: " + fieldname);
@@ -151,7 +145,7 @@ namespace BoboBrowse.Net.Sort
             {
                 compSource = new DocComparatorSource.DocIdDocComparatorSource();
             }
-            else if (SortField.FIELD_SCORE.Equals(sf) || sf.Type == SortField.SCORE)
+            else if (SortField.FIELD_SCORE.Equals(sf) || sf.Type == SortField.Type_e.SCORE)
             {
                 // we want to do reverse sorting regardless for relevance
                 compSource = new ReverseDocComparatorSource(new DocComparatorSource.RelevanceDocComparatorSource());
@@ -206,27 +200,26 @@ namespace BoboBrowse.Net.Sort
         }
 
         public static SortCollector BuildSortCollector(IBrowsable browser, Query q, SortField[] sort,
-            int offset, int count, bool forceScoring, bool fetchStoredFields, IEnumerable<string> termVectorsToFetch,
+            int offset, int count, bool fetchStoredFields, IEnumerable<string> termVectorsToFetch,
             string[] groupBy, int maxPerGroup, bool collectDocIdCache)
         {
-            bool doScoring = forceScoring;
+            
             if (sort == null || sort.Length == 0)
             {
                 if (q != null && !(q is MatchAllDocsQuery))
                 {
                     sort = new SortField[] { SortField.FIELD_SCORE };
                 }
+                else
+                {
+                    sort = new SortField[] { SortField.FIELD_DOC };
+                }
             }
 
-            if (sort == null || sort.Length == 0)
-            {
-                sort = new SortField[] { SortField.FIELD_DOC };
-            }
-
-            IEnumerable<string> facetNames = browser.FacetNames;
+            bool doScoring = false;
             foreach (SortField sf in sort)
             {
-                if (sf.Type == SortField.SCORE)
+                if (sf.Type == SortField.Type_e.SCORE)
                 {
                     doScoring = true;
                     break;
@@ -248,7 +241,8 @@ namespace BoboBrowse.Net.Sort
                 }
                 compSource = new MultiDocIdComparatorSource(compSources);
             }
-            return new SortCollectorImpl(compSource, sort, browser, offset, count, doScoring, fetchStoredFields, termVectorsToFetch, groupBy, maxPerGroup, collectDocIdCache);
+            return new SortCollectorImpl(compSource, sort, browser, offset, count, doScoring, 
+                fetchStoredFields, termVectorsToFetch, groupBy, maxPerGroup, collectDocIdCache);
         }
 
         public virtual Collector Collector { get; set; }
