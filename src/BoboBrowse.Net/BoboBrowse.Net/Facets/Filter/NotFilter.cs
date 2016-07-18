@@ -17,17 +17,16 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Filter
 {
+    using BoboBrowse.Net.DocIdSet;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
-    using LuceneExt.Impl;
+    using Lucene.Net.Util;
 
     public class NotFilter : Filter
     {
-        //private static long serialVersionUID = 1L; // NOT USED
-
         private readonly Filter _innerFilter;
 
         public NotFilter(Filter innerFilter)
@@ -35,9 +34,9 @@ namespace BoboBrowse.Net.Facets.Filter
             _innerFilter = innerFilter;
         }
 
-        public override DocIdSet GetDocIdSet(IndexReader reader)
+        public override DocIdSet GetDocIdSet(AtomicReaderContext context, Bits acceptDocs)
         {
-            return new NotDocIdSet(_innerFilter.GetDocIdSet(reader), reader.MaxDoc);
+            return new NotDocIdSet(_innerFilter.GetDocIdSet(context, acceptDocs), context.Reader.MaxDoc);
         }
     }
 }
