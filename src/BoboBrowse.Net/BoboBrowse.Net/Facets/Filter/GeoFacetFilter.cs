@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Filter
 {
     using BoboBrowse.Net.DocIdSet;
@@ -30,13 +30,12 @@ namespace BoboBrowse.Net.Facets.Filter
     /// </summary>
     public class GeoFacetFilter : RandomAccessFilter
     {
-        //private static long serialVersionUID = 1L; // NOT USED
 	    private readonly FacetHandler<GeoFacetHandler.GeoFacetData> _handler;
 	    private readonly float _lat;
 	    private readonly float _lon;
         private readonly float _rad;
         // variable to specify if the geo distance calculations are in miles. Default is miles
-        private bool _miles;
+        private readonly bool _miles;
 
         /// <summary>
         /// 
@@ -76,7 +75,7 @@ namespace BoboBrowse.Net.Facets.Filter
             private readonly float _delta;
 		    private readonly int _maxDoc;
 	        // variable to specify if the geo distance calculations are in miles. Default is miles
-	        private bool _miles;
+	        private readonly bool _miles;
 
             /// <summary>
             /// Constructor
@@ -121,7 +120,7 @@ namespace BoboBrowse.Net.Facets.Filter
                 return InCircle(docX, docY, docZ, _targetX, _targetY, _targetZ, _radius);
             }
 
-            public override DocIdSetIterator Iterator()
+            public override DocIdSetIterator GetIterator()
             {
                 return new GeoDocIdSetIterator(_xvals, _yvals, _zvals, _targetX, _targetY, _targetZ, _delta, _radius, _maxDoc);
             }
@@ -173,10 +172,8 @@ namespace BoboBrowse.Net.Facets.Filter
                 float zl = z - _delta;
 
                 int docid = _doc;
-                while (docid < _maxDoc)
+                while (++docid < _maxDoc)
                 {
-                    docid++;
-
                     float docX = _xvals.Get(docid);
                     if (docX > xu || docX < xl) continue;
 
@@ -199,7 +196,9 @@ namespace BoboBrowse.Net.Facets.Filter
             public sealed override int Advance(int targetId)
             {
                 if (_doc < targetId)
+                {
                     _doc = targetId - 1;
+                }
 
                 float x = _targetX;
                 float xu = x + _delta;
@@ -212,10 +211,8 @@ namespace BoboBrowse.Net.Facets.Filter
                 float zl = z - _delta;
 
                 int docid = _doc;
-                while (docid < _maxDoc)
+                while (++docid < _maxDoc)
                 {
-                    docid++;
-
                     float docX = _xvals.Get(docid);
                     if (docX > xu || docX < xl) continue;
 
@@ -233,6 +230,11 @@ namespace BoboBrowse.Net.Facets.Filter
                 }
                 _doc = DocIdSetIterator.NO_MORE_DOCS;
                 return _doc;
+            }
+
+            public override long Cost()
+            {
+                return 0;
             }
         }
 
