@@ -17,14 +17,14 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Index.Digest
 {
     using System.Text;
 
     public abstract class FileDigester : DataDigester
     {
-        private string _file;
+        private readonly string _file;
 
         public FileDigester(string file)
         {
