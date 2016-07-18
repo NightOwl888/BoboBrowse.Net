@@ -273,7 +273,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// This function returns an Iterator to visit the facets in value order
         /// </summary>
         /// <returns>The Iterator to iterate over the facets in value order</returns>
-        public virtual FacetIterator Iterator()
+        public virtual FacetIterator GetIterator()
         {
             if (_closed)
             {

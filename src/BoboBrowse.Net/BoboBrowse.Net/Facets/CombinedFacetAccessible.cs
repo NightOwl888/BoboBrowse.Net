@@ -123,7 +123,7 @@ namespace BoboBrowse.Net.Facets
 
             int cnt = 0;
             string facet = null;
-            FacetIterator iter = (FacetIterator)this.Iterator();
+            FacetIterator iter = (FacetIterator)this.GetIterator();
             IComparer<BrowseFacet> comparator;
             if (FacetSpec.FacetSortSpec.OrderValueAsc.Equals(_fspec.OrderBy))
             {
@@ -285,7 +285,7 @@ namespace BoboBrowse.Net.Facets
             }
         }
 
-        public virtual FacetIterator Iterator()
+        public virtual FacetIterator GetIterator()
         {
             if (_closed)
             {
@@ -296,7 +296,7 @@ namespace BoboBrowse.Net.Facets
             FacetIterator iter;
             foreach (IFacetAccessible facetAccessor in _list)
             {
-                iter = (FacetIterator)facetAccessor.Iterator();
+                iter = (FacetIterator)facetAccessor.GetIterator();
                 if (iter != null)
                     iterList.Add(iter);
             }
@@ -305,7 +305,7 @@ namespace BoboBrowse.Net.Facets
                 List<IntFacetIterator> il = new List<IntFacetIterator>();
                 foreach (IFacetAccessible facetAccessor in _list)
                 {
-                    iter = (FacetIterator)facetAccessor.Iterator();
+                    iter = (FacetIterator)facetAccessor.GetIterator();
                     if (iter != null)
                         il.Add((IntFacetIterator)iter);
                 }
@@ -316,7 +316,7 @@ namespace BoboBrowse.Net.Facets
                 List<LongFacetIterator> il = new List<LongFacetIterator>();
                 foreach (IFacetAccessible facetAccessor in _list)
                 {
-                    iter = (FacetIterator)facetAccessor.Iterator();
+                    iter = (FacetIterator)facetAccessor.GetIterator();
                     if (iter != null)
                         il.Add((LongFacetIterator)iter);
                 }
@@ -327,7 +327,7 @@ namespace BoboBrowse.Net.Facets
                 List<ShortFacetIterator> il = new List<ShortFacetIterator>();
                 foreach (IFacetAccessible facetAccessor in _list)
                 {
-                    iter = (FacetIterator)facetAccessor.Iterator();
+                    iter = (FacetIterator)facetAccessor.GetIterator();
                     if (iter != null)
                         il.Add((ShortFacetIterator)iter);
                 }
@@ -338,7 +338,7 @@ namespace BoboBrowse.Net.Facets
                 List<FloatFacetIterator> il = new List<FloatFacetIterator>();
                 foreach (IFacetAccessible facetAccessor in _list)
                 {
-                    iter = (FacetIterator)facetAccessor.Iterator();
+                    iter = (FacetIterator)facetAccessor.GetIterator();
                     if (iter != null)
                         il.Add((FloatFacetIterator)iter);
                 }
@@ -349,7 +349,7 @@ namespace BoboBrowse.Net.Facets
                 List<DoubleFacetIterator> il = new List<DoubleFacetIterator>();
                 foreach (IFacetAccessible facetAccessor in _list)
                 {
-                    iter = (FacetIterator)facetAccessor.Iterator();
+                    iter = (FacetIterator)facetAccessor.GetIterator();
                     if (iter != null)
                         il.Add((DoubleFacetIterator)iter);
                 }

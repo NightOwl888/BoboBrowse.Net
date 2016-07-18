@@ -73,7 +73,7 @@ namespace BoboBrowse.Net.Util
         /// instance of some class that provides a guarantee).
         /// </summary>
         /// <returns></returns>
-        public IntIterator Iterator()
+        public IntIterator GetIterator()
         {
             return new IntIterator(this);
         }

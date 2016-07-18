@@ -347,7 +347,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 }
             }
 
-            public virtual FacetIterator Iterator()
+            public virtual FacetIterator GetIterator()
             {
                 if (!_isAggregated) Aggregate();
                 return new HistogramFacetIterator(_count, NUMBER_FORMAT);

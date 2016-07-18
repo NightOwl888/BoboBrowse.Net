@@ -43,7 +43,7 @@ namespace BoboBrowse.Net.Facets.Impl
             /// Added in .NET version as an accessor to the _iterator field.
             /// </summary>
             /// <returns></returns>
-            public virtual LongFacetIterator Iterator()
+            public virtual LongFacetIterator GetIterator()
             {
                 return _iterator;
             }

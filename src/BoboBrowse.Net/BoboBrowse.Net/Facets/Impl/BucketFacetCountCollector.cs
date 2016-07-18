@@ -173,7 +173,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public virtual FacetIterator Iterator()
+        public virtual FacetIterator GetIterator()
         {
             BigSegmentedArray counts = GetCollapsedCounts();
             return new DefaultFacetIterator(_bucketValues, counts, counts.Size(), true);

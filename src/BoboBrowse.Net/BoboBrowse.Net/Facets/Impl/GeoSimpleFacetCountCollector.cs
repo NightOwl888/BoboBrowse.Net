@@ -255,7 +255,7 @@ namespace BoboBrowse.Net.Facets.Impl
         public virtual void Dispose()
         { }
 
-        public virtual FacetIterator Iterator()
+        public virtual FacetIterator GetIterator()
         {
             // each range is of the form <lat, lon, radius>
             LazyBigIntArray rangeCounts = new LazyBigIntArray(_latPredefinedRangeIndexes.Length);

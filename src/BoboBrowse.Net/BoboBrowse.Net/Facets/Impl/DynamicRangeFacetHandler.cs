@@ -172,9 +172,9 @@ namespace BoboBrowse.Net.Facets.Impl
                 return retList;
             }
 
-            public override FacetIterator Iterator()
+            public override FacetIterator GetIterator()
             {
-                FacetIterator iter = base.Iterator();
+                FacetIterator iter = base.GetIterator();
 
                 List<BrowseFacet> facets = new List<BrowseFacet>();
                 while (iter.HasNext())

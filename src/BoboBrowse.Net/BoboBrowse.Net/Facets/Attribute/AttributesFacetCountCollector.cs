@@ -121,7 +121,7 @@ namespace BoboBrowse.Net.Facets.Attribute
             return editable;
         }
 
-        public override FacetIterator Iterator()
+        public override FacetIterator GetIterator()
         {
             return new AttributesFacetIterator(GetFacets());
         }

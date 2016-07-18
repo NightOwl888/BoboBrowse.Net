@@ -514,10 +514,10 @@ namespace BoboBrowse.Net.Facets.Impl
                 _aggregated = true;
             }
 
-            public override FacetIterator Iterator()
+            public override FacetIterator GetIterator()
             {
                 if (!_aggregated) AggregateCounts();
-                return base.Iterator();
+                return base.GetIterator();
             }
         }
     }

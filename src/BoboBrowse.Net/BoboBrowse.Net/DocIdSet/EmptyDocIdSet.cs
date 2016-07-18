@@ -60,16 +60,10 @@ namespace BoboBrowse.Net.DocIdSet
             get { return SINGLETON; }
         }
 
-        // TODO: Submit pull request to Lucene to fix this name
         public override DocIdSetIterator GetIterator()
         {
             return SINGLETON_ITERATOR;
         }
-
-        //public override DocIdSetIterator Iterator()
-        //{
-        //    return SINGLETON_ITERATOR;
-        //}
 
         public override bool Get(int docId)
         {

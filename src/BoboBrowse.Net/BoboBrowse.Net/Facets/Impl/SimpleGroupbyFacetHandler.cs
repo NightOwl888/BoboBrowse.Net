@@ -493,7 +493,7 @@ namespace BoboBrowse.Net.Facets.Impl
             {
             }
 
-            public virtual FacetIterator Iterator()
+            public virtual FacetIterator GetIterator()
             {
                 return new GroupByFacetIterator(this);
             }

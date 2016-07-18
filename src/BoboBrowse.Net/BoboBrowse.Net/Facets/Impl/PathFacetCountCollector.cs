@@ -438,7 +438,7 @@ namespace BoboBrowse.Net.Facets.Impl
         public virtual void Dispose()
         { }
 
-        public virtual FacetIterator Iterator()
+        public virtual FacetIterator GetIterator()
         {
             IDictionary<string, string> props = _sel == null ? null : _sel.SelectionProperties;
             int depth = PathFacetHandler.GetDepth(props);

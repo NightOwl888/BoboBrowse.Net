@@ -65,7 +65,7 @@ namespace BoboBrowse.Net
         public virtual void Dispose()
         { }
 
-        public virtual FacetIterator Iterator()
+        public virtual FacetIterator GetIterator()
         {
             return new PathFacetIterator(_facets);
         }
