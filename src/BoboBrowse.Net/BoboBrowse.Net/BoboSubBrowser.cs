@@ -317,7 +317,7 @@ namespace BoboBrowse.Net
                 try
                 {
                     var query = req.Query;
-                    weight = CreateNormalizedWeight(query);
+                    Weight weight = CreateNormalizedWeight(query);
                     Search(weight, finalFilter, collector, start, req.MapReduceWrapper);
                 }
                 finally
@@ -440,24 +440,46 @@ namespace BoboBrowse.Net
             }
         }
 
-        // Analagous to the DoClose() method in Java
-        protected override void Dispose(bool disposing)
+        public void DoClose()
         {
-            if (disposing)
+            // TODO: Work out what to do here - dispose or DoClose...
+            if (_runtimeFacetHandlers != null)
             {
-                if (_runtimeFacetHandlers != null)
+                foreach (var handler in _runtimeFacetHandlers)
                 {
-                    foreach (var handler in _runtimeFacetHandlers)
-                    {
-                        handler.Dispose();
-                    }
-                }
-                if (_reader != null)
-                {
-                    _reader.ClearRuntimeFacetData();
-                    _reader.ClearRuntimeFacetHandler();
+                    handler.Dispose();
                 }
             }
+            if (_reader != null)
+            {
+                _reader.ClearRuntimeFacetData();
+                _reader.ClearRuntimeFacetHandler();
+            }
         }
+
+        public void Dispose()
+        {
+
+        }
+
+        //// Analagous to the DoClose() method in Java
+        //protected override void Dispose(bool disposing)
+        //{
+        //    if (disposing)
+        //    {
+        //        if (_runtimeFacetHandlers != null)
+        //        {
+        //            foreach (var handler in _runtimeFacetHandlers)
+        //            {
+        //                handler.Dispose();
+        //            }
+        //        }
+        //        if (_reader != null)
+        //        {
+        //            _reader.ClearRuntimeFacetData();
+        //            _reader.ClearRuntimeFacetHandler();
+        //        }
+        //    }
+        //}
     }
 }
