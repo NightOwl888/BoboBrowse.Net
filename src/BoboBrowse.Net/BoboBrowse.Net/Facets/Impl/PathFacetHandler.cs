@@ -145,7 +145,7 @@ namespace BoboBrowse.Net.Facets.Impl
             if (dataCache == null) return new string[0];
             if (_multiValue)
             {
-                return ((IMultiValueFacetDataCache)dataCache).NestedArray.GetTranslatedData(id, dataCache.ValArray);
+                return ((MultiValueFacetDataCache)dataCache).NestedArray.GetTranslatedData(id, dataCache.ValArray);
             }
             else
             {
@@ -360,7 +360,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
             else
             {
-                IMultiValueFacetDataCache dataCache = new MultiValueFacetDataCache();
+                MultiValueFacetDataCache dataCache = new MultiValueFacetDataCache();
                 dataCache.Load(_indexedName, reader, _termListFactory);
                 return dataCache;
             }

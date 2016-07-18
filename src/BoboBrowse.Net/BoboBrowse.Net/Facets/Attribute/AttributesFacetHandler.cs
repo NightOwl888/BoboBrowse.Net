@@ -125,7 +125,7 @@ namespace BoboBrowse.Net.Facets.Attribute
                 {
                     facetsPerKey = int.Parse(_ospec.Properties.Get(MAX_FACETS_PER_KEY_PROP_NAME));
                 }
-                IMultiValueFacetDataCache dataCache = (IMultiValueFacetDataCache)reader.GetFacetData(_parent.Name);
+                MultiValueFacetDataCache dataCache = (MultiValueFacetDataCache)reader.GetFacetData(_parent.Name);
                 return new AttributesFacetCountCollector(_parent, _parent.Name, dataCache, docBase, _browseSelection, _ospec, facetsPerKey, _parent.GetSeparator(_browseSelection));
             }
         }

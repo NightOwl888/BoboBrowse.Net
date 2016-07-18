@@ -34,11 +34,11 @@ namespace BoboBrowse.Net.Facets.Attribute
         private IEnumerable<BrowseFacet> cachedFacets;
         private readonly int numFacetsPerKey;
         private readonly char separator;
-        private readonly IMultiValueFacetDataCache dataCache;
+        private readonly MultiValueFacetDataCache dataCache;
         private string[] values;
 
         public AttributesFacetCountCollector(AttributesFacetHandler attributesFacetHandler, string name, 
-            IMultiValueFacetDataCache dataCache, int docBase, BrowseSelection browseSelection, 
+            MultiValueFacetDataCache dataCache, int docBase, BrowseSelection browseSelection, 
             FacetSpec ospec, int numFacetsPerKey, char separator)
             : base(name, dataCache, docBase, browseSelection, ospec)
         {

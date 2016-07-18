@@ -38,7 +38,7 @@ namespace BoboBrowse.Net.Facets.Impl
     /// When being indexed, this field can be tokenized. Or alternatively, one can index multiple 
     /// values in multiple document fields under the same field name.
     /// </summary>
-    public class MultiValueFacetHandler : FacetHandler<IMultiValueFacetDataCache>, IFacetScoreable
+    public class MultiValueFacetHandler : FacetHandler<MultiValueFacetDataCache>, IFacetScoreable
     {
         protected readonly TermListFactory _termListFactory;
         protected readonly string _indexFieldName;
@@ -69,7 +69,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override int GetNumItems(BoboSegmentReader reader, int id)
         {
-            IMultiValueFacetDataCache data = GetFacetData<IMultiValueFacetDataCache>(reader);
+            MultiValueFacetDataCache data = GetFacetData<MultiValueFacetDataCache>(reader);
 	        if (data==null) return 0;
 	        return data.GetNumItems(id);
         }
@@ -171,7 +171,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override string[] GetFieldValues(BoboSegmentReader reader, int id)
         {
-            IMultiValueFacetDataCache dataCache = GetFacetData<IMultiValueFacetDataCache>(reader);
+            MultiValueFacetDataCache dataCache = GetFacetData<MultiValueFacetDataCache>(reader);
             if (dataCache != null)
             {
                 return dataCache.NestedArray.GetTranslatedData(id, dataCache.ValArray);
@@ -181,7 +181,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override object[] GetRawFieldValues(BoboSegmentReader reader, int id)
         {
-            IMultiValueFacetDataCache dataCache = GetFacetData<IMultiValueFacetDataCache>(reader);
+            MultiValueFacetDataCache dataCache = GetFacetData<MultiValueFacetDataCache>(reader);
             if (dataCache != null)
             {
                 return dataCache.NestedArray.GetRawData(id, dataCache.ValArray);
@@ -211,12 +211,12 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase)
             {
-                IMultiValueFacetDataCache dataCache = _parent.GetFacetData<IMultiValueFacetDataCache>(reader);
+                MultiValueFacetDataCache dataCache = _parent.GetFacetData<MultiValueFacetDataCache>(reader);
                 return new MultiValueFacetCountCollector(_name, dataCache, docBase, _sel, _ospec);
             }
         }
 
-        public override IMultiValueFacetDataCache Load(BoboSegmentReader reader)
+        public override MultiValueFacetDataCache Load(BoboSegmentReader reader)
         {
             return Load(reader, new BoboSegmentReader.WorkArea());
         }
@@ -301,17 +301,17 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public virtual BoboDocScorer GetDocScorer(BoboSegmentReader reader, IFacetTermScoringFunctionFactory scoringFunctionFactory, IDictionary<string, float> boostMap)
         {
-            IMultiValueFacetDataCache dataCache = GetFacetData<IMultiValueFacetDataCache>(reader);
+            MultiValueFacetDataCache dataCache = GetFacetData<MultiValueFacetDataCache>(reader);
             float[] boostList = BoboDocScorer.BuildBoostList(dataCache.ValArray, boostMap);
             return new MultiValueDocScorer(dataCache, scoringFunctionFactory, boostList);
         }
 
         public sealed class MultiValueDocScorer : BoboDocScorer
         {
-            private readonly IMultiValueFacetDataCache _dataCache;
+            private readonly MultiValueFacetDataCache _dataCache;
             private readonly BigNestedIntArray _array;
 
-            public MultiValueDocScorer(IMultiValueFacetDataCache dataCache, IFacetTermScoringFunctionFactory scoreFunctionFactory, float[] boostList)
+            public MultiValueDocScorer(MultiValueFacetDataCache dataCache, IFacetTermScoringFunctionFactory scoreFunctionFactory, float[] boostList)
                 : base(scoreFunctionFactory.GetFacetTermScoringFunction(dataCache.ValArray.Count, dataCache.NestedArray.Size), boostList)
             {
                 _dataCache = dataCache;
