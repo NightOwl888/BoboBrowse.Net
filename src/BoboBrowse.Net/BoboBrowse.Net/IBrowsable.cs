@@ -100,7 +100,7 @@ namespace BoboBrowse.Net
         /// <returns>The total number of documents.</returns>
         int NumDocs { get; }
 
-        void DoClose(); // TODO: Should this be IDisposable?
+        //void DoClose(); // TODO: Should this be IDisposable?
 
         SortCollector GetSortCollector(SortField[] sort, Lucene.Net.Search.Query q, int offset, int count, 
             bool fetchStoredFields, IEnumerable<string> termVectorsToFetch, string[] groupBy, int maxPerGroup, 
