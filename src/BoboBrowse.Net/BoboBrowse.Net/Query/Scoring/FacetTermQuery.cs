@@ -214,7 +214,7 @@ namespace BoboBrowse.Net.Query.Scoring
 
             private DocIdSetIterator BuildIterator(RandomAccessDocIdSet docset, BoboSegmentReader reader, Bits acceptDocs)
             {
-                return new FacetTermQueryDocIdSetIterator(docset, td);
+                return new FacetTermQueryDocIdSetIterator(docset, reader, acceptDocs);
             }
 
             private class FacetTermQueryDocIdSetIterator : DocIdSetIterator
