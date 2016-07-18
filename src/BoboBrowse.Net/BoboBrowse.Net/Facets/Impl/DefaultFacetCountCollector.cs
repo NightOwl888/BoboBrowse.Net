@@ -33,7 +33,7 @@ namespace BoboBrowse.Net.Facets.Impl
         protected BigSegmentedArray _count;
 
         protected int _countlength;
-        protected readonly IFacetDataCache _dataCache;
+        protected readonly FacetDataCache _dataCache;
         private readonly string _name;
         protected readonly BrowseSelection _sel;
         protected readonly BigSegmentedArray _array;
@@ -41,7 +41,7 @@ namespace BoboBrowse.Net.Facets.Impl
         //protected readonly List<BigSegmentedArray> intarraylist = new List<BigSegmentedArray>();
         private bool _closed = false;
 
-        public DefaultFacetCountCollector(string name, IFacetDataCache dataCache, int docBase, BrowseSelection sel, FacetSpec ospec)
+        public DefaultFacetCountCollector(string name, FacetDataCache dataCache, int docBase, BrowseSelection sel, FacetSpec ospec)
         {
             _sel = sel;
             _ospec = ospec;

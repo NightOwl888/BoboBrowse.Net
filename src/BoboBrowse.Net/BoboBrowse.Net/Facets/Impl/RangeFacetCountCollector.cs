@@ -34,12 +34,12 @@ namespace BoboBrowse.Net.Facets.Impl
         protected BigSegmentedArray _count;
         private int _countLength;
         private readonly BigSegmentedArray _array;
-        protected IFacetDataCache _dataCache;
+        protected FacetDataCache _dataCache;
         private readonly string _name;
         private readonly TermStringList _predefinedRanges;
         private int[][] _predefinedRangeIndexes;
 
-        public RangeFacetCountCollector(string name, IFacetDataCache dataCache, int docBase, FacetSpec ospec, IEnumerable<string> predefinedRanges)
+        public RangeFacetCountCollector(string name, FacetDataCache dataCache, int docBase, FacetSpec ospec, IEnumerable<string> predefinedRanges)
         {
             _name = name;
             _dataCache = dataCache;

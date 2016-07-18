@@ -25,7 +25,7 @@ namespace BoboBrowse.Net.Facets.Impl
     public abstract class GroupByFacetCountCollector : DefaultFacetCountCollector
     {
         public GroupByFacetCountCollector(string name,
-                                    IFacetDataCache dataCache,
+                                    FacetDataCache dataCache,
                                     int docBase,
                                     BrowseSelection sel,
                                     FacetSpec ospec)

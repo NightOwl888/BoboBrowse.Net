@@ -39,7 +39,7 @@ namespace BoboBrowse.Net.Facets.Impl
     /// Same as <see cref="T:MultiValueFacetHandler"/>, multiple values are allowed, but the total possible values are limited to 32. 
     /// This is more efficient than <see cref="T:MultiValueFacetHandler"/> and has a smaller memory footprint.
     /// </summary>
-    public class CompactMultiValueFacetHandler : FacetHandler<IFacetDataCache>, IFacetScoreable
+    public class CompactMultiValueFacetHandler : FacetHandler<FacetDataCache>, IFacetScoreable
     {
         private const int MAX_VAL_COUNT = 32;
         private readonly TermListFactory _termListFactory;
@@ -156,7 +156,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override int GetNumItems(BoboSegmentReader reader, int id)
         {
-            IFacetDataCache dataCache = GetFacetData<IFacetDataCache>(reader);
+            FacetDataCache dataCache = GetFacetData<FacetDataCache>(reader);
             if (dataCache == null) return 0;
             int encoded = dataCache.OrderArray.Get(id);
             return CountBits(encoded);
@@ -164,7 +164,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override string[] GetFieldValues(BoboSegmentReader reader, int id)
         {
-            IFacetDataCache dataCache = GetFacetData<IFacetDataCache>(reader);
+            FacetDataCache dataCache = GetFacetData<FacetDataCache>(reader);
             if (dataCache == null) return new string[0];
             int encoded = dataCache.OrderArray.Get(id);
             if (encoded == 0)
@@ -191,7 +191,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override object[] GetRawFieldValues(BoboSegmentReader reader, int id)
         {
-            IFacetDataCache dataCache = GetFacetData<IFacetDataCache>(reader);
+            FacetDataCache dataCache = GetFacetData<FacetDataCache>(reader);
             if (dataCache == null) return new string[0];
             int encoded = dataCache.OrderArray.Get(id);
             if (encoded == 0)
@@ -228,7 +228,7 @@ namespace BoboBrowse.Net.Facets.Impl
             private readonly BrowseSelection _sel;
             private readonly FacetSpec _ospec;
 
-            public CompactMultiValueFacetCountCollectorSource(Func<BoboSegmentReader, IFacetDataCache> getFacetData, string name, BrowseSelection sel, FacetSpec ospec)
+            public CompactMultiValueFacetCountCollectorSource(Func<BoboSegmentReader, FacetDataCache> getFacetData, string name, BrowseSelection sel, FacetSpec ospec)
             {
                 this.getFacetData = getFacetData;
                 _name = name;
@@ -238,7 +238,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase)
             {
-                IFacetDataCache dataCache = getFacetData(reader);
+                FacetDataCache dataCache = getFacetData(reader);
                 return new CompactMultiValueFacetCountCollector(_name, _sel, dataCache, docBase, _ospec);
             }
         }
@@ -323,7 +323,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 if (!(reader is BoboSegmentReader))
                     throw new InvalidOperationException("reader must be instance of BoboSegmentReader");
                 var boboReader = (BoboSegmentReader)reader;
-                IFacetDataCache dataCache = _facetHandler.GetFacetData<IFacetDataCache>(boboReader);
+                FacetDataCache dataCache = _facetHandler.GetFacetData<FacetDataCache>(boboReader);
                 return new CompactMultiValueDocComparator(dataCache, _facetHandler, boboReader);
             }
 
@@ -356,15 +356,15 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public virtual BoboDocScorer GetDocScorer(BoboSegmentReader reader, IFacetTermScoringFunctionFactory scoringFunctionFactory, IDictionary<string, float> boostMap)
         {
-            IFacetDataCache dataCache = GetFacetData<IFacetDataCache>(reader);
+            FacetDataCache dataCache = GetFacetData<FacetDataCache>(reader);
             float[] boostList = BoboDocScorer.BuildBoostList(dataCache.ValArray, boostMap);
             return new CompactMultiValueDocScorer(dataCache, scoringFunctionFactory, boostList);
         }
 
         private sealed class CompactMultiValueDocScorer : BoboDocScorer
         {
-            private readonly IFacetDataCache _dataCache;
-            internal CompactMultiValueDocScorer(IFacetDataCache dataCache, IFacetTermScoringFunctionFactory scoreFunctionFactory, float[] boostList)
+            private readonly FacetDataCache _dataCache;
+            internal CompactMultiValueDocScorer(FacetDataCache dataCache, IFacetTermScoringFunctionFactory scoreFunctionFactory, float[] boostList)
                 : base(scoreFunctionFactory.GetFacetTermScoringFunction(dataCache.ValArray.Count, dataCache.OrderArray.Size()), boostList)
             {
                 _dataCache = dataCache;
@@ -425,7 +425,7 @@ namespace BoboBrowse.Net.Facets.Impl
             private bool _aggregated = false;
 
 
-            internal CompactMultiValueFacetCountCollector(string name, BrowseSelection sel, IFacetDataCache dataCache, int docBase, FacetSpec ospec)
+            internal CompactMultiValueFacetCountCollector(string name, BrowseSelection sel, FacetDataCache dataCache, int docBase, FacetSpec ospec)
                 : base(name, dataCache, docBase, sel, ospec)
             {
                 _array = _dataCache.OrderArray;

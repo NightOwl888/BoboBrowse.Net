@@ -50,7 +50,7 @@ namespace BoboBrowse.Net.Facets.Impl
         {
         }
 
-        public override IFacetDataCache Load(BoboSegmentReader reader)
+        public override FacetDataCache Load(BoboSegmentReader reader)
         {
             C5.TreeDictionary<object, List<int>> dataMap = null;
             List<int> docList = null;

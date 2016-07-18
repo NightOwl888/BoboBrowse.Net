@@ -152,7 +152,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase)
             {
-                IFacetDataCache dataCache = (IFacetDataCache)reader.GetFacetData(_dataHandlerName);
+                FacetDataCache dataCache = (FacetDataCache)reader.GetFacetData(_dataHandlerName);
                 IFacetCountCollector baseCollector = _baseCollectorSrc.GetFacetCountCollector(reader, docBase);
                 return new HistogramCollector(_name, baseCollector, dataCache, _ospec, _start, _end, _unit);
             }
@@ -172,7 +172,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
             private bool _isAggregated;
 
-            public HistogramCollector(string facetName, IFacetCountCollector baseCollector, IFacetDataCache dataCache, FacetSpec ospec, T start, T end, T unit)
+            public HistogramCollector(string facetName, IFacetCountCollector baseCollector, FacetDataCache dataCache, FacetSpec ospec, T start, T end, T unit)
             {
                 _facetName = facetName;
                 _baseCollector = baseCollector;

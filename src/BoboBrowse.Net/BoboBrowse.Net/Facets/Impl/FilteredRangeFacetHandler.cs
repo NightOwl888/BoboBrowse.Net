@@ -79,7 +79,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
             public override IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase)
             {
-                IFacetDataCache dataCache = _innerHandler.GetFacetData<IFacetDataCache>(reader);
+                FacetDataCache dataCache = _innerHandler.GetFacetData<FacetDataCache>(reader);
                 return new RangeFacetCountCollector(_name, dataCache, docBase, _fspec, _predefinedRanges);
             }
         }

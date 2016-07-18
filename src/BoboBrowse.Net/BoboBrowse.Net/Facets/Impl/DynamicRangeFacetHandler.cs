@@ -96,7 +96,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase)
             {
-                IFacetDataCache dataCache = this._dataFacetHandler.GetFacetData<IFacetDataCache>(reader);
+                FacetDataCache dataCache = this._dataFacetHandler.GetFacetData<FacetDataCache>(reader);
                 return new DynamicRangeFacetCountCollector(_parent, _name, dataCache, docBase, _fspec, _predefinedList);
             }
 
@@ -127,7 +127,7 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             private readonly DynamicRangeFacetHandler parent;
 
-            internal DynamicRangeFacetCountCollector(DynamicRangeFacetHandler parent, string name, IFacetDataCache dataCache, int docBase, FacetSpec fspec, IEnumerable<string> predefinedList)
+            internal DynamicRangeFacetCountCollector(DynamicRangeFacetHandler parent, string name, FacetDataCache dataCache, int docBase, FacetSpec fspec, IEnumerable<string> predefinedList)
                 : base(name, dataCache, docBase, fspec, predefinedList)
             {
                 this.parent = parent;

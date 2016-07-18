@@ -47,7 +47,7 @@ namespace BoboBrowse.Net.Facets.Impl
 	    private int _patStart;
 	    private int _patEnd;
 
-        internal PathFacetCountCollector(string name, string sep, BrowseSelection sel, FacetSpec ospec, IFacetDataCache dataCache)
+        internal PathFacetCountCollector(string name, string sep, BrowseSelection sel, FacetSpec ospec, FacetDataCache dataCache)
         {
             _sel = sel;
             _name = name;
