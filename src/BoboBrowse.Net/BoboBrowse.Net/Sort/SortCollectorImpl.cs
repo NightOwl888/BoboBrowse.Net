@@ -233,9 +233,9 @@ namespace BoboBrowse.Net.Sort
             }
         }
 
-        public override bool AcceptsDocsOutOfOrder
+        public override bool AcceptsDocsOutOfOrder()
         {
-            get { return this.Collector == null ? true : this.Collector.AcceptsDocsOutOfOrder(); }
+            return this.Collector == null ? true : this.Collector.AcceptsDocsOutOfOrder();
         }
 
         public override void Collect(int doc)
@@ -377,57 +377,67 @@ namespace BoboBrowse.Net.Sort
             if (this.Collector != null) this.Collector.Collect(doc);
         }
 
-        public override void SetNextReader(AtomicReaderContext context)
+        public override AtomicReaderContext NextReader
         {
-            AtomicReader reader = context.AtomicReader;
-            if (!(reader is BoboSegmentReader))
-                throw new ArgumentException("reader must be a BoboIndexReader");
-            _currentReader = (BoboSegmentReader)reader;
-            int docBase = context.DocBase;
-            _currentComparator = _compSource.GetComparator(_currentReader, docBase);
-            _currentQueue = new DocIDPriorityQueue(_currentComparator, _numHits, docBase);
-            if (groupBy != null)
+            set 
             {
-                if (_facetCountCollectorMulti != null)  // _facetCountCollectorMulti.Length >= 1
+                // NOTE: Since this is a prperty instead of a method in Lucene.Net,
+                // we set a variable to the value of the property so the rest of the code
+                // from Java doesn't need to change.
+                AtomicReaderContext context = value;
+                AtomicReader reader = context.AtomicReader;
+                if (!(reader is BoboSegmentReader))
+                    throw new ArgumentException("reader must be a BoboIndexReader");
+                _currentReader = (BoboSegmentReader)reader;
+                int docBase = context.DocBase;
+                _currentComparator = _compSource.GetComparator(_currentReader, docBase);
+                _currentQueue = new DocIDPriorityQueue(_currentComparator, _numHits, docBase);
+                if (groupBy != null)
                 {
-                    for (int i = 0; i < _facetCountCollectorMulti.Length; ++i)
-                    {
-                        _facetCountCollectorMulti[i] = groupByMulti[i].GetFacetCountCollectorSource(null, null, true).GetFacetCountCollector(_currentReader, docBase);
-                    }
-                    //if (_facetCountCollector != null)
-                    //    collectTotalGroups();
-                    _facetCountCollector = _facetCountCollectorMulti[0];
-                    if (_facetAccessibleLists != null)
+                    if (_facetCountCollectorMulti != null)  // _facetCountCollectorMulti.Length >= 1
                     {
                         for (int i = 0; i < _facetCountCollectorMulti.Length; ++i)
                         {
-                            _facetAccessibleLists[i].Add(_facetCountCollectorMulti[i]);
+                            _facetCountCollectorMulti[i] = groupByMulti[i].GetFacetCountCollectorSource(null, null, true).GetFacetCountCollector(_currentReader, docBase);
+                        }
+                        //if (_facetCountCollector != null)
+                        //    collectTotalGroups();
+                        _facetCountCollector = _facetCountCollectorMulti[0];
+                        if (_facetAccessibleLists != null)
+                        {
+                            for (int i = 0; i < _facetCountCollectorMulti.Length; ++i)
+                            {
+                                _facetAccessibleLists[i].Add(_facetCountCollectorMulti[i]);
+                            }
                         }
                     }
-                }
-                if (_currentValueDocMaps != null)
-                    _currentValueDocMaps.Clear();
+                    if (_currentValueDocMaps != null)
+                        _currentValueDocMaps.Clear();
 
-                // NightOwl888: The _collectDocIdCache setting seems to put arrays into
-                // memory, but then do nothing with the arrays. Seems wasteful and unnecessary.
-                //if (contextList != null)
-                //{
-                //    _currentContext = new CollectorContext(_currentReader, docBase, _currentComparator);
-                //    contextList.Add(_currentContext);
-                //}
+                    // NightOwl888: The _collectDocIdCache setting seems to put arrays into
+                    // memory, but then do nothing with the arrays. Seems wasteful and unnecessary.
+                    //if (contextList != null)
+                    //{
+                    //    _currentContext = new CollectorContext(_currentReader, docBase, _currentComparator);
+                    //    contextList.Add(_currentContext);
+                    //}
+                }
+                MyScoreDoc myScoreDoc = (MyScoreDoc)_tmpScoreDoc;
+                myScoreDoc.queue = _currentQueue;
+                myScoreDoc.reader = _currentReader;
+                myScoreDoc.sortValue = null;
+                _pqList.Add(_currentQueue);
+                _queueFull = false;
             }
-            MyScoreDoc myScoreDoc = (MyScoreDoc)_tmpScoreDoc;
-            myScoreDoc.queue = _currentQueue;
-            myScoreDoc.reader = _currentReader;
-            myScoreDoc.sortValue = null;
-            _pqList.Add(_currentQueue);
-            _queueFull = false;
         }
 
-        public override void SetScorer(Scorer scorer)
+        public override Scorer Scorer
         {
-            _scorer = scorer;
-            _currentComparator.SetScorer(scorer);
+            set 
+            {
+                _scorer = value;
+                _currentComparator.SetScorer(value);
+            }
         }
 
         public override int TotalHits
