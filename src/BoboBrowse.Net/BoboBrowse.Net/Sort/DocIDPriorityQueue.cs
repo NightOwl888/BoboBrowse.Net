@@ -17,16 +17,14 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-﻿// Version compatibility level: 3.2.0
+﻿// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Sort
 {
-    using Common.Logging;
     using Lucene.Net.Search;
     using System;
 
     public class DocIDPriorityQueue
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(DocIDPriorityQueue));
         public int size;
         protected readonly ScoreDoc[] heap;
         public readonly int @base;
