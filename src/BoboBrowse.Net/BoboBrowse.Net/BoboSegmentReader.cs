@@ -295,7 +295,7 @@ namespace BoboBrowse.Net
         /// <param name="facetHandlers">List of facet handlers</param>
         /// <param name="facetHandlerFactories">List of factories to create facet handler instances at runtime.</param>
         /// <param name="workArea">A service locator that can be used to inject custom objects.</param>
-        protected BoboSegmentReader(AtomicReader reader, IEnumerable<IFacetHandler> facetHandlers, IEnumerable<IRuntimeFacetHandlerFactory> facetHandlerFactories, WorkArea workArea)
+        protected internal BoboSegmentReader(AtomicReader reader, IEnumerable<IFacetHandler> facetHandlers, IEnumerable<IRuntimeFacetHandlerFactory> facetHandlerFactories, WorkArea workArea)
             : base(reader)
         {
             _runtimeFacetHandlerFactories = facetHandlerFactories;
