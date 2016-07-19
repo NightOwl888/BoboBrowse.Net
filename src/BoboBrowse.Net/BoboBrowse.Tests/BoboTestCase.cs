@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net
 {
     using BoboBrowse.Net.Facets;
@@ -36,9 +36,9 @@ namespace BoboBrowse.Net
     using Lucene.Net.Analysis.Tokenattributes;
     using Lucene.Net.Documents;
     using Lucene.Net.Index;
-    using Lucene.Net.QueryParsers;
     using Lucene.Net.Search;
     using Lucene.Net.Store;
+    using Lucene.Net.Util;
     using NUnit.Framework;
     using System;
     using System.Collections.Generic;
@@ -58,13 +58,11 @@ namespace BoboBrowse.Net
 
         private class TestDataDigester : DataDigester
         {
-            private IEnumerable<IFacetHandler> _fconf;
-            private Document[] _data;
+            private readonly Document[] _data;
 
             public TestDataDigester(IEnumerable<IFacetHandler> fConf, Document[] data)
                 : base()
             {
-                _fconf = fConf;
                 _data = data;
             }
 
@@ -82,6 +80,7 @@ namespace BoboBrowse.Net
         {
             //string confdir = System.getProperty("conf.dir");
             //if (confdir == null) confdir = "./resource";
+            //System.setProperty("log.home", ".");
             //org.apache.log4j.PropertyConfigurator.configure(confdir + "/log4j.properties");
             this._fconf = BuildFieldConf();
             this._indexDir = CreateIndex();
@@ -94,15 +93,10 @@ namespace BoboBrowse.Net
             this._indexDir = null;
         }
 
-        private BoboSegmentReader NewIndexReader()
+        private BoboMultiReader NewIndexReader()
         {
-            return NewIndexReader(true);
-        }
-
-        private BoboSegmentReader NewIndexReader(bool readOnly)
-        {
-            IndexReader srcReader = IndexReader.Open(_indexDir, readOnly);
-            return BoboSegmentReader.GetInstance(srcReader, this._fconf, true);
+            DirectoryReader srcReader = DirectoryReader.Open(_indexDir);
+            return BoboMultiReader.GetInstance(srcReader, this._fconf);
         }
 
         private BoboBrowser NewBrowser()
@@ -112,15 +106,7 @@ namespace BoboBrowse.Net
 
         public static Field BuildMetaField(string name, string val)
         {
-            Field f = new Field(name, val, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS);
-            f.OmitTermFreqAndPositions = true;
-            return f;
-        }
-
-        public static Field BuildMetaSizePayloadField(Term term, int size)
-        {
-            var ts = new MetaSizeTokenStream(term, size);
-            Field f = new Field(term.Field, ts);
+            Field f = new StringField(name, val, Field.Store.NO);
             return f;
         }
 
@@ -128,8 +114,8 @@ namespace BoboBrowse.Net
         private class MetaSizeTokenStream : TokenStream
         {
             private bool returnToken = false;
-            private PayloadAttribute payloadAttr;
-            private TermAttribute termAttr;
+            private readonly PayloadAttribute payloadAttr;
+            private readonly CharTermAttribute termAttr;
 
             public MetaSizeTokenStream(Term term, int size)
             {
@@ -139,17 +125,20 @@ namespace BoboBrowse.Net
                 buffer[2] = (byte)(size >> 16);
                 buffer[3] = (byte)(size >> 24);
 
-                payloadAttr = new PayloadAttribute();
-                payloadAttr.Payload = new Payload(buffer);
-                // NOTE: Calling the AddAttribute<T> method failed, so 
-                // switched to using AddAttributeImpl.
-                AddAttributeImpl(payloadAttr);
+                payloadAttr = base.AddAttribute<PayloadAttribute>();
+                payloadAttr.Payload = new BytesRef(buffer);
+                termAttr = base.AddAttribute<CharTermAttribute>();
+                termAttr.Append(term.Text());
 
-                termAttr = new TermAttribute();
-                termAttr.SetTermBuffer(term.Text);
-                // NOTE: Calling the AddAttribute<T> method failed, so 
-                // switched to using AddAttributeImpl.
-                AddAttributeImpl(termAttr);
+                // Backup in case the above doesn't work...
+                //// NOTE: Calling the AddAttribute<T> method failed, so 
+                //// switched to using AddAttributeImpl.
+                //payloadAttr = new PayloadAttribute();
+                //payloadAttr.Payload = new BytesRef(buffer);
+                //AddAttributeImpl(payloadAttr);
+                //termAttr = new CharTermAttribute();
+                //termAttr.Append(term.Text());
+                //AddAttributeImpl(payloadAttr);
 
                 returnToken = true;
             }
@@ -166,10 +155,12 @@ namespace BoboBrowse.Net
                     return false;
                 }
             }
+        }
 
-            protected override void Dispose(bool disposing)
-            {
-            }
+        public static Field BuildMetaSizePayloadField(Term term, int size)
+        {
+            Field f = new TextField(term.Field, new MetaSizeTokenStream(term, size));
+            return f;
         }
 
         public static Document[] BuildData()
@@ -204,13 +195,48 @@ namespace BoboBrowse.Net
             d1.Add(BuildMetaField("longitude", "120"));
             d1.Add(BuildMetaField("salary", "04500"));
 
-            Field sf = new Field("testStored", "stored", Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
-            sf.OmitTermFreqAndPositions = (true);
+            Field sf = new StringField("testStored", "stored", Field.Store.YES);
             d1.Add(sf);
 
+            FieldType ft = new FieldType();
+            ft.Stored = (false);
+            ft.Indexed = (true);
+            ft.Tokenized = (true);
+            ft.StoreTermVectors = (true);
+            ft.StoreTermVectorPositions = (false);
+            ft.StoreTermVectorOffsets = (false);
+            Field tvf = new Field("tv", "bobo bobo lucene lucene lucene test", ft);
+            d1.Add(tvf);
 
-            Field tvf = new Field("tv", "bobo bobo lucene lucene lucene test", Field.Store.NO, Field.Index.ANALYZED, Field.TermVector.YES);
+            FieldType ftPositions = new FieldType();
+            ftPositions.Stored = (false);
+            ftPositions.Indexed = (true);
+            ftPositions.Tokenized = (true);
+            ftPositions.StoreTermVectors = (true);
+            ftPositions.StoreTermVectorPositions = (true);
+            ftPositions.StoreTermVectorOffsets = (false);
+            tvf = new Field("tvPositions", "bobo bobo lucene lucene lucene test", ftPositions);
+            d1.Add(tvf);
 
+            FieldType ftOffsets = new FieldType();
+            ftOffsets.Stored = (false);
+            ftOffsets.Indexed = (true);
+            ftOffsets.Tokenized = (true);
+            ftOffsets.StoreTermVectors = (true);
+            ftOffsets.StoreTermVectorPositions = (false);
+            ftOffsets.StoreTermVectorOffsets = (true);
+            tvf = new Field("tvOffsets", "bobo bobo lucene lucene lucene test", ftOffsets);
+            d1.Add(tvf);
+
+            FieldType ftPositionsAndOffsets = new FieldType();
+            ftPositionsAndOffsets.Stored = (false);
+            ftPositionsAndOffsets.Indexed = (true);
+            ftPositionsAndOffsets.Tokenized = (true);
+            ftPositionsAndOffsets.StoreTermVectors = (true);
+            ftPositionsAndOffsets.StoreTermVectorPositions = (true);
+            ftPositionsAndOffsets.StoreTermVectorOffsets = (true);
+            tvf = new Field("tvPositionsAndOffsets", "bobo bobo lucene lucene lucene test",
+                ftPositionsAndOffsets);
             d1.Add(tvf);
 
             Document d2 = new Document();
@@ -379,11 +405,6 @@ namespace BoboBrowse.Net
             d7.Add(BuildMetaField("longitude", "-60"));
             d7.Add(BuildMetaField("salary", "28500"));
 
-            Document d8 = new Document();
-            d8.Add(BuildMetaField("latitude", "35"));
-            d8.Add(BuildMetaField("longitude", "120"));
-            d8.Add(BuildMetaField("salary", "00120"));
-
             dataList.Add(d1);
             dataList.Add(d2);
             dataList.Add(d3);
@@ -391,7 +412,6 @@ namespace BoboBrowse.Net
             dataList.Add(d5);
             dataList.Add(d6);
             dataList.Add(d7);
-            dataList.Add(d8);
 
             return dataList.ToArray();
         }
@@ -405,10 +425,8 @@ namespace BoboBrowse.Net
             TestDataDigester testDigester = new TestDataDigester(this._fconf, data);
             BoboIndexer indexer = new BoboIndexer(testDigester, idxDir);
             indexer.Index();
-            using (IndexReader r = IndexReader.Open(idxDir, false))
+            using (DirectoryReader r = DirectoryReader.Open(idxDir))
             {
-                r.DeleteDocument(r.MaxDoc - 1);
-                //r.Flush();
             }
 
             return idxDir;
@@ -425,9 +443,12 @@ namespace BoboBrowse.Net
             SimpleFacetHandler shapeHandler = new SimpleFacetHandler("shape");
             colorHandler.TermCountSize = TermCountSize.Medium;
             facetHandlers.Add(new SimpleFacetHandler("shape"));
-            facetHandlers.Add(new RangeFacetHandler("size", new string[] { "[* TO 4]", "[5 TO 8]", "[9 TO *]" }));
-            string[] ranges = new string[] { "[000000 TO 000005]", "[000006 TO 000010]", "[000011 TO 000020]" };
-            facetHandlers.Add(new RangeFacetHandler("numendorsers", new PredefinedTermListFactory<int>("000000"), ranges));
+            facetHandlers.Add(new RangeFacetHandler("size", new string[] { "[* TO 4]", 
+                "[5 TO 8]", "[9 TO *]" }));
+            string[] ranges = new string[] { "[000000 TO 000005]", "[000006 TO 000010]", 
+                "[000011 TO 000020]" };
+            facetHandlers.Add(new RangeFacetHandler("numendorsers", new PredefinedTermListFactory<int>(
+                "000000"), ranges));
 
             var numTermFactory = new PredefinedTermListFactory<int>("0000");
 
@@ -443,34 +464,42 @@ namespace BoboBrowse.Net
 
 
             facetHandlers.Add(new SimpleFacetHandler("number", numTermFactory));
-            facetHandlers.Add(new VirtualSimpleFacetHandler("virtual", numTermFactory, new VirtualFacetDataFetcher(), new string[] { "number" }));
+            facetHandlers.Add(new VirtualSimpleFacetHandler("virtual", numTermFactory, 
+                new VirtualFacetDataFetcher(), new string[] { "number" }));
             facetHandlers.Add(new SimpleFacetHandler("testStored"));
 
-
-
             facetHandlers.Add(new SimpleFacetHandler("name"));
-            facetHandlers.Add(new RangeFacetHandler("date", new PredefinedTermListFactory<DateTime>("yyyy/MM/dd"), new string[] { "[2000/01/01 TO 2003/05/05]", "[2003/05/06 TO 2005/04/04]" }));
+            facetHandlers.Add(new RangeFacetHandler("date", new PredefinedTermListFactory<DateTime>(
+                "yyyy/MM/dd"), new string[] { "[2000/01/01 TO 2003/05/05]", "[2003/05/06 TO 2005/04/04]" }));
             facetHandlers.Add(new SimpleFacetHandler("char", (TermListFactory)null));
-            facetHandlers.Add(new MultiValueFacetHandler("tag", (string)null, (TermListFactory)null, tagSizePayloadTerm));
-            facetHandlers.Add(new MultiValueFacetHandler("multinum", new PredefinedTermListFactory<int>("000")));
-            facetHandlers.Add(new MultiValueFacetHandler("diffname", "multinum", new PredefinedTermListFactory<int>("000")));
+            facetHandlers.Add(new MultiValueFacetHandler("tag", (string)null, (TermListFactory)null, 
+                tagSizePayloadTerm));
+            facetHandlers.Add(new MultiValueFacetHandler("multinum", new PredefinedTermListFactory<int>(
+                "000")));
+            facetHandlers.Add(new MultiValueFacetHandler("diffname", "multinum", 
+                new PredefinedTermListFactory<int>("000")));
             facetHandlers.Add(new MultiValueWithWeightFacetHandler("multiwithweight"));
-            facetHandlers.Add(new CompactMultiValueFacetHandler("compactnum", new PredefinedTermListFactory<int>("000")));
+            facetHandlers.Add(new CompactMultiValueFacetHandler("compactnum", 
+                new PredefinedTermListFactory<int>("000")));
             facetHandlers.Add(new SimpleFacetHandler("storenum", new PredefinedTermListFactory<long>(null)));
             /* New FacetHandler for geographic locations. Depends on two RangeFacetHandlers on latitude and longitude */
-            facetHandlers.Add(new RangeFacetHandler("latitude", new string[] { "[* TO 30]", "[35 TO 60]", "[70 TO 120]" }));
-            facetHandlers.Add(new RangeFacetHandler("longitude", new string[] { "[* TO 30]", "[35 TO 60]", "[70 TO 120]" }));
+            facetHandlers.Add(new RangeFacetHandler("latitude", new string[] { "[* TO 30]", 
+                "[35 TO 60]", "[70 TO 120]" }));
+            facetHandlers.Add(new RangeFacetHandler("longitude", new string[] { "[* TO 30]", 
+                "[35 TO 60]", "[70 TO 120]" }));
             facetHandlers.Add(new GeoSimpleFacetHandler("distance", "latitude", "longitude"));
             facetHandlers.Add(new GeoFacetHandler("correctDistance", "latitude", "longitude"));
             /* Underlying time facet for DynamicTimeRangeFacetHandler */
-            facetHandlers.Add(new RangeFacetHandler("timeinmillis", new PredefinedTermListFactory<long>(DynamicTimeRangeFacetHandler.NUMBER_FORMAT), null));
+            facetHandlers.Add(new RangeFacetHandler("timeinmillis", new PredefinedTermListFactory<long>(
+                DynamicTimeRangeFacetHandler.NUMBER_FORMAT), null));
 
             string[] predefinedSalaryRanges = new string[4];
             predefinedSalaryRanges[0] = "[04000 TO 05999]";
             predefinedSalaryRanges[1] = "[06000 TO 07999]";
             predefinedSalaryRanges[2] = "[08000 TO 09999]";
             predefinedSalaryRanges[3] = "[10000 TO *]";
-            RangeFacetHandler dependedRangeFacet = new RangeFacetHandler("salary", predefinedSalaryRanges);
+            RangeFacetHandler dependedRangeFacet = new RangeFacetHandler("salary", 
+                predefinedSalaryRanges);
             facetHandlers.Add(dependedRangeFacet);
 
             string[][] predefinedBuckets = new string[4][];
@@ -487,7 +516,6 @@ namespace BoboBrowse.Net
 
             facetHandlers.Add(new BucketFacetHandler("groups", predefinedGroups, "name"));
 
-
             string[][] predefinedBuckets2 = new string[3][];
             predefinedBuckets2[0] = new string[] { "2", "3" };
             predefinedBuckets2[1] = new string[] { "1", "4" };
@@ -503,7 +531,8 @@ namespace BoboBrowse.Net
 
             // histogram
 
-            HistogramFacetHandler<int> histoHandler = new HistogramFacetHandler<int>("numberhisto", "number", 0, 5000, 100);
+            HistogramFacetHandler<int> histoHandler = new HistogramFacetHandler<int>("numberhisto", 
+                "number", 0, 5000, 100);
 
             facetHandlers.Add(histoHandler);
 
@@ -515,12 +544,13 @@ namespace BoboBrowse.Net
 
 
 
-            ComboFacetHandler colorShape = new ComboFacetHandler("colorShape", new string[] { "color", "shape" });
-            ComboFacetHandler colorShapeMultinum = new ComboFacetHandler("colorShapeMultinum", new string[] { "color", "shape", "multinum" });
+            ComboFacetHandler colorShape = new ComboFacetHandler("colorShape", 
+                new string[] { "color", "shape" });
+            ComboFacetHandler colorShapeMultinum = new ComboFacetHandler("colorShapeMultinum", 
+                new string[] { "color", "shape", "multinum" });
 
             facetHandlers.Add(colorShape);
             facetHandlers.Add(colorShapeMultinum);
-
 
             return facetHandlers;
         }
@@ -543,7 +573,8 @@ namespace BoboBrowse.Net
             }
         }
 
-        public static bool Check(BrowseResult res, int numHits, IDictionary<string, IEnumerable<BrowseFacet>> choiceMap, string[] ids)
+        public static bool Check(BrowseResult res, int numHits, 
+            IDictionary<string, IEnumerable<BrowseFacet>> choiceMap, string[] ids)
         {
             bool match = false;
             if (numHits == res.NumHits)
@@ -605,64 +636,6 @@ namespace BoboBrowse.Net
             return match;
         }
 
-        private static bool CheckFacet(BrowseResult res, int numHits, String facetName, IDictionary<string, IEnumerable<BrowseFacet>> choiceMap, string[] ids)
-        {
-            bool match = false;
-            if (numHits == res.NumHits)
-            {
-                if (choiceMap != null)
-                {
-                    var entries = res.FacetMap;
-
-                    if (res.FacetMap.ContainsKey(facetName))
-                    {
-                        IFacetAccessible c1 = res.FacetMap.Get(facetName);
-                        IEnumerable<BrowseFacet> l1 = c1.GetFacets();
-                        IEnumerable<BrowseFacet> l2 = choiceMap.Get(facetName);
-
-                        if (l1.Count() == l2.Count())
-                        {
-                            for (int i = 0; i < l1.Count(); i++)
-                            {
-                                if (!l1.ElementAt(i).Equals(l2.ElementAt(i)))
-                                {
-                                    return false;
-                                }
-                            }
-                            match = true;
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                if (ids != null)
-                {
-                    BrowseHit[] hits = res.Hits;
-                    try
-                    {
-                        if (hits.Length != ids.Length) return false;
-                        for (int i = 0; i < hits.Length; ++i)
-                        {
-                            String id = hits[i].GetField("id");
-                            if (!ids[i].Equals(id)) return false;
-                        }
-                    }
-                    catch
-                    {
-                        return false;
-                    }
-                }
-                match = true;
-            }
-            return match;
-        }
-
         /// <summary>
         /// Check results
         /// </summary>
@@ -671,7 +644,8 @@ namespace BoboBrowse.Net
         /// <param name="numHits"></param>
         /// <param name="choiceMap"></param>
         /// <param name="ids"></param>
-        private void DoTest(BrowseResult result, BrowseRequest req, int numHits, IDictionary<string, IEnumerable<BrowseFacet>> choiceMap, string[] ids)
+        private void DoTest(BrowseResult result, BrowseRequest req, int numHits, 
+            IDictionary<string, IEnumerable<BrowseFacet>> choiceMap, string[] ids)
         {
             if (!Check(result, numHits, choiceMap, ids))
             {
@@ -683,14 +657,16 @@ namespace BoboBrowse.Net
                 buffer.Append("Result check failed: \n");
                 buffer.Append("expected: \n");
                 buffer.Append(numHits).Append(" hits\n");
-                buffer.Append(choices).Append('\n');
                 buffer.Append(Arrays.ToString(ids)).AppendLine().AppendLine();
+                buffer.Append("Choices: \n");
+                buffer.Append(choices).Append('\n');
                 buffer.Append("gotten: \n");
                 buffer.Append(result.NumHits).Append(" hits\n");
                 buffer.Append(Arrays.ToString(result.Hits.Select(x => x.GetField("id")).ToArray())).AppendLine();
 
                 var entries = result.FacetMap;
 
+                buffer.Append("choiceMap: \n");
                 buffer.Append("{");
                 foreach (var entry in entries)
                 {
@@ -748,10 +724,19 @@ namespace BoboBrowse.Net
                 {
                     Assert.AreEqual(1, result.NumHits);
                     BrowseHit hit = result.Hits[0];
-                    Document storedFields = hit.StoredFields;
+                    IList<BrowseHit.SerializableField> storedFields = hit.StoredFields;
                     Assert.NotNull(storedFields);
 
-                    string[] values = storedFields.GetValues("testStored");
+                    var fieldValues = new List<string>();
+                    foreach (var field in storedFields)
+                    {
+                        if (field.Name.Equals("testStored") && field.StringValue != null)
+                        {
+                            fieldValues.Add(field.StringValue);
+                        }
+                    }
+
+                    string[] values = fieldValues.ToArray();
                     Assert.NotNull(values);
                     Assert.AreEqual(1, values.Length);
                     Assert.True("stored".Equals(values[0]));
@@ -792,10 +777,7 @@ namespace BoboBrowse.Net
                 {
                     Assert.AreEqual(1, result.NumHits);
                     BrowseHit hit = result.Hits[0];
-                    Document storedFields = hit.StoredFields;
-                    Assert.NotNull(storedFields);
-
-                    string stored = storedFields.Get("testStored");
+                    string stored = hit.GetFieldStringValue("testStored");
                     Assert.True("stored".Equals(stored));
                 }
             }
@@ -820,8 +802,8 @@ namespace BoboBrowse.Net
             sizeSel.AddValue("[4 TO 4]");
             br.AddSelection(sizeSel);
 
-            br.TermVectorsToFetch = new string[] { "tv" };
-
+            br.TermVectorsToFetch = new string[] { "tv", "tvPositions",
+                "tvOffsets", "tvPositionsAndOffsets" };
 
             using (BoboBrowser boboBrowser = NewBrowser())
             {
@@ -836,22 +818,120 @@ namespace BoboBrowse.Net
                 {
                     Assert.AreEqual(1, result.NumHits);
                     BrowseHit hit = result.Hits[0];
-                    var tvMap = hit.TermFreqMap;
+                    var tvMap = hit.TermVectorMap;
                     Assert.NotNull(tvMap);
 
-                    Assert.AreEqual(1, tvMap.Count);
+                    Assert.AreEqual(4, tvMap.Count);
 
-                    BrowseHit.TermFrequencyVector tv = tvMap.Get("tv");
+                    IList<BrowseHit.BoboTerm> tv = tvMap.Get("tv");
                     Assert.NotNull(tv);
 
-                    Assert.AreEqual("bobo", tv.terms[0]);
-                    Assert.AreEqual(2, tv.freqs[0]);
+                    Assert.AreEqual("bobo", tv.Get(0).Term);
+                    Assert.AreEqual(2, tv.Get(0).Freq);
+                    Assert.AreEqual(null, tv.Get(0).Positions);
+                    Assert.AreEqual(null, tv.Get(0).StartOffsets);
+                    Assert.AreEqual(null, tv.Get(0).EndOffsets);
 
-                    Assert.AreEqual("lucene", tv.terms[1]);
-                    Assert.AreEqual(3, tv.freqs[1]);
+                    Assert.AreEqual("lucene", tv.Get(1).Term);
+                    Assert.AreEqual(3, tv.Get(1).Freq);
+                    Assert.AreEqual(null, tv.Get(1).Positions);
+                    Assert.AreEqual(null, tv.Get(1).StartOffsets);
+                    Assert.AreEqual(null, tv.Get(1).EndOffsets);
 
-                    Assert.AreEqual("test", tv.terms[2]);
-                    Assert.AreEqual(1, tv.freqs[2]);
+                    Assert.AreEqual("test", tv.Get(2).Term);
+                    Assert.AreEqual(1, tv.Get(2).Freq);
+                    Assert.AreEqual(null, tv.Get(2).Positions);
+                    Assert.AreEqual(null, tv.Get(2).StartOffsets);
+                    Assert.AreEqual(null, tv.Get(2).EndOffsets);
+
+                    tv = tvMap.Get("tvPositions");
+                    Assert.NotNull(tv);
+
+                    Assert.AreEqual("bobo", tv.Get(0).Term);
+                    Assert.AreEqual(2, tv.Get(0).Freq);
+                    List<int> positions = new List<int>() { 0, 1 };
+                    Assert.AreEqual(positions, tv.Get(0).Positions);
+                    List<int> startOffsets = new List<int>() { -1, -1 };
+                    Assert.AreEqual(startOffsets, tv.Get(0).StartOffsets);
+                    List<int> endOffsets = new List<int>() { -1, -1 };
+                    Assert.AreEqual(endOffsets, tv.Get(0).EndOffsets);
+
+                    Assert.AreEqual("lucene", tv.Get(1).Term);
+                    Assert.AreEqual(3, tv.Get(1).Freq);
+                    positions = new List<int>() { 2, 3, 4 };
+                    Assert.AreEqual(positions, tv.Get(1).Positions);
+                    startOffsets = new List<int>() { -1, -1, -1 };
+                    Assert.AreEqual(startOffsets, tv.Get(1).StartOffsets);
+                    endOffsets = new List<int>() { -1, -1, -1 };
+                    Assert.AreEqual(endOffsets, tv.Get(1).EndOffsets);
+
+                    Assert.AreEqual("test", tv.Get(2).Term);
+                    Assert.AreEqual(1, tv.Get(2).Freq);
+                    positions = new List<int>() { 5 };
+                    Assert.AreEqual(positions, tv.Get(2).Positions);
+                    startOffsets = new List<int>() { -1 };
+                    Assert.AreEqual(startOffsets, tv.Get(2).StartOffsets);
+                    endOffsets = new List<int>() { -1 };
+                    Assert.AreEqual(endOffsets, tv.Get(2).EndOffsets);
+
+                    tv = tvMap.Get("tvOffsets");
+                    Assert.NotNull(tv);
+
+                    Assert.AreEqual("bobo", tv.Get(0).Term);
+                    Assert.AreEqual(2, tv.Get(0).Freq);
+                    positions = new List<int>() { -1, -1 };
+                    Assert.AreEqual(positions, tv.Get(0).Positions);
+                    startOffsets = new List<int>() { 0, 5 };
+                    Assert.AreEqual(startOffsets, tv.Get(0).StartOffsets);
+                    endOffsets = new List<int>() { 4, 9 };
+                    Assert.AreEqual(endOffsets, tv.Get(0).EndOffsets);
+
+                    Assert.AreEqual("lucene", tv.Get(1).Term);
+                    Assert.AreEqual(3, tv.Get(1).Freq);
+                    positions = new List<int>() { -1, -1, -1 };
+                    Assert.AreEqual(positions, tv.Get(1).Positions);
+                    startOffsets = new List<int>() { 10, 17, 24 };
+                    Assert.AreEqual(startOffsets, tv.Get(1).StartOffsets);
+                    endOffsets = new List<int>() { 16, 23, 30 };
+                    Assert.AreEqual(endOffsets, tv.Get(1).EndOffsets);
+
+                    Assert.AreEqual("test", tv.Get(2).Term);
+                    Assert.AreEqual(1, tv.Get(2).Freq);
+                    positions = new List<int>() { -1 };
+                    Assert.AreEqual(positions, tv.Get(2).Positions);
+                    startOffsets = new List<int>() { 31 };
+                    Assert.AreEqual(startOffsets, tv.Get(2).StartOffsets);
+                    endOffsets = new List<int>() { 35 };
+                    Assert.AreEqual(endOffsets, tv.Get(2).EndOffsets);
+
+                    tv = tvMap.Get("tvPositionsAndOffsets");
+                    Assert.NotNull(tv);
+                    Assert.AreEqual("bobo", tv.Get(0).Term);
+                    Assert.AreEqual(2, tv.Get(0).Freq);
+                    positions = new List<int>() { 0, 1 };
+                    Assert.AreEqual(positions, tv.Get(0).Positions);
+                    startOffsets = new List<int>() { 0, 5 };
+                    Assert.AreEqual(startOffsets, tv.Get(0).StartOffsets);
+                    endOffsets = new List<int>() { 4, 9 };
+                    Assert.AreEqual(endOffsets, tv.Get(0).EndOffsets);
+
+                    Assert.AreEqual("lucene", tv.Get(1).Term);
+                    Assert.AreEqual(3, tv.Get(1).Freq);
+                    positions = new List<int>() { 2, 3, 4 };
+                    Assert.AreEqual(positions, tv.Get(1).Positions);
+                    startOffsets = new List<int>() { 10, 17, 24 };
+                    Assert.AreEqual(startOffsets, tv.Get(1).StartOffsets);
+                    endOffsets = new List<int>() { 16, 23, 30 };
+                    Assert.AreEqual(endOffsets, tv.Get(1).EndOffsets);
+
+                    Assert.AreEqual("test", tv.Get(2).Term);
+                    Assert.AreEqual(1, tv.Get(2).Freq);
+                    positions = new List<int>() { 5 };
+                    Assert.AreEqual(positions, tv.Get(2).Positions);
+                    startOffsets = new List<int>() { 31 };
+                    Assert.AreEqual(startOffsets, tv.Get(2).StartOffsets);
+                    endOffsets = new List<int>() { 35 };
+                    Assert.AreEqual(endOffsets, tv.Get(2).EndOffsets);
                 }
             }
         }
@@ -862,7 +942,7 @@ namespace BoboBrowse.Net
             BrowseRequest br = new BrowseRequest();
             br.Count = 10;
             br.Offset = 0;
-            br.Sort = new SortField[] { new SortField("date", SortField.CUSTOM, false) };
+            br.Sort = new SortField[] { new SortField("date", SortField.Type_e.CUSTOM, false) };
 
             using (BoboBrowser boboBrowser = NewBrowser())
             {
@@ -905,8 +985,10 @@ namespace BoboBrowse.Net
 
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "color", new BrowseFacet[] { new BrowseFacet("blue", 2), new BrowseFacet("green", 2),new BrowseFacet("red", 3) } },
-                { "shape", new BrowseFacet[] { new BrowseFacet("rectangle", 1),new BrowseFacet("square", 2) } }
+                { "color", new BrowseFacet[] { new BrowseFacet("blue", 2), new BrowseFacet("green", 2),
+                    new BrowseFacet("red", 3) } },
+                { "shape", new BrowseFacet[] { new BrowseFacet("rectangle", 1),
+                    new BrowseFacet("square", 2) } }
             };
 
             DoTest(br, 3, answer, new string[] { "1", "2", "7" });
@@ -917,8 +999,9 @@ namespace BoboBrowse.Net
 
             answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "color", new BrowseFacet[] { new BrowseFacet("blue", 1),new BrowseFacet("red", 2) } },
-                { "shape", new BrowseFacet[] { new BrowseFacet("rectangle", 1),new BrowseFacet("square", 2) } }
+                { "color", new BrowseFacet[] { new BrowseFacet("blue", 1), new BrowseFacet("red", 2) } },
+                { "shape", new BrowseFacet[] { new BrowseFacet("rectangle", 1),
+                    new BrowseFacet("square", 2) } }
             };
 
             DoTest(br, 2, answer, new String[] { "1", "7" });
@@ -943,14 +1026,16 @@ namespace BoboBrowse.Net
 
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "path", new BrowseFacet[] { new BrowseFacet("a-b", 1) ,new BrowseFacet("a-c", 4), new BrowseFacet("a-e", 2) } }
+                { "path", new BrowseFacet[] { new BrowseFacet("a-b", 1) ,new BrowseFacet("a-c", 4), 
+                    new BrowseFacet("a-e", 2) } }
             };
             DoTest(br, 7, answer, null);
 
             pathSpec.OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc;
             answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "path", new BrowseFacet[] { new BrowseFacet("a-c", 4), new BrowseFacet("a-e", 2), new BrowseFacet("a-b", 1) } }
+                { "path", new BrowseFacet[] { new BrowseFacet("a-c", 4), new BrowseFacet("a-e", 2), 
+                    new BrowseFacet("a-b", 1) } }
             };
             DoTest(br, 7, answer, null);
 
@@ -1042,9 +1127,10 @@ namespace BoboBrowse.Net
             br.SetFacetSpec("distance", geoSpec);
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "distance", new BrowseFacet[] { new BrowseFacet("30,70:5", 2), new BrowseFacet("60,120:1", 2) } }
+                { "distance", new BrowseFacet[] { new BrowseFacet("30,70:5", 2), 
+                    new BrowseFacet("60,120:1", 2) } }
             };
-            DoTest(br, 4, answer, null);
+            DoTest(br, 4, answer, new string[] { "1", "3", "4", "5" });
 
             // testing for selection of facet <60,120,1> and verifying that 2 documents match this facet.
             BrowseRequest br2 = new BrowseRequest();
@@ -1059,12 +1145,8 @@ namespace BoboBrowse.Net
             };
             FacetTermQuery geoQ = new FacetTermQuery(sel2, map);
 
-            BoboBrowser b = NewBrowser();
-            Explanation expl = b.Explain(geoQ, 0);
-
             br2.Query = (geoQ);
             DoTest(br2, 2, null, new string[] { "1", "5" });
-            expl = b.Explain(geoQ, 1);
 
             // facet query for color "red" and getting facet counts for the distance facet.
             BrowseRequest br3 = new BrowseRequest();
@@ -1079,16 +1161,14 @@ namespace BoboBrowse.Net
             };
             FacetTermQuery colorQ = new FacetTermQuery(sel3, map3);
 
-            BoboBrowser b2 = NewBrowser();
-            Explanation expl2 = b.Explain(colorQ, 0);
-
             br3.SetFacetSpec("distance", geoSpec);
             geoSpec.MinHitCount = (0);
             br3.Query = (colorQ);             // query is color=red
             br3.AddSelection(sel);			  // count facets <30,70,5> and <60,120,1>
             answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "distance", new BrowseFacet[] { new BrowseFacet("30,70:5", 0), new BrowseFacet("60,120:1", 1) } }
+                { "distance", new BrowseFacet[] { new BrowseFacet("30,70:5", 0), 
+                    new BrowseFacet("60,120:1", 1) } }
             };
             DoTest(br3, 1, answer, null);
         }
@@ -1117,7 +1197,8 @@ namespace BoboBrowse.Net
 
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "correctDistance", new BrowseFacet[] { new BrowseFacet("30,75:100", 1), new BrowseFacet("60,120:1", 2) } }
+                { "correctDistance", new BrowseFacet[] { new BrowseFacet("30,75:100", 1), 
+                    new BrowseFacet("60,120:1", 2) } }
             };
             DoTest(br, 3, answer, null);
 
@@ -1134,13 +1215,8 @@ namespace BoboBrowse.Net
             };
             FacetTermQuery geoQ = new FacetTermQuery(sel2, map);
 
-            BoboBrowser b = NewBrowser();
-            Explanation expl = b.Explain(geoQ, 0);
-
             br2.Query = (geoQ);
             DoTest(br2, 2, null, new string[] { "1", "5" });
-
-            expl = b.Explain(geoQ, 1);
 
             // facet query for color "red" and getting facet counts for the distance facet.
             BrowseRequest br3 = new BrowseRequest();
@@ -1154,9 +1230,6 @@ namespace BoboBrowse.Net
                 { "red", 3.0f }
             };
             FacetTermQuery colorQ = new FacetTermQuery(sel3, map3);
-
-            BoboBrowser b2 = NewBrowser();
-            Explanation expl2 = b.Explain(colorQ, 0);
 
             br3.SetFacetSpec("correctDistance", geoSpec);
             geoSpec.MinHitCount = (1);
@@ -1190,7 +1263,8 @@ namespace BoboBrowse.Net
 
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "multipath", new BrowseFacet[] { new BrowseFacet("a-b",7),new BrowseFacet("a-c",4),new BrowseFacet("a-e",2) } }
+                { "multipath", new BrowseFacet[] { new BrowseFacet("a-b", 7), new BrowseFacet("a-c", 4),
+                    new BrowseFacet("a-e", 2) } }
             };
             DoTest(br, 7, answer, null);
         }
@@ -1217,7 +1291,8 @@ namespace BoboBrowse.Net
             br.SetFacetSpec("path", pathSpec);
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "path", new BrowseFacet[] { new BrowseFacet("a-c-d",2),new BrowseFacet("a-e-f",1) } }
+                { "path", new BrowseFacet[] { new BrowseFacet("a-c-d",2),
+                    new BrowseFacet("a-e-f",1) } }
             };
             DoTest(br, 3, answer, null);
 
@@ -1226,7 +1301,8 @@ namespace BoboBrowse.Net
 
             answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "path", new BrowseFacet[] { new BrowseFacet("a-c-d",2),new BrowseFacet("a-e-f",1) } }
+                { "path", new BrowseFacet[] { new BrowseFacet("a-c-d",2),
+                    new BrowseFacet("a-e-f",1) } }
             };
             DoTest(br, 3, answer, null);
         }
@@ -1306,7 +1382,10 @@ namespace BoboBrowse.Net
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
                 { "location", new BrowseFacet[] { new BrowseFacet("toy/lego/block",3) } },
-                { "tag", new BrowseFacet[] { new BrowseFacet("pet", 2), new BrowseFacet("animal", 1), new BrowseFacet("dog", 1), new BrowseFacet("funny", 1), new BrowseFacet("humor", 1), new BrowseFacet("joke", 1), new BrowseFacet("poodle", 1), new BrowseFacet("rabbit", 1) } }
+                { "tag", new BrowseFacet[] { new BrowseFacet("pet", 2), 
+                    new BrowseFacet("animal", 1), new BrowseFacet("dog", 1), new BrowseFacet("funny", 1), 
+                    new BrowseFacet("humor", 1), new BrowseFacet("joke", 1), 
+                    new BrowseFacet("poodle", 1), new BrowseFacet("rabbit", 1) } }
             };
             DoTest(br, 3, answer, null);
         }
@@ -1337,11 +1416,12 @@ namespace BoboBrowse.Net
 
 
             br.SetFacetSpec("char", charOutput);
-            br.AddSortField(new SortField("date", SortField.CUSTOM, true));
+            br.AddSortField(new SortField("date", SortField.Type_e.CUSTOM, true));
 
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "char", new BrowseFacet[] { new BrowseFacet("a", 1), new BrowseFacet("i", 1), new BrowseFacet("k", 1) } }
+                { "char", new BrowseFacet[] { new BrowseFacet("a", 1), new BrowseFacet("i", 1), 
+                    new BrowseFacet("k", 1) } }
             };
 
             DoTest(br, 3, answer, new string[] { "7", "2", "1" });
@@ -1362,11 +1442,12 @@ namespace BoboBrowse.Net
             ospec.ExpandSelection = false;
             br.SetFacetSpec("color", ospec);
 
-            br.AddSortField(new SortField("date", SortField.CUSTOM, true));
+            br.AddSortField(new SortField("date", SortField.Type_e.CUSTOM, true));
 
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "color", new BrowseFacet[] { new BrowseFacet("blue", 2), new BrowseFacet("green", 1), new BrowseFacet("red", 1) } }
+                { "color", new BrowseFacet[] { new BrowseFacet("blue", 2), new BrowseFacet("green", 1), 
+                    new BrowseFacet("red", 1) } }
             };
             DoTest(br, 4, answer, new string[] { "4", "2", "5", "3" });
         }
@@ -1386,7 +1467,7 @@ namespace BoboBrowse.Net
             ospec.ExpandSelection = false;
             br.SetFacetSpec("color", ospec);
 
-            br.AddSortField(new SortField("date", SortField.CUSTOM, true));
+            br.AddSortField(new SortField("date", SortField.Type_e.CUSTOM, true));
 
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
@@ -1410,7 +1491,7 @@ namespace BoboBrowse.Net
             ospec.ExpandSelection = false;
             br.SetFacetSpec("color", ospec);
 
-            br.AddSortField(new SortField("date", SortField.CUSTOM, true));
+            br.AddSortField(new SortField("date", SortField.Type_e.CUSTOM, true));
 
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
@@ -1427,12 +1508,14 @@ namespace BoboBrowse.Net
         /// <param name="choiceMap"></param>
         /// <param name="ids"></param>
         /// <returns></returns>
-        private BrowseResult DoTest(BrowseRequest req, int numHits, IDictionary<string, IEnumerable<BrowseFacet>> choiceMap, string[] ids)
+        private BrowseResult DoTest(BrowseRequest req, int numHits, 
+            IDictionary<string, IEnumerable<BrowseFacet>> choiceMap, string[] ids)
         {
             return DoTest((BoboBrowser)null, req, numHits, choiceMap, ids);
         }
 
-        private BrowseResult DoTest(BoboBrowser boboBrowser, BrowseRequest req, int numHits, IDictionary<string, IEnumerable<BrowseFacet>> choiceMap, string[] ids)
+        private BrowseResult DoTest(BoboBrowser boboBrowser, BrowseRequest req, int numHits, 
+            IDictionary<string, IEnumerable<BrowseFacet>> choiceMap, string[] ids)
         {
             BrowseResult result;
 
@@ -1455,19 +1538,18 @@ namespace BoboBrowse.Net
         [Test]
         public void TestLuceneSort()
         {
-            using (IndexReader srcReader = IndexReader.Open(_indexDir, true))
+            using (DirectoryReader srcReader = DirectoryReader.Open(_indexDir))
             {
                 var facetHandlers = new List<IFacetHandler>();
                 facetHandlers.Add(new SimpleFacetHandler("id"));
 
-                BoboSegmentReader reader = BoboSegmentReader.GetInstance(srcReader, facetHandlers);       // not facet handlers to help
+                BoboMultiReader reader = BoboMultiReader.GetInstance(srcReader, facetHandlers);       // not facet handlers to help
                 BoboBrowser browser = new BoboBrowser(reader);
 
                 BrowseRequest browseRequest = new BrowseRequest();
                 browseRequest.Count = 10;
                 browseRequest.Offset = 0;
-                browseRequest.AddSortField(new SortField("date", SortField.STRING));
-
+                browseRequest.AddSortField(new SortField("date", SortField.Type_e.STRING));
 
                 DoTest(browser, browseRequest, 7, null, new string[] { "1", "3", "5", "2", "4", "7", "6" });
             }
@@ -1490,8 +1572,10 @@ namespace BoboBrowse.Net
 
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "color", new BrowseFacet[] { new BrowseFacet("red", 3), new BrowseFacet("blue", 2), new BrowseFacet("green", 2) } },
-                { "shape", new BrowseFacet[] { new BrowseFacet("circle", 2), new BrowseFacet("rectangle", 2), new BrowseFacet("square", 3) } }
+                { "color", new BrowseFacet[] { new BrowseFacet("red", 3), new BrowseFacet("blue", 2), 
+                    new BrowseFacet("green", 2) } },
+                { "shape", new BrowseFacet[] { new BrowseFacet("circle", 2), 
+                    new BrowseFacet("rectangle", 2), new BrowseFacet("square", 3) } }
             };
 
             DoTest(br, 7, answer, null);
@@ -1552,7 +1636,7 @@ namespace BoboBrowse.Net
             sel.AddValue("[2003/01/01 TO 2005/01/01]");
             br.AddSelection(sel);
 
-            br.AddSortField(new SortField("date", SortField.CUSTOM, false));
+            br.AddSortField(new SortField("date", SortField.Type_e.CUSTOM, false));
 
             DoTest(br, 5, null, new string[] { "1", "3", "5", "2", "4" });
         }
@@ -1594,7 +1678,7 @@ namespace BoboBrowse.Net
             ospec.ExpandSelection = false;
             br.SetFacetSpec("color", ospec);
 
-            br.AddSortField(new SortField("date", SortField.CUSTOM, false));
+            br.AddSortField(new SortField("date", SortField.Type_e.CUSTOM, false));
 
             DoTest(br, 7, null, new string[] { "1", "3", "5", "2", "4", "7", "6" });
         }
@@ -1607,8 +1691,8 @@ namespace BoboBrowse.Net
             br.Count=(10);
             br.Offset=(0);
 
-
-            br.Sort = new SortField[] { new SortField("color", SortField.CUSTOM, false), new SortField("number", SortField.CUSTOM, true) };
+            br.Sort = new SortField[] { new SortField("color", SortField.Type_e.CUSTOM, false), 
+                new SortField("number", SortField.Type_e.CUSTOM, true) };
 
             DoTest(br, 7, null, new String[] { "5", "4", "6", "3", "2", "1", "7" });
 
@@ -1648,24 +1732,24 @@ namespace BoboBrowse.Net
             br.Count = 10;
             br.Offset = 0;
 
-            br.Sort = new SortField[] { new SortField("number", SortField.CUSTOM, true) };
+            br.Sort = new SortField[] { new SortField("number", SortField.Type_e.CUSTOM, true) };
             DoTest(br, 7, null, new string[] { "6", "5", "4", "3", "2", "1", "7" });
-            br.Sort = new SortField[] { new SortField("name", SortField.STRING, false) };
+            br.Sort = new SortField[] { new SortField("name", SortField.Type_e.STRING, false) };
             DoTest(br, 7, null, new string[] { "7", "4", "6", "2", "3", "1", "5" });
 
             BrowseSelection sel = new BrowseSelection("color");
             sel.AddValue("red");
             br.AddSelection(sel);
-            br.Sort = new SortField[] { new SortField("number", SortField.CUSTOM, true) };
+            br.Sort = new SortField[] { new SortField("number", SortField.Type_e.CUSTOM, true) };
             DoTest(br, 3, null, new string[] { "2", "1", "7" });
-            br.Sort = new SortField[] { new SortField("name", SortField.STRING, false) };
+            br.Sort = new SortField[] { new SortField("name", SortField.Type_e.STRING, false) };
             DoTest(br, 3, null, new string[] { "7", "2", "1" });
 
             sel.AddValue("blue");
             br.Query = new TermQuery(new Term("shape", "square"));
-            br.Sort = new SortField[] { new SortField("number", SortField.CUSTOM, true) };
+            br.Sort = new SortField[] { new SortField("number", SortField.Type_e.CUSTOM, true) };
             DoTest(br, 3, null, new string[] { "5", "1", "7" });
-            br.Sort = new SortField[] { new SortField("name", SortField.STRING, false) };
+            br.Sort = new SortField[] { new SortField("name", SortField.Type_e.STRING, false) };
             DoTest(br, 3, null, new string[] { "7", "1", "5" });
         }
 
@@ -1677,21 +1761,20 @@ namespace BoboBrowse.Net
             br.Count = 10;
             br.Offset = 0;
 
-            br.Sort = new SortField[] { new BoboCustomSortField("custom", false, new CustomSortComparatorSource()) };
+            br.Sort = new SortField[] { new BoboCustomSortField("custom", false, 
+                new CustomSortComparatorSource()) };
             DoTest(br, 7, null, new string[] { "5", "4", "6", "3", "7", "2", "1" });
         }
 
         private class CustomSortComparatorSource : DocComparatorSource
         {
-            public override DocComparator GetComparator(IndexReader reader, int docbase)
+            public override DocComparator GetComparator(AtomicReader reader, int docbase)
             {
                 return new CustomSortDocComparator();
             }
 
             public class CustomSortDocComparator : DocComparator
             {
-                //private static long serialVersionUID = 1L; // NOT USED
-
                 public override int Compare(ScoreDoc doc1, ScoreDoc doc2)
                 {
                     int id1 = Math.Abs(doc1.Doc - 4);
@@ -1724,7 +1807,7 @@ namespace BoboBrowse.Net
             spec.OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc;
             br.SetFacetSpec("color", spec);
 
-            br.Sort = new SortField[] { new SortField("number", SortField.CUSTOM, false) };
+            br.Sort = new SortField[] { new SortField("number", SortField.Type_e.CUSTOM, false) };
 
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
@@ -1752,7 +1835,8 @@ namespace BoboBrowse.Net
 
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "color", new BrowseFacet[] {  new BrowseFacet("red", 2), new BrowseFacet("blue", 1), new BrowseFacet("green", 0) } }
+                { "color", new BrowseFacet[] {  new BrowseFacet("red", 2), new BrowseFacet("blue", 1), 
+                    new BrowseFacet("green", 0) } }
             };
 
             DoTest(br, 3, answer, null);
@@ -1778,12 +1862,14 @@ namespace BoboBrowse.Net
             }
         }
 
+        /*
         [Test]
         public void TestQueryWithScore()
         {
             BrowseRequest br = new BrowseRequest();
             br.ShowExplanation = (false);	// default
-            QueryParser parser = new QueryParser(Lucene.Net.Util.Version.LUCENE_CURRENT, "color", new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_CURRENT));
+            QueryParser parser = new QueryParser(LuceneVersion.LUCENE_48, "color", new StandardAnalyzer(
+                LuceneVersion.LUCENE_48));
             br.Query = parser.Parse("color:red OR shape:square");
             br.Count = (10);
             br.Offset = (0);
@@ -1809,7 +1895,8 @@ namespace BoboBrowse.Net
 
             long fromTime = new DateTime(2006, 6, 1).ToBinary();
 
-            RecencyBoostScorerBuilder recencyBuilder = new RecencyBoostScorerBuilder("date", 2.0f, TimeUnit.DAYS.Convert(fromTime, TimeUnit.MILLISECONDS), 30L, TimeUnit.DAYS);
+            RecencyBoostScorerBuilder recencyBuilder = new RecencyBoostScorerBuilder("date", 2.0f, 
+                TimeUnit.DAYS.Convert(fromTime, TimeUnit.MILLISECONDS), 30L, TimeUnit.DAYS);
             ScoreAdjusterQuery sq = new ScoreAdjusterQuery(rawQuery, recencyBuilder);
             br.Query = (sq);
 
@@ -1829,7 +1916,8 @@ namespace BoboBrowse.Net
             try
             {
                 BrowseRequest br = new BrowseRequest();
-                QueryParser parser = new QueryParser(Lucene.Net.Util.Version.LUCENE_CURRENT, "shape", new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_CURRENT));
+                QueryParser parser = new QueryParser(LuceneVersion.LUCENE_48, "shape", new StandardAnalyzer(
+                    LuceneVersion.LUCENE_48));
                 br.Query = parser.Parse("square OR circle");
                 br.Count = 10;
                 br.Offset = 0;
@@ -1838,23 +1926,24 @@ namespace BoboBrowse.Net
                 sel.AddValue("red");
                 br.AddSelection(sel);
 
-                br.Sort = new SortField[] { new SortField("number", SortField.CUSTOM, false) };
+                br.Sort = new SortField[] { new SortField("number", SortField.Type_e.CUSTOM, false) };
                 DoTest(br, 2, null, new string[] { "7", "1" });
-
 
                 FacetSpec ospec = new FacetSpec();
                 ospec.ExpandSelection = true;
                 br.SetFacetSpec("color", ospec);
                 var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
                 {
-                    { "color", new BrowseFacet[] { new BrowseFacet("blue", 2), new BrowseFacet("green", 1), new BrowseFacet("red", 2) } }
+                    { "color", new BrowseFacet[] { new BrowseFacet("blue", 2), new BrowseFacet("green", 1), 
+                        new BrowseFacet("red", 2) } }
                 };
                 DoTest(br, 2, answer, new string[] { "7", "1" });
 
                 br.ClearSelections();
                 answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
                 {
-                    { "color", new BrowseFacet[] { new BrowseFacet("blue", 2), new BrowseFacet("green", 1), new BrowseFacet("red", 2) } }
+                    { "color", new BrowseFacet[] { new BrowseFacet("blue", 2), new BrowseFacet("green", 1), 
+                        new BrowseFacet("red", 2) } }
                 };
                 DoTest(br, 5, answer, new string[] { "7", "1", "3", "4", "5" });
             }
@@ -1863,6 +1952,7 @@ namespace BoboBrowse.Net
                 Assert.Fail(e.Message);
             }
         }
+        */
 
         [Test]
         public void TestBrowseCompactMultiVal()
@@ -1879,15 +1969,16 @@ namespace BoboBrowse.Net
             FacetSpec ospec = new FacetSpec();
             br.SetFacetSpec("compactnum", ospec);
 
-            br.Sort = new SortField[] { new SortField("compactnum", SortField.CUSTOM, true) };
+            br.Sort = new SortField[] { new SortField("compactnum", SortField.Type_e.CUSTOM, true) };
 
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "compactnum", new BrowseFacet[] { new BrowseFacet("001", 3), new BrowseFacet("002", 1), new BrowseFacet("003", 3), new BrowseFacet("007", 2), new BrowseFacet("008", 1), new BrowseFacet("012", 1) } }
+                { "compactnum", new BrowseFacet[] { new BrowseFacet("001", 3), new BrowseFacet("002", 1), 
+                    new BrowseFacet("003", 3), new BrowseFacet("007", 2), new BrowseFacet("008", 1), 
+                    new BrowseFacet("012", 1) } }
             };
 
             DoTest(br, 6, answer, new string[] { "3", "7", "4", "6", "1", "5" });
-
 
             br = new BrowseRequest();
             br.Count = 10;
@@ -1921,7 +2012,8 @@ namespace BoboBrowse.Net
             br.SetFacetSpec("compactnum", ospec);
             answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "compactnum", new BrowseFacet[] { new BrowseFacet("001", 1), new BrowseFacet("003", 2), new BrowseFacet("008", 1) } },
+                { "compactnum", new BrowseFacet[] { new BrowseFacet("001", 1), new BrowseFacet("003", 2), 
+                    new BrowseFacet("008", 1) } },
                 { "color", new BrowseFacet[] { new BrowseFacet("red", 2) } }
             };
 
@@ -1944,7 +2036,7 @@ namespace BoboBrowse.Net
 
             FacetSpec ospec = new FacetSpec();
             br.SetFacetSpec("multiwithweight", ospec);
-            br.Sort = new SortField[] { new SortField("multiwithweight", SortField.CUSTOM, true) };
+            br.Sort = new SortField[] { new SortField("multiwithweight", SortField.Type_e.CUSTOM, true) };
 
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
@@ -1981,19 +2073,17 @@ namespace BoboBrowse.Net
             sel.AddValue("007");
             br.AddSelection(sel);
 
-
             FacetSpec ospec = new FacetSpec();
             br.SetFacetSpec("multinum", ospec);
-            br.Sort = new SortField[] { new SortField("multinum", SortField.CUSTOM, true) };
+            br.Sort = new SortField[] { new SortField("multinum", SortField.Type_e.CUSTOM, true) };
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "multinum", new BrowseFacet[] { new BrowseFacet("001", 3), new BrowseFacet("002", 1), new BrowseFacet("003", 3), new BrowseFacet("007", 2), new BrowseFacet("008", 1), new BrowseFacet("012", 1) } }
+                { "multinum", new BrowseFacet[] { new BrowseFacet("001", 3), new BrowseFacet("002", 1), 
+                    new BrowseFacet("003", 3), new BrowseFacet("007", 2), new BrowseFacet("008", 1), 
+                    new BrowseFacet("012", 1) } }
             };
 
             DoTest(br, 6, answer, new string[] { "3", "4", "7", "1", "6", "5" });
-
-
-
 
             br = new BrowseRequest();
             br.Count = 10;
@@ -2027,7 +2117,8 @@ namespace BoboBrowse.Net
             br.SetFacetSpec("multinum", ospec);
             answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "multinum", new BrowseFacet[] { new BrowseFacet("001", 1), new BrowseFacet("003", 2), new BrowseFacet("008", 1) } },
+                { "multinum", new BrowseFacet[] { new BrowseFacet("001", 1), new BrowseFacet("003", 2), 
+                    new BrowseFacet("008", 1) } },
                 { "color", new BrowseFacet[] { new BrowseFacet("red", 2) } }
             };
 
@@ -2049,14 +2140,15 @@ namespace BoboBrowse.Net
 
             DoTest(br, 3, answer, new string[] { "1", "2", "7" });
 
-
-            using (IndexReader srcReader = IndexReader.Open(_indexDir, false))
+            Analyzer analyzer = new StandardAnalyzer(LuceneVersion.LUCENE_48);
+            IndexWriterConfig config = new IndexWriterConfig(LuceneVersion.LUCENE_48, analyzer);
+            using (IndexWriter idxWriter = new IndexWriter(_indexDir, config))
             {
-                using (BoboSegmentReader reader = BoboSegmentReader.GetInstance(srcReader, this._fconf))
+                idxWriter.DeleteDocuments(new Term("id", "1"));
+                idxWriter.DeleteDocuments(new Term("id", "2"));
+                idxWriter.Commit();
+                using (BoboMultiReader reader = NewIndexReader())
                 {
-                    reader.DeleteDocuments(new Term("id", "1"));
-                    reader.DeleteDocuments(new Term("id", "2"));
-
                     br = new BrowseRequest();
                     br.Count = 10;
                     br.Offset = 0;
@@ -2066,7 +2158,7 @@ namespace BoboBrowse.Net
                     br.AddSelection(sel);
                     answer = new Dictionary<string, IEnumerable<BrowseFacet>>();
 
-                    DoTest(new BoboBrowser(reader), br, 1, answer, null);
+                    DoTest(new BoboBrowser(reader), br, 1, answer, new string[] { "7" });
                 }
             }
 
@@ -2079,8 +2171,7 @@ namespace BoboBrowse.Net
             br.AddSelection(sel);
             answer = new Dictionary<string, IEnumerable<BrowseFacet>>();
 
-
-            DoTest(br, 1, answer, null);
+            DoTest(br, 1, answer, new string[] { "7" });
         }
 
         [Test]
@@ -2099,7 +2190,8 @@ namespace BoboBrowse.Net
 
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "shape", new BrowseFacet[] { new BrowseFacet("circle", 2), new BrowseFacet("rectangle", 1), new BrowseFacet("square", 1) } }
+                { "shape", new BrowseFacet[] { new BrowseFacet("circle", 2), 
+                    new BrowseFacet("rectangle", 1), new BrowseFacet("square", 1) } }
             };
 
             DoTest(br, 4, answer, new string[] { "3", "4", "5", "6" });
@@ -2108,7 +2200,8 @@ namespace BoboBrowse.Net
 
             answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "shape", new BrowseFacet[] { new BrowseFacet("circle", 1), new BrowseFacet("square", 1) } }
+                { "shape", new BrowseFacet[] { new BrowseFacet("circle", 1), 
+                    new BrowseFacet("square", 1) } }
             };
 
             DoTest(br, 2, answer, new string[] { "4", "5" });
@@ -2166,7 +2259,8 @@ namespace BoboBrowse.Net
 
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "date", new BrowseFacet[] { new BrowseFacet("[2000/01/01 TO 2003/05/05]", 4), new BrowseFacet("[2003/05/06 TO 2005/04/04]", 1) } }
+                { "date", new BrowseFacet[] { new BrowseFacet("[2000/01/01 TO 2003/05/05]", 4), 
+                    new BrowseFacet("[2003/05/06 TO 2005/04/04]", 1) } }
             };
 
             DoTest(br, 7, answer, null);
@@ -2201,7 +2295,8 @@ namespace BoboBrowse.Net
 
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "date", new BrowseFacet[] { new BrowseFacet("[2000/01/01 TO 2003/02/14]", 4), new BrowseFacet("[2003/05/06 TO 2005/04/04]", 1) } }
+                { "date", new BrowseFacet[] { new BrowseFacet("[2000/01/01 TO 2003/02/14]", 4), 
+                    new BrowseFacet("[2003/05/06 TO 2005/04/04]", 1) } }
             };
             DoTest(br, 3, null, null);
 
@@ -2224,9 +2319,10 @@ namespace BoboBrowse.Net
 
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "numendorsers", new BrowseFacet[] { new BrowseFacet("[000000 TO 000005]", 2), new BrowseFacet("[000006 TO 000010]", 2), new BrowseFacet("[000011 TO 000020]", 3) } }
+                { "numendorsers", new BrowseFacet[] { new BrowseFacet("[000000 TO 000005]", 2), 
+                    new BrowseFacet("[000006 TO 000010]", 2), new BrowseFacet("[000011 TO 000020]", 3) } }
             };
-            BrowseResult result = DoTest(br, 7, answer, null);
+            DoTest(br, 7, answer, null);
         }
 
         [Test]
@@ -2275,10 +2371,13 @@ namespace BoboBrowse.Net
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
                 { "color", new BrowseFacet[] { new BrowseFacet("green", 1), new BrowseFacet("red", 2) } },
-                { "size", new BrowseFacet[] { new BrowseFacet("[* TO 4]", 1), new BrowseFacet("[5 TO 8]", 1) } },
+                { "size", new BrowseFacet[] { new BrowseFacet("[* TO 4]", 1), 
+                    new BrowseFacet("[5 TO 8]", 1) } },
                 { "shape", new BrowseFacet[] { new BrowseFacet("square", 2) } },
-                { "location", new BrowseFacet[] { new BrowseFacet("toy/lego/", 1), new BrowseFacet("toy/lego/block", 1) } },
-                { "tag", new BrowseFacet[] { new BrowseFacet("rabbit", 2), new BrowseFacet("animal", 1), new BrowseFacet("dog", 1), new BrowseFacet("humane", 1), new BrowseFacet("pet", 1) } }
+                { "location", new BrowseFacet[] { new BrowseFacet("toy/lego/", 1), 
+                    new BrowseFacet("toy/lego/block", 1) } },
+                { "tag", new BrowseFacet[] { new BrowseFacet("rabbit", 2), new BrowseFacet("animal", 1), 
+                    new BrowseFacet("dog", 1), new BrowseFacet("humane", 1), new BrowseFacet("pet", 1) } }
             };
 
             DoTest(br, 2, answer, null);
@@ -2296,7 +2395,7 @@ namespace BoboBrowse.Net
             BrowseRequest browseRequest = new BrowseRequest();
             browseRequest.Count = 10;
             browseRequest.Offset = 0;
-            browseRequest.AddSortField(new SortField("date", SortField.CUSTOM));
+            browseRequest.AddSortField(new SortField("date", SortField.Type_e.CUSTOM));
 
             BrowseSelection colorSel = new BrowseSelection("color");
             colorSel.AddValue("red");
@@ -2325,14 +2424,16 @@ namespace BoboBrowse.Net
 
             BoboBrowser boboBrowser = NewBrowser();
 
-            browseRequest.Sort = new SortField[] { new SortField("compactnum", SortField.CUSTOM, true) };
+            browseRequest.Sort = new SortField[] { new SortField("compactnum", SortField.Type_e.CUSTOM, true) };
 
-            using (MultiBoboBrowser multiBoboBrowser = new MultiBoboBrowser(new IBrowsable[] { boboBrowser, boboBrowser }))
+            using (MultiBoboBrowser multiBoboBrowser = new MultiBoboBrowser(new IBrowsable[] { boboBrowser, 
+                boboBrowser }))
             {
                 var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
                 {
                     { "color", new BrowseFacet[] {  new BrowseFacet("red", 4), new BrowseFacet("green", 2) } },
-                    { "tag", new BrowseFacet[] { new BrowseFacet("animal", 2), new BrowseFacet("dog", 2), new BrowseFacet("humane", 2), new BrowseFacet("pet", 2), new BrowseFacet("rabbit", 4) } },
+                    { "tag", new BrowseFacet[] { new BrowseFacet("animal", 2), new BrowseFacet("dog", 2), 
+                        new BrowseFacet("humane", 2), new BrowseFacet("pet", 2), new BrowseFacet("rabbit", 4) } },
                     { "shape", new BrowseFacet[] {  new BrowseFacet("square", 4) } },
                     { "date", new BrowseFacet[] { new BrowseFacet("[2000/01/01 TO 2003/05/05]", 2) } }              
                 };
@@ -2342,7 +2443,7 @@ namespace BoboBrowse.Net
                     DoTest(mergedResult, browseRequest, 4, answer, new string[] { "7", "7", "1", "1" });
                 }
 
-                browseRequest.Sort = new SortField[] { new SortField("multinum", SortField.CUSTOM, true) };
+                browseRequest.Sort = new SortField[] { new SortField("multinum", SortField.Type_e.CUSTOM, true) };
                 using (BrowseResult mergedResult = multiBoboBrowser.Browse(browseRequest))
                 {
                     DoTest(mergedResult, browseRequest, 4, answer, new string[] { "7", "7", "1", "1" });
@@ -2376,15 +2477,14 @@ namespace BoboBrowse.Net
             shapeQ.Boost = 3.0f;
 
             BooleanQuery bq = new BooleanQuery();
-            bq.Add(shapeQ, Occur.SHOULD);
-            bq.Add(colorQ, Occur.SHOULD);
+            bq.Add(shapeQ, BooleanClause.Occur.SHOULD);
+            bq.Add(colorQ, BooleanClause.Occur.SHOULD);
 
             BrowseRequest br = new BrowseRequest();
             br.Sort = new SortField[] { SortField.FIELD_SCORE };
             br.Query = bq;
             br.Offset = 0;
             br.Count = 10;
-
 
             BrowseResult res = DoTest(br, 6, null, new string[] { "4", "1", "7", "5", "3", "2" });
             BrowseHit[] hits = res.Hits;
@@ -2413,7 +2513,6 @@ namespace BoboBrowse.Net
             map2.Add("rabbit", 100.0f);
             map2.Add("dog", 50.0f);
             FacetTermQuery tagQ = new FacetTermQuery(sel2, map2);
-
 
             BrowseRequest br = new BrowseRequest();
             br.Query = colorQ;
@@ -2449,16 +2548,14 @@ namespace BoboBrowse.Net
             map2.Put("dog", 50.0f);
             FacetTermQuery tagQ = new FacetTermQuery(sel2, map2);
 
-
             BrowseRequest br = new BrowseRequest();
 
             br.Offset = 0;
             br.Count = 10;
 
-
             BooleanQuery bq = new BooleanQuery(true);
-            bq.Add(colorQ, Occur.SHOULD);
-            bq.Add(tagQ, Occur.SHOULD);
+            bq.Add(colorQ, BooleanClause.Occur.SHOULD);
+            bq.Add(tagQ, BooleanClause.Occur.SHOULD);
 
             br.Query = bq;
             DoTest(br, 6, null, new String[] { "7", "1", "3", "2", "4", "5" });
@@ -2498,7 +2595,8 @@ namespace BoboBrowse.Net
             map.Put("dog", 7.0f);
             boostMaps.Put("tag", map);
 
-            var q = new ScoreAdjusterQuery(new MatchAllDocsQuery(), new FacetBasedBoostScorerBuilder(boostMaps));
+            var q = new ScoreAdjusterQuery(new MatchAllDocsQuery(), new FacetBasedBoostScorerBuilder(
+                boostMaps));
 
             BrowseRequest br = new BrowseRequest();
             br.Query = q;
@@ -2510,10 +2608,6 @@ namespace BoboBrowse.Net
             BrowseResult r = b.Browse(br);
 
             DoTest(r, br, 7, null, new string[] { "7", "2", "1", "3", "4", "5", "6" });
-
-            //      int firstDoc = r.getHits()[0].getDocid();
-            //      Explanation expl = b.explain(q, firstDoc);
-            //      System.out.println(">>> " + expl.toString());
         }
 
         [Test]
@@ -2529,7 +2623,8 @@ namespace BoboBrowse.Net
 
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "filtered_date", new BrowseFacet[] { new BrowseFacet("[2001/01/01 TO 2001/12/30]", 1), new BrowseFacet("[2007/01/01 TO 2007/12/30]", 1) } }          
+                { "filtered_date", new BrowseFacet[] { new BrowseFacet("[2001/01/01 TO 2001/12/30]", 1), 
+                    new BrowseFacet("[2007/01/01 TO 2007/12/30]", 1) } }          
             };
 
             DoTest(browser, req, 7, answer, null);
@@ -2548,7 +2643,8 @@ namespace BoboBrowse.Net
 
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "number", new BrowseFacet[] { new BrowseFacet("2130", 1), new BrowseFacet("1013", 1), new BrowseFacet("0913", 1) } }          
+                { "number", new BrowseFacet[] { new BrowseFacet("2130", 1), new BrowseFacet("1013", 1), 
+                    new BrowseFacet("0913", 1) } }          
             };
 
             DoTest(req, 7, answer, null);
@@ -2556,7 +2652,8 @@ namespace BoboBrowse.Net
             numberSpec.OrderBy = FacetSpec.FacetSortSpec.OrderValueAsc;
             answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "number", new BrowseFacet[] { new BrowseFacet("0005", 1), new BrowseFacet("0010", 1), new BrowseFacet("0011", 1) } }          
+                { "number", new BrowseFacet[] { new BrowseFacet("0005", 1), new BrowseFacet("0010", 1), 
+                    new BrowseFacet("0011", 1) } }          
             };
 
             DoTest(req, 7, answer, null);
@@ -2625,7 +2722,8 @@ namespace BoboBrowse.Net
 
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "groupby", new BrowseFacet[] { new BrowseFacet("red,rectangle,0011", 1), new BrowseFacet("red,square,0005", 1), new BrowseFacet("red,square,0010", 1) } }          
+                { "groupby", new BrowseFacet[] { new BrowseFacet("red,rectangle,0011", 1), 
+                    new BrowseFacet("red,square,0005", 1), new BrowseFacet("red,square,0010", 1) } }          
             };
 
             BrowseSelection sel = new BrowseSelection("groupby");
@@ -2637,7 +2735,8 @@ namespace BoboBrowse.Net
             sel.Values = new string[] { "red,square" };
             answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "groupby", new BrowseFacet[] { new BrowseFacet("red,square,0005", 1), new BrowseFacet("red,square,0010", 1) } }          
+                { "groupby", new BrowseFacet[] { new BrowseFacet("red,square,0005", 1), 
+                    new BrowseFacet("red,square,0010", 1) } }          
             };
 
             DoTest(req, 2, answer, null);
@@ -2654,63 +2753,11 @@ namespace BoboBrowse.Net
             fspec.MaxCount = 2;
             answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
-                { "groupby", new BrowseFacet[] { new BrowseFacet("blue,circle,0913",1),new BrowseFacet("blue,square,1013",1) } }          
+                { "groupby", new BrowseFacet[] { new BrowseFacet("blue,circle,0913",1),
+                    new BrowseFacet("blue,square,1013",1) } }          
             };
 
             DoTest(req, 7, answer, null);
-        }
-
-        /// <summary>
-        /// Reopened is not used any more
-        /// </summary>
-        //[Test]
-        public void nTestIndexReaderReopen()
-        {
-            int numDocs;
-            Lucene.Net.Store.Directory idxDir = new RAMDirectory();
-            Document[] docs = BuildData();
-
-            IndexWriter writer = new IndexWriter(idxDir, new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_CURRENT), IndexWriter.MaxFieldLength.UNLIMITED);
-            writer.AddDocument(docs[0]);
-            writer.Optimize();
-            writer.Commit();
-
-            IndexReader idxReader = IndexReader.Open(idxDir, true);
-            BoboSegmentReader boboReader = BoboSegmentReader.GetInstance(idxReader, _fconf, true);
-
-
-            for (int i = 1; i < docs.Length; ++i)
-            {
-                Document doc = docs[i];
-                numDocs = boboReader.NumDocs();
-                BoboSegmentReader reader = (BoboSegmentReader)boboReader.Reopen(true);
-                Assert.AreSame(boboReader, reader);
-
-                Lucene.Net.Store.Directory tmpDir = new RAMDirectory();
-                IndexWriter subWriter = new IndexWriter(tmpDir, new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_CURRENT), IndexWriter.MaxFieldLength.UNLIMITED);
-                subWriter.AddDocument(doc);
-                subWriter.Optimize();
-                subWriter.Dispose();
-                writer.AddIndexesNoOptimize(new Lucene.Net.Store.Directory[] { tmpDir });
-                writer.Commit();
-                reader = (BoboSegmentReader)boboReader.Reopen();
-                Assert.AreNotSame(boboReader, reader);
-                Assert.AreEqual(numDocs + 1, reader.NumDocs());
-                boboReader = reader;
-            }
-            writer.DeleteDocuments(new Term("id", "1"));
-            writer.Commit();
-            numDocs = boboReader.NumDocs();
-            BoboSegmentReader newReader = (BoboSegmentReader)boboReader.Reopen();
-            Assert.AreNotSame(newReader, boboReader);
-            int numDocs2 = newReader.NumDocs();
-            if (boboReader != newReader)
-            {
-                boboReader.Dispose();
-                boboReader = newReader;
-            }
-            Assert.AreEqual(numDocs - 1, numDocs2);
-            boboReader.Dispose();
         }
 
         [Test]
@@ -2718,25 +2765,30 @@ namespace BoboBrowse.Net
         {
             var facetHandlers = new List<IFacetHandler>();
             /* Underlying time facet for DynamicTimeRangeFacetHandler */
-            facetHandlers.Add(new RangeFacetHandler("timeinmillis", new PredefinedTermListFactory<long>(DynamicTimeRangeFacetHandler.NUMBER_FORMAT), null));
+            facetHandlers.Add(new RangeFacetHandler("timeinmillis", new PredefinedTermListFactory<long>(
+                DynamicTimeRangeFacetHandler.NUMBER_FORMAT), null));
             Lucene.Net.Store.Directory idxDir = new RAMDirectory();
-            IndexWriter writer = new IndexWriter(idxDir, new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_CURRENT), IndexWriter.MaxFieldLength.UNLIMITED);
+            Analyzer analyzer = new StandardAnalyzer(LuceneVersion.LUCENE_48);
+            IndexWriterConfig config = new IndexWriterConfig(LuceneVersion.LUCENE_48, analyzer);
 
             // This method returns the difference, measured in milliseconds, between the current 
             // time and midnight, January 1, 1970 UTC(coordinated universal time).
             // long now = System.currentTimeMillis();
-            //long now = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
             long now = DateTime.Now.GetTime();
-            for (long l = 0; l < 53; l++)
+            using (IndexWriter idxWriter = new IndexWriter(idxDir, config))
             {
-                Document d = new Document();
-                d.Add(BuildMetaField("timeinmillis", (now - l * 3500000).ToString(DynamicTimeRangeFacetHandler.NUMBER_FORMAT)));
-                writer.AddDocument(d);
-                writer.Optimize();
-                writer.Commit();
+                for (long l = 0; l < 53; l++)
+                {
+                    Document d = new Document();
+                    d.Add(BuildMetaField("timeinmillis", (now - l * 3500000).ToString(DynamicTimeRangeFacetHandler.NUMBER_FORMAT)));
+                    idxWriter.AddDocument(d);
+                    idxWriter.ForceMerge(1);
+                    idxWriter.Commit();
+                }
             }
-            IndexReader idxReader = IndexReader.Open(idxDir, true);
-            BoboSegmentReader boboReader = BoboSegmentReader.GetInstance(idxReader, facetHandlers);
+
+            DirectoryReader idxReader = DirectoryReader.Open(idxDir);
+            BoboMultiReader boboReader = BoboMultiReader.GetInstance(idxReader, facetHandlers);
             BoboBrowser browser = new BoboBrowser(boboReader);
             List<string> ranges = new List<string>();
             ranges.Add("000000001");
@@ -2748,7 +2800,8 @@ namespace BoboBrowse.Net
             ranges.Add("002000000");// two days
             ranges.Add("003000000");
             ranges.Add("004000000");
-            IFacetHandler facetHandler = new DynamicTimeRangeFacetHandler("timerange", "timeinmillis", now, ranges);
+            IFacetHandler facetHandler = new DynamicTimeRangeFacetHandler("timerange", "timeinmillis", 
+                now, ranges);
             browser.SetFacetHandler(facetHandler);
             //  
             BrowseRequest req = new BrowseRequest();
@@ -2844,7 +2897,6 @@ namespace BoboBrowse.Net
             output.MinHitCount = (1);
             br.SetFacetSpec("numberhisto", output);
 
-
             BrowseFacet[] answerBucketFacets = new BrowseFacet[5];
             answerBucketFacets[0] = new BrowseFacet("0000000000", 3);
             answerBucketFacets[1] = new BrowseFacet("0000000002", 1);
@@ -2858,7 +2910,6 @@ namespace BoboBrowse.Net
             };
 
             DoTest(br, 7, answer, null);
-
 
             // now with selection
 
@@ -2881,19 +2932,6 @@ namespace BoboBrowse.Net
         [Test]
         public void TestBucketFacetHandlerForNumbers()
         {
-            /*
-             * 
-             * 
-           String[][] predefinedBuckets2 = new String[3][];
-           predefinedBuckets2[0] =  new String[]{"2","3"};
-           predefinedBuckets2[1] =  new String[]{"1","4"};
-           predefinedBuckets2[2] =  new String[]{"7","8"};
-        
-           Map<String,String[]> predefinedNumberSets = new HashMap<String,String[]>();
-           predefinedNumberSets.put("s1", predefinedBuckets2[0]);
-           predefinedNumberSets.put("s2", predefinedBuckets2[1]);
-           predefinedNumberSets.put("s3", predefinedBuckets2[2]);
-             */
             BrowseRequest br = new BrowseRequest();
             br.Count = (10);
             br.Offset = (0);
