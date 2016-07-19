@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Util
 {
     using BoboBrowse.Net.Facets.Impl;
@@ -67,9 +67,9 @@ namespace BoboBrowse.Net.Util
                 private readonly IComparer<T> comparator;
 
                 public MergedQueue(int length, IComparer<T> comparator)
+                    : base(length)
                 {
                     this.comparator = comparator;
-                    this.Initialize(length);
                 }
 
                 public override bool LessThan(IteratorNode a, IteratorNode b)
