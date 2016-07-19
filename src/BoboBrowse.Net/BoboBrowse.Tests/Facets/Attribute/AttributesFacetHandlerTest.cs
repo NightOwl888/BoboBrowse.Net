@@ -17,16 +17,18 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Attribute
 {
     using BoboBrowse.Net.Facets.Filter;
     using BoboBrowse.Net.Support;
     using Lucene.Net.Analysis;
+    using Lucene.Net.Analysis.Core;
     using Lucene.Net.Documents;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
     using Lucene.Net.Store;
+    using Lucene.Net.Util;
     using NUnit.Framework;
     using System;
     using System.Collections.Generic;
@@ -40,7 +42,7 @@ namespace BoboBrowse.Net.Facets.Attribute
         private List<IFacetHandler> facetHandlers;
         private AttributesFacetHandler attributesFacetHandler;
         private BoboBrowser browser;
-        private BoboSegmentReader boboReader;
+        private BoboMultiReader boboReader;
         private IDictionary<string, string> selectionProperties;
         private const string AttributeHandlerName = "attributes";
 
@@ -48,8 +50,7 @@ namespace BoboBrowse.Net.Facets.Attribute
         {
             foreach (string val in vals)
             {
-                Field field = new Field(name, val, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS);
-                field.OmitTermFreqAndPositions = (true);
+                Field field = new StringField(name, val, Field.Store.NO);
                 doc.Add(field);
             }
         }
@@ -60,9 +61,11 @@ namespace BoboBrowse.Net.Facets.Attribute
             facetHandlers = new List<IFacetHandler>();
 
             directory = new RAMDirectory();
-            analyzer = new WhitespaceAnalyzer();
+            analyzer = new WhitespaceAnalyzer(LuceneVersion.LUCENE_48);
             selectionProperties = new Dictionary<string, string>();
-            IndexWriter writer = new IndexWriter(directory, analyzer, true, IndexWriter.MaxFieldLength.UNLIMITED);
+            IndexWriterConfig conf = new IndexWriterConfig(LuceneVersion.LUCENE_48, analyzer);
+            conf.SetOpenMode(IndexWriterConfig.OpenMode_e.CREATE);
+            IndexWriter writer = new IndexWriter(directory, conf);
 
             writer.AddDocument(Doc("prop1=val1", "prop2=val1", "prop5=val1"));
             writer.AddDocument(Doc("prop1=val2", "prop3=val1", "prop7=val7"));
@@ -72,12 +75,15 @@ namespace BoboBrowse.Net.Facets.Attribute
             writer.AddDocument(Doc("prop1=val1", "prop2=val1", "prop4=val2", "prop4=val3"));
             writer.Commit();
 
-            attributesFacetHandler = new AttributesFacetHandler(AttributeHandlerName, AttributeHandlerName, null, null,
-                new Dictionary<string, string>());
+            attributesFacetHandler = new AttributesFacetHandler(AttributeHandlerName, AttributeHandlerName, 
+                null, null, new Dictionary<string, string>());
             facetHandlers.Add(attributesFacetHandler);
-            IndexReader reader = IndexReader.Open(directory, true);
-            boboReader = BoboSegmentReader.GetInstance(reader, facetHandlers);
-            attributesFacetHandler.LoadFacetData(boboReader);
+            DirectoryReader reader = DirectoryReader.Open(directory);
+            boboReader = BoboMultiReader.GetInstance(reader, facetHandlers);
+            foreach (BoboSegmentReader subReader in boboReader.GetSubReaders())
+            {
+                attributesFacetHandler.LoadFacetData(subReader);
+            }
             browser = new BoboBrowser(boboReader);
         }
 
@@ -102,7 +108,8 @@ namespace BoboBrowse.Net.Facets.Attribute
             return CreateRequest(minHitCount, BrowseSelection.ValueOperation.ValueOperationOr, terms);
         }
 
-        public BrowseRequest CreateRequest(int minHitCount, BrowseSelection.ValueOperation operation, params string[] terms)
+        public BrowseRequest CreateRequest(int minHitCount, BrowseSelection.ValueOperation operation, 
+            params string[] terms)
         {
             BrowseRequest req = new BrowseRequest();
 
@@ -126,9 +133,10 @@ namespace BoboBrowse.Net.Facets.Attribute
         public void Test1Filter()
         {
             BrowseRequest request = CreateRequest(1, "prop3");
-            FacetCountCollectorSource facetCountCollectorSource = attributesFacetHandler.GetFacetCountCollectorSource(request.GetSelection(AttributeHandlerName), request.GetFacetSpec(AttributeHandlerName));
-            RandomAccessFilter randomAccessFilter = attributesFacetHandler.BuildFilter(request.GetSelection(AttributeHandlerName));
-            DocIdSetIterator iterator = randomAccessFilter.GetDocIdSet(boboReader).Iterator();
+            RandomAccessFilter randomAccessFilter = attributesFacetHandler.BuildFilter(request
+                .GetSelection(AttributeHandlerName));
+            DocIdSetIterator iterator = randomAccessFilter.GetDocIdSet(
+                boboReader.GetSubReaders().Get(0).AtomicContext, null).GetIterator();
             int docId = iterator.NextDoc();
             int[] docIds = new int[2];
             int i = 0;
@@ -280,7 +288,8 @@ namespace BoboBrowse.Net.Facets.Attribute
         {
             ModifiedSetup();
             selectionProperties.Put(AttributesFacetHandler.MAX_FACETS_PER_KEY_PROP_NAME, "2");
-            BrowseRequest request = CreateRequest(1, BrowseSelection.ValueOperation.ValueOperationOr, "prop1", "prop2", "prop3", "prop4", "prop5", "prop6", "prop7");
+            BrowseRequest request = CreateRequest(1, BrowseSelection.ValueOperation.ValueOperationOr, "prop1", "prop2", 
+                "prop3", "prop4", "prop5", "prop6", "prop7");
             request.GetFacetSpec(AttributeHandlerName).OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc;
             BrowseResult res = browser.Browse(request);
             Console.WriteLine(res);
@@ -299,8 +308,10 @@ namespace BoboBrowse.Net.Facets.Attribute
         private void ModifiedSetup()
         {
             directory = new RAMDirectory();
-            analyzer = new WhitespaceAnalyzer();
-            IndexWriter writer = new IndexWriter(directory, analyzer, true, IndexWriter.MaxFieldLength.UNLIMITED);
+            analyzer = new WhitespaceAnalyzer(LuceneVersion.LUCENE_48);
+            IndexWriterConfig conf = new IndexWriterConfig(LuceneVersion.LUCENE_48, analyzer);
+            conf.SetOpenMode(IndexWriterConfig.OpenMode_e.CREATE);
+            IndexWriter writer = new IndexWriter(directory, conf);
 
             writer.AddDocument(Doc("prop1=val1", "prop2=val1", "prop5=val1"));
             writer.AddDocument(Doc("prop1=val2", "prop3=val1", "prop7=val7"));
@@ -312,12 +323,15 @@ namespace BoboBrowse.Net.Facets.Attribute
 
             IDictionary<string, string> facetProps = new Dictionary<string, string>();
             facetProps.Put(AttributesFacetHandler.MAX_FACETS_PER_KEY_PROP_NAME, "1");
-            attributesFacetHandler = new AttributesFacetHandler(AttributeHandlerName, AttributeHandlerName, null, null,
-                facetProps);
+            attributesFacetHandler = new AttributesFacetHandler(AttributeHandlerName, AttributeHandlerName, 
+                null, null, facetProps);
             facetHandlers.Add(attributesFacetHandler);
-            IndexReader reader = IndexReader.Open(directory, true);
-            boboReader = BoboSegmentReader.GetInstance(reader, facetHandlers);
-            attributesFacetHandler.LoadFacetData(boboReader);
+            DirectoryReader reader = DirectoryReader.Open(directory);
+            boboReader = BoboMultiReader.GetInstance(reader, facetHandlers);
+            foreach (BoboSegmentReader subReader in boboReader.getSubReaders())
+            {
+                attributesFacetHandler.LoadFacetData(subReader);
+            }
             browser = new BoboBrowser(boboReader);
         }
     }
