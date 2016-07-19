@@ -27,6 +27,7 @@ namespace BoboBrowse.Net.Search
     using Lucene.Net.Index;
     using Lucene.Net.Search;
     using Lucene.Net.Util;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -320,9 +321,14 @@ namespace BoboBrowse.Net.Search
                         : (AtomicReaderContext)(indexReaderContext.Children.Get(i));
                     int docStart = start;
 
-                    // TODO: Need to contribute this to Lucene.net
-                    atomicContext = Lucene.Net.Index.AtomicReaderContextUtil.UpdateDocBase(atomicContext, docStart);
+                    // NOTE: This code calls an internal constructor. Apparently, this was in the same namespace as Lucene,
+                    // but was added to this project, which presumably allows you to call internal constructors in Java.
+                    // In .NET, we can just use Activator.CreateInstance. Not great, but this code will be removed
+                    // when applying commit https://github.com/senseidb/bobo/commit/924c8579d90dbb5d56103976d39b47daa2242ef3
+                    // which includes several major changes after the 4.0.2 release.
 
+                    // atomicContext = AtomicReaderContextUtil.UpdateDocBase(atomicContext, docStart);
+                    atomicContext = (AtomicReaderContext)Activator.CreateInstance(typeof(AtomicReaderContext), null, atomicContext.Reader, 0, 0, 0, docStart);
 
                     if (reader is BoboMultiReader) 
                     {
