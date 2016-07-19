@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Util
 {
     using NUnit.Framework;
@@ -44,13 +44,11 @@ namespace BoboBrowse.Net.Util
 			while (rand.NextDouble() > density) {
 				idx++;
 			}
-            int count = 0;
 			while (idx < orig.Length) 
             {
 				float val = (float)rand.NextDouble();
 				orig[idx] = val;
 				fromEmpty.Set(idx, val);
-				count++;
 				idx += 1;
 				while (rand.NextDouble() > density) {
 					idx++;
@@ -129,8 +127,10 @@ namespace BoboBrowse.Net.Util
             }
             long elapsedTimeMutable = System.Environment.TickCount - markTime;
 
-            Console.WriteLine("elapsed time on the primitive array: " + elapsedTimePrim + "; elapsed time on the mutable condensed arr: " + elapsedTimeMutable);
-            Console.WriteLine("ratio of time to do it on the mutable condensed arr, to time on primitive array: " + (double)elapsedTimeMutable / elapsedTimePrim);
+            Console.WriteLine("elapsed time on the primitive array: " + elapsedTimePrim 
+                + "; elapsed time on the mutable condensed arr: " + elapsedTimeMutable);
+            Console.WriteLine("ratio of time to do it on the mutable condensed arr, to time on primitive array: " 
+                + (double)elapsedTimeMutable / elapsedTimePrim);
         }
     }
 }
