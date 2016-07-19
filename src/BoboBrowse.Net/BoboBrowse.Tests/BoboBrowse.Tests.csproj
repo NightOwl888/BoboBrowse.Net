@@ -98,8 +98,6 @@
     <Compile Include="Util\BigIntArrayTest.cs" />
     <Compile Include="Util\BigNestedIntArrayTest.cs" />
     <Compile Include="Util\BigSegmentedArrayTest.cs" />
-    <Compile Include="Util\FilterTest.cs" />
-    <Compile Include="Util\IndexReaderWithMetaDataCache.cs" />
     <Compile Include="Util\MutableSparseFloatArrayTest.cs" />
     <Compile Include="Util\SparseFloatArrayTest.cs" />
   </ItemGroup>
