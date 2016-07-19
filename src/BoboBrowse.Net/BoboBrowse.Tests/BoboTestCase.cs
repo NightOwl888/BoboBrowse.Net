@@ -111,7 +111,7 @@ namespace BoboBrowse.Net
         }
 
         // From Bobo 3.1.0 MetaTokenStream class
-        private class MetaSizeTokenStream : TokenStream
+        private sealed class MetaSizeTokenStream : TokenStream
         {
             private bool returnToken = false;
             private readonly PayloadAttribute payloadAttr;
@@ -125,20 +125,20 @@ namespace BoboBrowse.Net
                 buffer[2] = (byte)(size >> 16);
                 buffer[3] = (byte)(size >> 24);
 
-                payloadAttr = base.AddAttribute<PayloadAttribute>();
-                payloadAttr.Payload = new BytesRef(buffer);
-                termAttr = base.AddAttribute<CharTermAttribute>();
-                termAttr.Append(term.Text());
+                //payloadAttr = base.AddAttribute<PayloadAttribute>();
+                //payloadAttr.Payload = new BytesRef(buffer);
+                //termAttr = base.AddAttribute<CharTermAttribute>();
+                //termAttr.Append(term.Text());
 
                 // Backup in case the above doesn't work...
                 //// NOTE: Calling the AddAttribute<T> method failed, so 
                 //// switched to using AddAttributeImpl.
-                //payloadAttr = new PayloadAttribute();
-                //payloadAttr.Payload = new BytesRef(buffer);
-                //AddAttributeImpl(payloadAttr);
-                //termAttr = new CharTermAttribute();
-                //termAttr.Append(term.Text());
-                //AddAttributeImpl(payloadAttr);
+                payloadAttr = new PayloadAttribute();
+                payloadAttr.Payload = new BytesRef(buffer);
+                AddAttributeImpl(payloadAttr);
+                termAttr = new CharTermAttribute();
+                termAttr.Append(term.Text());
+                AddAttributeImpl(payloadAttr);
 
                 returnToken = true;
             }
