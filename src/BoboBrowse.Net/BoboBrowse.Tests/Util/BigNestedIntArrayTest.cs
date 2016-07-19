@@ -17,10 +17,11 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Util
 {
     using BoboBrowse.Net.Support;
+    using Lucene.Net.Util;
     using NUnit.Framework;
     using System;
 
@@ -250,7 +251,7 @@ namespace BoboBrowse.Net.Util
         /// </summary>
         public sealed class AllocOnlyTestLoader : BigNestedIntArray.Loader
         {
-            private int[] _maxNumItems;
+            private readonly int[] _maxNumItems;
 
             public AllocOnlyTestLoader(int maxdoc)
             {
@@ -318,6 +319,53 @@ namespace BoboBrowse.Net.Util
                     }
                 }
             }
+        }
+
+        [Test]
+        public void TestCountNoReturnWithFilter()
+        {
+            int maxId = 20;
+            int numVals = 10;
+            int[] count = new int[numVals];
+
+            var loader = new BigNestedIntArray.BufferedLoader(maxId);
+            for (int val = 0; val < numVals; val++)
+            {
+                for (int i = 0; i < maxId - val; i++)
+                {
+                    loader.Add(i, val);
+                }
+            }
+
+            BigNestedIntArray nestedArray = new BigNestedIntArray();
+            nestedArray.Load(maxId, loader);
+
+            OpenBitSet filter = new OpenBitSet(numVals);
+            for (int i = 0; i < numVals; i++)
+            {
+                if (i % 2 == 0)
+                {
+                    filter.Set(i);
+                }
+            }
+
+            for (int i = 0; i < maxId; i++)
+            {
+                nestedArray.CountNoReturnWithFilter(i, count, filter);
+            }
+
+            for (int i = 0; i < numVals; i++)
+            {
+                if (i % 2 == 0)
+                {
+                    Assert.True(count[i] == maxId - i);
+                }
+                else
+                {
+                    Assert.True(count[i] == 0);
+                }
+            }
+            return;
         }
     }
 }
