@@ -17,13 +17,12 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net
 {
     using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Facets.Impl;
     using BoboBrowse.Net.Util;
-    using Common.Logging;
     using NUnit.Framework;
     using System;
     using System.Collections.Generic;
@@ -31,13 +30,9 @@ namespace BoboBrowse.Net
     [TestFixture]
     public class BoboFacetIteratorTest
     {
-        private static ILog log = LogManager.GetLogger(typeof(BoboFacetIteratorTest));
-
         [SetUp]
         public void Init()
         {
-            //String confdir = System.getProperty("conf.dir");
-            //org.apache.log4j.PropertyConfigurator.configure(confdir + "/log4j.properties");
         }
 
         [TearDown]
