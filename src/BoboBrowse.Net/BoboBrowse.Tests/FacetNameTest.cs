@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Tests
 {
     using BoboBrowse.Net;
@@ -47,12 +47,10 @@ namespace BoboBrowse.Tests
 
         private class TestDataDigester : DataDigester
         {
-            private IEnumerable<IFacetHandler> _facetHandlers;
-            private Document[] _data;
+            private readonly Document[] _data;
 
             public TestDataDigester(IEnumerable<IFacetHandler> facetHandlers, Document[] data)
             {
-                _facetHandlers = facetHandlers;
                 _data = data;
             }
 
@@ -100,9 +98,9 @@ namespace BoboBrowse.Tests
 
                 String ID = i.ToString();
                 Document d = new Document();
-                d.Add(new Field("id", ID, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
-                d.Add(new Field("color", color, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
-                d.Add(new Field("make", make, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
+                d.Add(new StringField("id", ID, Field.Store.YES));
+                d.Add(new StringField("color", color, Field.Store.YES));
+                d.Add(new StringField("make", make, Field.Store.YES));
                 dataList.Add(d);
             }
             return dataList.ToArray();
@@ -117,7 +115,7 @@ namespace BoboBrowse.Tests
             TestDataDigester testDigester = new TestDataDigester(_facetHandlers, data);
             BoboIndexer indexer = new BoboIndexer(testDigester, dir);
             indexer.Index();
-            using (var r = IndexReader.Open(dir, false))
+            using (var r = DirectoryReader.Open(dir))
             {
             }
 
@@ -161,9 +159,9 @@ namespace BoboBrowse.Tests
             int expectedHitNum = 3;
 
             Directory ramIndexDir = CreateIndex();
-            using (IndexReader srcReader = IndexReader.Open(ramIndexDir, true))
+            using (DirectoryReader srcReader = DirectoryReader.Open(ramIndexDir))
             {
-                using (BoboSegmentReader boboReader = BoboSegmentReader.GetInstance(srcReader, _facetHandlers, null))
+                using (BoboMultiReader boboReader = BoboMultiReader.GetInstance(srcReader, _facetHandlers))
                 {
                     using (BoboBrowser boboBrowser = new BoboBrowser(boboReader))
                     {
