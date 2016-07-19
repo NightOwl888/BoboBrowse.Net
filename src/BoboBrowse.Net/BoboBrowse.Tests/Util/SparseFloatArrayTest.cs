@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Util
 {
     using NUnit.Framework;
@@ -55,7 +55,8 @@ namespace BoboBrowse.Net.Util
                 }
             }
             Assert.True(count > 100 && count < orig.Length / 2, "count was bad: " + count);
-            Console.WriteLine("float array with " + count + " out of " + orig.Length + " non-zero values");
+            Console.WriteLine("float array with " + count + " out of " + orig.Length 
+                + " non-zero values");
 
             var sparse = new SparseFloatArray(orig);
 

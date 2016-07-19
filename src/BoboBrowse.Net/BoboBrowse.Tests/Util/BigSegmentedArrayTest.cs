@@ -17,16 +17,11 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Util
 {
-    using BoboBrowse.Net.Util;
     using Lucene.Net.Search;
     using NUnit.Framework;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
 
     /// <summary>
     /// Test BigSegmentedArray
@@ -108,10 +103,8 @@ namespace BoboBrowse.Net.Util
         {
             int a = array.MaxValue / 16;
             int b = a * 2;
-            int c = a * 3;
             int d = a * 4;
             int e = a * 5;
-            int f = a * 6;
 
             array.Add(10000, b);
             Assert.AreEqual(DocIdSetIterator.NO_MORE_DOCS, array.FindValueRange(d, e, 0, array.Size()));

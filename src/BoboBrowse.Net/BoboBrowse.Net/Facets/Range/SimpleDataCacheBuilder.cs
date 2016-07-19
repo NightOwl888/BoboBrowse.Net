@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Range
 {
     using BoboBrowse.Net.Facets.Data;
@@ -26,8 +26,8 @@ namespace BoboBrowse.Net.Facets.Range
 
     public class SimpleDataCacheBuilder : IFacetDataCacheBuilder
     {
-        private string name;
-        private string indexFieldName;
+        private readonly string name;
+        private readonly string indexFieldName;
 
         public SimpleDataCacheBuilder(string name, string indexFieldName)
         {
