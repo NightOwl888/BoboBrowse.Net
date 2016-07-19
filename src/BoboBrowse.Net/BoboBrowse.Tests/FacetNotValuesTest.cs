@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Tests
 {
     using BoboBrowse.Net;
@@ -45,12 +45,10 @@ namespace BoboBrowse.Tests
 
         private class TestDataDigester : DataDigester
         {
-            private List<IFacetHandler> _facetHandlers;
             private Document[] _data;
 
             public TestDataDigester(List<IFacetHandler> facetHandlers, Document[] data)
             {
-                _facetHandlers = facetHandlers;
                 _data = data;
             }
 
@@ -71,6 +69,7 @@ namespace BoboBrowse.Tests
             _documentSize = 2;
             //string confdir = System.getProperty("conf.dir");
             //if (confdir == null) confdir = "./resource";
+            //System.setProperty("log.home", ".");
             //org.apache.log4j.PropertyConfigurator.configure(confdir + "/log4j.properties");
         }
 
@@ -87,17 +86,17 @@ namespace BoboBrowse.Tests
             string color = "red";
             string ID = "10";
             Document d = new Document();
-            d.Add(new Field("id", ID, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
-            d.Add(new Field("color", color, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
-            d.Add(new NumericField("NUM").SetIntValue(10));
+            d.Add(new StringField("id", ID, Field.Store.YES));
+            d.Add(new StringField("color", color, Field.Store.YES));
+            d.Add(new IntField("NUM", 10, Field.Store.YES));
             dataList.Add(d);
 
             color = "green";
             ID = "11";
             d = new Document();
-            d.Add(new Field("id", ID, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
-            d.Add(new Field("color", color, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
-            d.Add(new NumericField("NUM").SetIntValue(11));
+            d.Add(new StringField("id", ID, Field.Store.YES));
+            d.Add(new StringField("color", color, Field.Store.YES));
+            d.Add(new IntField("NUM", 11, Field.Store.YES));
             dataList.Add(d);
 
 
@@ -112,8 +111,8 @@ namespace BoboBrowse.Tests
                 string color = (i % 2 == 0) ? "red" : "green";
                 string ID = Convert.ToString(i);
                 Document d = new Document();
-                d.Add(new Field("id", ID, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
-                d.Add(new Field("color", color, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
+                d.Add(new StringField("id", ID, Field.Store.YES));
+                d.Add(new StringField("color", color, Field.Store.YES));
                 dataList.Add(d);
             }
 
@@ -129,7 +128,7 @@ namespace BoboBrowse.Tests
             TestDataDigester testDigester = new TestDataDigester(_facetHandlers, data);
             BoboIndexer indexer = new BoboIndexer(testDigester, dir);
             indexer.Index();
-            using (IndexReader r = IndexReader.Open(dir, false))
+            using (DirectoryReader r = DirectoryReader.Open(dir))
             { }
 
             return dir;
@@ -144,7 +143,7 @@ namespace BoboBrowse.Tests
             TestDataDigester testDigester = new TestDataDigester(_facetHandlers, data);
             BoboIndexer indexer = new BoboIndexer(testDigester, dir);
             indexer.Index();
-            using (IndexReader r = IndexReader.Open(dir, false))
+            using (DirectoryReader r = DirectoryReader.Open(dir))
             { }
 
             return dir;
@@ -182,9 +181,9 @@ namespace BoboBrowse.Tests
 
             using (Directory ramIndexDir = CreateIndex())
             {
-                using (IndexReader srcReader = IndexReader.Open(ramIndexDir, true))
+                using (DirectoryReader srcReader = DirectoryReader.Open(ramIndexDir))
                 {
-                    using (boboBrowser = new BoboBrowser(BoboSegmentReader.GetInstance(srcReader, _facetHandlers, null)))
+                    using (boboBrowser = new BoboBrowser(BoboMultiReader.GetInstance(srcReader, _facetHandlers)))
                     {
                         result = boboBrowser.Browse(br);
 
@@ -219,10 +218,10 @@ namespace BoboBrowse.Tests
             using (Directory ramIndexDir = CreateIndexTwo())
             {
 
-                using (IndexReader srcReader = IndexReader.Open(ramIndexDir, true))
+                using (DirectoryReader srcReader = DirectoryReader.Open(ramIndexDir))
                 {
 
-                    using (boboBrowser = new BoboBrowser(BoboSegmentReader.GetInstance(srcReader, _facetHandlers, null)))
+                    using (boboBrowser = new BoboBrowser(BoboMultiReader.GetInstance(srcReader, _facetHandlers)))
                     {
 
                         BrowseRequest br = new BrowseRequest();
@@ -234,13 +233,12 @@ namespace BoboBrowse.Tests
                             log.Error("_idRanges cannot be null in order to test NOT on RangeFacetHandler");
                         }
                         BrowseSelection idSel = new BrowseSelection("idRange");
-                        //int rangeIndex = 2; // Not used
                         idSel.AddNotValue(_idRanges[0]);
                         int expectedHitNum = 1;
                         br.AddSelection(idSel);
                         BooleanQuery q = new BooleanQuery();
-                        q.Add(NumericRangeQuery.NewIntRange("NUM", 10, 10, true, true), Occur.MUST_NOT);
-                        q.Add(new MatchAllDocsQuery(), Occur.MUST);
+                        q.Add(NumericRangeQuery.NewIntRange("NUM", 10, 10, true, true), BooleanClause.Occur.MUST_NOT);
+                        q.Add(new MatchAllDocsQuery(), BooleanClause.Occur.MUST);
                         br.Query = q;
 
                         result = boboBrowser.Browse(br);
