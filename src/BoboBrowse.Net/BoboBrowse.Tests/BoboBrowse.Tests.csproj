@@ -80,6 +80,7 @@
     <Compile Include="..\Common\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="BasicIndexingTests.cs" />
     <Compile Include="BasicTests.cs" />
     <Compile Include="BoboFacetIteratorTest.cs" />
     <Compile Include="BoboTestCase.cs" />
