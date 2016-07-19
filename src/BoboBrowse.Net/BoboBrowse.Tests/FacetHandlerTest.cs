@@ -17,17 +17,19 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Tests
 {
     using BoboBrowse.Net;
     using BoboBrowse.Net.Facets;
     using BoboBrowse.Net.Facets.Filter;
     using BoboBrowse.Net.Sort;
-    using BoboBrowse.Net.Support;
+    using Lucene.Net.Analysis;
     using Lucene.Net.Analysis.Standard;
+    using Lucene.Net.Documents;
     using Lucene.Net.Index;
     using Lucene.Net.Store;
+    using Lucene.Net.Util;
     using NUnit.Framework;
     using System.Collections.Generic;
     using System.Linq;
@@ -48,7 +50,8 @@ namespace BoboBrowse.Tests
             {
             }
 
-            public override RandomAccessFilter BuildRandomAccessFilter(string value, IDictionary<string, string> selectionProperty)
+            public override RandomAccessFilter BuildRandomAccessFilter(string value, 
+                IDictionary<string, string> selectionProperty)
             {
                 return null;
             }
@@ -84,9 +87,13 @@ namespace BoboBrowse.Tests
             _ramDir = new RAMDirectory();
             try
             {
-                using (var writer = new IndexWriter(_ramDir, new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_CURRENT), IndexWriter.MaxFieldLength.UNLIMITED))
-                {
-                }
+                Analyzer analyzer = new StandardAnalyzer(LuceneVersion.LUCENE_48);
+                IndexWriterConfig config = new IndexWriterConfig(LuceneVersion.LUCENE_48, analyzer);
+                IndexWriter idxWriter = new IndexWriter(_ramDir, config);
+                // Add one empty document, so that Directory reader will have one sub reader
+                Document doc = new Document();
+                idxWriter.AddDocument(doc);
+                idxWriter.Dispose();
             }
             catch
             {
@@ -97,7 +104,7 @@ namespace BoboBrowse.Tests
         [Test]
         public void TestFacetHandlerLoad()
         {
-            var reader = IndexReader.Open(_ramDir, true);
+            var reader = DirectoryReader.Open(_ramDir);
 
             var list = new List<IFacetHandler>();
             var h1 = new NoopFacetHandler("A");
@@ -127,7 +134,7 @@ namespace BoboBrowse.Tests
             list.Add(h5);
 
 
-            using (var boboReader = BoboSegmentReader.GetInstance(reader, list, null))
+            using (var boboReader = BoboMultiReader.GetInstance(reader, list))
             {
 
                 using (var browser = new BoboBrowser(boboReader))
@@ -172,7 +179,7 @@ namespace BoboBrowse.Tests
         [Test]
         public void TestNegativeLoad()
         {
-            var reader = IndexReader.Open(_ramDir, true);
+            var reader = DirectoryReader.Open(_ramDir);
 
             var list = new List<IFacetHandler>();
             var s1 = new HashSet<string>();
@@ -203,7 +210,7 @@ namespace BoboBrowse.Tests
             var h5 = new NoopFacetHandler("E", s5);
             list.Add(h5);
 
-            using (var boboReader = BoboSegmentReader.GetInstance(reader, list, null))
+            using (var boboReader = BoboMultiReader.GetInstance(reader, list))
             {
 
                 using (var browser = new BoboBrowser(boboReader))
