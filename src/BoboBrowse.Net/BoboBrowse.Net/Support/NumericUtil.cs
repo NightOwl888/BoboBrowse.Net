@@ -107,7 +107,7 @@ namespace BoboBrowse.Net.Support
             {
                 try
                 {
-                    int val = NumericUtils.PrefixCodedToInt(prefixCoded);
+                    int val = NumericUtils.PrefixCodedToInt(new BytesRef(prefixCoded));
                     if (val < 0)
                         val ^= 0x7fffffff;
                     float result = BitConverter.ToSingle(BitConverter.GetBytes(val), 0);
@@ -128,7 +128,7 @@ namespace BoboBrowse.Net.Support
             {
                 try
                 {
-                    long val = NumericUtils.PrefixCodedToLong(prefixCoded);
+                    long val = NumericUtils.PrefixCodedToLong(new BytesRef(prefixCoded));
                     if (val < 0)
                         val ^= 0x7fffffffffffffffL;
                     double result = BitConverter.Int64BitsToDouble(val);
