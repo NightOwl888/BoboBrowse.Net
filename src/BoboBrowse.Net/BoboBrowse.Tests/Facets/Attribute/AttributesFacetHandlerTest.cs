@@ -328,7 +328,7 @@ namespace BoboBrowse.Net.Facets.Attribute
             facetHandlers.Add(attributesFacetHandler);
             DirectoryReader reader = DirectoryReader.Open(directory);
             boboReader = BoboMultiReader.GetInstance(reader, facetHandlers);
-            foreach (BoboSegmentReader subReader in boboReader.getSubReaders())
+            foreach (BoboSegmentReader subReader in boboReader.GetSubReaders())
             {
                 attributesFacetHandler.LoadFacetData(subReader);
             }
