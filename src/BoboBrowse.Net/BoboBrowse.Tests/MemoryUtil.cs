@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net
 {
     using BoboBrowse.Net.Util;
@@ -43,12 +43,12 @@ namespace BoboBrowse.Net
             return array;
         }
 
-        private class RunnerThread2
+        private class RunnerThread
         {
-            private int[] array;
+            private readonly int[] array;
             private BigIntArray bigarray;
 
-            public RunnerThread2(int[] a, BigIntArray b)
+            public readonly RunnerThread(int[] a, BigIntArray b)
             {
                 array = a;
                 bigarray = b;
@@ -72,60 +72,18 @@ namespace BoboBrowse.Net
             int iter = array.Length;
             BigIntArray bigArray = new BigIntArray(max);
             Thread[] threads = new Thread[iter];
-            RunnerThread2[] threadStates = new RunnerThread2[iter];
-
-            for (int i = 0; i < iter; ++i)
-            {
-                threadStates[i] = new RunnerThread2(array[i], bigArray); 
-                threads[i] = new Thread(new ThreadStart(threadStates[i].Run));
-            }
-
-            foreach (Thread t in threads)
-            {
-                t.Start();
-            }
-        }
-
-        private class RunnerThread
-        {
-            private int[] array;
-            private int[] bigarray;
-
-            public RunnerThread(int[] a, int[] b)
-            {
-                array = a;
-                bigarray = b;
-            }
-
-            public void Run()
-            {
-                long start = System.Environment.TickCount;
-                foreach (int val in array)
-                {
-                    int x = bigarray[val];
-                }
-
-                long end = System.Environment.TickCount;
-                Console.WriteLine("time: " + (end - start));
-            }
-        }
-
-        static void Time2(int[][] array)
-        {
-            int iter = array.Length;
-            int[] bigArray = new int[max];
-            Thread[] threads = new Thread[iter];
             RunnerThread[] threadStates = new RunnerThread[iter];
 
             for (int i = 0; i < iter; ++i)
             {
-                threadStates[i] = new RunnerThread(array[i], bigArray);
+                threadStates[i] = new RunnerThread(array[i], bigArray); 
                 threads[i] = new Thread(new ThreadStart(threadStates[i].Run));
             }
 
             foreach (Thread t in threads)
             {
-                t.Start();
+                //t.Start();
+                t.Join();
             }
         }
 
@@ -140,8 +98,6 @@ namespace BoboBrowse.Net
             }
 
             Time1(indexesPerThread);
-
-            //Time2(indexesPerThread);
         }
 
         [Test]
