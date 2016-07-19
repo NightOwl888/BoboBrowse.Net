@@ -17,7 +17,7 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Util
 {
     using NUnit.Framework;
@@ -43,16 +43,16 @@ namespace BoboBrowse.Net.Util
                 Assert.AreEqual(0, test.Get(0));
             }
 
-            int k = 0;
             long start = System.Environment.TickCount;
             for (int i = 0; i < count; i++)
             {
-                k = test.Get(i);
+                test.Get(i);
             }
             long end = System.Environment.TickCount;
             Console.WriteLine("Big array took: " + (end - start));
 
             start = System.Environment.TickCount;
+            int k = 0;
             for (int i = 0; i < count; i++)
             {
                 k = test2[i];
