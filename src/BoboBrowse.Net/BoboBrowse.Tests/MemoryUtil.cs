@@ -46,9 +46,9 @@ namespace BoboBrowse.Net
         private class RunnerThread
         {
             private readonly int[] array;
-            private BigIntArray bigarray;
+            private readonly BigIntArray bigarray;
 
-            public readonly RunnerThread(int[] a, BigIntArray b)
+            public RunnerThread(int[] a, BigIntArray b)
             {
                 array = a;
                 bigarray = b;
