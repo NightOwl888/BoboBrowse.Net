@@ -17,16 +17,18 @@
 //* See the License for the specific language governing permissions and
 //* limitations under the License.
 
-// Version compatibility level: 3.2.0
+// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net
 {
     using BoboBrowse.Net.Facets;
     using BoboBrowse.Net.Facets.Impl;
     using BoboBrowse.Net.Support;
     using Lucene.Net.Analysis;
+    using Lucene.Net.Analysis.Core;
     using Lucene.Net.Documents;
     using Lucene.Net.Index;
     using Lucene.Net.Store;
+    using Lucene.Net.Util;
     using NUnit.Framework;
     using System;
     using System.Collections.Generic;
@@ -47,8 +49,10 @@ namespace BoboBrowse.Net
             facetHandlers = new List<IFacetHandler>();
 
             directory = new RAMDirectory();
-            analyzer = new WhitespaceAnalyzer();
-            IndexWriter writer = new IndexWriter(directory, analyzer, true, IndexWriter.MaxFieldLength.UNLIMITED);
+            analyzer = new WhitespaceAnalyzer(LuceneVersion.LUCENE_48);
+            IndexWriterConfig config = new IndexWriterConfig(LuceneVersion.LUCENE_48, analyzer);
+            config.SetOpenMode(IndexWriterConfig.OpenMode_e.CREATE);
+            IndexWriter writer = new IndexWriter(directory, config);
             Document doc = new Document();
             AddMetaDataField(doc, PathHandlerName, new String[] { "/a/b/c", "/a/b/d" });
             writer.AddDocument(doc);
@@ -62,7 +66,7 @@ namespace BoboBrowse.Net
         public void Dispose()
         {
             facetHandlers = null;
-            if (directory.isOpen_ForNUnit) directory.Dispose();
+            if (directory != null && directory.IsOpen) directory.Dispose();
             directory = null;
             analyzer = null;
         }
@@ -71,8 +75,7 @@ namespace BoboBrowse.Net
         {
             foreach (String val in vals)
             {
-                Field field = new Field(name, val, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS);
-                field.OmitTermFreqAndPositions = (true);
+                Field field = new StringField(name, val, Field.Store.NO);
                 doc.Add(field);
             }
         }
@@ -80,8 +83,8 @@ namespace BoboBrowse.Net
         [Test]
         public void TestMultiValPath()
         {
-            IndexReader reader = IndexReader.Open(directory, true);
-            BoboSegmentReader boboReader = BoboSegmentReader.GetInstance(reader, facetHandlers);
+            DirectoryReader reader = DirectoryReader.Open(directory);
+            BoboMultiReader boboReader = BoboMultiReader.GetInstance(reader, facetHandlers);
 
             BoboBrowser browser = new BoboBrowser(boboReader);
             BrowseRequest req = new BrowseRequest();
