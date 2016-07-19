@@ -141,7 +141,7 @@ namespace BoboBrowse.Net
             TestDataDigester testDigester = new TestDataDigester(_facetHandlers, data);
             BoboIndexer indexer = new BoboIndexer(testDigester, dir);
             indexer.Index();
-            using (var r = IndexReader.Open(dir, false))
+            using (var r = DirectoryReader.Open(dir))
             {
             }
 
@@ -150,9 +150,7 @@ namespace BoboBrowse.Net
 
         public static Field BuildField(string name, string val)
         {
-            Field f = new Field(name, val, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
-            f.OmitTermFreqAndPositions = true;
-            return f;
+            return new StringField(name, val, Field.Store.YES);
         }
 
         public static IEnumerable<IFacetHandler> CreateFacetHandlers()
@@ -171,10 +169,10 @@ namespace BoboBrowse.Net
             string field = "pricedouble";
 
             // Lucene index.
-            using (IndexReader reader = IndexReader.Open(this._indexDir, true))
+            using (DirectoryReader reader = DirectoryReader.Open(this._indexDir))
             {
                 // Bobo reader.
-                using (BoboSegmentReader boboReader = BoboSegmentReader.GetInstance(reader, this._facetHandlers))
+                using (BoboMultiReader boboReader = BoboMultiReader.GetInstance(reader, this._facetHandlers))
                 {
                     // Request.
                     BrowseRequest browseRequest = new BrowseRequest();
@@ -223,10 +221,10 @@ namespace BoboBrowse.Net
             string field = "pricedouble";
 
             // Lucene index.
-            using (IndexReader reader = IndexReader.Open(this._indexDir, true))
+            using (DirectoryReader reader = DirectoryReader.Open(this._indexDir))
             {
                 // Bobo reader.
-                using (BoboSegmentReader boboReader = BoboSegmentReader.GetInstance(reader, this._facetHandlers))
+                using (BoboMultiReader boboReader = BoboMultiReader.GetInstance(reader, this._facetHandlers))
                 {
                     // Request.
                     BrowseRequest browseRequest = new BrowseRequest();
@@ -275,10 +273,10 @@ namespace BoboBrowse.Net
             string field = "pricefloat";
 
             // Lucene index.
-            using (IndexReader reader = IndexReader.Open(this._indexDir, true))
+            using (DirectoryReader reader = DirectoryReader.Open(this._indexDir))
             {
                 // Bobo reader.
-                using (BoboSegmentReader boboReader = BoboSegmentReader.GetInstance(reader, this._facetHandlers))
+                using (BoboMultiReader boboReader = BoboMultiReader.GetInstance(reader, this._facetHandlers))
                 {
                     // Request.
                     BrowseRequest browseRequest = new BrowseRequest();
@@ -327,10 +325,10 @@ namespace BoboBrowse.Net
             string field = "pricefloat";
 
             // Lucene index.
-            using (IndexReader reader = IndexReader.Open(this._indexDir, true))
+            using (DirectoryReader reader = DirectoryReader.Open(this._indexDir))
             {
                 // Bobo reader.
-                using (BoboSegmentReader boboReader = BoboSegmentReader.GetInstance(reader, this._facetHandlers))
+                using (BoboMultiReader boboReader = BoboMultiReader.GetInstance(reader, this._facetHandlers))
                 {
                     // Request.
                     BrowseRequest browseRequest = new BrowseRequest();
@@ -379,10 +377,10 @@ namespace BoboBrowse.Net
             string field = "number";
 
             // Lucene index.
-            using (IndexReader reader = IndexReader.Open(this._indexDir, true))
+            using (DirectoryReader reader = DirectoryReader.Open(this._indexDir))
             {
                 // Bobo reader.
-                using (BoboSegmentReader boboReader = BoboSegmentReader.GetInstance(reader, this._facetHandlers))
+                using (BoboMultiReader boboReader = BoboMultiReader.GetInstance(reader, this._facetHandlers))
                 {
                     // Request.
                     BrowseRequest browseRequest = new BrowseRequest();
