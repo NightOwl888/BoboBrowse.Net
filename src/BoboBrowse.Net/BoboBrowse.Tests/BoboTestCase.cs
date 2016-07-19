@@ -117,6 +117,9 @@ namespace BoboBrowse.Net
             private readonly PayloadAttribute payloadAttr;
             private readonly CharTermAttribute termAttr;
 
+            // NOTE: This is apparently required by Lucene.Net 4.8.0
+            private readonly TermToBytesRefAttribute termsToBytesRefAttr;
+
             public MetaSizeTokenStream(Term term, int size)
             {
                 byte[] buffer = new byte[4];
@@ -125,20 +128,33 @@ namespace BoboBrowse.Net
                 buffer[2] = (byte)(size >> 16);
                 buffer[3] = (byte)(size >> 24);
 
+                // NOTE: This is what the original Java code (basically) did...
+
                 //payloadAttr = base.AddAttribute<PayloadAttribute>();
                 //payloadAttr.Payload = new BytesRef(buffer);
                 //termAttr = base.AddAttribute<CharTermAttribute>();
                 //termAttr.Append(term.Text());
 
-                // Backup in case the above doesn't work...
-                //// NOTE: Calling the AddAttribute<T> method failed, so 
-                //// switched to using AddAttributeImpl.
+                //// NOTE: This is apparently required by Lucene.Net 4.8.0, 
+                //// but didn't exist in the original source.
+                //termsToBytesRefAttr = base.AddAttribute<TermToBytesRefAttribute>();
+                //termsToBytesRefAttr.BytesRef = term.Bytes;
+
+
+                // NOTE: Calling the AddAttribute<T> method failed, so 
+                // switched to using AddAttributeImpl.
                 payloadAttr = new PayloadAttribute();
                 payloadAttr.Payload = new BytesRef(buffer);
                 AddAttributeImpl(payloadAttr);
                 termAttr = new CharTermAttribute();
                 termAttr.Append(term.Text());
                 AddAttributeImpl(payloadAttr);
+
+                // NOTE: This is apparently required by Lucene.Net 4.8.0, 
+                // but didn't exist in the original source.
+                termsToBytesRefAttr = new TermToBytesRefAttribute();
+                termsToBytesRefAttr.BytesRef = term.Bytes;
+                AddAttributeImpl(termsToBytesRefAttr);
 
                 returnToken = true;
             }
