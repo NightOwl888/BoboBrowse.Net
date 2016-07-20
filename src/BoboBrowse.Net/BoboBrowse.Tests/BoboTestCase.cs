@@ -127,19 +127,19 @@ namespace BoboBrowse.Net
 
                 // NOTE: This is what the original Java code (basically) did...
 
-                //payloadAttr = base.AddAttribute<PayloadAttribute>();
-                //payloadAttr.Payload = new BytesRef(buffer);
-                //termAttr = base.AddAttribute<CharTermAttribute>();
-                //termAttr.Append(term.Text());
-
-                // NOTE: Calling the AddAttribute<T> method failed, so 
-                // switched to using AddAttributeImpl.
-                payloadAttr = new PayloadAttribute();
+                payloadAttr = base.AddAttribute<PayloadAttribute>();
                 payloadAttr.Payload = new BytesRef(buffer);
-                AddAttributeImpl(payloadAttr);
-                termAttr = new CharTermAttribute();
+                termAttr = base.AddAttribute<CharTermAttribute>();
                 termAttr.Append(term.Text());
-                AddAttributeImpl(termAttr);
+
+                //// NOTE: Calling the AddAttribute<T> method failed, so 
+                //// switched to using AddAttributeImpl (this works AFAIK).
+                //payloadAttr = new PayloadAttribute();
+                //payloadAttr.Payload = new BytesRef(buffer);
+                //AddAttributeImpl(payloadAttr);
+                //termAttr = new CharTermAttribute();
+                //termAttr.Append(term.Text());
+                //AddAttributeImpl(termAttr);
 
                 returnToken = true;
             }
