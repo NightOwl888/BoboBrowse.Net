@@ -23,6 +23,7 @@ namespace BoboBrowse.Net
     using BoboBrowse.Net.Facets;
     using Lucene.Net.Index;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class BoboMultiReader : FilterDirectoryReader
     {
@@ -53,7 +54,7 @@ namespace BoboBrowse.Net
         protected BoboMultiReader(DirectoryReader reader, IEnumerable<IFacetHandler> facetHandlers)
             : base(reader, new BoboSubReaderWrapper(facetHandlers))
         {
-            _subReaders = (IEnumerable<BoboSegmentReader>)GetSequentialSubReaders();
+            _subReaders = GetSequentialSubReaders().Cast<BoboSegmentReader>().ToList();
         }
 
         protected void FacetInit()
