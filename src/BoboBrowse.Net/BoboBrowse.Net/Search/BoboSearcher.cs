@@ -30,6 +30,7 @@ namespace BoboBrowse.Net.Search
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
 
     public class BoboSearcher : IndexSearcher
     {
@@ -328,7 +329,9 @@ namespace BoboBrowse.Net.Search
                     // which includes several major changes after the 4.0.2 release.
 
                     // atomicContext = AtomicReaderContextUtil.UpdateDocBase(atomicContext, docStart);
-                    atomicContext = (AtomicReaderContext)Activator.CreateInstance(typeof(AtomicReaderContext), null, atomicContext.Reader, 0, 0, 0, docStart);
+                    BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+                    object[] args = new object[] { (CompositeReaderContext)null, atomicContext.AtomicReader, 0, 0, 0, docStart };
+                    atomicContext = (AtomicReaderContext)Activator.CreateInstance(typeof(AtomicReaderContext), flags, null, args, null);
 
                     if (reader is BoboMultiReader) 
                     {
