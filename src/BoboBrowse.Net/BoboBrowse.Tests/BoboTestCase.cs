@@ -827,34 +827,59 @@ namespace BoboBrowse.Net
                     IList<BrowseHit.BoboTerm> tv = tvMap.Get("tv");
                     Assert.NotNull(tv);
 
+                    //Assert.AreEqual("bobo", tv.Get(0).Term);
+                    //Assert.AreEqual(2, tv.Get(0).Freq);
+                    //Assert.AreEqual(null, tv.Get(0).Positions);
+                    //Assert.AreEqual(null, tv.Get(0).StartOffsets);
+                    //Assert.AreEqual(null, tv.Get(0).EndOffsets);
+
+                    //Assert.AreEqual("lucene", tv.Get(1).Term);
+                    //Assert.AreEqual(3, tv.Get(1).Freq);
+                    //Assert.AreEqual(null, tv.Get(1).Positions);
+                    //Assert.AreEqual(null, tv.Get(1).StartOffsets);
+                    //Assert.AreEqual(null, tv.Get(1).EndOffsets);
+
+                    //Assert.AreEqual("test", tv.Get(2).Term);
+                    //Assert.AreEqual(1, tv.Get(2).Freq);
+                    //Assert.AreEqual(null, tv.Get(2).Positions);
+                    //Assert.AreEqual(null, tv.Get(2).StartOffsets);
+                    //Assert.AreEqual(null, tv.Get(2).EndOffsets);
+
+
+                    // NOTE: For a cleaner API, we are using empty IEnumerable instances
+                    // instead of allowing null as was done in the original version.
+                    IEnumerable<int> positions = new List<int>();
+                    IEnumerable<int> startOffsets = new List<int>();
+                    IEnumerable<int> endOffsets = new List<int>();
+
                     Assert.AreEqual("bobo", tv.Get(0).Term);
                     Assert.AreEqual(2, tv.Get(0).Freq);
-                    Assert.AreEqual(null, tv.Get(0).Positions);
-                    Assert.AreEqual(null, tv.Get(0).StartOffsets);
-                    Assert.AreEqual(null, tv.Get(0).EndOffsets);
+                    Assert.AreEqual(positions, tv.Get(0).Positions);
+                    Assert.AreEqual(startOffsets, tv.Get(0).StartOffsets);
+                    Assert.AreEqual(endOffsets, tv.Get(0).EndOffsets);
 
                     Assert.AreEqual("lucene", tv.Get(1).Term);
                     Assert.AreEqual(3, tv.Get(1).Freq);
-                    Assert.AreEqual(null, tv.Get(1).Positions);
-                    Assert.AreEqual(null, tv.Get(1).StartOffsets);
-                    Assert.AreEqual(null, tv.Get(1).EndOffsets);
+                    Assert.AreEqual(positions, tv.Get(1).Positions);
+                    Assert.AreEqual(startOffsets, tv.Get(1).StartOffsets);
+                    Assert.AreEqual(endOffsets, tv.Get(1).EndOffsets);
 
                     Assert.AreEqual("test", tv.Get(2).Term);
                     Assert.AreEqual(1, tv.Get(2).Freq);
-                    Assert.AreEqual(null, tv.Get(2).Positions);
-                    Assert.AreEqual(null, tv.Get(2).StartOffsets);
-                    Assert.AreEqual(null, tv.Get(2).EndOffsets);
+                    Assert.AreEqual(positions, tv.Get(2).Positions);
+                    Assert.AreEqual(startOffsets, tv.Get(2).StartOffsets);
+                    Assert.AreEqual(endOffsets, tv.Get(2).EndOffsets);
 
                     tv = tvMap.Get("tvPositions");
                     Assert.NotNull(tv);
 
                     Assert.AreEqual("bobo", tv.Get(0).Term);
                     Assert.AreEqual(2, tv.Get(0).Freq);
-                    List<int> positions = new List<int>() { 0, 1 };
+                    positions = new List<int>() { 0, 1 };
                     Assert.AreEqual(positions, tv.Get(0).Positions);
-                    List<int> startOffsets = new List<int>() { -1, -1 };
+                    startOffsets = new List<int>() { -1, -1 };
                     Assert.AreEqual(startOffsets, tv.Get(0).StartOffsets);
-                    List<int> endOffsets = new List<int>() { -1, -1 };
+                    endOffsets = new List<int>() { -1, -1 };
                     Assert.AreEqual(endOffsets, tv.Get(0).EndOffsets);
 
                     Assert.AreEqual("lucene", tv.Get(1).Term);
