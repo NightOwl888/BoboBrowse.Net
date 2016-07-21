@@ -62,7 +62,7 @@ namespace BoboBrowse.Net.Facets.Impl
             : base(name, dependsOn)
         {
             _depends = dependsOn;
-            _indexFieldName = (indexFieldName != null ? indexFieldName : name);
+            _indexFieldName = (!string.IsNullOrEmpty(indexFieldName) ? indexFieldName : name);
             _termListFactory = termListFactory;
             _sizePayloadTerm = sizePayloadTerm;
         }
