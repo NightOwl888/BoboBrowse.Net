@@ -243,6 +243,7 @@ namespace BoboBrowse.Net.Facets
             private readonly IComparer<BrowseFacet> comparator;
 
             public BrowseFacetPriorityQueue(int max, IComparer<BrowseFacet> comparator)
+                : base(max)
             {
                 this.comparator = comparator;
             }
