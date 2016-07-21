@@ -37,7 +37,7 @@ namespace Lucene.Net.QueryParser.Classic
 
         public Query Parse(string queryString)
         {
-            return null;
+            return new MatchAllDocsQuery();
         }
     }
 }
