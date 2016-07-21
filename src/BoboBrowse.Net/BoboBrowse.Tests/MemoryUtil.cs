@@ -82,8 +82,7 @@ namespace BoboBrowse.Net
 
             foreach (Thread t in threads)
             {
-                //t.Start();
-                t.Join();
+                t.Start();
             }
         }
 
