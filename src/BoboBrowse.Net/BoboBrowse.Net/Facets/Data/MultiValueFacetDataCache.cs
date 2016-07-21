@@ -194,14 +194,13 @@ namespace BoboBrowse.Net.Facets.Data
             List<int> minIDList = new List<int>();
             List<int> maxIDList = new List<int>();
             List<int> freqList = new List<int>();
-            OpenBitSet bitset = new OpenBitSet();
+            OpenBitSet bitset = new OpenBitSet(maxdoc + 1);
 
             int t = 1; // valid term id starts from 1
             list.Add(null);
             minIDList.Add(-1);
             maxIDList.Add(-1);
             freqList.Add(0);
-            t++;
 
             _overflow = false;
 
