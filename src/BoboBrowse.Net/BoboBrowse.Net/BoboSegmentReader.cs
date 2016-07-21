@@ -385,7 +385,7 @@ namespace BoboBrowse.Net
                 if (vals != null)
                 {
                     string[] values = doc.GetValues(facetHandler.Name);
-                    IList<string> storedVals = new List<string>(values);
+                    var storedVals = new HashSet<string>(values);
 
                     foreach (string val in vals)
                     {
