@@ -65,7 +65,6 @@ namespace BoboBrowse.Net.Facets.Data
             minIDList.Add(-1);
             maxIDList.Add(-1);
             freqList.Add(0);
-            t++;
 
             _overflow = false;
 
