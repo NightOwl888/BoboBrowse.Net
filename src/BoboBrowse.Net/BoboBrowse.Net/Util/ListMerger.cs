@@ -33,20 +33,20 @@ namespace BoboBrowse.Net.Util
         {
             private class IteratorNode
             {
-                public IEnumerator<T> iterator;
+                public IEnumerator<T> _iterator;
                 public T _curVal;
 
                 public IteratorNode(IEnumerator<T> iterator)
                 {
-                    this.iterator = iterator;
+                    _iterator = iterator;
                     _curVal = default(T);
                 }
 
                 public bool Fetch()
                 {
-                    if (iterator.MoveNext())
+                    if (_iterator.MoveNext())
                     {
-                        _curVal = iterator.Current;
+                        _curVal = _iterator.Current;
                         return true;
                     }
                     _curVal = default(T);
@@ -100,20 +100,20 @@ namespace BoboBrowse.Net.Util
 
             //public virtual bool HasNext()
             //{
-            //    return queue.Size() > 0;
+            //    return _queue.Size() > 0;
             //}
 
             //public virtual T Next()
             //{
-            //    IteratorNode ctx = (IteratorNode)queue.Top();
-            //    T val = ctx.CurVal;
+            //    IteratorNode ctx = (IteratorNode)_queue.Top();
+            //    T val = ctx._curVal;
             //    if (ctx.Fetch())
             //    {
-            //        queue.UpdateTop();
+            //        _queue.UpdateTop();
             //    }
             //    else
             //    {
-            //        queue.Pop();
+            //        _queue.Pop();
             //    }
             //    return val;
             //}
@@ -192,6 +192,7 @@ namespace BoboBrowse.Net.Util
 
         private static List<T> MergeLists<T>(int offset, int count, MergedIterator<T> mergedIter)
         {
+            if (count == 0) return new List<T>();
             for (int c = 0; c < offset && mergedIter.MoveNext(); c++)
             {
                 var x = mergedIter.Current;
@@ -251,7 +252,6 @@ namespace BoboBrowse.Net.Util
                 }
 
                 Dictionary<string, IFacetAccessible> mergedFacetMap = new Dictionary<string, IFacetAccessible>();
-
                 foreach (string facet in counts.Keys)
                 {
                     FacetSpec fs = req.GetFacetSpec(facet);
