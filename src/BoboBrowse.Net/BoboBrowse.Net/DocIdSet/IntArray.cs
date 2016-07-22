@@ -70,7 +70,7 @@ namespace BoboBrowse.Net.DocIdSet
             return false;
         }
 
-        protected override object BuildArray(int len)
+        protected override int[] BuildArray(int len)
         {
             return new int[len];
         }

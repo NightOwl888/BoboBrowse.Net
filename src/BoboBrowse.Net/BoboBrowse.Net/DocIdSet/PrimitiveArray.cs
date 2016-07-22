@@ -20,24 +20,25 @@
 // Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.DocIdSet
 {
+    using BoboBrowse.Net.Support;
     using System;
     using System.Runtime.CompilerServices;
     using System.Text;
 
     [Serializable]
-    public abstract class PrimitiveArray<T>
+    public abstract class PrimitiveArray<T> : ICloneable
     {
-        protected object Array { get; set; }
+        protected internal T[] Array { get; set; }
 
-        protected int Count { get; set; }
+        protected internal int Count { get; set; }
 
-        protected int Growth { get; set; }
+        protected internal int Growth { get; set; }
 
-        protected int Len { get; set; }
+        protected internal int Len { get; set; }
 
         private const int DEFAULT_SIZE = 1000;
 
-        protected abstract object BuildArray(int len);
+        protected abstract T[] BuildArray(int len);
 
         protected PrimitiveArray(int len)
         {
@@ -75,7 +76,7 @@ namespace BoboBrowse.Net.DocIdSet
                 return;
             int oldLen = Len;
             Len = idx + Growth;
-            object newArray = BuildArray(Len);
+            T[] newArray = BuildArray(Len);
             System.Array.Copy((Array)this.Array, 0, (Array)newArray, 0, oldLen);
             Growth += Len;
             Array = newArray;
@@ -98,7 +99,7 @@ namespace BoboBrowse.Net.DocIdSet
         {
             if (Len > Count)
             {
-                object newArray = BuildArray(Count);
+                T[] newArray = BuildArray(Count);
                 System.Array.Copy((Array)this.Array, 0, (Array)newArray, 0, Count);
                 Array = newArray;
                 Len = Count;
@@ -121,27 +122,9 @@ namespace BoboBrowse.Net.DocIdSet
             return array;
         }
 
-        public PrimitiveArray<T> Clone()
+        public virtual object Clone()
         {
-            PrimitiveArray<T> obj;
-            try
-            {
-                // TODO: Check out whether this solution will work.
-                //obj = (PrimitiveArray<T>)this.GetType().GetConstructors()[0].Invoke(new object[] { }); // FIXME i still think that we need a better way do to this
-                obj = (PrimitiveArray<T>)Activator.CreateInstance(this.GetType(), 0);
-                obj.Count = Count;
-                obj.Growth = Growth;
-                obj.Len = Len;
-
-                object newArray = BuildArray(Len);
-                System.Array.Copy((Array)this.Array, 0, (Array)newArray, 0, Count);
-                obj.Array = newArray;
-                return obj;
-            }
-            catch (Exception e)
-            {
-                throw new ApplicationException(e.Message);
-            }
+            return ObjectCopier.Clone(this);
         }
 
         public override string ToString()
@@ -164,5 +147,7 @@ namespace BoboBrowse.Net.DocIdSet
         {
             return this.Len;
         }
+
+        
     }
 }
