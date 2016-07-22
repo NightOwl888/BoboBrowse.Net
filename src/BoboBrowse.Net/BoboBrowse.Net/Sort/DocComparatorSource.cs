@@ -91,8 +91,9 @@ namespace BoboBrowse.Net.Sort
 
             public override DocComparator GetComparator(AtomicReader reader, int docbase)
             {
-                // TODO: Not sure about the 3rd parameter...Bobo only had 2, but there is no overload...
-                // Need to check the Lucene source code to find out what the overload that is missing does.
+                // NOTE: Original Java source called an overload of Lucene 4.3.0 that had only 2 parameters.
+                // The setDocsWithField parameter was not available in that version, but since in other methods
+                // of this class the parameter is set to true, we am setting it to true here as well.
                 BinaryDocValues values = FieldCache.DEFAULT.GetTerms(reader, this.field, true);
                 return new StringValDocComparator(values);
             }
