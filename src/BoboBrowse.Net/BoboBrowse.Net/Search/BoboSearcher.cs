@@ -337,7 +337,6 @@ namespace BoboBrowse.Net.Search
                     {
                         docStart = start + ((BoboMultiReader) reader).SubReaderBase(i);
                     }
-                    // TODO: Make these consistenly properties or methods
                     collector.NextReader = atomicContext;
                     validator.SetNextReader(_subReaders[i], docStart);
 
