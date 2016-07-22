@@ -224,7 +224,7 @@ namespace BoboBrowse.Net.Support
         /// this bit set changes.
         /// </summary>
         /// <returns>the clone of this object.</returns>
-        public object Clone()
+        public virtual object Clone()
         {
             try
             {
