@@ -22,7 +22,7 @@ namespace BoboBrowse.Net.Impl
 {
     using BoboBrowse.Net;
     using BoboBrowse.Net.Service;
-    using Common.Logging;
+    using BoboBrowse.Net.Support.Logging;
     using Lucene.Net.Index;
     using Lucene.Net.Store;
     using System.IO;
@@ -31,7 +31,7 @@ namespace BoboBrowse.Net.Impl
 
     public class BrowseServiceImpl : IBrowseService
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(BrowseServiceImpl));
+        private static readonly ILog logger = LogProvider.For<BrowseServiceImpl>();
         private readonly DirectoryInfo _idxDir;
         private readonly BoboMultiReader _reader;
 
@@ -44,7 +44,7 @@ namespace BoboBrowse.Net.Impl
             }
             catch (IOException e)
             {
-                logger.Error(e.Message, e);
+                logger.ErrorException(e.Message, e);
             }
         }
 
@@ -86,7 +86,7 @@ namespace BoboBrowse.Net.Impl
 
             long end = System.Environment.TickCount;
 
-            if (logger.IsDebugEnabled)
+            if (logger.IsDebugEnabled())
             {
                 logger.Debug("New index loading took: " + (end - start));
             }

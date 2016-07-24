@@ -21,15 +21,12 @@
 namespace BoboBrowse.Net.Facets.Data
 {
     using BoboBrowse.Net.Support;
-    using Common.Logging;
     using System;
     using System.Globalization;
 
     public class TermIntList : TermNumberList<int>
     {
-        private static ILog logger = LogManager.GetLogger(typeof(TermIntList));
         private int[] _elements;
-        //private int sanity = -1; // Not used
         private bool withDummy = true;
         public const int VALUE_MISSING = int.MinValue;
 

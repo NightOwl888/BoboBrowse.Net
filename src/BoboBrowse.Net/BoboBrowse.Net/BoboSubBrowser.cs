@@ -25,7 +25,7 @@ namespace BoboBrowse.Net
     using BoboBrowse.Net.Search;
     using BoboBrowse.Net.Sort;
     using BoboBrowse.Net.Support;
-    using Common.Logging;
+    using BoboBrowse.Net.Support.Logging;
     using Lucene.Net.Documents;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
@@ -36,7 +36,7 @@ namespace BoboBrowse.Net
 
     public class BoboSubBrowser : BoboSearcher, IBrowsable, IDisposable
     {
-        private static ILog logger = LogManager.GetLogger(typeof(BoboSubBrowser));
+        private static readonly ILog logger = LogProvider.For<BoboSubBrowser>();
         private readonly BoboSegmentReader _reader;
         private readonly IDictionary<string, IRuntimeFacetHandlerFactory> _runtimeFacetHandlerFactoryMap;
         private readonly IDictionary<string, IFacetHandler> _runtimeFacetHandlerMap;

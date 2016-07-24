@@ -21,7 +21,7 @@
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Support;
-    using Common.Logging;
+    using BoboBrowse.Net.Support.Logging;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -29,7 +29,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
     public class DynamicTimeRangeFacetHandler : DynamicRangeFacetHandler
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(DynamicTimeRangeFacetHandler));
+        private static readonly ILog log = LogProvider.For<DynamicTimeRangeFacetHandler>();
         public const string NUMBER_FORMAT = "00000000000000000000";
 
         public const long MILLIS_IN_DAY = 24L * 60L * 60L * 1000L;
@@ -54,7 +54,7 @@ namespace BoboBrowse.Net.Facets.Impl
         public DynamicTimeRangeFacetHandler(string name, string dataFacetName, long currentTime, IEnumerable<string> ranges)
             : base(name, dataFacetName)
         {
-            if (log.IsDebugEnabled)
+            if (log.IsDebugEnabled())
             {
                 log.Debug(name + " " + dataFacetName + " " + currentTime);
             }
@@ -74,7 +74,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 _rangeStringList.Add(rangeString);
                 prev = range;
 
-                if (log.IsDebugEnabled)
+                if (log.IsDebugEnabled())
                 {
                     log.Debug(range + "\t " + rangeString);
                 }

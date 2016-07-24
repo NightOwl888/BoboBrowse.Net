@@ -25,7 +25,7 @@ namespace BoboBrowse.Tests
     using BoboBrowse.Net.Facets.Impl;
     using BoboBrowse.Net.Index;
     using BoboBrowse.Net.Index.Digest;
-    using Common.Logging;
+    using BoboBrowse.Net.Support.Logging;
     using Lucene.Net.Documents;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
@@ -38,7 +38,7 @@ namespace BoboBrowse.Tests
     [TestFixture]
     public class FacetNotValuesTest
     {
-        private static ILog log = LogManager.GetLogger(typeof(FacetNotValuesTest));
+        private static readonly ILog log = LogProvider.For<FacetNotValuesTest>();
         private List<IFacetHandler> _facetHandlers;
         private int _documentSize;
         private static string[] _idRanges = new string[] { "[10 TO 10]" };

@@ -20,14 +20,14 @@
 // Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.DocIdSet
 {
+    using BoboBrowse.Net.Support.Logging;
     using System;
-    using Common.Logging;
     using Lucene.Net.Search;
 
     public abstract class ImmutableDocSet : DocSet
     {
         private int size = -1;
-        private static ILog log = LogManager.GetLogger(typeof(ImmutableDocSet));
+        private static readonly ILog log = LogProvider.For<ImmutableDocSet>();
 
         public override void AddDoc(int docid)
         {

@@ -24,7 +24,7 @@ namespace BoboBrowse.Net.Facets.Data
     using BoboBrowse.Net.Sort;
     using BoboBrowse.Net.Support;
     using BoboBrowse.Net.Util;
-    using Common.Logging;
+    using BoboBrowse.Net.Support.Logging;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
     using Lucene.Net.Util;
@@ -34,7 +34,7 @@ namespace BoboBrowse.Net.Facets.Data
     public class MultiValueFacetDataCache : FacetDataCache
     {
         //private static long serialVersionUID = 1L; // NOT USED
-        private static ILog logger = LogManager.GetLogger(typeof(MultiValueFacetDataCache));
+        private static readonly ILog logger = LogProvider.For<MultiValueFacetDataCache>();
 
         protected readonly BigNestedIntArray _nestedArray;
         protected int _maxItems = BigNestedIntArray.MAX_ITEMS;

@@ -23,7 +23,7 @@ namespace BoboBrowse.Net
     using BoboBrowse.Net.Facets;
     using BoboBrowse.Net.Sort;
     using BoboBrowse.Net.Support;
-    using Common.Logging;
+    using BoboBrowse.Net.Support.Logging;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
     using Lucene.Net.Search.Similarities;
@@ -37,7 +37,7 @@ namespace BoboBrowse.Net
     /// </summary>
     public class MultiBoboBrowser : MultiReader, IBrowsable
     {
-        private static ILog logger = LogManager.GetLogger(typeof(MultiBoboBrowser));
+        private static readonly ILog logger = LogProvider.For<MultiBoboBrowser>();
 
         protected readonly IBrowsable[] _subBrowsers;
 
@@ -152,7 +152,7 @@ namespace BoboBrowse.Net
                     }
                     catch (Exception e)
                     {
-                        logger.Error(e.Message, e);
+                        logger.ErrorException(e.Message, e);
                     }
                 }
             }
@@ -199,7 +199,7 @@ namespace BoboBrowse.Net
             }
             catch (Exception e)
             {
-                logger.Error(e.Message, e);
+                logger.ErrorException(e.Message, e);
                 result.AddError(e.Message);
                 hits = new BrowseHit[0];
             }
@@ -219,7 +219,7 @@ namespace BoboBrowse.Net
                     }
                     catch (Exception e)
                     {
-                        logger.Error(e.Message, e);
+                        logger.ErrorException(e.Message, e);
                         result.AddError(e.Message);
                     }
                 }

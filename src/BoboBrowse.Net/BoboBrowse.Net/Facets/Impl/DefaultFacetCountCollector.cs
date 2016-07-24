@@ -21,14 +21,14 @@
 namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
+    using BoboBrowse.Net.Support.Logging;
     using BoboBrowse.Net.Util;
-    using Common.Logging;
     using System;
     using System.Collections.Generic;
     
     public abstract class DefaultFacetCountCollector : IFacetCountCollector
     {
-        private static ILog log = LogManager.GetLogger(typeof(DefaultFacetCountCollector));
+        private static ILog log = LogProvider.For<DefaultFacetCountCollector>();
         protected readonly FacetSpec _ospec;
         protected BigSegmentedArray _count;
 

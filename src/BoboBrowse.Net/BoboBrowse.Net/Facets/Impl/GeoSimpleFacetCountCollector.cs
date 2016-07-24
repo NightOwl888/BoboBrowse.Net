@@ -23,7 +23,7 @@ namespace BoboBrowse.Net.Facets.Impl
     using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Facets.Filter;
     using BoboBrowse.Net.Util;
-    using Common.Logging;
+    using BoboBrowse.Net.Support.Logging;
     using System.Collections.Generic;
 
     /// <summary>
@@ -31,7 +31,7 @@ namespace BoboBrowse.Net.Facets.Impl
     /// </summary>
     public class GeoSimpleFacetCountCollector : IFacetCountCollector
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(GeoSimpleFacetCountCollector));
+        private static readonly ILog log = LogProvider.For<GeoSimpleFacetCountCollector>();
 	    private readonly FacetSpec _spec;
 	    private readonly string _name;
 	    private int[] _latCount;

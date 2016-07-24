@@ -22,7 +22,7 @@ namespace BoboBrowse.Net
 {
     using BoboBrowse.Net.Facets;
     using BoboBrowse.Net.Support;
-    using Common.Logging;
+    using BoboBrowse.Net.Support.Logging;
     using Lucene.Net.Documents;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
@@ -43,7 +43,7 @@ namespace BoboBrowse.Net
     public class BoboSegmentReader : FilterAtomicReader
     {
         private const string SPRING_CONFIG = "bobo.spring";
-        private static readonly ILog logger = LogManager.GetLogger(typeof(BoboSegmentReader));
+        private static readonly ILog logger = LogProvider.For<BoboSegmentReader>();
 
         protected IDictionary<string, IFacetHandler> _facetHandlerMap;
 
@@ -218,7 +218,7 @@ namespace BoboBrowse.Net
                 long start = System.Environment.TickCount;
                 facetHandler.LoadFacetData(this, workArea);
                 long end = System.Environment.TickCount;
-                if (logger.IsDebugEnabled)
+                if (logger.IsDebugEnabled())
                 {
                     StringBuilder buf = new StringBuilder();
                     buf.Append("facetHandler loaded: ").Append(name).Append(", took: ").Append(end - start).Append(" ms");

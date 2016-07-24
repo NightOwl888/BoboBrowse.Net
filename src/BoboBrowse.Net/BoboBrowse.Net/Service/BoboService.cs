@@ -21,7 +21,7 @@
 namespace BoboBrowse.Net.Service
 {
     using BoboBrowse.Net;
-    using Common.Logging;
+    using BoboBrowse.Net.Support.Logging;
     using Lucene.Net.Index;
     using Lucene.Net.Store;
     using System;
@@ -29,7 +29,7 @@ namespace BoboBrowse.Net.Service
 
     public class BoboService
     {
-        private static ILog logger = LogManager.GetLogger(typeof(BoboService));
+        private static readonly ILog logger = LogProvider.For<BoboService>();
 
         private readonly DirectoryInfo _idxDir;
         private BoboMultiReader _boboReader;
@@ -55,7 +55,7 @@ namespace BoboBrowse.Net.Service
             }
             catch (Exception e)
             {
-                logger.Error(e.Message, e);
+                logger.ErrorException(e.Message, e);
                 return new BrowseResult();
             }
             finally

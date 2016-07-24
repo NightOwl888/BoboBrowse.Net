@@ -22,7 +22,7 @@
 namespace BoboBrowse.Net.Sort
 {
     using BoboBrowse.Net.Facets;
-    using Common.Logging;
+    using BoboBrowse.Net.Support.Logging;
     using Lucene.Net.Search;
     using System;
     using System.Collections.Generic;
@@ -32,7 +32,7 @@ namespace BoboBrowse.Net.Sort
 
     public abstract class SortCollector : Collector, IDisposable
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(SortCollector));
+        private static readonly ILog logger = LogProvider.For<SortCollector>();
 
         // NightOwl888: The _collectDocIdCache setting seems to put arrays into
         // memory, but then do nothing with the arrays. Seems wasteful and unnecessary.

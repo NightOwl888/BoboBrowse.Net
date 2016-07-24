@@ -21,7 +21,6 @@
 namespace BoboBrowse.Net.Facets.Data
 {
     using BoboBrowse.Net.Support;
-    using Common.Logging;
     using System;
     using System.Collections;
     using System.Collections.Generic;
@@ -31,8 +30,6 @@ namespace BoboBrowse.Net.Facets.Data
 
     public class TermFixedLengthLongArrayList : TermValueList<long[]>
     {
-        private static ILog logger = LogManager.GetLogger(typeof(TermFixedLengthLongArrayList));
-
         private List<long> _innerList2 = new List<long>();
         protected long[] _elements = null;
         protected int width;

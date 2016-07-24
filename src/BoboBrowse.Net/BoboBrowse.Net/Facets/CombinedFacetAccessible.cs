@@ -21,7 +21,7 @@
 namespace BoboBrowse.Net.Facets
 {
     using BoboBrowse.Net.Facets.Impl;
-    using Common.Logging;
+    using BoboBrowse.Net.Support.Logging;
     using Lucene.Net.Util;
     using System;
     using System.Collections.Generic;
@@ -32,7 +32,7 @@ namespace BoboBrowse.Net.Facets
      ///</summary>
     public class CombinedFacetAccessible : IFacetAccessible
     {
-        private static ILog log = LogManager.GetLogger(typeof(CombinedFacetAccessible));
+        private static readonly ILog log = LogProvider.For<CombinedFacetAccessible>();
         protected readonly IEnumerable<IFacetAccessible> _list;
         protected readonly FacetSpec _fspec;
         protected bool _closed;

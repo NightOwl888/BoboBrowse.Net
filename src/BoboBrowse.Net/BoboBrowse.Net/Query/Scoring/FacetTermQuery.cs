@@ -24,7 +24,7 @@ namespace BoboBrowse.Net.Query.Scoring
     using BoboBrowse.Net.Facets;
     using BoboBrowse.Net.Facets.Filter;
     using BoboBrowse.Net.Support;
-    using Common.Logging;
+    using BoboBrowse.Net.Support.Logging;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
     using Lucene.Net.Search.Similarities;
@@ -36,7 +36,7 @@ namespace BoboBrowse.Net.Query.Scoring
 
     public class FacetTermQuery : Query
     {
-        private static ILog logger = LogManager.GetLogger(typeof(FacetTermQuery));
+        private static readonly ILog logger = LogProvider.For<FacetTermQuery>();
 
         private readonly string _name;
         private readonly BrowseSelection _sel;

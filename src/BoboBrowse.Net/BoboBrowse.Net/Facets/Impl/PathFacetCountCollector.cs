@@ -22,8 +22,8 @@ namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Support;
+    using BoboBrowse.Net.Support.Logging;
     using BoboBrowse.Net.Util;
-    using Common.Logging;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -32,7 +32,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
     public class PathFacetCountCollector : IFacetCountCollector
     {
-        private static ILog log = LogManager.GetLogger(typeof(PathFacetCountCollector));
+        private static readonly ILog log = LogProvider.For<PathFacetCountCollector>();
         private readonly BrowseSelection _sel;
         protected BigSegmentedArray _count;
         private readonly string _name;

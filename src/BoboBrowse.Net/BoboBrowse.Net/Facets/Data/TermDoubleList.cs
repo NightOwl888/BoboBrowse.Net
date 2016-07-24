@@ -21,13 +21,11 @@
 namespace BoboBrowse.Net.Facets.Data
 {
     using BoboBrowse.Net.Support;
-    using Common.Logging;
     using System;
     using System.Globalization;
 
     public class TermDoubleList : TermNumberList<double>
     {
-        private static ILog logger = LogManager.GetLogger(typeof(TermDoubleList));
         private double[] _elements;
         private bool withDummy = true;
         public const double VALUE_MISSING = double.MinValue;

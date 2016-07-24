@@ -25,7 +25,9 @@ namespace BoboBrowse.Tests
     using BoboBrowse.Net.Facets.Impl;
     using BoboBrowse.Net.Index;
     using BoboBrowse.Net.Index.Digest;
-    using Common.Logging;
+    using log4net;
+    using log4net.Config;
+    using log4net.Appender;
     using Lucene.Net.Documents;
     using Lucene.Net.Index;
     using Lucene.Net.Store;
@@ -41,7 +43,7 @@ namespace BoboBrowse.Tests
     [TestFixture]
     public class FacetNameTest
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(FacetNameTest));
+        //private static readonly BoboBrowse.Net.Support.Logging.ILog logger = LogProvider.For<FacetNameTest>();  // NOT USED
         private IEnumerable<IFacetHandler> _facetHandlers;
         private int _documentSize;
 
@@ -173,6 +175,60 @@ namespace BoboBrowse.Tests
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Verifies that if a logger (such as log4net) is added to the project that
+        /// the logging will automatically be sent to it.
+        /// </summary>
+        [Test]
+        public void TestLogging()
+        {
+            // Set up a simple Log4Net configuration that logs in memory.
+            var memAppend = new log4net.Appender.MemoryAppender();
+            BasicConfigurator.Configure(memAppend);
+
+            BrowseRequest br = new BrowseRequest();
+            br.Count = 20;
+            br.Offset = 0;
+
+            BrowseSelection colorSel = new BrowseSelection("mycolor");
+            colorSel.AddValue("yellow");
+            br.AddSelection(colorSel);
+
+            BrowseSelection makeSel = new BrowseSelection("make");
+            makeSel.AddValue("rav4");
+            br.AddSelection(makeSel);
+
+            FacetSpec spec = new FacetSpec();
+            spec.ExpandSelection = true;
+            spec.OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc;
+            spec.MaxCount = 15;
+
+            br.SetFacetSpec("mycolor", spec);
+            br.SetFacetSpec("id", spec);
+            br.SetFacetSpec("make", spec);
+
+            Directory ramIndexDir = CreateIndex();
+            using (DirectoryReader srcReader = DirectoryReader.Open(ramIndexDir))
+            {
+                using (BoboMultiReader boboReader = BoboMultiReader.GetInstance(srcReader, _facetHandlers))
+                {
+                    using (BoboBrowser boboBrowser = new BoboBrowser(boboReader))
+                    {
+                        using (BrowseResult result = boboBrowser.Browse(br))
+                        {
+                        }
+                    }
+                }
+            }
+
+            var events = memAppend.GetEvents();
+
+            Assert.AreEqual(3, events.Length);
+            StringAssert.StartsWith("facetHandler loaded: id, took:", events[0].RenderedMessage);
+            StringAssert.StartsWith("facetHandler loaded: make, took:", events[1].RenderedMessage);
+            StringAssert.StartsWith("facetHandler loaded: mycolor, took:", events[2].RenderedMessage);
         }
     }
 }
