@@ -45,7 +45,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         protected int _maxItems = BigNestedIntArray.MAX_ITEMS;
         protected Term _sizePayloadTerm;
-        protected IEnumerable<string> _depends;
+        // protected IEnumerable<string> _depends; // NOT USED
 
         /// <summary>
         /// Initializes a new instance of <see cref="T:MultiValueFacetHandler"/> with the specified name,
@@ -61,7 +61,7 @@ namespace BoboBrowse.Net.Facets.Impl
         public MultiValueFacetHandler(string name, string indexFieldName, TermListFactory termListFactory, Term sizePayloadTerm, IEnumerable<string> dependsOn)
             : base(name, dependsOn)
         {
-            _depends = dependsOn;
+            //_depends = dependsOn; // NOT USED
             _indexFieldName = (!string.IsNullOrEmpty(indexFieldName) ? indexFieldName : name);
             _termListFactory = termListFactory;
             _sizePayloadTerm = sizePayloadTerm;
