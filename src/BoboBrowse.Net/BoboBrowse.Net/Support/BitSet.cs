@@ -226,17 +226,7 @@ namespace BoboBrowse.Net.Support
         /// <returns>the clone of this object.</returns>
         public virtual object Clone()
         {
-            try
-            {
-                var bs = ObjectCopier.Clone(this);
-                bs.bits = (long[])bits.Clone();
-                return bs;
-            }
-            catch
-            {
-                // Impossible to get here.
-                return null;
-            }
+            return ObjectCopier.Clone(this);
         }
 
         /// <summary>

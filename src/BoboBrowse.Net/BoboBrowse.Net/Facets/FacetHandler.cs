@@ -79,7 +79,7 @@ namespace BoboBrowse.Net.Facets
         }
     }
 
-    public abstract class FacetHandler<D> : ICloneable, IFacetHandler
+    public abstract class FacetHandler<D> : IFacetHandler
     {
         protected readonly string _name;
         private readonly IEnumerable<string> _dependsOn;
@@ -339,9 +339,13 @@ namespace BoboBrowse.Net.Facets
         /// <returns>a sort comparator</returns>
         public abstract DocComparatorSource GetDocComparatorSource();
 
-        public virtual object Clone()
-        {
-            return ObjectCopier.Clone(this);
-        }
+        // Removed clone method (differs from Java). For it to work, all facet handlers and any nested types
+        // (such as TermListFactory and subclasses) would all need to be marked [Serializable].
+        // There doesn't seem to be much benefit in cloning a facet handler, since it is tied to
+        // a specific field at construction anyway.
+        //public virtual object Clone()
+        //{
+        //    return ObjectCopier.Clone(this);
+        //}
     }
 }

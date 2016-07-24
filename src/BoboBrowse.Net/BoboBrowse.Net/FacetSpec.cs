@@ -20,6 +20,7 @@
 // Version compatibility level: 4.0.2
 namespace BoboBrowse.Net
 {
+    using BoboBrowse.Net.Support;
     using System;
     using System.Collections.Generic;
     using System.Text;
@@ -106,18 +107,10 @@ namespace BoboBrowse.Net
         /// <returns>The cloned instance.</returns>
         public virtual object Clone()
         {
-            var properties = this.Properties;
-            var clonedProperties = new Dictionary<string, string>(properties);
-
-            return new FacetSpec()
-            {
-                CustomComparatorFactory = this.CustomComparatorFactory,
-                ExpandSelection = this.ExpandSelection,
-                MaxCount = this.MaxCount,
-                MinHitCount = this.MinHitCount,
-                OrderBy = this.OrderBy,
-                Properties = clonedProperties
-            };
+            var facetSpec = ObjectCopier.Clone(this);
+            // Create a new dictionary object so the existing is not referenced.
+            facetSpec.Properties = new Dictionary<string, string>(facetSpec.Properties);
+            return facetSpec;
         }
     }
 }
