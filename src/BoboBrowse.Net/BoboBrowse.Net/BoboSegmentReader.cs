@@ -96,7 +96,7 @@ namespace BoboBrowse.Net
         /// <returns>A new BoboSegmentReader instance.</returns>
         public static BoboSegmentReader GetInstance(AtomicReader reader, IEnumerable<IFacetHandler> facetHandlers, IEnumerable<IRuntimeFacetHandlerFactory> facetHandlerFactories, WorkArea workArea)
         {
-            BoboSegmentReader boboReader = BoboSegmentReader.GetInstance(reader, facetHandlers, facetHandlerFactories, workArea);
+            BoboSegmentReader boboReader = new BoboSegmentReader(reader, facetHandlers, facetHandlerFactories, workArea);
             boboReader.FacetInit();
             return boboReader;
         }
