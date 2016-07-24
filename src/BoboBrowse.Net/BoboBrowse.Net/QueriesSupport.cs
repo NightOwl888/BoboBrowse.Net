@@ -42,7 +42,6 @@ namespace BoboBrowse.Net
                     clauses = bq.Clauses;
                     for (int j = 0; splittable && j < clauses.Length; j++)
                     {
-                        // TODO: Fix lucene and issue pull request.
                         splittable = (clauses[j].Occur_ == BooleanClause.Occur.MUST);
                     }
                 }
