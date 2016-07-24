@@ -45,17 +45,6 @@ namespace BoboBrowse.Net.DocIdSet
         public OrDocIdSet(List<DocIdSet> docSets)
         {
             this.sets = docSets;
-            int size = 0;
-            if (sets != null)
-            {
-                foreach (DocIdSet set in sets)
-                {
-                    // TODO: There appears to be a bug in the original Java source,
-                    // as the size++ is missing (and we used it this way in older versions).
-                    if (set != null) 
-                        size++;
-                }
-            }
         }
 
         public override DocIdSetIterator GetIterator()
