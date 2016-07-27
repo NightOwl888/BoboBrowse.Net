@@ -7,30 +7,16 @@
 		<version>$version$</version>
 		<authors>NightOwl888</authors>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<summary>BoboBrowse.Net is a faceted browse engine implemented on a top of Lucene.Net.</summary>
-		<description>BoboBrowse.Net is a faceted browse engine implemented on a top of Lucene.Net. Originally ported from wonderful Java library developed by John Wang (http://javasoze.github.com/bobo/). While Lucene.Net is good with unstructured data, BoboBrowse.Net fills in the missing piece to handle semi-structured and structured data.</description>
+		<summary>BoboBrowse.Net is a faceted search engine implemented on a top of Lucene.Net.</summary>
+		<description>BoboBrowse.Net is a faceted search engine implemented on a top of Lucene.Net. Originally ported from wonderful Java library developed by John Wang (http://javasoze.github.com/bobo/). While Lucene.Net is good with unstructured data, BoboBrowse.Net fills in the missing piece to handle semi-structured and structured data.</description>
 		<language>en-US</language>
-		<tags>faceted search engine lucene lucene.net nosql text information retrieval apache drill down checkbox navigation</tags>
+		<tags>faceted search engine lucene lucene.net nosql text information retrieval apache drill down checkbox navigation browse</tags>
 		<projectUrl>https://github.com/NightOwl888/BoboBrowse.Net</projectUrl>
     <licenseUrl>https://github.com/NightOwl888/BoboBrowse.Net/blob/master/LICENSE.md</licenseUrl>
 		<iconUrl>https://raw.githubusercontent.com/NightOwl888/BoboBrowse.Net/master/BoboBrowse.Net.png</iconUrl>
 		<dependencies>
-			<group targetFramework="net35">
-				<dependency id="Lucene.Net" version="[3.0,4.0)" />
-				<dependency id="C5" version="[1.0.2.0]" />
-				<dependency id="Common.Logging" version="3.0" />
-			</group>
-			<group targetFramework="net40">
-				<dependency id="Lucene.Net" version="[3.0,4.0)" />
-        <!-- 2.2 is the minimum strong-named 2.x version -->
-				<dependency id="C5" version="2.2" /> 
-				<dependency id="Common.Logging" version="3.0" />
-			</group>
 			<group targetFramework="net45">
-				<dependency id="Lucene.Net" version="[3.0,4.0)" />
-        <!-- 2.2 is the minimum strong-named 2.x version -->
-				<dependency id="C5" version="2.2" />
-				<dependency id="Common.Logging" version="3.0" />
+				<dependency id="Lucene.Net" version="[4.5,5.0)" />
 			</group>
 		</dependencies>
 	</metadata>

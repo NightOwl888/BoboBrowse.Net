@@ -10,19 +10,11 @@
 		<summary>Provides Spring.Net configuration support for FacetHandlers in BoboBrowse.Net.</summary>
 		<description>This is an add-on NuGet package for BoboBrowse.Net. It provides the ability to configure FacetHandlers using XML in each Lucene.Net index directory so the facet handlers don't need to be configured in code.</description>
 		<language>en-US</language>
-		<tags>faceted search engine lucene lucene.net nosql text information retrieval apache drill down checkbox navigation</tags>
+		<tags>faceted search engine lucene lucene.net nosql text information retrieval apache drill down checkbox navigation browse</tags>
 		<projectUrl>https://github.com/NightOwl888/BoboBrowse.Net</projectUrl>
     <licenseUrl>https://github.com/NightOwl888/BoboBrowse.Net/blob/master/LICENSE.md</licenseUrl>
 		<iconUrl>https://raw.githubusercontent.com/NightOwl888/BoboBrowse.Net/master/BoboBrowse.Net.png</iconUrl>
 		<dependencies>
-			<group targetFramework="net35">
-				<dependency id="BoboBrowse.Net" version="$version$" />
-				<dependency id="Spring.Core" version="2.0" />
-			</group>
-			<group targetFramework="net40">
-				<dependency id="BoboBrowse.Net" version="$version$" />
-				<dependency id="Spring.Core" version="2.0" />
-			</group>
 			<group targetFramework="net45">
 				<dependency id="BoboBrowse.Net" version="$version$" />
 				<dependency id="Spring.Core" version="2.0" />

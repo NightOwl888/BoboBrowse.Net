@@ -8,7 +8,7 @@ properties {
 	[string]$version          = "1.0.0"
 	[string]$packageVersion   = "$version-pre"
 	[string]$configuration    = "Release"
-	[string[]]$target_frameworks = @("net35", "net40", "net45")
+	[string[]]$target_frameworks = @("net451")
 	[string]$common_assembly_info = "$source_directory\Common\CommonAssemblyInfo.cs"
 }
 
@@ -64,21 +64,19 @@ task Test -depends Clean, Init, Restore -description "This tasks runs the unit t
 	if ($IsPrerelease -eq $false) {
 		Write-Host "Running Unit Tests..." -ForegroundColor Magenta
 
-		$msbuild_configuration = "NET40-$configuration"
 		$target_project = "$source_directory\BoboBrowse.Tests\BoboBrowse.Tests.csproj"
 
 		exec { 
 			msbuild $target_project `
 				/verbosity:quiet `
-				/property:Configuration=$msbuild_configuration `
+				/property:Configuration=$configuration `
 				"/t:Clean;Rebuild" `
 				/property:WarningLevel=3 `
-				/property:EnableNuGetPackageRestore=true `
-				/property:TargetFrameworkVersion=v4.0 `
+				/property:TargetFrameworkVersion=v4.5.1
 		}
 
 		exec {
-			&"$tools_directory\nunit\nunit-console.exe" $target_project /config:$msbuild_configuration /noshadow /noresult /framework:net-4.0
+			&"$tools_directory\nunit\nunit-console.exe" $target_project /config:$configuration /noshadow /noresult /framework:net-4.0
 		}
 	}
 }
@@ -111,7 +109,6 @@ function Create-BoboBrowse-Package {
 	
 	#copy sources for symbols package
 	Copy-Item -Recurse -Filter *.cs -Force "$source_directory\BoboBrowse.Net" "$release_directory\BoboBrowse.Net\src\BoboBrowse.Net"
-	Copy-Item -Recurse -Filter *.cs -Force "$source_directory\LuceneExt.Net" "$release_directory\BoboBrowse.Net\src\LuceneExt.Net"
 	
 	exec { 
 		&"$tools_directory\nuget\NuGet.exe" pack $output_nuspec_file -Symbols -Version $packageVersion -OutputDirectory $output_directory
@@ -140,28 +137,30 @@ function Build-Framework-Versions ([string[]] $target_frameworks) {
 
 function Build-BoboBrowse-Framework-Version ([string] $target_framework) {
 	$target_framework_upper = $target_framework.toUpper()
-	$msbuild_configuration = "$target_framework_upper-$configuration"
 	$outdir = "$release_directory\bobobrowse.net\lib\$target_framework\"
+	$targetFramework = Get-TargetFramework-Version $target_framework
 	
 	Write-Host "Compiling BoboBrowse.Net for $target_framework_upper" -ForegroundColor Blue
+	Write-Host "Target Framework: $targetFramework - $target_framework" -ForegroundColor Blue
 
 	exec { 
 		msbuild "$source_directory\BoboBrowse.Net\BoboBrowse.Net.csproj" `
 			/property:outdir=$outdir `
 			/verbosity:quiet `
-			/property:Configuration=$msbuild_configuration `
+			/property:Configuration=$configuration `
 			"/t:Clean;Rebuild" `
 			/property:WarningLevel=3 `
-			/property:EnableNuGetPackageRestore=true
+			/property:EnableNuGetPackageRestore=true `
+			/property:TargetFrameworkVersion=$targetFramework
 	}
 	
-	dir $outdir | ?{ -not($_.Name -match 'BoboBrowse.Net|LuceneExt.Net') } | %{ del $_.FullName }
+	dir $outdir | ?{ -not($_.Name -match 'BoboBrowse.Net') } | %{ del $_.FullName }
 }
 
 function Build-BoboBrowse-Spring-Framework-Version ([string] $target_framework) {
 	$target_framework_upper = $target_framework.toUpper()
-	$msbuild_configuration = "$target_framework_upper-$configuration"
 	$outdir = "$release_directory\bobobrowse.net.spring\lib\$target_framework\"
+	$targetFramework = Get-TargetFramework-Version $target_framework
 	
 	Write-Host "Compiling BoboBrowse.Net for $target_framework_upper" -ForegroundColor Blue
 
@@ -169,10 +168,11 @@ function Build-BoboBrowse-Spring-Framework-Version ([string] $target_framework) 
 		msbuild "$source_directory\BoboBrowse.Net.Spring\BoboBrowse.Net.Spring.csproj" `
 			/property:outdir=$outdir `
 			/verbosity:quiet `
-			/property:Configuration=$msbuild_configuration `
+			/property:Configuration=$configuration `
 			"/t:Clean;Rebuild" `
 			/property:WarningLevel=3 `
-			/property:EnableNuGetPackageRestore=true
+			/property:EnableNuGetPackageRestore=true `
+			/property:TargetFrameworkVersion=$targetFramework
 	}
 	
 	dir $outdir | ?{ -not($_.Name -match 'BoboBrowse.Net.Spring') } | %{ del $_.FullName }
@@ -238,4 +238,21 @@ function Is-Prerelease {
 		return $true
 	}
 	return $false
+}
+
+function Get-TargetFramework-Version ([string] $net_version) {
+	$targetFramework = "v4.0"
+	if ($net_version -eq "net35") {
+		$targetFramework = "v3.5"
+	}
+	if ($net_version -eq "net40") {
+		$targetFramework = "v4.0"
+	}
+	if ($net_version -eq "net45") {
+		$targetFramework = "v4.5"
+	}
+	if ($net_version -eq "net451") {
+		$targetFramework = "v4.5.1"
+	}
+	return $targetFramework
 }
