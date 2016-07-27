@@ -164,6 +164,27 @@ namespace BoboBrowse.Net
                 }
                 return false;
             }
+
+            // Required by .NET because Equals() was overridden.
+            // Source: http://stackoverflow.com/questions/70303/how-do-you-implement-gethashcode-for-structure-with-two-string#21604191
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    int hashCode = 0;
+
+                    // String properties
+                    hashCode = (hashCode * 397) ^ (name != null ? name.GetHashCode() : string.Empty.GetHashCode());
+
+                    string value = StringValue;
+                    hashCode = (hashCode * 397) ^ (value != null ? value.GetHashCode() : string.Empty.GetHashCode());
+
+                    // int properties
+                    //hashCode = (hashCode * 397) ^ _hitcount;
+
+                    return hashCode;
+                }
+            }
         }
 
 
