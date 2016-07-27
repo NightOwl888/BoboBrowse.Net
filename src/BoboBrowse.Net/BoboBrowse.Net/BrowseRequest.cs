@@ -138,7 +138,9 @@ namespace BoboBrowse.Net
             FetchStoredFields = false;
             GroupBy = null;
             MaxPerGroup = 0;
+#pragma warning disable 612, 618
             CollectDocIdCache = false;
+#pragma warning restore 612, 618
         }
 
         /// <summary>

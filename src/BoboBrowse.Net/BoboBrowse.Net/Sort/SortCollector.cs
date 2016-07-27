@@ -118,11 +118,13 @@ namespace BoboBrowse.Net.Sort
                 case SortField.Type_e.DOUBLE:
                     return new DocComparatorSource.LongDocComparatorSource(fieldname);
 
+#pragma warning disable 612, 618
                 case SortField.Type_e.BYTE:
                     return new DocComparatorSource.ByteDocComparatorSource(fieldname);
 
                 case SortField.Type_e.SHORT:
                     return new DocComparatorSource.ShortDocComparatorSource(fieldname);
+#pragma warning restore 612, 618
 
                 case SortField.Type_e.STRING:
                     return new DocComparatorSource.StringOrdComparatorSource(fieldname);

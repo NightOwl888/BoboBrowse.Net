@@ -182,8 +182,10 @@ namespace BoboBrowse.Net
                 throw new ArgumentOutOfRangeException("both offset and count must be > 0: " + offset + "/" + count);
             }
             SortCollector collector = GetSortCollector(req.Sort, req.Query, offset, count, 
-                req.FetchStoredFields, req.TermVectorsToFetch, req.GroupBy, req.MaxPerGroup, 
+                req.FetchStoredFields, req.TermVectorsToFetch, req.GroupBy, req.MaxPerGroup,
+#pragma warning disable 612, 618
                 req.CollectDocIdCache);
+#pragma warning restore 612, 618
 
             var facetCollectors = new Dictionary<string, IFacetAccessible>();
             Browse(req, collector, facetCollectors, 0);
