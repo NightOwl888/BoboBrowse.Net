@@ -169,9 +169,7 @@ namespace BoboBrowse.Net.Query.Scoring
 
         private class FacetTermWeight : Weight
         {
-            //private static long serialVersionUID = 1L; // NOT USED
             internal Similarity _similarity;
-            private float value;
             private FacetTermQuery parent;
 
             public FacetTermWeight(FacetTermQuery parent, Similarity sim)
