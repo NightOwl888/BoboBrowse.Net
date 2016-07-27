@@ -40,14 +40,6 @@
     <AssemblyOriginatorKeyFile>..\Common\BoboBrowse.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ICU4NET, Version=1.0.5593.31013, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\packages\ICU4NET-ICU4C55.1-bin32.1.0.0\lib\net45\ICU4NET.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="ICU4NETExtension, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\packages\ICU4NET-ICU4C55.1-bin32.1.0.0\lib\net45\ICU4NETExtension.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Lucene.Net, Version=4.8.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Lucene.Net.4.8.0.605-beta\lib\net451\Lucene.Net.dll</HintPath>
       <Private>True</Private>
@@ -56,14 +48,10 @@
       <HintPath>..\packages\Lucene.Net.Analysis.Common.4.8.0.605-beta\lib\net451\Lucene.Net.Analysis.Common.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
-    <Reference Include="System.Collections.Immutable, Version=1.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Collections.Immutable.1.2.0\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
@@ -307,48 +295,6 @@
       <Link>BoboBrowse.snk</Link>
     </None>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\packages\ICU4NET-ICU4C55.1-bin32.1.0.0\ref\icudt55.dll">
-      <Link>icudt55.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\packages\ICU4NET-ICU4C55.1-bin32.1.0.0\ref\icuin55.dll">
-      <Link>icuin55.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\packages\ICU4NET-ICU4C55.1-bin32.1.0.0\ref\icuio55.dll">
-      <Link>icuio55.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\packages\ICU4NET-ICU4C55.1-bin32.1.0.0\ref\icule55.dll">
-      <Link>icule55.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\packages\ICU4NET-ICU4C55.1-bin32.1.0.0\ref\iculx55.dll">
-      <Link>iculx55.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\packages\ICU4NET-ICU4C55.1-bin32.1.0.0\ref\icutu55.dll">
-      <Link>icutu55.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\packages\ICU4NET-ICU4C55.1-bin32.1.0.0\ref\icuuc55.dll">
-      <Link>icuuc55.dll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
