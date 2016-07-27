@@ -10730,67 +10730,6 @@ namespace BoboBrowse.Net.Support.C5
     }
 
     /// <summary>
-    /// An exception thrown when trying to access a view (a list view on a <see cref="T:C5.IList`1"/> or 
-    /// a snapshot on a <see cref="T:C5.IPersistentSorted`1"/>)
-    /// that has been invalidated by some earlier operation.
-    /// <para>
-    /// The typical scenario is a view on a list that hash been invalidated by a call to 
-    /// Sort, Reverse or Shuffle on some other, overlapping view or the whole list.
-    /// </para>
-    /// </summary>
-    [Serializable]
-    public class ViewDisposedException : Exception
-    {
-        /// <summary>
-        /// Create a simple exception with no further explanation.
-        /// </summary>
-        public ViewDisposedException() : base() { }
-        /// <summary>
-        /// Create the exception with an explanation of the reason.
-        /// </summary>
-        /// <param name="message"></param>
-        public ViewDisposedException(string message) : base(message) { }
-    }
-
-    /// <summary>
-    /// An exception thrown by a lookup or lookup with update operation that does not 
-    /// find the lookup item and has no other means to communicate failure.
-    /// <para>The typical scenario is a lookup by key in a dictionary with an indexer,
-    /// see e.g. <see cref="P:C5.IDictionary`2.Item(`0)"/></para>
-    /// </summary>
-    [Serializable]
-    public class NoSuchItemException : Exception
-    {
-        /// <summary>
-        /// Create a simple exception with no further explanation.
-        /// </summary>
-        public NoSuchItemException() : base() { }
-        /// <summary>
-        /// Create the exception with an explanation of the reason.
-        /// </summary>
-        /// <param name="message"></param>
-        public NoSuchItemException(string message) : base(message) { }
-    }
-
-    /// <summary>
-    /// An exception thrown by enumerators, range views etc. when accessed after 
-    /// the underlying collection has been modified.
-    /// </summary>
-    [Serializable]
-    public class CollectionModifiedException : Exception
-    {
-        /// <summary>
-        /// Create a simple exception with no further explanation.
-        /// </summary>
-        public CollectionModifiedException() : base() { }
-        /// <summary>
-        /// Create the exception with an explanation of the reason.
-        /// </summary>
-        /// <param name="message"></param>
-        public CollectionModifiedException(string message) : base(message) { }
-    }
-
-    /// <summary>
     /// An exception thrown by an update operation on a Read-Only collection or dictionary.
     /// <para>This exception will be thrown unconditionally when an update operation 
     /// (method or set property) is called. No check is made to see if the update operation, 
@@ -10808,6 +10747,23 @@ namespace BoboBrowse.Net.Support.C5
         /// </summary>
         /// <param name="message"></param>
         public ReadOnlyCollectionException(string message) : base(message) { }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [Serializable]
+    public class FixedSizeCollectionException : Exception
+    {
+        /// <summary>
+        /// Create a simple exception with no further explanation.
+        /// </summary>
+        public FixedSizeCollectionException() : base() { }
+        /// <summary>
+        /// Create the exception with an explanation of the reason.
+        /// </summary>
+        /// <param name="message"></param>
+        public FixedSizeCollectionException(string message) : base(message) { }
     }
 
     /// <summary>
@@ -10868,6 +10824,84 @@ namespace BoboBrowse.Net.Support.C5
         /// <param name="message"></param>
         public MultipleEnumerationException(string message) : base(message) { }
     }
+    /// <summary>
+    /// An exception thrown by enumerators, range views etc. when accessed after 
+    /// the underlying collection has been modified.
+    /// </summary>
+    [Serializable]
+    public class CollectionModifiedException : Exception
+    {
+        /// <summary>
+        /// Create a simple exception with no further explanation.
+        /// </summary>
+        public CollectionModifiedException() : base() { }
+        /// <summary>
+        /// Create the exception with an explanation of the reason.
+        /// </summary>
+        /// <param name="message"></param>
+        public CollectionModifiedException(string message) : base(message) { }
+    }
+
+    /// <summary>
+    /// An exception thrown when trying to access a view (a list view on a <see cref="T:C5.IList`1"/> or 
+    /// a snapshot on a <see cref="T:C5.IPersistentSorted`1"/>)
+    /// that has been invalidated by some earlier operation.
+    /// <para>
+    /// The typical scenario is a view on a list that hash been invalidated by a call to 
+    /// Sort, Reverse or Shuffle on some other, overlapping view or the whole list.
+    /// </para>
+    /// </summary>
+    [Serializable]
+    public class ViewDisposedException : Exception
+    {
+        /// <summary>
+        /// Create a simple exception with no further explanation.
+        /// </summary>
+        public ViewDisposedException() : base() { }
+        /// <summary>
+        /// Create the exception with an explanation of the reason.
+        /// </summary>
+        /// <param name="message"></param>
+        public ViewDisposedException(string message) : base(message) { }
+    }
+
+    /// <summary>
+    /// An exception thrown by a lookup or lookup with update operation that does not 
+    /// find the lookup item and has no other means to communicate failure.
+    /// <para>The typical scenario is a lookup by key in a dictionary with an indexer,
+    /// see e.g. <see cref="P:C5.IDictionary`2.Item(`0)"/></para>
+    /// </summary>
+    [Serializable]
+    public class NoSuchItemException : Exception
+    {
+        /// <summary>
+        /// Create a simple exception with no further explanation.
+        /// </summary>
+        public NoSuchItemException() : base() { }
+        /// <summary>
+        /// Create the exception with an explanation of the reason.
+        /// </summary>
+        /// <param name="message"></param>
+        public NoSuchItemException(string message) : base(message) { }
+    }
+
+    /// <summary>
+    /// An exception thrown by an operation on a list (<see cref="T:C5.IList`1"/>)
+    /// that only makes sense for a view, not for an underlying list.
+    /// </summary>
+    [Serializable]
+    public class NotAViewException : Exception
+    {
+        /// <summary>
+        /// Create a simple exception with no further explanation.
+        /// </summary>
+        public NotAViewException() : base() { }
+        /// <summary>
+        /// Create the exception with an explanation of the reason.
+        /// </summary>
+        /// <param name="message"></param>
+        public NotAViewException(string message) : base(message) { }
+    }
 
     /// <summary>
     /// An exception thrown when an operation attempts to create a duplicate in a collection with set semantics 
@@ -10906,6 +10940,42 @@ namespace BoboBrowse.Net.Support.C5
         /// </summary>
         /// <param name="message"></param>
         public InvalidPriorityQueueHandleException(string message) : base(message) { }
+    }
+
+    /// <summary>
+    /// An exception thrown by an operation that need to construct a natural
+    /// comparer for a type.
+    /// </summary>
+    [Serializable]
+    public class NotComparableException : Exception
+    {
+        /// <summary>
+        /// Create a simple exception with no further explanation.
+        /// </summary>
+        public NotComparableException() : base() { }
+        /// <summary>
+        /// Create the exception with an explanation of the reason.
+        /// </summary>
+        /// <param name="message"></param>
+        public NotComparableException(string message) : base(message) { }
+    }
+
+    /// <summary>
+    /// An exception thrown by operations on a list that expects an argument
+    /// that is a view on the same underlying list.
+    /// </summary>
+    [Serializable]
+    public class IncompatibleViewException : Exception
+    {
+        /// <summary>
+        /// Create a simple exception with no further explanation.
+        /// </summary>
+        public IncompatibleViewException() : base() { }
+        /// <summary>
+        /// Create the exception with an explanation of the reason.
+        /// </summary>
+        /// <param name="message"></param>
+        public IncompatibleViewException(string message) : base(message) { }
     }
 
 
