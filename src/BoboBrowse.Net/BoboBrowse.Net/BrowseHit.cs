@@ -191,9 +191,6 @@ namespace BoboBrowse.Net
         [Serializable]
         public class SerializableExplanation
         {
-            /**
-             *
-             */
             //private static const long serialVersionUID = 1L; // NOT USED
 
             private float value; // the value of this node
@@ -215,26 +212,27 @@ namespace BoboBrowse.Net
                 }
             }
 
-
+            /// <summary>
+            /// Gets or sets the value assigned to this explanation node.
+            /// </summary>
             public float Value
             {
-                /** The value assigned to this explanation node. */
                 get { return value; }
-                /** Sets the value assigned to this explanation node. */
                 set { this.value = value; }
             }
 
-
+            /// <summary>
+            /// Gets or sets the description of this explanation node.
+            /// </summary>
             public string Description
             {
-                /** A description of this explanation node. */
                 get { return description; }
-                /** Sets the description of this explanation node. */
                 set { description = value; }
             }
 
-
-            /** The sub-nodes of this explanation node. */
+            /// <summary>
+            /// Gets the sub-nodes of this explanation node.
+            /// </summary>
             public SerializableExplanation[] Details
             {
                 get
@@ -247,7 +245,10 @@ namespace BoboBrowse.Net
                 }
             }
 
-            /** Adds a sub-node to this explanation node. */
+            /// <summary>
+            /// Adds a sub-node to this explanation node.
+            /// </summary>
+            /// <param name="detail"></param>
             public void AddDetail(SerializableExplanation detail)
             {
                 if (details == null)
