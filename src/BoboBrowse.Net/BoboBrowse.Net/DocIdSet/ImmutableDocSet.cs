@@ -44,7 +44,7 @@ namespace BoboBrowse.Net.DocIdSet
                   try {
                     while (dcit.NextDoc() != DocIdSetIterator.NO_MORE_DOCS)
                       size++;
-                  } catch (Exception e) {
+                  } catch (Exception) {
                     log.Error("Error computing size..");
                     return -1;
                   }

@@ -162,7 +162,7 @@ namespace BoboBrowse.Net.DocIdSet
                 int docid = dcit.Advance(target);
                 if (docid == target) return dcit.GetCursor();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 //e.printStackTrace();
             }

@@ -59,7 +59,7 @@ namespace BoboBrowse.Net.DocIdSet
                 {
                     if ((innerDocid = it1.NextDoc()) == DocIdSetIterator.NO_MORE_DOCS) it1 = null;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     //e.printStackTrace();
                 }
@@ -146,7 +146,7 @@ namespace BoboBrowse.Net.DocIdSet
 
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return -1;
             }
