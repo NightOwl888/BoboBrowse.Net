@@ -20,7 +20,7 @@
 // Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Util
 {
-    using C5;
+    using BoboBrowse.Net.Support;
     using System;
     using System.Collections.Generic;
     

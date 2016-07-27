@@ -22,7 +22,9 @@ namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Support;
+    using BoboBrowse.Net.Support.Logging;
     using BoboBrowse.Net.Util;
+    using C5 = BoboBrowse.Net.Support.C5;
     using Lucene.Net.Index;
     using Lucene.Net.Util;
     using System;
@@ -30,7 +32,22 @@ namespace BoboBrowse.Net.Facets.Impl
 
     public class VirtualSimpleFacetHandler : SimpleFacetHandler
     {
+        private static readonly ILog log = LogProvider.For<VirtualSimpleFacetHandler>();
+
         protected IFacetDataFetcher _facetDataFetcher;
+
+        /// <summary>
+        /// Plugin constructor for TreeView, which has its own way of logging.
+        /// Unfortunately, the author of TreeView didn't have the foresight to 
+        /// log different types such as Error, Info, Warn, etc.
+        /// </summary>
+        static VirtualSimpleFacetHandler()
+        {
+            C5.Logger.Log = (string message) =>
+            {
+                log.Info(message);
+            };
+        }
 
         public VirtualSimpleFacetHandler(string name,
                                          string indexFieldName,
@@ -52,7 +69,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override FacetDataCache Load(BoboSegmentReader reader)
         {
-            C5.TreeDictionary<object, List<int>> dataMap = null;
+            TreeDictionary<object, List<int>> dataMap = null;
             List<int> docList = null;
 
             int nullMinId = -1;
@@ -86,15 +103,15 @@ namespace BoboBrowse.Net.Facets.Impl
                             _termListFactory = new TermFixedLengthLongArrayListFactory(
                               ((long[])val).Length);
 
-                        dataMap = new C5.TreeDictionary<object, List<int>>(new VirtualSimpleFacetHandlerLongArrayComparator());
+                        dataMap = new TreeDictionary<object, List<int>>(new VirtualSimpleFacetHandlerLongArrayComparator());
                     }
                     else if (val is IComparable)
                     {
-                        dataMap = new C5.TreeDictionary<object, List<int>>();
+                        dataMap = new TreeDictionary<object, List<int>>();
                     }
                     else
                     {
-                        dataMap = new C5.TreeDictionary<object, List<int>>(new VirtualSimpleFacetHandlerObjectComparator());
+                        dataMap = new TreeDictionary<object, List<int>>(new VirtualSimpleFacetHandlerObjectComparator());
                     }
                 }
 

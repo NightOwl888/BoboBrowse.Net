@@ -40,10 +40,6 @@
     <AssemblyOriginatorKeyFile>..\Common\BoboBrowse.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="C5, Version=2.2.4822.42600, Culture=neutral, PublicKeyToken=282361b99ded7e8e, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\C5.2.2.4822.42600\lib\portable-win+net40+sl40+wp+Xbox40\C5.dll</HintPath>
-    </Reference>
     <Reference Include="ICU4NET, Version=1.0.5593.31013, Culture=neutral, processorArchitecture=x86">
       <HintPath>..\packages\ICU4NET-ICU4C55.1-bin32.1.0.0\lib\net45\ICU4NET.dll</HintPath>
       <Private>True</Private>
@@ -251,6 +247,7 @@
     <Compile Include="Support\DateTimeExtensions.cs" />
     <Compile Include="Support\IIterator.cs" />
     <Compile Include="Support\IListExtensions.cs" />
+    <Compile Include="Support\IntervalHeap.cs" />
     <Compile Include="Support\LibLog.cs" />
     <Compile Include="Support\MathUtil.cs" />
     <Compile Include="Support\NumericUtil.cs" />
@@ -258,6 +255,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DocIdSet\RandomAccessDocIdSet.cs" />
     <Compile Include="Support\RangeStringFormatter.cs" />
+    <Compile Include="Support\C5\Dependencies.cs" />
     <Compile Include="Support\RuntimeException.cs" />
     <Compile Include="Query\Scoring\IFacetTermScoringFunction.cs" />
     <Compile Include="Query\Scoring\BoboDocScorer.cs" />
@@ -283,6 +281,7 @@
     <Compile Include="Support\Stub\QueryParser.cs" />
     <Compile Include="Support\Stub\StandardAnalyzer.cs" />
     <Compile Include="Support\TimeUnit.cs" />
+    <Compile Include="Support\TreeDictionary.cs" />
     <Compile Include="Util\BigByteArray.cs" />
     <Compile Include="Util\BigFloatArray.cs" />
     <Compile Include="Util\BigIntArray.cs" />
