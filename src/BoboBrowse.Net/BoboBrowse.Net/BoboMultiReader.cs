@@ -32,13 +32,19 @@ namespace BoboBrowse.Net
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="reader">Index reader</param>
-        /// <returns></returns>
+        /// <param name="reader">Directory reader</param>
+        /// <returns>A new BoboMultiReader instance.</returns>
         public static BoboMultiReader GetInstance(DirectoryReader reader) 
         {
             return BoboMultiReader.GetInstance(reader, null);
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="reader">Directory reader</param>
+        /// <param name="facetHandlers">List of facet handlers</param>
+        /// <returns>A new BoboMultiReader instance.</returns>
         public static BoboMultiReader GetInstance(DirectoryReader reader, IEnumerable<IFacetHandler> facetHandlers) 
         {
             BoboMultiReader boboReader = new BoboMultiReader(reader, facetHandlers);
