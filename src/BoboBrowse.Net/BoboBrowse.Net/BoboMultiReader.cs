@@ -21,9 +21,15 @@
 namespace BoboBrowse.Net
 {
     using BoboBrowse.Net.Facets;
+    using BoboBrowse.Net.Support;
     using Lucene.Net.Index;
+    using Lucene.Net.Store;
     using System.Collections.Generic;
+    using System;
+    using System.IO;
     using System.Linq;
+    using System.Text;
+    using System.Reflection;
 
     public class BoboMultiReader : FilterDirectoryReader
     {
@@ -58,7 +64,7 @@ namespace BoboBrowse.Net
         }
 
         protected BoboMultiReader(DirectoryReader reader, IEnumerable<IFacetHandler> facetHandlers)
-            : base(reader, new BoboSubReaderWrapper(facetHandlers))
+            : base(reader, new BoboSubReaderWrapper(reader, facetHandlers))
         {
             _subReaders = GetSequentialSubReaders().Cast<BoboSegmentReader>().ToList();
         }
@@ -83,19 +89,61 @@ namespace BoboBrowse.Net
 
         public class BoboSubReaderWrapper : SubReaderWrapper
         {
-
-            private readonly BoboSegmentReader.WorkArea workArea = new BoboSegmentReader.WorkArea();
+            private const string SPRING_CONFIG = "bobo.spring";
+            private readonly BoboSegmentReader.WorkArea _workArea = new BoboSegmentReader.WorkArea();
             private IEnumerable<IFacetHandler> _facetHandlers = null;
 
-            /** Constructor */
-            public BoboSubReaderWrapper(IEnumerable<IFacetHandler> facetHandlers)
+            /// <summary>
+            /// Constructor
+            /// </summary>
+            /// <param name="reader"></param>
+            /// <param name="facetHandlers"></param>
+            public BoboSubReaderWrapper(DirectoryReader reader, IEnumerable<IFacetHandler> facetHandlers)
             {
+                // NOTE: Spring support was removed in Bobo 4.0.2 in Java, but we are still including it in 
+                // the .NET version.
+                if (facetHandlers == null)
+                {
+                    var idxDir = reader.Directory();
+                    if (idxDir != null && idxDir is FSDirectory)
+                    {
+                        // Look for the bobo.spring file in the same directory as the Lucene index
+                        var dir = ((FSDirectory)idxDir).Directory;
+                        var springConfigFile = Path.Combine(dir.FullName, SPRING_CONFIG);
+                        Type loaderType = Type.GetType("BoboBrowse.Net.Spring.FacetHandlerLoader, BoboBrowse.Net.Spring");
+
+                        if (loaderType != null)
+                        {
+                            var loaderInstance = Activator.CreateInstance(loaderType);
+
+                            MethodInfo methodInfo = loaderType.GetMethod("LoadFacetHandlers");
+                            facetHandlers = (IEnumerable<IFacetHandler>)methodInfo.Invoke(loaderInstance, new object[] { springConfigFile, _workArea });
+                        }
+                        else if (File.Exists(springConfigFile))
+                        {
+                            throw new RuntimeException(string.Format(
+                                "There is a file named '{0}' in the Lucene.Net index directory '{1}', but you don't have " +
+                                "the BoboBrowse.Net.Spring assembly in your project to resolve the references. You can " +
+                                "download BoboBrowse.Net.Spring as a separate optional package from NuGet or you can provide " +
+                                "facet handlers using an alternate BoboBrowseIndex.GetInstance overload", SPRING_CONFIG, dir));
+                        }
+                        else
+                        {
+                            facetHandlers = new List<IFacetHandler>();
+                        }
+                    }
+                    else
+                    {
+                        facetHandlers = new List<IFacetHandler>();
+                    }
+                }
+
                 _facetHandlers = facetHandlers;
             }
 
             public override AtomicReader Wrap(AtomicReader reader)
             {
-                return new BoboSegmentReader(reader, _facetHandlers, null, workArea);
+                return new BoboSegmentReader(reader, _facetHandlers, null, _workArea);
             }
         }
 

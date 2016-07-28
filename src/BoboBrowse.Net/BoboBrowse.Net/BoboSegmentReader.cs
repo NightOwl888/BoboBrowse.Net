@@ -25,24 +25,18 @@ namespace BoboBrowse.Net
     using BoboBrowse.Net.Support.Logging;
     using Lucene.Net.Documents;
     using Lucene.Net.Index;
-    using Lucene.Net.Search;
-    using Lucene.Net.Store;
     using Lucene.Net.Util;
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using System.Reflection;
-    using System.Runtime.CompilerServices;
     using System.Text;
-    using Directory = Lucene.Net.Store.Directory;
 
     /// <summary>
     /// bobo browse index reader
     /// </summary>
     public class BoboSegmentReader : FilterAtomicReader
     {
-        private const string SPRING_CONFIG = "bobo.spring";
         private static readonly ILog logger = LogProvider.For<BoboSegmentReader>();
 
         protected IDictionary<string, IFacetHandler> _facetHandlerMap;
@@ -241,45 +235,6 @@ namespace BoboBrowse.Net
 
         private void Initialize(ref IEnumerable<IFacetHandler> facetHandlers)
         {
-            //// TODO: Review whether Spring configuration should still be included.
-            //// It was removed from this location in Bobo 4.0.2.
-            //if (facetHandlers == null)
-            //{
-            //    var idxDir = Directory();
-            //    if (idxDir != null && idxDir is FSDirectory)
-            //    {
-            //        // Look for the bobo.spring file in the same directory as the Lucene index
-            //        var dir = ((FSDirectory)idxDir).Directory;
-            //        var springConfigFile = Path.Combine(dir.FullName, SPRING_CONFIG);
-            //        Type loaderType = Type.GetType("BoboBrowse.Net.Spring.FacetHandlerLoader, BoboBrowse.Net.Spring");
-
-            //        if (loaderType != null)
-            //        {
-            //            var loaderInstance = Activator.CreateInstance(loaderType);
-
-            //            MethodInfo methodInfo = loaderType.GetMethod("LoadFacetHandlers");
-            //            facetHandlers = (IEnumerable<IFacetHandler>)methodInfo.Invoke(loaderInstance, new object[] { springConfigFile, _workArea });
-            //        }
-            //        else
-            //        {
-            //            if (File.Exists(springConfigFile))
-            //            {
-            //                throw new RuntimeException(string.Format(
-            //                    "There is a file named '{0}' in the Lucene.Net index directory '{1}', but you don't have " +
-            //                    "the BoboBrowse.Net.Spring assembly in your project to resolve the references. You can " +
-            //                    "download BoboBrowse.Net.Spring as a separate optional package from NuGet or you can provide " +
-            //                    "facet handlers using an alternate BoboBrowseIndex.GetInstance overload", SPRING_CONFIG, dir));
-            //            }
-
-            //            facetHandlers = new List<IFacetHandler>();
-            //        }
-            //    }
-            //    else
-            //    {
-            //        facetHandlers = new List<IFacetHandler>();
-            //    }
-            //}
-
             _facetHandlers = facetHandlers;
             _facetHandlerMap = new Dictionary<string, IFacetHandler>();
             foreach (var facetHandler in facetHandlers)
