@@ -358,11 +358,11 @@ namespace BoboBrowse.Net
         [NonSerialized]
         private IComparable _comparable;
 
-        // TODO: Correct documentation here.
-        ///// <summary>
-        ///// Gets or sets a dictionary of field names to <see cref="T:TermFrequencyVector"/> instances. These are populated when specified in the <see cref="P:BrowseRequest.TermVectorsToFetch"/> property.
-        ///// A term vector is a list of the document's terms and their number of occurrences in that document.
-        ///// </summary>
+        /// <summary>
+        /// Gets or sets a dictionary of field names to <see cref="T:IList{BoboTerm}"/> instances. 
+        /// These are populated when specified in the <see cref="P:BrowseRequest.TermVectorsToFetch"/> property.
+        /// A term vector is a list of the document's terms and their number of occurrences in that document.
+        /// </summary>
         public virtual IDictionary<string, IList<BoboTerm>> TermVectorMap { get; set; }
 
         /// <summary>

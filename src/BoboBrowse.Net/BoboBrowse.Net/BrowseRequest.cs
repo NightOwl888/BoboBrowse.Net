@@ -57,7 +57,7 @@ namespace BoboBrowse.Net
         private readonly IList<SortField> _sortSpecs;
 
         /// <summary>
-        /// Gets or sets a list of term vectors to fetch from the Lucene.Net index. The values are populated in the <see cref="P:BrowseHit.TermFreqMap"/>.
+        /// Gets or sets a list of term vectors to fetch from the Lucene.Net index. The values are populated in the <see cref="P:BrowseHit.TermVectorMap"/>.
         /// A term vector is a list of the document's terms and their number of occurrences in that document.
         /// </summary>
         public virtual IEnumerable<string> TermVectorsToFetch { get; set; }
