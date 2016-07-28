@@ -15,7 +15,7 @@
     <licenseUrl>https://github.com/NightOwl888/BoboBrowse.Net/blob/master/LICENSE.md</licenseUrl>
 		<iconUrl>https://raw.githubusercontent.com/NightOwl888/BoboBrowse.Net/master/BoboBrowse.Net.png</iconUrl>
 		<dependencies>
-			<group targetFramework="net45">
+			<group targetFramework="net451">
 				<dependency id="BoboBrowse.Net" version="$version$" />
 				<dependency id="Spring.Core" version="2.0" />
 			</group>
