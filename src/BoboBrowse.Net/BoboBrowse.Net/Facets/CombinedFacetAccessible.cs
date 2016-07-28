@@ -273,9 +273,21 @@ namespace BoboBrowse.Net.Facets
                 _closed = true;
                 if (_list != null)
                 {
+                    Exception exception = null;
                     foreach (IFacetAccessible fa in _list)
                     {
-                        fa.Dispose();
+                        try
+                        {
+                            fa.Dispose();
+                        }
+                        catch (Exception e)
+                        {
+                            exception = e;
+                        }
+                    }
+                    if (exception != null)
+                    {
+                        throw exception;
                     }
                     // NOTE: This was done in the original Java source, but
                     // is not necessary in .NET. After disposing all of the child instances,

@@ -210,20 +210,46 @@ namespace BoboBrowse.Net
         {
             if (disposing)
             {
-                if (GroupAccessibles != null)
+                lock (this)
                 {
-                    foreach (var accessible in this.GroupAccessibles)
+                    Exception exception = null;
+                    if (GroupAccessibles != null)
                     {
-                        if (accessible != null)
-                            accessible.Dispose();
+                        foreach (var accessible in this.GroupAccessibles)
+                        {
+                            try
+                            {
+                                if (accessible != null)
+                                    accessible.Dispose();
+                            }
+                            catch (Exception e)
+                            {
+                                exception = e;
+                            }
+                        }
+                        if (exception != null)
+                        {
+                            throw exception;
+                        }
                     }
-                }
-                if (this.SortCollector != null)
-                    this.SortCollector.Dispose();
-                if (this.FacetMap == null) return;
-                foreach (var fa in this.FacetMap.Values)
-                {
-                    fa.Dispose();
+                    if (this.SortCollector != null)
+                        this.SortCollector.Dispose();
+                    if (this.FacetMap == null) return;
+                    foreach (var fa in this.FacetMap.Values)
+                    {
+                        try
+                        {
+                            fa.Dispose();
+                        }
+                        catch (Exception e)
+                        {
+                            exception = e;
+                        }
+                    }
+                    if (exception != null)
+                    {
+                        throw exception;
+                    }
                 }
             }
         }

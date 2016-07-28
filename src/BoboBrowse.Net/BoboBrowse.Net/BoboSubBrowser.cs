@@ -34,7 +34,7 @@ namespace BoboBrowse.Net
     using System.Diagnostics;
     using System.Linq;
 
-    public class BoboSubBrowser : BoboSearcher, IBrowsable, IDisposable
+    public class BoboSubBrowser : BoboSearcher, IBrowsable
     {
         private static readonly ILog logger = LogProvider.For<BoboSubBrowser>();
         private readonly BoboSegmentReader _reader;
@@ -440,46 +440,44 @@ namespace BoboBrowse.Net
             }
         }
 
-        public void DoClose()
-        {
-            // TODO: Work out what to do here - dispose or DoClose...
-            if (_runtimeFacetHandlers != null)
-            {
-                foreach (var handler in _runtimeFacetHandlers)
-                {
-                    handler.Dispose();
-                }
-            }
-            if (_reader != null)
-            {
-                _reader.ClearRuntimeFacetData();
-                _reader.ClearRuntimeFacetHandler();
-            }
-        }
-
+        // Analogous to the DoClose() method in Java
         public void Dispose()
         {
-
+            this.Dispose(true);
         }
 
-        //// Analagous to the DoClose() method in Java
-        //protected override void Dispose(bool disposing)
-        //{
-        //    if (disposing)
-        //    {
-        //        if (_runtimeFacetHandlers != null)
-        //        {
-        //            foreach (var handler in _runtimeFacetHandlers)
-        //            {
-        //                handler.Dispose();
-        //            }
-        //        }
-        //        if (_reader != null)
-        //        {
-        //            _reader.ClearRuntimeFacetData();
-        //            _reader.ClearRuntimeFacetHandler();
-        //        }
-        //    }
-        //}
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                lock (this)
+                {
+                    if (_runtimeFacetHandlers != null)
+                    {
+                        Exception exception = null;
+                        foreach (var handler in _runtimeFacetHandlers)
+                        {
+                            try
+                            {
+                                handler.Dispose();
+                            }
+                            catch (Exception e)
+                            {
+                                exception = e;
+                            }
+                        }
+                        if (exception != null)
+                        {
+                            throw exception;
+                        }
+                    }
+                    if (_reader != null)
+                    {
+                        _reader.ClearRuntimeFacetData();
+                        _reader.ClearRuntimeFacetHandler();
+                    }
+                }
+            }
+        }
     }
 }

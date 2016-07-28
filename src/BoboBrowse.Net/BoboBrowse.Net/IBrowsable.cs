@@ -25,9 +25,10 @@ namespace BoboBrowse.Net
     using Lucene.Net.Index;
     using Lucene.Net.Search;
     using Lucene.Net.Search.Similarities;
+    using System;
     using System.Collections.Generic;
 
-    public interface IBrowsable
+    public interface IBrowsable : IDisposable
     {
         /// <summary>
         /// Generates a merged BrowseResult from the supplied <see cref="T:BrowseRequest"/>.
@@ -99,8 +100,6 @@ namespace BoboBrowse.Net
         /// </summary>
         /// <returns>The total number of documents.</returns>
         int NumDocs { get; }
-
-        //void DoClose(); // TODO: Should this be IDisposable?
 
         SortCollector GetSortCollector(SortField[] sort, Lucene.Net.Search.Query q, int offset, int count, 
             bool fetchStoredFields, IEnumerable<string> termVectorsToFetch, string[] groupBy, int maxPerGroup, 

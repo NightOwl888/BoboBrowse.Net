@@ -368,26 +368,29 @@ namespace BoboBrowse.Net
                 termVectorsToFetch, groupBy, maxPerGroup, collectDocIdCache);
         }
 
-        // TODO: Work out how to properly clean up this object.
-        //protected override void DoClose()
-        //{
-        //    base.DoClose();
-        //}
-
-        //protected override void Dispose(bool disposing)
-        //{
-        //    if (disposing)
-        //    {
-        //        foreach (IBrowsable subBrowser in _subBrowsers)
-        //        {
-        //            var disposable = subBrowser as IDisposable;
-        //            if (disposable != null)
-        //                disposable.Dispose();
-        //        }
-        //    }
-
-        //    base.Dispose(disposing);
-        //}
+        protected override void DoClose()
+        {
+            base.DoClose();
+            lock (this)
+            {
+                Exception exception = null;
+                foreach (IBrowsable subBrowser in _subBrowsers)
+                {
+                    try
+                    {
+                        subBrowser.Dispose();
+                    }
+                    catch (Exception e)
+                    {
+                        exception = e;
+                    }
+                }
+                if (exception != null)
+                {
+                    throw exception;
+                }
+            }
+        }
 
         public virtual IndexReader IndexReader
         {
