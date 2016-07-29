@@ -7,36 +7,34 @@ Faceted Search for Lucene.Net
 
 Bobo-Browse is a powerful and extensible faceted search engine library built on top of Lucene.Net. It is a C# port of the [original Bobo-Browse project](https://github.com/senseidb/bobo) written in Java by John Wang.
 
-This project is based on earlier work from [here](https://bobo.codeplex.com/) and [here](https://github.com/zhengchun/Bobo-Browse.Net), but both of those versions are based on Bobo-Browse.Net 2.x. This is an (almost) complete port of [Bobo-Browse 3.2.0](https://github.com/senseidb/bobo/releases), which is fully compatible with [Lucene.Net 3.0.3](https://www.nuget.org/packages/Lucene.Net/).
+This project is based on earlier work from [here](https://bobo.codeplex.com/) and [here](https://github.com/zhengchun/Bobo-Browse.Net), but both of those versions are based on Bobo-Browse.Net 2.x. This is an (almost) complete port of [Bobo-Browse 4.0.2](https://github.com/senseidb/bobo/releases), which is fully compatible with [Lucene.Net 4.8.0](https://www.nuget.org/packages/Lucene.Net/).
 
 Features Not Implemented:
 
-1. bobo-contrib
-2. bobo-solr (doesn't make sense to port because this feature is a plugin for solr, a Java-based application).
-3. CollectDocIdCache feature of BoboBrowser (uses memory management in a way that is incompatible with .NET).
-4. Util.PrimitiveMatrix, Util.FloatMatrix, and Util.IntMatrix (not used by the rest of the framework and are essentially just 2-dimensional arrays, which don't exist in Java but already exist in .NET).
-5. Util.MemoryManager and Util.MemoryManagerAdminMBean (uses memory management in a way that is incompatible with .NET).
-6. Index.MakeBobo (a console application that can be used for writing Lucene.Net indexes, but isn't required)
+1. CollectDocIdCache feature of BoboBrowser (uses memory management in a way that is incompatible with .NET).
+2. Util.PrimitiveMatrix, Util.FloatMatrix, and Util.IntMatrix (not used by the rest of the framework and are essentially just 2-dimensional arrays, which don't exist in Java but already exist in .NET).
+3. Util.MemoryManager and Util.MemoryManagerAdminMBean (uses memory management in a way that is incompatible with .NET).
+4. Index.MakeBobo (a console application that can be used for writing Lucene.Net indexes, but isn't required)
 
-###Status###
+### Status
 
-Stable
+Alpha - awaiting port of StandardAnalyzer and QueryParser of Lucene.Net 4.8.0, as well as releases for .NET 3.5 and 4.0.
 
-###Documentation###
+### Documentation
 
 Read the documentation on the wiki: https://github.com/NightOwl888/BoboBrowse.Net/wiki
 
-###License###
+### License
 
 [Apache 2.0 License](https://github.com/NightOwl888/BoboBrowse.Net/blob/master/LICENSE.md)
 
-###Install Via NuGet###
+### Install Via NuGet
 
     PM> Install-Package BoboBrowse.Net
 
 See [our page on the NuGet gallery](https://www.nuget.org/packages/BoboBrowse.Net/).
 
-###Building the Source###
+### Building the Source
 
 You only need to build the source if you plan to customize the source, but these instructions are provided in case you need to do so.
 
@@ -63,7 +61,7 @@ The -v parameter is the file version number, and the -pv parameter is the NuGet 
 
 Once the source has been built, you can install Bobo-Browse.Net into your project using NuGet. In Visual Studio, open the Options dialog from the Tools menu. In the left pane, choose NuGet Package Manager > Package Sources. Click the "+" button. Name the package source "Local Bobo-Browse.Net Feed", and add a Windows file path to `[Bobo-Browse Project Directory]\packages\packagesource\`. You can then use either the UI or Package Manager Console to install Bobo-Browse.Net into your project by selecting the "Local Bobo-Browse.Net Feed" as the package source.
 
-###Sample Usage###
+### Sample Usage
 
 Here is a quick demonstration showing how easy it is to create a faceted search:
 
