@@ -285,14 +285,14 @@ namespace BoboBrowse.Net.Facets
                             exception = e;
                         }
                     }
-                    if (exception != null)
-                    {
-                        throw exception;
-                    }
                     // NOTE: This was done in the original Java source, but
                     // is not necessary in .NET. After disposing all of the child instances,
                     // memory cleanup is left up to the framework.
                     //_list.Clear();
+                    if (exception != null)
+                    {
+                        throw exception;
+                    }
                 }
             }
         }

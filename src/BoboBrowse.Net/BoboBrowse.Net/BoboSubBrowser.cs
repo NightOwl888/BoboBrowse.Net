@@ -452,9 +452,9 @@ namespace BoboBrowse.Net
             {
                 lock (this)
                 {
+                    Exception exception = null;
                     if (_runtimeFacetHandlers != null)
                     {
-                        Exception exception = null;
                         foreach (var handler in _runtimeFacetHandlers)
                         {
                             try
@@ -466,15 +466,15 @@ namespace BoboBrowse.Net
                                 exception = e;
                             }
                         }
-                        if (exception != null)
-                        {
-                            throw exception;
-                        }
                     }
                     if (_reader != null)
                     {
                         _reader.ClearRuntimeFacetData();
                         _reader.ClearRuntimeFacetHandler();
+                    }
+                    if (exception != null)
+                    {
+                        throw exception;
                     }
                 }
             }

@@ -227,10 +227,6 @@ namespace BoboBrowse.Net
                                 exception = e;
                             }
                         }
-                        if (exception != null)
-                        {
-                            throw exception;
-                        }
                     }
                     if (this.SortCollector != null)
                         this.SortCollector.Dispose();
