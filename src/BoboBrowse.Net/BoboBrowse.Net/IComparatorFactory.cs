@@ -39,4 +39,4 @@ namespace BoboBrowse.Net
         ///<returns> Comparator instance </returns>
         IComparer<BrowseFacet> NewComparator();
     }
-}
+}// SOME GARBAGE COMMENT
