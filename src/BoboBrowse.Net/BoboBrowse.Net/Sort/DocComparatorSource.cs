@@ -188,7 +188,9 @@ namespace BoboBrowse.Net.Sort
 
             public override DocComparer GetComparer(AtomicReader reader, int docbase)
             {
+#pragma warning disable 612,618
                 FieldCache.Int16s values = FieldCache.DEFAULT.GetInt16s(reader, this.m_field, true);
+#pragma warning restore 612, 618
                 return new ShortDocComparer(values);
             }
 
@@ -441,7 +443,9 @@ namespace BoboBrowse.Net.Sort
 
             public override DocComparer GetComparer(AtomicReader reader, int docbase)
             {
+#pragma warning disable 612, 618
                 FieldCache.Bytes values = FieldCache.DEFAULT.GetBytes(reader, this.m_field, true);
+#pragma warning restore 612, 618
                 return new ByteDocComparer(values);
             }
 
