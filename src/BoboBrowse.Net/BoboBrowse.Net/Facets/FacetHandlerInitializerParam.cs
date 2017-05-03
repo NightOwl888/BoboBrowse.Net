@@ -55,9 +55,9 @@ namespace BoboBrowse.Net.Facets
                 return new long[0];
             }
 
-            public override sbyte[] GetByteArrayParam(string name)
+            public override byte[] GetByteArrayParam(string name)
             {
-                return new sbyte[0];
+                return new byte[0];
             }
 
             public override double[] GetDoubleParam(string name)
@@ -117,7 +117,7 @@ namespace BoboBrowse.Net.Facets
         public abstract int[] GetIntParam(string name);
         public abstract bool[] GetBooleanParam(string name);
         public abstract long[] GetLongParam(string name);
-        public abstract sbyte[] GetByteArrayParam(string name);
+        public abstract byte[] GetByteArrayParam(string name);
         public abstract double[] GetDoubleParam(string name);
         public abstract ICollection<string> BooleanParamNames { get; }
         public abstract ICollection<string> StringParamNames { get; }
