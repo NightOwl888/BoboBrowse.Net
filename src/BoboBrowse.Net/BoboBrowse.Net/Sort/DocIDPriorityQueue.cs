@@ -29,11 +29,11 @@ namespace BoboBrowse.Net.Sort
         protected readonly ScoreDoc[] heap;
         public readonly int @base;
 
-        private readonly DocComparator comparator;
+        private readonly DocComparer comparer;
 
-        public DocIDPriorityQueue(DocComparator comparator, int maxSize, int @base)
+        public DocIDPriorityQueue(DocComparer comparer, int maxSize, int @base)
         {
-            this.comparator = comparator;
+            this.comparer = comparer;
             size = 0;
             this.@base = @base;
             int heapSize;
@@ -62,12 +62,12 @@ namespace BoboBrowse.Net.Sort
 
         public virtual IComparable SortValue(ScoreDoc doc)
         {
-            return this.comparator.Value(doc);
+            return this.comparer.Value(doc);
         }
 
         private int Compare(ScoreDoc doc1, ScoreDoc doc2)
         {
-            int cmp = comparator.Compare(doc1, doc2);
+            int cmp = comparer.Compare(doc1, doc2);
             if (cmp != 0)
             {
                 return -cmp;

@@ -35,8 +35,8 @@ namespace BoboBrowse.Net.Util
             this._maxSize = maxSize;
         }
 
-        public BoundedPriorityQueue(IComparer<E> comparator, int maxSize)
-            : base(maxSize, comparator)
+        public BoundedPriorityQueue(IComparer<E> comparer, int maxSize)
+            : base(maxSize, comparer)
         {
             this._maxSize = maxSize;
         }
@@ -52,9 +52,9 @@ namespace BoboBrowse.Net.Util
             else
             {
                 E smallest = base.Peek();
-                IComparer<E> comparator = base.Comparer;
+                IComparer<E> comparer = base.Comparer;
                 bool madeIt = false;
-                if (comparator == null)
+                if (comparer == null)
                 {
                     if (((IComparable<E>)smallest).CompareTo(o) < 0)
                     {
@@ -63,7 +63,7 @@ namespace BoboBrowse.Net.Util
                 }
                 else
                 {
-                    if (comparator.Compare(smallest, o) < 0)
+                    if (comparer.Compare(smallest, o) < 0)
                     {
                         madeIt = true;
                     }

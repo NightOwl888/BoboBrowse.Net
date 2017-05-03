@@ -30,7 +30,7 @@ namespace BoboBrowse.Net.DocIdSet
         private const int INVALID = -1;
 
         [Serializable]
-        public class AescDocIdSetComparator : IComparer<DocIdSetIterator>
+        public class AescDocIdSetComparer : IComparer<DocIdSetIterator>
         {
             public virtual int Compare(DocIdSetIterator o1, DocIdSetIterator o2)
             {

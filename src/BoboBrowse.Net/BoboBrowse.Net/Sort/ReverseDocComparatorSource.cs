@@ -24,37 +24,37 @@ namespace BoboBrowse.Net.Sort
     using Lucene.Net.Search;
     using System;
 
-    public class ReverseDocComparatorSource : DocComparatorSource
+    public class ReverseDocComparerSource : DocComparerSource
     {
-        private readonly DocComparatorSource _inner;
+        private readonly DocComparerSource _inner;
 
-        public ReverseDocComparatorSource(DocComparatorSource inner)
+        public ReverseDocComparerSource(DocComparerSource inner)
         {
             _inner = inner;
         }
 
-        public override DocComparator GetComparator(AtomicReader reader, int docbase)
+        public override DocComparer GetComparer(AtomicReader reader, int docbase)
         {
-            return new ReverseDocComparator(_inner.GetComparator(reader, docbase));
+            return new ReverseDocComparer(_inner.GetComparer(reader, docbase));
         }
 
-        public class ReverseDocComparator : DocComparator
+        public class ReverseDocComparer : DocComparer
         {
-            private readonly DocComparator _comparator;
+            private readonly DocComparer _comparer;
 
-            public ReverseDocComparator(DocComparator comparator)
+            public ReverseDocComparer(DocComparer comparer)
             {
-                _comparator = comparator;
+                _comparer = comparer;
             }
 
             public override int Compare(ScoreDoc doc1, ScoreDoc doc2)
             {
-                return -_comparator.Compare(doc1, doc2);
+                return -_comparer.Compare(doc1, doc2);
             }
 
             public override IComparable Value(ScoreDoc doc)
             {
-                return new ReverseComparable(_comparator.Value(doc));
+                return new ReverseComparable(_comparer.Value(doc));
             }
 
             [Serializable]

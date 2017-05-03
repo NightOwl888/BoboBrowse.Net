@@ -37,9 +37,9 @@ namespace BoboBrowse.Net.Sort
 
     public class SortCollectorImpl : SortCollector
     {
-        private static IComparer<MyScoreDoc> MERGE_COMPATATOR = new MyScoreDocComparator();
+        private static IComparer<MyScoreDoc> MERGE_COMPATATOR = new MyScoreDocComparer();
 
-        private class MyScoreDocComparator : IComparer<MyScoreDoc>
+        private class MyScoreDocComparer : IComparer<MyScoreDoc>
         {
             public int Compare(MyScoreDoc o1, MyScoreDoc o2)
             {
@@ -85,8 +85,8 @@ namespace BoboBrowse.Net.Sort
         private ScoreDoc _bottom;
         private ScoreDoc _tmpScoreDoc;
         private bool _queueFull;
-        private DocComparator _currentComparator;
-        private readonly DocComparatorSource _compSource;
+        private DocComparer _currentComparer;
+        private readonly DocComparerSource _compSource;
         private DocIDPriorityQueue _currentQueue;
         private BoboSegmentReader _currentReader = null;
         private IFacetCountCollector _facetCountCollector;
@@ -148,7 +148,7 @@ namespace BoboBrowse.Net.Sort
         private IEnumerable<string> _termVectorsToFetch;
 
         public SortCollectorImpl(
-            DocComparatorSource compSource,
+            DocComparerSource compSource,
             SortField[] sortFields,
             IBrowsable boboBrowser,
             int offset,
@@ -313,13 +313,13 @@ namespace BoboBrowse.Net.Sort
 
                         _tmpScoreDoc.Doc = doc;
                         _tmpScoreDoc.Score = score;
-                        if (!_queueFull || _currentComparator.Compare(_bottom, _tmpScoreDoc) > 0)
+                        if (!_queueFull || _currentComparer.Compare(_bottom, _tmpScoreDoc) > 0)
                         {
                             int order = groupBy.GetFacetData<FacetDataCache>(_currentReader).OrderArray.Get(doc);
                             ScoreDoc pre = _currentValueDocMaps.Get(order);
                             if (pre != null)
                             {
-                                if (_currentComparator.Compare(pre, _tmpScoreDoc) > 0)
+                                if (_currentComparer.Compare(pre, _tmpScoreDoc) > 0)
                                 {
                                     ScoreDoc tmp = pre;
                                     _bottom = _currentQueue.Replace(_tmpScoreDoc, pre);
@@ -360,7 +360,7 @@ namespace BoboBrowse.Net.Sort
                         _tmpScoreDoc.Doc = doc;
                         _tmpScoreDoc.Score = score;
 
-                        if (_currentComparator.Compare(_bottom, _tmpScoreDoc) > 0)
+                        if (_currentComparer.Compare(_bottom, _tmpScoreDoc) > 0)
                         {
                             ScoreDoc tmp = _bottom;
                             _bottom = _currentQueue.Replace(_tmpScoreDoc);
@@ -385,8 +385,8 @@ namespace BoboBrowse.Net.Sort
                 throw new ArgumentException("reader must be a BoboIndexReader");
             _currentReader = (BoboSegmentReader)reader;
             int docBase = context.DocBase;
-            _currentComparator = _compSource.GetComparator(_currentReader, docBase);
-            _currentQueue = new DocIDPriorityQueue(_currentComparator, _numHits, docBase);
+            _currentComparer = _compSource.GetComparer(_currentReader, docBase);
+            _currentQueue = new DocIDPriorityQueue(_currentComparer, _numHits, docBase);
             if (groupBy != null)
             {
                 if (_facetCountCollectorMulti != null)  // _facetCountCollectorMulti.Length >= 1
@@ -413,7 +413,7 @@ namespace BoboBrowse.Net.Sort
                 // memory, but then do nothing with the arrays. Seems wasteful and unnecessary.
                 //if (contextList != null)
                 //{
-                //    _currentContext = new CollectorContext(_currentReader, docBase, _currentComparator);
+                //    _currentContext = new CollectorContext(_currentReader, docBase, _currentComparer);
                 //    contextList.Add(_currentContext);
                 //}
             }
@@ -428,7 +428,7 @@ namespace BoboBrowse.Net.Sort
         public override void SetScorer(Scorer scorer)
         {
             _scorer = scorer;
-            _currentComparator.SetScorer(scorer);
+            _currentComparer.SetScorer(scorer);
         }
 
         public override int TotalHits

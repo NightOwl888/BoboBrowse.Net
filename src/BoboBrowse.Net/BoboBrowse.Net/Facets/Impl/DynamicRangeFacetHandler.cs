@@ -112,9 +112,9 @@ namespace BoboBrowse.Net.Facets.Impl
             return _dataFacetHandler.GetRawFieldValues(reader, docid);
         }
 
-        public override DocComparatorSource GetDocComparatorSource()
+        public override DocComparerSource GetDocComparerSource()
         {
-            return _dataFacetHandler.GetDocComparatorSource();
+            return _dataFacetHandler.GetDocComparerSource();
         }
 
         public override FacetDataNone Load(BoboSegmentReader reader)
@@ -183,7 +183,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     int count = iter.Count;
                     facets.Add(new BrowseFacet(parent.GetValueFromRangeString(facet), count));
                 }
-                facets.Sort(ListMerger.FACET_VAL_COMPARATOR);
+                facets.Sort(ListMerger.FACET_VAL_COMPARER);
                 return new PathFacetIterator(facets);
             }
         }

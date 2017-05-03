@@ -242,9 +242,9 @@ namespace BoboBrowse.Net.Facets.Impl
             return new GeoFacetFilter(this, range.Lat, range.Lon, range.Rad, _miles);
         }
 
-        public override DocComparatorSource GetDocComparatorSource()
+        public override DocComparerSource GetDocComparerSource()
         {
-            throw new NotSupportedException("Doc comparator not yet supported for Geo Facets");
+            throw new NotSupportedException("Doc comparer not yet supported for Geo Facets");
         }
 
         public override FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec fspec)

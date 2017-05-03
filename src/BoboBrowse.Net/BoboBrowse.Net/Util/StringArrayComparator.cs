@@ -24,16 +24,16 @@ namespace BoboBrowse.Net.Util
     using Lucene.Net.Support;
     using System;
 
-    public class StringArrayComparator : IComparable<StringArrayComparator>, IComparable
+    public class StringArrayComparer : IComparable<StringArrayComparer>, IComparable
     {
         private readonly string[] vals;
 
-        public StringArrayComparator(string[] vals)
+        public StringArrayComparer(string[] vals)
         {
             this.vals = vals;
         }
 
-        public virtual int CompareTo(StringArrayComparator node)
+        public virtual int CompareTo(StringArrayComparer node)
         {
             string[] o = node.vals;
             if (vals == o)
@@ -68,7 +68,7 @@ namespace BoboBrowse.Net.Util
 
         public int CompareTo(object obj)
         {
-            return CompareTo((StringArrayComparator)obj);
+            return CompareTo((StringArrayComparer)obj);
         }
 
         public override string ToString()

@@ -172,25 +172,25 @@ namespace BoboBrowse.Net.Facets.Impl
                 }
                 else //if (sortspec == FacetSortSpec.OrderHitsDesc)
                 {
-                    IComparatorFactory comparatorFactory;
+                    IComparerFactory comparerFactory;
                     if (sortspec == FacetSpec.FacetSortSpec.OrderHitsDesc)
                     {
-                        comparatorFactory = new FacetHitcountComparatorFactory();
+                        comparerFactory = new FacetHitcountComparerFactory();
                     }
                     else
                     {
-                        comparatorFactory = ospec.CustomComparatorFactory;
+                        comparerFactory = ospec.CustomComparerFactory;
                     }
 
-                    if (comparatorFactory == null)
+                    if (comparerFactory == null)
                     {
-                        throw new ArgumentException("facet comparator factory not specified");
+                        throw new ArgumentException("facet comparer factory not specified");
                     }
 
-                    IComparer<int> comparator = comparatorFactory.NewComparator(new DefaultFacetCountCollectorFieldAccessor(valList), count);
+                    IComparer<int> comparer = comparerFactory.NewComparer(new DefaultFacetCountCollectorFieldAccessor(valList), count);
                     facetColl = new LinkedList<BrowseFacet>();
                     int forbidden = -1;
-                    IntBoundedPriorityQueue pq = new IntBoundedPriorityQueue(comparator, max, forbidden);
+                    IntBoundedPriorityQueue pq = new IntBoundedPriorityQueue(comparer, max, forbidden);
 
                     for (int i = 1; i < countlength; ++i) // exclude zero
                     {

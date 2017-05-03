@@ -37,13 +37,13 @@ namespace BoboBrowse.Net.Util
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="comparator">a comparator that is used to order the items.</param>
+        /// <param name="comparer">a comparer that is used to order the items.</param>
         /// <param name="capacity">the maximum number of items the queue accepts</param>
         /// <param name="forbiddenValue"></param>
-        public IntBoundedPriorityQueue(IComparer<int> comparator, int capacity, int forbiddenValue)
+        public IntBoundedPriorityQueue(IComparer<int> comparer, int capacity, int forbiddenValue)
         {
             _capacity = capacity;
-            _comp = comparator;
+            _comp = comparer;
             _items = new int[capacity];// java.lang.reflect.Array.newInstance(, capacity);
             _forbiddenValue = forbiddenValue;
         }
@@ -228,7 +228,7 @@ namespace BoboBrowse.Net.Util
             _items[index] = temp;
         }
 
-        public abstract class IntComparator : Comparer<int>
+        public abstract class IntComparer : Comparer<int>
         {
             public override int Compare(int x, int y)
             {

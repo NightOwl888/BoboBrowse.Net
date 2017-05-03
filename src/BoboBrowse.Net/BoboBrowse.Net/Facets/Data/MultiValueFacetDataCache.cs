@@ -354,28 +354,28 @@ namespace BoboBrowse.Net.Facets.Data
         }
     }
 
-    public sealed class MultiFacetDocComparatorSource : DocComparatorSource
+    public sealed class MultiFacetDocComparerSource : DocComparerSource
     {
         private readonly MultiDataCacheBuilder cacheBuilder;
-        public MultiFacetDocComparatorSource(MultiDataCacheBuilder multiDataCacheBuilder)
+        public MultiFacetDocComparerSource(MultiDataCacheBuilder multiDataCacheBuilder)
         {
             cacheBuilder = multiDataCacheBuilder;
         }
 
-        public override DocComparator GetComparator(AtomicReader reader, int docbase)
+        public override DocComparer GetComparer(AtomicReader reader, int docbase)
         {
             if (!(reader is BoboSegmentReader))
                 throw new ArgumentException("reader must be instance of " + typeof(BoboSegmentReader).Name);
             BoboSegmentReader boboReader = (BoboSegmentReader)reader;
             MultiValueFacetDataCache dataCache = (MultiValueFacetDataCache)cacheBuilder.Build(boboReader);
-            return new MultiFacetDocComparator(dataCache);
+            return new MultiFacetDocComparer(dataCache);
         }
 
-        public sealed class MultiFacetDocComparator : DocComparator
+        public sealed class MultiFacetDocComparer : DocComparer
         {
             private readonly MultiValueFacetDataCache _dataCache;
 
-            public MultiFacetDocComparator(MultiValueFacetDataCache dataCache)
+            public MultiFacetDocComparer(MultiValueFacetDataCache dataCache)
             {
                 _dataCache = dataCache;
             }
@@ -388,7 +388,7 @@ namespace BoboBrowse.Net.Facets.Data
             public override IComparable Value(ScoreDoc doc)
             {
                 string[] vals = _dataCache.NestedArray.GetTranslatedData(doc.Doc, _dataCache.ValArray);
-                return new StringArrayComparator(vals);
+                return new StringArrayComparer(vals);
             }
         }
     }

@@ -24,19 +24,19 @@ namespace BoboBrowse.Net
     using System.Collections.Generic;
 
     /// <summary>
-    /// Comparator for custom sorting a facet value.
+    /// Comparer for custom sorting a facet value.
     /// author jwang
     /// </summary>
-    public interface IComparatorFactory
+    public interface IComparerFactory
     {
-        ///<summary>Providers a Comparator from field values and counts. This is called within a browse. </summary>
+        ///<summary>Providers a Comparer from field values and counts. This is called within a browse. </summary>
         ///<param name="fieldValueAccessor"> accessor for field values </param>
         ///<param name="counts"> hit counts </param>
-        ///<returns> Comparator instance </returns>
-        IComparer<int> NewComparator(IFieldValueAccessor fieldValueAccessor, BigSegmentedArray counts);
+        ///<returns> Comparer instance </returns>
+        IComparer<int> NewComparer(IFieldValueAccessor fieldValueAccessor, BigSegmentedArray counts);
 
-        ///<summary>Providers a Comparator. This is called when doing a merge across browses. </summary>
-        ///<returns> Comparator instance </returns>
-        IComparer<BrowseFacet> NewComparator();
+        ///<summary>Providers a Comparer. This is called when doing a merge across browses. </summary>
+        ///<returns> Comparer instance </returns>
+        IComparer<BrowseFacet> NewComparer();
     }
 }

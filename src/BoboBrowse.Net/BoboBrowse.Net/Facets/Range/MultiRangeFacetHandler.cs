@@ -45,9 +45,9 @@ namespace BoboBrowse.Net.Facets.Range
             this.sizePayloadTerm = sizePayloadTerm;
         }
 
-        public override DocComparatorSource GetDocComparatorSource()
+        public override DocComparerSource GetDocComparerSource()
         {
-            return new MultiFacetDocComparatorSource(new MultiDataCacheBuilder(Name, _indexFieldName));
+            return new MultiFacetDocComparerSource(new MultiDataCacheBuilder(Name, _indexFieldName));
         }
 
         public override string[] GetFieldValues(BoboSegmentReader reader, int id)

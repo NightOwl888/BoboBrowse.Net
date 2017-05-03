@@ -32,7 +32,7 @@ namespace BoboBrowse.Net.DocIdSet
         private readonly IList<int> _interSectionResult = new List<int>();
 
         [Serializable]
-        public class DescDocIdSetComparator : IComparer<StatefulDSIterator>
+        public class DescDocIdSetComparer : IComparer<StatefulDSIterator>
         {
             // private static long serialVersionUID = 1L; // NOT USED
 

@@ -40,10 +40,10 @@ namespace BoboBrowse.Net.Facets.Impl
             _dependsOnFacetName = dependsOnFacetName;
         }
 
-        public override DocComparatorSource GetDocComparatorSource()
+        public override DocComparerSource GetDocComparerSource()
         {
             var dependOnFacetHandler = GetDependedFacetHandler(_dependsOnFacetName);
-            return dependOnFacetHandler.GetDocComparatorSource();
+            return dependOnFacetHandler.GetDocComparerSource();
         }
 
         public override string[] GetFieldValues(BoboSegmentReader reader, int id)

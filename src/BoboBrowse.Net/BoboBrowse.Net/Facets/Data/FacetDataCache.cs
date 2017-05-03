@@ -291,31 +291,31 @@ namespace BoboBrowse.Net.Facets.Data
         }
     }
 
-    public class FacetDocComparatorSource : DocComparatorSource
+    public class FacetDocComparerSource : DocComparerSource
     {
         private readonly IFacetHandler _facetHandler;
 
-        public FacetDocComparatorSource(IFacetHandler facetHandler)
+        public FacetDocComparerSource(IFacetHandler facetHandler)
         {
             _facetHandler = facetHandler;
         }
 
-        public override DocComparator GetComparator(AtomicReader reader, int docbase)
+        public override DocComparer GetComparer(AtomicReader reader, int docbase)
         {
             if (!(reader is BoboSegmentReader))
                 throw new ArgumentException("reader not instance of BoboSegmentReader");
             BoboSegmentReader boboReader = (BoboSegmentReader)reader;
             FacetDataCache dataCache = _facetHandler.GetFacetData<FacetDataCache>(boboReader);
             BigSegmentedArray orderArray = dataCache.OrderArray;
-            return new FacetDocComparator(dataCache, orderArray);
+            return new FacetDocComparer(dataCache, orderArray);
         }
 
-        public class FacetDocComparator : DocComparator
+        public class FacetDocComparer : DocComparer
         {
             private readonly FacetDataCache _dataCache;
             private readonly BigSegmentedArray _orderArray;
 
-            public FacetDocComparator(FacetDataCache dataCache, BigSegmentedArray orderArray)
+            public FacetDocComparer(FacetDataCache dataCache, BigSegmentedArray orderArray)
             {
                 _dataCache = dataCache;
                 _orderArray = orderArray;

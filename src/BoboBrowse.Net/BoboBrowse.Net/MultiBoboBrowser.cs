@@ -271,7 +271,7 @@ namespace BoboBrowse.Net
         /// <summary>
         /// Compare BrowseFacets by their value
         /// </summary>
-        public class BrowseFacetValueComparator : IComparer<BrowseFacet>
+        public class BrowseFacetValueComparer : IComparer<BrowseFacet>
         {
             public virtual int Compare(BrowseFacet o1, BrowseFacet o2)
             {

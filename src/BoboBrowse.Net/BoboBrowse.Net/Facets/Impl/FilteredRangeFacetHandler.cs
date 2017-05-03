@@ -94,9 +94,9 @@ namespace BoboBrowse.Net.Facets.Impl
 			return _innerHandler.GetRawFieldValues(reader, id);
 		}
 
-        public override DocComparatorSource GetDocComparatorSource()
+        public override DocComparerSource GetDocComparerSource()
         {
-            return _innerHandler.GetDocComparatorSource();
+            return _innerHandler.GetDocComparerSource();
         }
 
         public override FacetDataNone Load(BoboSegmentReader reader)

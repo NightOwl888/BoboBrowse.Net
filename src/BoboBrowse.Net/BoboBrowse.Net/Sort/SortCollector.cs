@@ -42,17 +42,17 @@ namespace BoboBrowse.Net.Sort
         //{
         //    public BoboIndexReader reader;
         //    public int @base;
-        //    public DocComparator comparator;
+        //    public DocComparer comparer;
         //    public int length;
 
         //    private IDictionary<string, IRuntimeFacetHandler> _runtimeFacetMap;
         //    private IDictionary<string, object> _runtimeFacetDataMap;
 
-        //    public CollectorContext(BoboSegmentReader reader, int @base, DocComparator comparator)
+        //    public CollectorContext(BoboSegmentReader reader, int @base, DocComparer comparer)
         //    {
         //        this.reader = reader;
         //        this.@base = @base;
-        //        this.comparator = comparator;
+        //        this.comparer = comparer;
         //        _runtimeFacetMap = reader.RuntimeFacetHandlerMap;
         //        _runtimeFacetDataMap = reader.RuntimeFacetDataMap;
         //    }
@@ -107,7 +107,7 @@ namespace BoboBrowse.Net.Sort
         abstract public int TotalGroups { get; }
         abstract public IFacetAccessible[] GroupAccessibles { get; }
 
-        private static DocComparatorSource GetNonFacetComparatorSource(SortField sf)
+        private static DocComparerSource GetNonFacetComparerSource(SortField sf)
         {
             string fieldname = sf.Field;
             SortFieldType type = sf.Type;
@@ -115,30 +115,30 @@ namespace BoboBrowse.Net.Sort
             switch (type)
             {
                 case SortFieldType.INT32:
-                    return new DocComparatorSource.IntDocComparatorSource(fieldname);
+                    return new DocComparerSource.IntDocComparerSource(fieldname);
 
                 case SortFieldType.SINGLE:
-                    return new DocComparatorSource.FloatDocComparatorSource(fieldname);
+                    return new DocComparerSource.FloatDocComparerSource(fieldname);
 
                 case SortFieldType.INT64:
-                    return new DocComparatorSource.LongDocComparatorSource(fieldname);
+                    return new DocComparerSource.LongDocComparerSource(fieldname);
 
                 case SortFieldType.DOUBLE:
-                    return new DocComparatorSource.LongDocComparatorSource(fieldname);
+                    return new DocComparerSource.LongDocComparerSource(fieldname);
 
 #pragma warning disable 612, 618
                 case SortFieldType.BYTE:
-                    return new DocComparatorSource.ByteDocComparatorSource(fieldname);
+                    return new DocComparerSource.ByteDocComparerSource(fieldname);
 
                 case SortFieldType.INT16:
-                    return new DocComparatorSource.ShortDocComparatorSource(fieldname);
+                    return new DocComparerSource.ShortDocComparerSource(fieldname);
 #pragma warning restore 612, 618
 
                 case SortFieldType.STRING:
-                    return new DocComparatorSource.StringOrdComparatorSource(fieldname);
+                    return new DocComparerSource.StringOrdComparerSource(fieldname);
 
                 case SortFieldType.STRING_VAL:
-                    return new DocComparatorSource.StringValComparatorSource(fieldname);
+                    return new DocComparerSource.StringValComparerSource(fieldname);
 
                 case SortFieldType.CUSTOM:
                     throw new InvalidOperationException("lucene custom sort no longer supported: " + fieldname);
@@ -148,22 +148,22 @@ namespace BoboBrowse.Net.Sort
             }
         }
 
-        private static DocComparatorSource GetComparatorSource(IBrowsable browser, SortField sf)
+        private static DocComparerSource GetComparerSource(IBrowsable browser, SortField sf)
         {
-            DocComparatorSource compSource = null;
+            DocComparerSource compSource = null;
             if (SortField.FIELD_DOC.Equals(sf))
             {
-                compSource = new DocComparatorSource.DocIdDocComparatorSource();
+                compSource = new DocComparerSource.DocIdDocComparerSource();
             }
             else if (SortField.FIELD_SCORE.Equals(sf) || sf.Type == SortFieldType.SCORE)
             {
                 // we want to do reverse sorting regardless for relevance
-                compSource = new ReverseDocComparatorSource(new DocComparatorSource.RelevanceDocComparatorSource());
+                compSource = new ReverseDocComparerSource(new DocComparerSource.RelevanceDocComparerSource());
             }
             else if (sf is BoboCustomSortField)
             {
                 BoboCustomSortField custField = (BoboCustomSortField)sf;
-                DocComparatorSource src = custField.GetCustomComparatorSource();
+                DocComparerSource src = custField.GetCustomComparerSource();
                 Debug.Assert(src != null);
                 compSource = src;
             }
@@ -175,19 +175,19 @@ namespace BoboBrowse.Net.Sort
                 {
                     var handler = browser.GetFacetHandler(sortName);
                     Debug.Assert(handler != null);
-                    compSource = handler.GetDocComparatorSource();
+                    compSource = handler.GetDocComparerSource();
                 }
                 else
                 {
                     // default lucene field
                     logger.Info("doing default lucene sort for: " + sf);
-                    compSource = GetNonFacetComparatorSource(sf);
+                    compSource = GetNonFacetComparerSource(sf);
                 }
             }
             bool reverse = sf.IsReverse;
             if (reverse)
             {
-                compSource = new ReverseDocComparatorSource(compSource);
+                compSource = new ReverseDocComparerSource(compSource);
             }
             compSource.IsReverse = reverse;
             return compSource;
@@ -200,7 +200,7 @@ namespace BoboBrowse.Net.Sort
             if (facetHandler != null)
             {
                 //browser.GetFacetHandler(field); // BUG? this does nothing with the result.
-                BoboCustomSortField sortField = new BoboCustomSortField(field, sort.IsReverse, facetHandler.GetDocComparatorSource());
+                BoboCustomSortField sortField = new BoboCustomSortField(field, sort.IsReverse, facetHandler.GetDocComparerSource());
                 return sortField;
             }
             else
@@ -236,20 +236,20 @@ namespace BoboBrowse.Net.Sort
                 }
             }
 
-            DocComparatorSource compSource;
+            DocComparerSource compSource;
             if (sort.Length == 1)
             {
                 SortField sf = Convert(browser, sort[0]);
-                compSource = GetComparatorSource(browser, sf);
+                compSource = GetComparerSource(browser, sf);
             }
             else
             {
-                DocComparatorSource[] compSources = new DocComparatorSource[sort.Length];
+                DocComparerSource[] compSources = new DocComparerSource[sort.Length];
                 for (int i = 0; i < sort.Length; ++i)
                 {
-                    compSources[i] = GetComparatorSource(browser, Convert(browser, sort[i]));
+                    compSources[i] = GetComparerSource(browser, Convert(browser, sort[i]));
                 }
-                compSource = new MultiDocIdComparatorSource(compSources);
+                compSource = new MultiDocIdComparerSource(compSources);
             }
             return new SortCollectorImpl(compSource, sort, browser, offset, count, doScoring, 
                 fetchStoredFields, termVectorsToFetch, groupBy, maxPerGroup, collectDocIdCache);

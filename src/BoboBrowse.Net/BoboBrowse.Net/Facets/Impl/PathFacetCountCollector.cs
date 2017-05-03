@@ -39,7 +39,7 @@ namespace BoboBrowse.Net.Facets.Impl
         private readonly string _sep;
         private readonly BigSegmentedArray _orderArray;
         protected readonly FacetDataCache _dataCache;
-        private readonly IComparatorFactory _comparatorFactory;
+        private readonly IComparerFactory _comparerFactory;
         private readonly int _minHitCount;
 	    private int _maxCount;
 	    private string[] _stringData;
@@ -67,13 +67,13 @@ namespace BoboBrowse.Net.Facets.Impl
             switch (sortOption)
             {
                 case FacetSpec.FacetSortSpec.OrderHitsDesc: 
-                    _comparatorFactory = new FacetHitcountComparatorFactory(); 
+                    _comparerFactory = new FacetHitcountComparerFactory(); 
                     break;
                 case FacetSpec.FacetSortSpec.OrderValueAsc: 
-                    _comparatorFactory = null; 
+                    _comparerFactory = null; 
                     break;
                 case FacetSpec.FacetSortSpec.OrderByCustom: 
-                    _comparatorFactory = ospec.CustomComparatorFactory; 
+                    _comparerFactory = ospec.CustomComparerFactory; 
                     break;
                 default: 
                     throw new ArgumentOutOfRangeException("invalid sort option: " + sortOption);
@@ -202,11 +202,11 @@ namespace BoboBrowse.Net.Facets.Impl
             List<BrowseFacet> list = new List<BrowseFacet>();
 
             BoundedPriorityQueue<BrowseFacet> pq = null;
-            if (_comparatorFactory != null)
+            if (_comparerFactory != null)
             {
-                IComparer<BrowseFacet> comparator = _comparatorFactory.NewComparator();
+                IComparer<BrowseFacet> comparer = _comparerFactory.NewComparer();
 
-                pq = new BoundedPriorityQueue<BrowseFacet>(new PathFacetCountCollectorComparator(comparator), maxCount);
+                pq = new BoundedPriorityQueue<BrowseFacet>(new PathFacetCountCollectorComparer(comparer), maxCount);
             }
 
             string[] startParts = null;
@@ -385,18 +385,18 @@ namespace BoboBrowse.Net.Facets.Impl
             return list;
         }
 
-        private class PathFacetCountCollectorComparator : IComparer<BrowseFacet>
+        private class PathFacetCountCollectorComparer : IComparer<BrowseFacet>
         {
-            private readonly IComparer<BrowseFacet> _comparator;
+            private readonly IComparer<BrowseFacet> _comparer;
 
-            public PathFacetCountCollectorComparator(IComparer<BrowseFacet> comparator)
+            public PathFacetCountCollectorComparer(IComparer<BrowseFacet> comparer)
             {
-                _comparator = comparator;
+                _comparer = comparer;
             }
 
             public virtual int Compare(BrowseFacet o1, BrowseFacet o2)
             {
-                return -_comparator.Compare(o1, o2);
+                return -_comparer.Compare(o1, o2);
             }
         }
 
@@ -426,7 +426,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
 
             var finalIter = ListMerger.MergeLists(iterList.ToArray(),
-                _comparatorFactory == null ? new FacetValueComparatorFactory().NewComparator() : _comparatorFactory.NewComparator());
+                _comparerFactory == null ? new FacetValueComparerFactory().NewComparer() : _comparerFactory.NewComparer());
             while (finalIter.MoveNext())
             {
                 BrowseFacet f = finalIter.Current;
@@ -469,7 +469,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 }
             }
             var finalIter = ListMerger.MergeLists(iterList.ToArray(),
-                _comparatorFactory == null ? new FacetValueComparatorFactory().NewComparator() : _comparatorFactory.NewComparator());
+                _comparerFactory == null ? new FacetValueComparerFactory().NewComparer() : _comparerFactory.NewComparer());
 
             while (finalIter.MoveNext())
             {

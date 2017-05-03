@@ -22,23 +22,23 @@ namespace BoboBrowse.Net.Sort
 {
     using Lucene.Net.Index;
 
-    public class MultiDocIdComparatorSource : DocComparatorSource
+    public class MultiDocIdComparerSource : DocComparerSource
     {
-        private readonly DocComparatorSource[] _compSources;
+        private readonly DocComparerSource[] _compSources;
 
-        public MultiDocIdComparatorSource(DocComparatorSource[] compSources)
+        public MultiDocIdComparerSource(DocComparerSource[] compSources)
         {
             _compSources = compSources;
         }
 
-        public override DocComparator GetComparator(AtomicReader reader, int docbase)
+        public override DocComparer GetComparer(AtomicReader reader, int docbase)
         {
-            DocComparator[] comparators = new DocComparator[_compSources.Length];
+            DocComparer[] comparers = new DocComparer[_compSources.Length];
             for (int i = 0; i < _compSources.Length; ++i)
             {
-                comparators[i] = _compSources[i].GetComparator(reader, docbase);
+                comparers[i] = _compSources[i].GetComparer(reader, docbase);
             }
-            return new MultiDocIdComparator(comparators);
+            return new MultiDocIdComparer(comparers);
         }
     }
 }

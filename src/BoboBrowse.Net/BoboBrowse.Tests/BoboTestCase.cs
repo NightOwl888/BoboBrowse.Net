@@ -1312,7 +1312,7 @@ namespace BoboBrowse.Net
             DoTest(br, 3, answer, null);
 
             pathSpec.OrderBy = FacetSpec.FacetSortSpec.OrderByCustom;
-            pathSpec.CustomComparatorFactory = new TestMultiSelectedPathsComparatorFactory();
+            pathSpec.CustomComparerFactory = new TestMultiSelectedPathsComparerFactory();
 
             answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
@@ -1322,25 +1322,25 @@ namespace BoboBrowse.Net
             DoTest(br, 3, answer, null);
         }
 
-        private class TestMultiSelectedPathsComparatorFactory : IComparatorFactory
+        private class TestMultiSelectedPathsComparerFactory : IComparerFactory
         {
 
-            public IComparer<int> NewComparator(IFieldValueAccessor fieldValueAccessor, BigSegmentedArray counts)
+            public IComparer<int> NewComparer(IFieldValueAccessor fieldValueAccessor, BigSegmentedArray counts)
             {
-                return new TestMultiSelectedPathsIntComparator(counts);
+                return new TestMultiSelectedPathsIntComparer(counts);
             }
 
-            public IComparer<BrowseFacet> NewComparator()
+            public IComparer<BrowseFacet> NewComparer()
             {
-                return new TestMultiSelectedPathsBrowseFacetComparator();
+                return new TestMultiSelectedPathsBrowseFacetComparer();
             }
         }
 
-        private class TestMultiSelectedPathsIntComparator : IComparer<int>
+        private class TestMultiSelectedPathsIntComparer : IComparer<int>
         {
             private readonly BigSegmentedArray counts;
 
-            public TestMultiSelectedPathsIntComparator(BigSegmentedArray counts)
+            public TestMultiSelectedPathsIntComparer(BigSegmentedArray counts)
             {
                 this.counts = counts;
             }
@@ -1356,7 +1356,7 @@ namespace BoboBrowse.Net
             }
         }
 
-        private class TestMultiSelectedPathsBrowseFacetComparator : IComparer<BrowseFacet>
+        private class TestMultiSelectedPathsBrowseFacetComparer : IComparer<BrowseFacet>
         {
             public int Compare(BrowseFacet f1, BrowseFacet f2)
             {
@@ -1595,12 +1595,12 @@ namespace BoboBrowse.Net
 
             DoTest(br, 7, answer, null);
 
-            var valComp = new FacetValueComparatorFactory().NewComparator();
+            var valComp = new FacetValueComparerFactory().NewComparer();
 
             int v = valComp.Compare(new BrowseFacet("red", 3), new BrowseFacet("blue", 2));
             Assert.True(v > 0);
 
-            valComp = new FacetHitcountComparatorFactory().NewComparator();
+            valComp = new FacetHitcountComparerFactory().NewComparer();
             v = valComp.Compare(new BrowseFacet("red", 3), new BrowseFacet("blue", 2));
             Assert.True(v < 0);
 
@@ -1777,18 +1777,18 @@ namespace BoboBrowse.Net
             br.Offset = 0;
 
             br.Sort = new SortField[] { new BoboCustomSortField("custom", false, 
-                new CustomSortComparatorSource()) };
+                new CustomSortComparerSource()) };
             DoTest(br, 7, null, new string[] { "5", "4", "6", "3", "7", "2", "1" });
         }
 
-        private class CustomSortComparatorSource : DocComparatorSource
+        private class CustomSortComparerSource : DocComparerSource
         {
-            public override DocComparator GetComparator(AtomicReader reader, int docbase)
+            public override DocComparer GetComparer(AtomicReader reader, int docbase)
             {
-                return new CustomSortDocComparator();
+                return new CustomSortDocComparer();
             }
 
-            public class CustomSortDocComparator : DocComparator
+            public class CustomSortDocComparer : DocComparer
             {
                 public override int Compare(ScoreDoc doc1, ScoreDoc doc2)
                 {
@@ -2650,7 +2650,7 @@ namespace BoboBrowse.Net
         {
             BrowseRequest req = new BrowseRequest();
             FacetSpec numberSpec = new FacetSpec();
-            numberSpec.CustomComparatorFactory = new TestCustomFacetSortComparatorFactory();
+            numberSpec.CustomComparerFactory = new TestCustomFacetSortComparerFactory();
 
             numberSpec.OrderBy = FacetSpec.FacetSortSpec.OrderByCustom;
             numberSpec.MaxCount = 3;
@@ -2674,25 +2674,25 @@ namespace BoboBrowse.Net
             DoTest(req, 7, answer, null);
         }
 
-        private class TestCustomFacetSortComparatorFactory : IComparatorFactory
+        private class TestCustomFacetSortComparerFactory : IComparerFactory
         {
 
-            public IComparer<int> NewComparator(IFieldValueAccessor fieldValueAccessor, BigSegmentedArray counts)
+            public IComparer<int> NewComparer(IFieldValueAccessor fieldValueAccessor, BigSegmentedArray counts)
             {
-                return new TestCustomFacetSortIntComparator(fieldValueAccessor, counts);
+                return new TestCustomFacetSortIntComparer(fieldValueAccessor, counts);
             }
 
-            public IComparer<BrowseFacet> NewComparator()
+            public IComparer<BrowseFacet> NewComparer()
             {
-                return new TestCustomFacetSortBrowseFacetComparator();
+                return new TestCustomFacetSortBrowseFacetComparer();
             }
 
-            public class TestCustomFacetSortIntComparator : IComparer<int>
+            public class TestCustomFacetSortIntComparer : IComparer<int>
             {
                 private readonly IFieldValueAccessor fieldValueAccessor;
                 private readonly BigSegmentedArray counts;
 
-                public TestCustomFacetSortIntComparator(IFieldValueAccessor fieldValueAccessor, BigSegmentedArray counts)
+                public TestCustomFacetSortIntComparer(IFieldValueAccessor fieldValueAccessor, BigSegmentedArray counts)
                 {
                     this.fieldValueAccessor = fieldValueAccessor;
                     this.counts = counts;
@@ -2712,7 +2712,7 @@ namespace BoboBrowse.Net
                 }
             }
 
-            public class TestCustomFacetSortBrowseFacetComparator : IComparer<BrowseFacet>
+            public class TestCustomFacetSortBrowseFacetComparer : IComparer<BrowseFacet>
             {
                 public int Compare(BrowseFacet o1, BrowseFacet o2)
                 {

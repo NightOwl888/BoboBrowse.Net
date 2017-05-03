@@ -23,7 +23,7 @@ namespace BoboBrowse.Net.Sort
     using Lucene.Net.Search;
     using System;
 
-    public abstract class DocComparator
+    public abstract class DocComparer
     {
         public abstract int Compare(ScoreDoc doc1, ScoreDoc doc2);
 

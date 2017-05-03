@@ -120,11 +120,11 @@ namespace BoboBrowse.Net
             //}
         }
 
-        public virtual IEnumerable<BrowseFacet> Merge(IEnumerable<BrowseFacet> v, IComparer<BrowseFacet> comparator)
+        public virtual IEnumerable<BrowseFacet> Merge(IEnumerable<BrowseFacet> v, IComparer<BrowseFacet> comparer)
         {
             foreach (var facet in v)
             {
-                int val = comparator.Compare(this, facet);
+                int val = comparer.Compare(this, facet);
                 if (val == 0)
                 {
                     facet._hitcount += _hitcount;

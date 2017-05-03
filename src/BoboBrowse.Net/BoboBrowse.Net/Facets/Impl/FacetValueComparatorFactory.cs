@@ -23,14 +23,14 @@ namespace BoboBrowse.Net.Facets.Impl
     using BoboBrowse.Net.Util;
     using System.Collections.Generic;
 
-    public class FacetValueComparatorFactory : IComparatorFactory
+    public class FacetValueComparerFactory : IComparerFactory
     {
-        public virtual IComparer<int> NewComparator(IFieldValueAccessor fieldValueAccessor, BigSegmentedArray counts)
+        public virtual IComparer<int> NewComparer(IFieldValueAccessor fieldValueAccessor, BigSegmentedArray counts)
         {
-            return new FacetValueComparatorFactoryComparator();
+            return new FacetValueComparerFactoryComparer();
         }
 
-        private class FacetValueComparatorFactoryComparator : IComparer<int>
+        private class FacetValueComparerFactoryComparer : IComparer<int>
         {
             public virtual int Compare(int o1, int o2)
             {
@@ -38,12 +38,12 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public virtual IComparer<BrowseFacet> NewComparator()
+        public virtual IComparer<BrowseFacet> NewComparer()
         {
-            return new FacetValueComparatorFactoryBrowseFacetComparator();
+            return new FacetValueComparerFactoryBrowseFacetComparer();
         }
 
-        private class FacetValueComparatorFactoryBrowseFacetComparator : IComparer<BrowseFacet>
+        private class FacetValueComparerFactoryBrowseFacetComparer : IComparer<BrowseFacet>
         {
             public virtual int Compare(BrowseFacet o1, BrowseFacet o2)
             {

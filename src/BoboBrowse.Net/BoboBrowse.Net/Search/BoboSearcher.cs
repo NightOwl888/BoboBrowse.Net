@@ -74,15 +74,15 @@ namespace BoboBrowse.Net.Search
 
             private void SortPostCollectors(BoboSegmentReader reader)
             {
-                var comparator = new SortPostCollectorsComparator(reader);
-                System.Array.Sort(_collectors, 0, _numPostFilters, comparator);
+                var comparer = new SortPostCollectorsComparer(reader);
+                System.Array.Sort(_collectors, 0, _numPostFilters, comparer);
             }
 
-            private class SortPostCollectorsComparator : IComparer<FacetHitCollector>
+            private class SortPostCollectorsComparer : IComparer<FacetHitCollector>
             {
                 private readonly BoboSegmentReader reader;
 
-                public SortPostCollectorsComparator(BoboSegmentReader reader)
+                public SortPostCollectorsComparer(BoboSegmentReader reader)
                 {
                     this.reader = reader;
                 }

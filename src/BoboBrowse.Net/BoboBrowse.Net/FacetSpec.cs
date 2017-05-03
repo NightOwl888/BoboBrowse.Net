@@ -40,7 +40,7 @@ namespace BoboBrowse.Net
             OrderValueAsc,
             ///<summary>Order by the facet hit counts in descending order.</summary>
             OrderHitsDesc,
-            ///<summary>Custom order, must have a comparator.</summary>
+            ///<summary>Custom order, must have a comparer.</summary>
             OrderByCustom
         }       
 
@@ -52,15 +52,15 @@ namespace BoboBrowse.Net
             OrderBy = FacetSortSpec.OrderValueAsc;
             MinHitCount = 1;
             ExpandSelection = false;
-            CustomComparatorFactory = null;
+            CustomComparerFactory = null;
             Properties = new Dictionary<string, string>();
         }
 
         /// <summary>
-        /// Gets or sets a custom comparator factory instance. This is required when specifying 
+        /// Gets or sets a custom comparer factory instance. This is required when specifying 
         /// <see cref="T:FacetSortSpec.OrderByCustom"/> for the <see cref="P:OrderBy"/> property.
         /// </summary>
-        public virtual IComparatorFactory CustomComparatorFactory { get; set; }
+        public virtual IComparerFactory CustomComparerFactory { get; set; }
 
         /// <summary>
         /// Gets or sets the minimum number of hits a choice would need to have to be returned.

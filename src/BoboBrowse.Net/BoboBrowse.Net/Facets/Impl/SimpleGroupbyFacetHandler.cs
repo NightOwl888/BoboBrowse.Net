@@ -148,30 +148,30 @@ namespace BoboBrowse.Net.Facets.Impl
             return GetFieldValues(reader, id);
         }
 
-        public override DocComparatorSource GetDocComparatorSource()
+        public override DocComparerSource GetDocComparerSource()
         {
-            return new GroupbyDocComparatorSource(_fieldsSet, _facetHandlers);
+            return new GroupbyDocComparerSource(_fieldsSet, _facetHandlers);
         }
 
-        private class GroupbyDocComparatorSource : DocComparatorSource
+        private class GroupbyDocComparerSource : DocComparerSource
         {
             private readonly IEnumerable<string> _fieldsSet;
             private readonly IEnumerable<SimpleFacetHandler> _facetHandlers;
 
-            public GroupbyDocComparatorSource(IEnumerable<string> fieldsSet, IEnumerable<SimpleFacetHandler> facetHandlers)
+            public GroupbyDocComparerSource(IEnumerable<string> fieldsSet, IEnumerable<SimpleFacetHandler> facetHandlers)
             {
                 _fieldsSet = fieldsSet;
                 _facetHandlers = facetHandlers;
             }
 
-            public override DocComparator GetComparator(AtomicReader reader, int docbase)
+            public override DocComparer GetComparer(AtomicReader reader, int docbase)
             {
-                var comparatorList = new List<DocComparator>(_fieldsSet.Count());
+                var comparerList = new List<DocComparer>(_fieldsSet.Count());
                 foreach (var handler in _facetHandlers)
                 {
-                    comparatorList.Add(handler.GetDocComparatorSource().GetComparator(reader, docbase));
+                    comparerList.Add(handler.GetDocComparerSource().GetComparer(reader, docbase));
                 }
-                return new GroupbyDocComparator(comparatorList.ToArray());
+                return new GroupbyDocComparer(comparerList.ToArray());
             }
         }
 
@@ -193,21 +193,21 @@ namespace BoboBrowse.Net.Facets.Impl
             return FacetDataNone.Instance;
         }
 
-        private class GroupbyDocComparator : DocComparator
+        private class GroupbyDocComparer : DocComparer
         {
-            private readonly DocComparator[] _comparators;
+            private readonly DocComparer[] _comparers;
 
-            public GroupbyDocComparator(DocComparator[] comparators)
+            public GroupbyDocComparer(DocComparer[] comparers)
             {
-                _comparators = comparators;
+                _comparers = comparers;
             }
 
             public override sealed int Compare(ScoreDoc d1, ScoreDoc d2)
             {
                 int retval = 0;
-                foreach (DocComparator comparator in _comparators)
+                foreach (DocComparer comparer in _comparers)
                 {
-                    retval = comparator.Compare(d1, d2);
+                    retval = comparer.Compare(d1, d2);
                     if (retval != 0) break;
                 }
                 return retval;
@@ -215,27 +215,27 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override sealed IComparable Value(ScoreDoc doc)
             {
-                return new GroupbyComparable(_comparators, doc);
+                return new GroupbyComparable(_comparers, doc);
             }
         }
 
         private class GroupbyComparable : IComparable
         {
-            private readonly DocComparator[] _comparators;
+            private readonly DocComparer[] _comparers;
             private readonly ScoreDoc _doc;
 
-            public GroupbyComparable(DocComparator[] comparators, ScoreDoc doc)
+            public GroupbyComparable(DocComparer[] comparers, ScoreDoc doc)
             {
-                _comparators = comparators;
+                _comparers = comparers;
                 _doc = doc;
             }
 
             public virtual int CompareTo(object o)
             {
                 int retval = 0;
-                foreach (DocComparator comparator in _comparators)
+                foreach (DocComparer comparer in _comparers)
                 {
-                    retval = comparator.Value(_doc).CompareTo(o);
+                    retval = comparer.Value(_doc).CompareTo(o);
                     if (retval != 0) break;
                 }
                 return retval;
@@ -419,25 +419,25 @@ namespace BoboBrowse.Net.Facets.Impl
                     }
                     else
                     {
-                        IComparatorFactory comparatorFactory;
+                        IComparerFactory comparerFactory;
                         if (sortspec == FacetSpec.FacetSortSpec.OrderHitsDesc)
                         {
-                            comparatorFactory = new FacetHitcountComparatorFactory();
+                            comparerFactory = new FacetHitcountComparerFactory();
                         }
                         else
                         {
-                            comparatorFactory = _fspec.CustomComparatorFactory;
+                            comparerFactory = _fspec.CustomComparerFactory;
                         }
 
-                        if (comparatorFactory == null)
+                        if (comparerFactory == null)
                         {
-                            throw new System.ArgumentException("facet comparator factory not specified");
+                            throw new System.ArgumentException("facet comparer factory not specified");
                         }
 
-                        IComparer<int> comparator = comparatorFactory.NewComparator(new GroupbyFieldValueAccessor(this.GetFacetString, this.GetRawFaceValue), _count);
+                        IComparer<int> comparer = comparerFactory.NewComparer(new GroupbyFieldValueAccessor(this.GetFacetString, this.GetRawFaceValue), _count);
                         facetColl = new List<BrowseFacet>();
                         int forbidden = -1;
-                        IntBoundedPriorityQueue pq = new IntBoundedPriorityQueue(comparator, max, forbidden);
+                        IntBoundedPriorityQueue pq = new IntBoundedPriorityQueue(comparer, max, forbidden);
 
                         for (int i = 1; i < _countlength; ++i) // exclude zero
                         {

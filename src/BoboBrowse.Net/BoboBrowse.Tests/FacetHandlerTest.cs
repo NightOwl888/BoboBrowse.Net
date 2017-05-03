@@ -66,7 +66,7 @@ namespace BoboBrowse.Tests
                 return null;
             }
 
-            public override DocComparatorSource GetDocComparatorSource()
+            public override DocComparerSource GetDocComparerSource()
             {
                 return null;
             }

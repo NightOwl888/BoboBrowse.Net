@@ -203,7 +203,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public override DocComparatorSource GetDocComparatorSource()
+        public override DocComparerSource GetDocComparerSource()
         {
             throw new NotSupportedException("sorting not supported for " + typeof(ComboFacetHandler));
         }

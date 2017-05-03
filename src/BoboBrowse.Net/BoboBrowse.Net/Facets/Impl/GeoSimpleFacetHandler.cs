@@ -238,24 +238,24 @@ namespace BoboBrowse.Net.Facets.Impl
             return FacetDataNone.Instance;
         }
 
-        public override DocComparatorSource GetDocComparatorSource()
+        public override DocComparerSource GetDocComparerSource()
         {
-            return new GeoFacetDocComparatorSource(this);
+            return new GeoFacetDocComparerSource(this);
         }
 
-        public class GeoFacetDocComparatorSource : DocComparatorSource
+        public class GeoFacetDocComparerSource : DocComparerSource
         {
-            public GeoFacetDocComparatorSource(GeoSimpleFacetHandler geoSimpleFacetHandler)
+            public GeoFacetDocComparerSource(GeoSimpleFacetHandler geoSimpleFacetHandler)
             {
             }
 
-            public override DocComparator GetComparator(AtomicReader reader, int docbase)
+            public override DocComparer GetComparer(AtomicReader reader, int docbase)
             {
                 if (!(reader is BoboSegmentReader)) throw new ArgumentException("reader not instance of " + typeof(BoboSegmentReader));
-                return new GeoSimpleFacetHandlerDocComparator();
+                return new GeoSimpleFacetHandlerDocComparer();
             }
 
-            private class GeoSimpleFacetHandlerDocComparator : DocComparator
+            private class GeoSimpleFacetHandlerDocComparer : DocComparer
             {
                 public override IComparable Value(ScoreDoc doc)
                 {

@@ -85,7 +85,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return FacetDataNone.Instance;
         }
 
-        public override DocComparatorSource GetDocComparatorSource()
+        public override DocComparerSource GetDocComparerSource()
         {
             throw new NotSupportedException();
         }

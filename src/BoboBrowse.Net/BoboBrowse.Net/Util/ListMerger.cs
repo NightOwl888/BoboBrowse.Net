@@ -57,29 +57,29 @@ namespace BoboBrowse.Net.Util
             private readonly MergedQueue _queue;
             private T _current;
 
-            private MergedIterator(int length, IComparer<T> comparator)
+            private MergedIterator(int length, IComparer<T> comparer)
             {
-                _queue = new MergedQueue(length, comparator);
+                _queue = new MergedQueue(length, comparer);
             }
 
             private class MergedQueue : PriorityQueue<IteratorNode>
             {
-                private readonly IComparer<T> comparator;
+                private readonly IComparer<T> comparer;
 
-                public MergedQueue(int length, IComparer<T> comparator)
+                public MergedQueue(int length, IComparer<T> comparer)
                     : base(length)
                 {
-                    this.comparator = comparator;
+                    this.comparer = comparer;
                 }
 
                 protected override bool LessThan(IteratorNode a, IteratorNode b)
                 {
-                    return (comparator.Compare(a._curVal, b._curVal) < 0);
+                    return (comparer.Compare(a._curVal, b._curVal) < 0);
                 }
             }
 
-            public MergedIterator(IEnumerable<IEnumerator<T>> iterators, IComparer<T> comparator)
-                : this(iterators.Count(), comparator)
+            public MergedIterator(IEnumerable<IEnumerator<T>> iterators, IComparer<T> comparer)
+                : this(iterators.Count(), comparer)
             {
                 foreach (IEnumerator<T> iterator in iterators)
                 {
@@ -88,8 +88,8 @@ namespace BoboBrowse.Net.Util
                 }
             }
 
-            public MergedIterator(IEnumerator<T>[] iterators, IComparer<T> comparator)
-                : this(iterators.Length, comparator)
+            public MergedIterator(IEnumerator<T>[] iterators, IComparer<T> comparer)
+                : this(iterators.Length, comparer)
             {
                 foreach (IEnumerator<T> iterator in iterators)
                 {
@@ -170,24 +170,24 @@ namespace BoboBrowse.Net.Util
         {
         }
 
-        public static MergedIterator<T> MergeLists<T>(IEnumerator<T>[] iterators, IComparer<T> comparator)
+        public static MergedIterator<T> MergeLists<T>(IEnumerator<T>[] iterators, IComparer<T> comparer)
         {
-            return new MergedIterator<T>(iterators, comparator);
+            return new MergedIterator<T>(iterators, comparer);
         }
 
-        public static MergedIterator<T> MergeLists<T>(IEnumerable<IEnumerator<T>> iterators, IComparer<T> comparator)
+        public static MergedIterator<T> MergeLists<T>(IEnumerable<IEnumerator<T>> iterators, IComparer<T> comparer)
         {
-            return new MergedIterator<T>(iterators, comparator);
+            return new MergedIterator<T>(iterators, comparer);
         }
 
-        public static List<T> MergeLists<T>(int offset, int count, IEnumerator<T>[] iterators, IComparer<T> comparator)
+        public static List<T> MergeLists<T>(int offset, int count, IEnumerator<T>[] iterators, IComparer<T> comparer)
         {
-            return MergeLists(offset, count, new MergedIterator<T>(iterators, comparator));
+            return MergeLists(offset, count, new MergedIterator<T>(iterators, comparer));
         }
 
-        public static List<T> MergeLists<T>(int offset, int count, IEnumerable<IEnumerator<T>> iterators, IComparer<T> comparator)
+        public static List<T> MergeLists<T>(int offset, int count, IEnumerable<IEnumerator<T>> iterators, IComparer<T> comparer)
         {
-            return MergeLists(offset, count, new MergedIterator<T>(iterators, comparator));
+            return MergeLists(offset, count, new MergedIterator<T>(iterators, comparer));
         }
 
         private static List<T> MergeLists<T>(int offset, int count, MergedIterator<T> mergedIter)
@@ -208,9 +208,9 @@ namespace BoboBrowse.Net.Util
             return mergedList;
         }
 
-        public static IComparer<BrowseFacet> FACET_VAL_COMPARATOR = new FacetValComparator();
+        public static IComparer<BrowseFacet> FACET_VAL_COMPARER = new FacetValComparer();
 
-        private class FacetValComparator : IComparer<BrowseFacet>
+        private class FacetValComparer : IComparer<BrowseFacet>
         {
             public int Compare(BrowseFacet o1, BrowseFacet o2)
             {
@@ -258,23 +258,23 @@ namespace BoboBrowse.Net.Util
 
                     FacetSpec.FacetSortSpec sortSpec = fs.OrderBy;
 
-                    IComparer<BrowseFacet> comparator;
+                    IComparer<BrowseFacet> comparer;
                     if (FacetSpec.FacetSortSpec.OrderValueAsc.Equals(sortSpec))
                     {
-                        comparator = FACET_VAL_COMPARATOR;
+                        comparer = FACET_VAL_COMPARER;
                     }
                     else if (FacetSpec.FacetSortSpec.OrderHitsDesc.Equals(sortSpec))
                     {
-                        comparator = FacetHitcountComparatorFactory.FACET_HITS_COMPARATOR;
+                        comparer = FacetHitcountComparerFactory.FACET_HITS_COMPARER;
                     }
                     else
                     {
-                        comparator = fs.CustomComparatorFactory.NewComparator();
+                        comparer = fs.CustomComparerFactory.NewComparer();
                     }
 
                     Dictionary<object, BrowseFacet> facetValueCounts = counts[facet];
                     BrowseFacet[] facetArray = facetValueCounts.Values.ToArray();
-                    Array.Sort(facetArray, comparator);
+                    Array.Sort(facetArray, comparer);
 
                     int numToShow = facetArray.Length;
                     if (req != null)

@@ -91,7 +91,7 @@ namespace BoboBrowse.Net.Support
                 OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc,
                 MinHitCount = 2,
                 ExpandSelection = false,
-                CustomComparatorFactory = null,
+                CustomComparerFactory = null,
                 Properties = new Dictionary<string, string>()
                 {
                     { "foo", "bar" },
@@ -109,7 +109,7 @@ namespace BoboBrowse.Net.Support
             Assert.AreEqual(FacetSpec.FacetSortSpec.OrderHitsDesc, orig.OrderBy);
             Assert.AreEqual(2, orig.MinHitCount);
             Assert.AreEqual(false, orig.ExpandSelection);
-            Assert.AreEqual(null, orig.CustomComparatorFactory);
+            Assert.AreEqual(null, orig.CustomComparerFactory);
             Assert.AreEqual(2, orig.Properties.Count);
             Assert.AreEqual("bar", orig.Properties.Get("foo"));
             Assert.AreEqual("two", orig.Properties.Get("prop"));
@@ -117,7 +117,7 @@ namespace BoboBrowse.Net.Support
             Assert.AreEqual(FacetSpec.FacetSortSpec.OrderHitsDesc, clone.OrderBy);
             Assert.AreEqual(1, clone.MinHitCount);
             Assert.AreEqual(false, clone.ExpandSelection);
-            Assert.AreEqual(null, clone.CustomComparatorFactory);
+            Assert.AreEqual(null, clone.CustomComparerFactory);
             Assert.AreEqual(3, clone.Properties.Count);
             Assert.AreEqual("bar", clone.Properties.Get("foo"));
             Assert.AreEqual("two", clone.Properties.Get("prop"));

@@ -46,7 +46,7 @@ namespace BoboBrowse.Net.Facets
         RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, IDictionary<string, string> prop, bool isNot);
         IEnumerable<string> DependsOn { get; }
         IFacetHandler GetDependedFacetHandler(string name);
-        DocComparatorSource GetDocComparatorSource();
+        DocComparerSource GetDocComparerSource();
         FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec fspec);
         FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec ospec, bool groupMode);
         T GetFacetData<T>(BoboSegmentReader reader);
@@ -335,10 +335,10 @@ namespace BoboBrowse.Net.Facets
         }
 
         /// <summary>
-        /// builds a comparator to determine how sorting is done
+        /// builds a comparer to determine how sorting is done
         /// </summary>
-        /// <returns>a sort comparator</returns>
-        public abstract DocComparatorSource GetDocComparatorSource();
+        /// <returns>a sort comparer</returns>
+        public abstract DocComparerSource GetDocComparerSource();
 
         // Removed clone method (differs from Java). For it to work, all facet handlers and any nested types
         // (such as TermListFactory and subclasses) would all need to be marked [Serializable].

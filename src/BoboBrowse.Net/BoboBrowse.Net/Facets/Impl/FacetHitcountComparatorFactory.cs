@@ -23,7 +23,7 @@ namespace BoboBrowse.Net.Facets.Impl
     using BoboBrowse.Net.Util;
     using System.Collections.Generic;
 
-    public class FacetHitcountComparatorFactory : IComparatorFactory
+    public class FacetHitcountComparerFactory : IComparerFactory
     {
         private class FacetHitComparer : IComparer<int>
         {
@@ -40,7 +40,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public virtual IComparer<int> NewComparator(IFieldValueAccessor valueList, BigSegmentedArray counts)
+        public virtual IComparer<int> NewComparer(IFieldValueAccessor valueList, BigSegmentedArray counts)
         {
             return new FacetHitComparer { counts = counts };
         }
@@ -58,11 +58,11 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public static IComparer<BrowseFacet> FACET_HITS_COMPARATOR = new DefaultFacetHitsComparer();
+        public static IComparer<BrowseFacet> FACET_HITS_COMPARER = new DefaultFacetHitsComparer();
 
-        public virtual IComparer<BrowseFacet> NewComparator()
+        public virtual IComparer<BrowseFacet> NewComparer()
         {
-            return FACET_HITS_COMPARATOR;
+            return FACET_HITS_COMPARER;
         }
     }
 }

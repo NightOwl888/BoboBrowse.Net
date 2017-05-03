@@ -103,9 +103,9 @@ namespace BoboBrowse.Net.Facets.Impl
         {
         }
 
-        public override DocComparatorSource GetDocComparatorSource()
+        public override DocComparerSource GetDocComparerSource()
         {
-            return new FacetDocComparatorSource(this);
+            return new FacetDocComparerSource(this);
         }
 
         public override int GetNumItems(BoboSegmentReader reader, int id)

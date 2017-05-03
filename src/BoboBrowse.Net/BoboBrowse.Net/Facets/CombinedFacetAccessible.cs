@@ -124,7 +124,7 @@ namespace BoboBrowse.Net.Facets
             int cnt = 0;
             string facet = null;
             FacetIterator iter = this.GetIterator();
-            IComparer<BrowseFacet> comparator;
+            IComparer<BrowseFacet> comparer;
             if (FacetSpec.FacetSortSpec.OrderValueAsc.Equals(_fspec.OrderBy))
             {
                 while (!string.IsNullOrEmpty((facet = iter.Next(minHits))))
@@ -136,12 +136,12 @@ namespace BoboBrowse.Net.Facets
             }
             else if (FacetSpec.FacetSortSpec.OrderHitsDesc.Equals(_fspec.OrderBy))
             {
-                comparator = new BrowseFacetComparator();
+                comparer = new BrowseFacetComparer();
                 if (maxCnt != int.MaxValue)
                 {
                     // we will maintain a min heap of size maxCnt
                     // Order by hits in descending order and max count is supplied
-                    var queue = CreatePQ(maxCnt, comparator);
+                    var queue = CreatePQ(maxCnt, comparer);
                     int qsize = 0;
                     while ((qsize < maxCnt) && !string.IsNullOrEmpty((facet = iter.Next(minHits))))
                     {
@@ -175,15 +175,15 @@ namespace BoboBrowse.Net.Facets
                     {
                         list.Add(new BrowseFacet(facet, iter.Count));
                     }
-                    list.Sort(comparator);
+                    list.Sort(comparer);
                 }
             }
             else // FacetSortSpec.OrderByCustom.equals(_fspec.getOrderBy()
             {
-                comparator = _fspec.CustomComparatorFactory.NewComparator();
+                comparer = _fspec.CustomComparerFactory.NewComparer();
                 if (maxCnt != int.MaxValue)
                 {
-                    var queue = CreatePQ(maxCnt, comparator);
+                    var queue = CreatePQ(maxCnt, comparer);
                     BrowseFacet browseFacet = new BrowseFacet();
                     int qsize = 0;
                     while ((qsize < maxCnt) && !string.IsNullOrEmpty((facet = iter.Next(minHits))))
@@ -214,13 +214,13 @@ namespace BoboBrowse.Net.Facets
                     {
                         list.Add(new BrowseFacet(facet, iter.Count));
                     }
-                    list.Sort(comparator);
+                    list.Sort(comparer);
                 }
             }
             return list;
         }
 
-        private class BrowseFacetComparator : IComparer<BrowseFacet>
+        private class BrowseFacetComparer : IComparer<BrowseFacet>
         {
             public virtual int Compare(BrowseFacet f1, BrowseFacet f2)
             {
@@ -233,26 +233,26 @@ namespace BoboBrowse.Net.Facets
             }
         }
 
-        private PriorityQueue<BrowseFacet> CreatePQ(int max, IComparer<BrowseFacet> comparator)
+        private PriorityQueue<BrowseFacet> CreatePQ(int max, IComparer<BrowseFacet> comparer)
         {
-            return new BrowseFacetPriorityQueue(max, comparator);
+            return new BrowseFacetPriorityQueue(max, comparer);
         }
 
         private class BrowseFacetPriorityQueue : PriorityQueue<BrowseFacet>
         {
-            private readonly IComparer<BrowseFacet> comparator;
+            private readonly IComparer<BrowseFacet> comparer;
 
-            public BrowseFacetPriorityQueue(int max, IComparer<BrowseFacet> comparator)
+            public BrowseFacetPriorityQueue(int max, IComparer<BrowseFacet> comparer)
                 : base(max)
             {
-                this.comparator = comparator;
+                this.comparer = comparer;
             }
 
             protected override bool LessThan(BrowseFacet a, BrowseFacet b)
             {
                 BrowseFacet o1 = a;
                 BrowseFacet o2 = b;
-                return comparator.Compare(o1, o2) > 0;
+                return comparer.Compare(o1, o2) > 0;
             }
         }
 

@@ -93,9 +93,9 @@ namespace BoboBrowse.Net.Facets.Impl
         {
         }
 
-        public override DocComparatorSource GetDocComparatorSource()
+        public override DocComparerSource GetDocComparerSource()
         {
-            return new CompactMultiFacetDocComparatorSource(this);
+            return new CompactMultiFacetDocComparerSource(this);
         }
 
         public override RandomAccessFilter BuildRandomAccessFilter(string value, IDictionary<string, string> prop)
@@ -309,30 +309,30 @@ namespace BoboBrowse.Net.Facets.Impl
             return new FacetDataCache(order, mterms, freqList.ToArray(), minIDList.ToArray(), maxIDList.ToArray(), TermCountSize.Large);
         }
 
-        private class CompactMultiFacetDocComparatorSource : DocComparatorSource
+        private class CompactMultiFacetDocComparerSource : DocComparerSource
         {
             private readonly CompactMultiValueFacetHandler _facetHandler;
-            public CompactMultiFacetDocComparatorSource(CompactMultiValueFacetHandler facetHandler)
+            public CompactMultiFacetDocComparerSource(CompactMultiValueFacetHandler facetHandler)
             {
                 _facetHandler = facetHandler;
             }
 
-            public override DocComparator GetComparator(AtomicReader reader, int docbase)
+            public override DocComparer GetComparer(AtomicReader reader, int docbase)
             {
                 if (!(reader is BoboSegmentReader))
                     throw new InvalidOperationException("reader must be instance of BoboSegmentReader");
                 var boboReader = (BoboSegmentReader)reader;
                 FacetDataCache dataCache = _facetHandler.GetFacetData<FacetDataCache>(boboReader);
-                return new CompactMultiValueDocComparator(dataCache, _facetHandler, boboReader);
+                return new CompactMultiValueDocComparer(dataCache, _facetHandler, boboReader);
             }
 
-            public class CompactMultiValueDocComparator : DocComparator
+            public class CompactMultiValueDocComparer : DocComparer
             {
                 private readonly FacetDataCache _dataCache;
                 private readonly IFacetHandler _facetHandler;
                 private readonly BoboSegmentReader _reader;
 
-                public CompactMultiValueDocComparator(FacetDataCache dataCache, IFacetHandler facetHandler, BoboSegmentReader reader)
+                public CompactMultiValueDocComparer(FacetDataCache dataCache, IFacetHandler facetHandler, BoboSegmentReader reader)
                 {
                     _dataCache = dataCache;
                     _facetHandler = facetHandler;
@@ -348,7 +348,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
                 public override IComparable Value(ScoreDoc doc)
                 {
-                    return new StringArrayComparator(_facetHandler.GetFieldValues(_reader, doc.Doc));
+                    return new StringArrayComparer(_facetHandler.GetFieldValues(_reader, doc.Doc));
                 }
             }
         }

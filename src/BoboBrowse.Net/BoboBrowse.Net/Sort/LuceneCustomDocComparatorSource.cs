@@ -24,45 +24,45 @@ namespace BoboBrowse.Net.Sort
     using Lucene.Net.Search;
     using System;
 
-    public class LuceneCustomDocComparatorSource : DocComparatorSource
+    public class LuceneCustomDocComparerSource : DocComparerSource
     {
-        private readonly FieldComparer _luceneComparator;
+        private readonly FieldComparer _luceneComparer;
         private readonly string _fieldname;
         
-        public LuceneCustomDocComparatorSource(string fieldname, FieldComparer luceneComparator)
+        public LuceneCustomDocComparerSource(string fieldname, FieldComparer luceneComparer)
         {
             _fieldname = fieldname;
-            _luceneComparator = luceneComparator;
+            _luceneComparer = luceneComparer;
         }
 
-        public override DocComparator GetComparator(AtomicReader reader, int docbase)
+        public override DocComparer GetComparer(AtomicReader reader, int docbase)
         {
-            _luceneComparator.SetNextReader(reader.AtomicContext);
-            return new LuceneCustomDocComparator(_luceneComparator);
+            _luceneComparer.SetNextReader(reader.AtomicContext);
+            return new LuceneCustomDocComparer(_luceneComparer);
         }
 
-        private class LuceneCustomDocComparator : DocComparator
+        private class LuceneCustomDocComparer : DocComparer
         {
-            private readonly FieldComparer _luceneComparator;
+            private readonly FieldComparer _luceneComparer;
 
-            public LuceneCustomDocComparator(FieldComparer luceneComparator)
+            public LuceneCustomDocComparer(FieldComparer luceneComparer)
             {
-                this._luceneComparator = luceneComparator;
+                this._luceneComparer = luceneComparer;
             }
 
             public override IComparable Value(ScoreDoc doc)
             {
-                return _luceneComparator[doc.Doc];
+                return _luceneComparer[doc.Doc];
             }
 
             public override int Compare(ScoreDoc doc1, ScoreDoc doc2)
             {
-                return _luceneComparator.Compare(doc1.Doc, doc2.Doc);
+                return _luceneComparer.Compare(doc1.Doc, doc2.Doc);
             }
 
             public override void SetScorer(Scorer scorer)
             {
-                _luceneComparator.SetScorer(scorer);
+                _luceneComparer.SetScorer(scorer);
             }
         }
     }

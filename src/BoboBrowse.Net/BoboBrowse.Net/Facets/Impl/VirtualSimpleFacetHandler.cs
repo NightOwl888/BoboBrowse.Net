@@ -104,7 +104,7 @@ namespace BoboBrowse.Net.Facets.Impl
                             _termListFactory = new TermFixedLengthLongArrayListFactory(
                               ((long[])val).Length);
 
-                        dataMap = new TreeDictionary<object, List<int>>(new VirtualSimpleFacetHandlerLongArrayComparator());
+                        dataMap = new TreeDictionary<object, List<int>>(new VirtualSimpleFacetHandlerLongArrayComparer());
                     }
                     else if (val is IComparable)
                     {
@@ -112,7 +112,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     }
                     else
                     {
-                        dataMap = new TreeDictionary<object, List<int>>(new VirtualSimpleFacetHandlerObjectComparator());
+                        dataMap = new TreeDictionary<object, List<int>>(new VirtualSimpleFacetHandlerObjectComparer());
                     }
                 }
 
@@ -174,7 +174,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return dataCache;
         }
 
-        private class VirtualSimpleFacetHandlerLongArrayComparator : IComparer<object>
+        private class VirtualSimpleFacetHandlerLongArrayComparer : IComparer<object>
         {
             public virtual int Compare(object big, object small)
             {
@@ -201,7 +201,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        private class VirtualSimpleFacetHandlerObjectComparator : IComparer<object>
+        private class VirtualSimpleFacetHandlerObjectComparer : IComparer<object>
         {
             public virtual int Compare(object big, object small)
             {

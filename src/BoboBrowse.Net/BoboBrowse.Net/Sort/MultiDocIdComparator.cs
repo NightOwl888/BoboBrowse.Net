@@ -23,20 +23,20 @@ namespace BoboBrowse.Net.Sort
     using Lucene.Net.Search;
     using System;
 
-    public class MultiDocIdComparator : DocComparator
+    public class MultiDocIdComparer : DocComparer
     {
-        private readonly DocComparator[] _comparators;
+        private readonly DocComparer[] _comparers;
 
-        public MultiDocIdComparator(DocComparator[] comparators)
+        public MultiDocIdComparer(DocComparer[] comparers)
         {
-            _comparators = comparators;
+            _comparers = comparers;
         }
 
         public override int Compare(ScoreDoc doc1, ScoreDoc doc2)
         {
-            for (int i = 0; i < _comparators.Length; ++i)
+            for (int i = 0; i < _comparers.Length; ++i)
             {
-                int v = _comparators[i].Compare(doc1, doc2);
+                int v = _comparers[i].Compare(doc1, doc2);
                 if (v != 0) return v;
             }
             return 0;
@@ -44,36 +44,36 @@ namespace BoboBrowse.Net.Sort
 
         public override void SetScorer(Scorer scorer)
         {
-            foreach (DocComparator comparator in _comparators)
+            foreach (DocComparer comparer in _comparers)
             {
-                comparator.SetScorer(scorer);
+                comparer.SetScorer(scorer);
             }
         }
 
         public override IComparable Value(ScoreDoc doc)
         {
-            return new MultiDocIdComparable(doc, _comparators);
+            return new MultiDocIdComparable(doc, _comparers);
         }
 
         public class MultiDocIdComparable : IComparable
         {
             private readonly ScoreDoc _doc;
-            private readonly DocComparator[] _comparators;
+            private readonly DocComparer[] _comparers;
 
-            public MultiDocIdComparable(ScoreDoc doc, DocComparator[] comparators)
+            public MultiDocIdComparable(ScoreDoc doc, DocComparer[] comparers)
             {
                 _doc = doc;
-                _comparators = comparators;
+                _comparers = comparers;
             }
 
             public virtual int CompareTo(object o)
             {
                 MultiDocIdComparable other = (MultiDocIdComparable)o;
                 IComparable c1, c2;
-                for (int i = 0; i < _comparators.Length; ++i)
+                for (int i = 0; i < _comparers.Length; ++i)
                 {
-                    c1 = _comparators[i].Value(_doc);
-                    c2 = other._comparators[i].Value(other._doc);
+                    c1 = _comparers[i].Value(_doc);
+                    c2 = other._comparers[i].Value(other._doc);
                     int v = c1.CompareTo(c2);
                     if (v != 0)
                     {
