@@ -33,77 +33,77 @@ namespace BoboBrowse.Net.Facets.Impl
     public class PathFacetCountCollector : IFacetCountCollector
     {
         private static readonly ILog log = LogProvider.For<PathFacetCountCollector>();
-        private readonly BrowseSelection _sel;
-        protected BigSegmentedArray _count;
-        private readonly string _name;
-        private readonly string _sep;
-        private readonly BigSegmentedArray _orderArray;
-        protected readonly FacetDataCache _dataCache;
-        private readonly IComparerFactory _comparerFactory;
-        private readonly int _minHitCount;
-	    private int _maxCount;
-	    private string[] _stringData;
-	    private readonly char[] _sepArray;
-	    private int _patStart;
-	    private int _patEnd;
+        private readonly BrowseSelection m_sel;
+        protected BigSegmentedArray m_count;
+        private readonly string m_name;
+        private readonly string m_sep;
+        private readonly BigSegmentedArray m_orderArray;
+        protected readonly FacetDataCache m_dataCache;
+        private readonly IComparerFactory m_comparerFactory;
+        private readonly int m_minHitCount;
+	    private int m_maxCount;
+	    private string[] m_stringData;
+	    private readonly char[] m_sepArray;
+	    private int m_patStart;
+	    private int m_patEnd;
 
         internal PathFacetCountCollector(string name, string sep, BrowseSelection sel, FacetSpec ospec, FacetDataCache dataCache)
         {
-            _sel = sel;
-            _name = name;
-            _dataCache = dataCache;
-            _sep = sep;
-            _sepArray = sep.ToCharArray();
-            _count = new LazyBigIntArray(_dataCache.Freqs.Length);
-            log.Info(name + ": " + _count.Length);
-            _orderArray = _dataCache.OrderArray;
-            _minHitCount = ospec.MinHitCount;
-            _maxCount = ospec.MaxCount;
-            if (_maxCount < 1)
+            m_sel = sel;
+            m_name = name;
+            m_dataCache = dataCache;
+            m_sep = sep;
+            m_sepArray = sep.ToCharArray();
+            m_count = new LazyBigIntArray(m_dataCache.Freqs.Length);
+            log.Info(name + ": " + m_count.Length);
+            m_orderArray = m_dataCache.OrderArray;
+            m_minHitCount = ospec.MinHitCount;
+            m_maxCount = ospec.MaxCount;
+            if (m_maxCount < 1)
             {
-                _maxCount = _count.Length;
+                m_maxCount = m_count.Length;
             }
             FacetSpec.FacetSortSpec sortOption = ospec.OrderBy;
             switch (sortOption)
             {
                 case FacetSpec.FacetSortSpec.OrderHitsDesc: 
-                    _comparerFactory = new FacetHitcountComparerFactory(); 
+                    m_comparerFactory = new FacetHitcountComparerFactory(); 
                     break;
                 case FacetSpec.FacetSortSpec.OrderValueAsc: 
-                    _comparerFactory = null; 
+                    m_comparerFactory = null; 
                     break;
                 case FacetSpec.FacetSortSpec.OrderByCustom: 
-                    _comparerFactory = ospec.CustomComparerFactory; 
+                    m_comparerFactory = ospec.CustomComparerFactory; 
                     break;
                 default: 
                     throw new ArgumentOutOfRangeException("invalid sort option: " + sortOption);
             }
             // Doesn't make much sense to do this, so it is commented.
             // new Regex(_sep, RegexOptions.Compiled);
-            _stringData = new string[10];
-            _patStart = 0;
-            _patEnd = 0;
+            m_stringData = new string[10];
+            m_patStart = 0;
+            m_patEnd = 0;
         }
 
         public virtual BigSegmentedArray GetCountDistribution()
         {
-            return _count;
+            return m_count;
         }
 
         public virtual string Name
         {
-            get { return _name; }
+            get { return m_name; }
         }
 
         public virtual void Collect(int docid)
         {
-            int i = _orderArray.Get(docid);
-            _count.Add(i, _count.Get(i) + 1);
+            int i = m_orderArray.Get(docid);
+            m_count.Add(i, m_count.Get(i) + 1);
         }
 
         public virtual void CollectAll()
         {
-            _count = BigIntArray.FromArray(_dataCache.Freqs);
+            m_count = BigIntArray.FromArray(m_dataCache.Freqs);
         }
 
         public virtual BrowseFacet GetFacet(string @value)
@@ -118,28 +118,28 @@ namespace BoboBrowse.Net.Facets.Impl
 
         private void EnsureCapacity(int minCapacity)
         {
-            int oldCapacity = _stringData.Length;
+            int oldCapacity = m_stringData.Length;
             if (minCapacity > oldCapacity)
             {
-                string[] oldData = _stringData;
+                string[] oldData = m_stringData;
                 int newCapacity = (oldCapacity * 3) / 2 + 1;
                 if (newCapacity < minCapacity)
                     newCapacity = minCapacity;
                 // minCapacity is usually close to size, so this is a win:
-                _stringData = new string[newCapacity];
-                Array.Copy(oldData, 0, _stringData, Math.Min(oldData.Length, newCapacity), newCapacity);
+                m_stringData = new string[newCapacity];
+                Array.Copy(oldData, 0, m_stringData, Math.Min(oldData.Length, newCapacity), newCapacity);
             }
         }
 
         private int PatListSize()
         {
-            return (_patEnd - _patStart);
+            return (m_patEnd - m_patStart);
         }
 
         public virtual bool SplitString(string input)
         {
-            _patStart = 0;
-            _patEnd = 0;
+            m_patStart = 0;
+            m_patEnd = 0;
             char[] str = input.ToCharArray();
             int index = 0;
             int sepindex = 0;
@@ -147,17 +147,17 @@ namespace BoboBrowse.Net.Facets.Impl
             int tokEnd = 0;
             while (index < input.Length)
             {
-                for (sepindex = 0; (sepindex < _sepArray.Length) 
-                    && (str[index + sepindex] == _sepArray[sepindex]); sepindex++) 
+                for (sepindex = 0; (sepindex < m_sepArray.Length) 
+                    && (str[index + sepindex] == m_sepArray[sepindex]); sepindex++) 
                     ;
-                if (sepindex == _sepArray.Length)
+                if (sepindex == m_sepArray.Length)
                 {
-                    index += _sepArray.Length;
+                    index += m_sepArray.Length;
                     if (tokStart >= 0)
                     {
-                        EnsureCapacity(_patEnd + 1);
+                        EnsureCapacity(m_patEnd + 1);
                         tokEnd++;
-                        _stringData[_patEnd++] = input.Substring(tokStart, tokEnd - tokStart);
+                        m_stringData[m_patEnd++] = input.Substring(tokStart, tokEnd - tokStart);
                     }
                     tokStart = -1;
                 }
@@ -176,35 +176,35 @@ namespace BoboBrowse.Net.Facets.Impl
                 }
             }
 
-            if (_patEnd == 0)
+            if (m_patEnd == 0)
                 return false;
 
             if (tokStart >= 0)
             {
-                EnsureCapacity(_patEnd + 1);
+                EnsureCapacity(m_patEnd + 1);
                 tokEnd++;
-                _stringData[_patEnd++] = input.Substring(tokStart, tokEnd - tokStart);
+                m_stringData[m_patEnd++] = input.Substring(tokStart, tokEnd - tokStart);
             }
 
             // let gc do its job 
             str = null;
 
             // Construct result
-            while (_patEnd > 0 && _stringData[PatListSize() - 1].Equals(""))
+            while (m_patEnd > 0 && m_stringData[PatListSize() - 1].Equals(""))
             {
-                _patEnd--;
+                m_patEnd--;
             }
             return true;
         }
 
-        private IEnumerable<BrowseFacet> GetFacetsForPath(string selectedPath, int depth, bool strict, int minCount, int maxCount)
+        private ICollection<BrowseFacet> GetFacetsForPath(string selectedPath, int depth, bool strict, int minCount, int maxCount)
         {
             List<BrowseFacet> list = new List<BrowseFacet>();
 
             BoundedPriorityQueue<BrowseFacet> pq = null;
-            if (_comparerFactory != null)
+            if (m_comparerFactory != null)
             {
-                IComparer<BrowseFacet> comparer = _comparerFactory.NewComparer();
+                IComparer<BrowseFacet> comparer = m_comparerFactory.NewComparer();
 
                 pq = new BoundedPriorityQueue<BrowseFacet>(new PathFacetCountCollectorComparer(comparer), maxCount);
             }
@@ -214,11 +214,11 @@ namespace BoboBrowse.Net.Facets.Impl
 
             if (selectedPath != null && selectedPath.Length > 0)
             {
-                startParts = selectedPath.Split(new string[] { _sep }, StringSplitOptions.RemoveEmptyEntries);
+                startParts = selectedPath.Split(new string[] { m_sep }, StringSplitOptions.RemoveEmptyEntries);
                 startDepth = startParts.Length;
-                if (!selectedPath.EndsWith(_sep))
+                if (!selectedPath.EndsWith(m_sep))
                 {
-                    selectedPath += _sep;
+                    selectedPath += m_sep;
                 }
             }
 
@@ -230,7 +230,7 @@ namespace BoboBrowse.Net.Facets.Impl
             int index = 0;
             if (selectedPath != null && selectedPath.Length > 0)
             {
-                index = _dataCache.ValArray.IndexOf(selectedPath);
+                index = m_dataCache.ValArray.IndexOf(selectedPath);
                 if (index < 0)
                 {
                     index = -(index + 1);
@@ -238,14 +238,14 @@ namespace BoboBrowse.Net.Facets.Impl
             }
 
             StringBuilder buf = new StringBuilder();
-            for (int i = index; i < _count.Length; ++i)
+            for (int i = index; i < m_count.Length; ++i)
             {
-                if (_count.Get(i) >= minCount)
+                if (m_count.Get(i) >= minCount)
                 {
-                    string path = _dataCache.ValArray.Get(i);
+                    string path = m_dataCache.ValArray.Get(i);
                     //if (path==null || path.equals(selectedPath)) continue;						
 
-                    int subCount = _count.Get(i);
+                    int subCount = m_count.Get(i);
 
                     // do not use Java split string in a loop !
                     //				string[] pathParts=path.split(_sep);
@@ -266,13 +266,13 @@ namespace BoboBrowse.Net.Facets.Impl
 
                         int minDepth = Math.Min(wantedDepth, pathDepth);
                         tmpdepth = 0;
-                        for (int k = _patStart; ((k < _patEnd) && (tmpdepth < minDepth)); ++k, tmpdepth++)
+                        for (int k = m_patStart; ((k < m_patEnd) && (tmpdepth < minDepth)); ++k, tmpdepth++)
                         {
-                            buf.Append(_stringData[k]);
-                            if (!_stringData[k].EndsWith(_sep))
+                            buf.Append(m_stringData[k]);
+                            if (!m_stringData[k].EndsWith(m_sep))
                             {
                                 if (pathDepth != wantedDepth || k < (wantedDepth - 1))
-                                    buf.Append(_sep);
+                                    buf.Append(m_sep);
                             }
                         }
                         string wantedPath = buf.ToString();
@@ -292,7 +292,7 @@ namespace BoboBrowse.Net.Facets.Impl
                         {
                             bool directNode = false;
 
-                            if (wantedPath.EndsWith(_sep))
+                            if (wantedPath.EndsWith(m_sep))
                             {
                                 if (currentPath.Equals(wantedPath.Substring(0, wantedPath.Length - 1)))
                                 {
@@ -387,46 +387,46 @@ namespace BoboBrowse.Net.Facets.Impl
 
         private class PathFacetCountCollectorComparer : IComparer<BrowseFacet>
         {
-            private readonly IComparer<BrowseFacet> _comparer;
+            private readonly IComparer<BrowseFacet> m_comparer;
 
             public PathFacetCountCollectorComparer(IComparer<BrowseFacet> comparer)
             {
-                _comparer = comparer;
+                m_comparer = comparer;
             }
 
             public virtual int Compare(BrowseFacet o1, BrowseFacet o2)
             {
-                return -_comparer.Compare(o1, o2);
+                return -m_comparer.Compare(o1, o2);
             }
         }
 
-        public virtual IEnumerable<BrowseFacet> GetFacets()
+        public virtual ICollection<BrowseFacet> GetFacets()
         {
-            IDictionary<string, string> props = _sel == null ? null : _sel.SelectionProperties;
+            IDictionary<string, string> props = m_sel == null ? null : m_sel.SelectionProperties;
             int depth = PathFacetHandler.GetDepth(props);
             bool strict = PathFacetHandler.IsStrict(props);
 
-            string[] paths = _sel == null ? null : _sel.Values;
+            string[] paths = m_sel == null ? null : m_sel.Values;
             if (paths == null || paths.Length == 0)
             {
-                return GetFacetsForPath(null, depth, strict, _minHitCount, _maxCount);
+                return GetFacetsForPath(null, depth, strict, m_minHitCount, m_maxCount);
             }
 
-            if (paths.Length == 1) return GetFacetsForPath(paths[0], depth, strict, _minHitCount, _maxCount);
+            if (paths.Length == 1) return GetFacetsForPath(paths[0], depth, strict, m_minHitCount, m_maxCount);
 
             List<BrowseFacet> finalList = new List<BrowseFacet>();
             var iterList = new List<IEnumerator<BrowseFacet>>(paths.Length);
             foreach (string path in paths)
             {
-                var subList = GetFacetsForPath(path, depth, strict, _minHitCount, _maxCount);
-                if (subList.Count() > 0)
+                var subList = GetFacetsForPath(path, depth, strict, m_minHitCount, m_maxCount);
+                if (subList.Count > 0)
                 {
                     iterList.Add(subList.GetEnumerator());
                 }
             }
 
             var finalIter = ListMerger.MergeLists(iterList.ToArray(),
-                _comparerFactory == null ? new FacetValueComparerFactory().NewComparer() : _comparerFactory.NewComparer());
+                m_comparerFactory == null ? new FacetValueComparerFactory().NewComparer() : m_comparerFactory.NewComparer());
             while (finalIter.MoveNext())
             {
                 BrowseFacet f = finalIter.Current;
@@ -440,21 +440,21 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public virtual FacetIterator GetIterator()
         {
-            IDictionary<string, string> props = _sel == null ? null : _sel.SelectionProperties;
+            IDictionary<string, string> props = m_sel == null ? null : m_sel.SelectionProperties;
             int depth = PathFacetHandler.GetDepth(props);
             bool strict = PathFacetHandler.IsStrict(props);
             List<BrowseFacet> finalList;
 
-            string[] paths = _sel == null ? null : _sel.Values;
+            string[] paths = m_sel == null ? null : m_sel.Values;
             if (paths == null || paths.Length == 0)
             {
-                finalList = new List<BrowseFacet>(GetFacetsForPath(null, depth, strict, int.MinValue, _count.Length));
+                finalList = new List<BrowseFacet>(GetFacetsForPath(null, depth, strict, int.MinValue, m_count.Length));
                 return new PathFacetIterator(finalList);
             }
 
             if (paths.Length == 1)
             {
-                finalList = new List<BrowseFacet>(GetFacetsForPath(paths[0], depth, strict, int.MinValue, _count.Length));
+                finalList = new List<BrowseFacet>(GetFacetsForPath(paths[0], depth, strict, int.MinValue, m_count.Length));
                 return new PathFacetIterator(finalList);
             }
 
@@ -462,14 +462,14 @@ namespace BoboBrowse.Net.Facets.Impl
             var iterList = new List<IEnumerator<BrowseFacet>>(paths.Length);
             foreach (string path in paths)
             {
-                var subList = GetFacetsForPath(path, depth, strict, int.MinValue, _count.Length);
-                if (subList.Count() > 0)
+                var subList = GetFacetsForPath(path, depth, strict, int.MinValue, m_count.Length);
+                if (subList.Count > 0)
                 {
                     iterList.Add(subList.GetEnumerator());
                 }
             }
             var finalIter = ListMerger.MergeLists(iterList.ToArray(),
-                _comparerFactory == null ? new FacetValueComparerFactory().NewComparer() : _comparerFactory.NewComparer());
+                m_comparerFactory == null ? new FacetValueComparerFactory().NewComparer() : m_comparerFactory.NewComparer());
 
             while (finalIter.MoveNext())
             {

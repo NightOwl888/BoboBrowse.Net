@@ -27,7 +27,7 @@ namespace BoboBrowse.Net.Search.Section
     /// </summary>
     public class OrNode : SectionSearchQueryPlan
     {
-        private NodeQueue _pq;
+        private NodeQueue m_pq;
 
         protected OrNode() { }
 
@@ -35,81 +35,81 @@ namespace BoboBrowse.Net.Search.Section
         {
             if (subqueries.Length == 0)
             {
-                _curDoc = DocIdSetIterator.NO_MORE_DOCS;
+                m_curDoc = DocIdSetIterator.NO_MORE_DOCS;
             }
             else
             {
-                _pq = new NodeQueue(subqueries.Length);
+                m_pq = new NodeQueue(subqueries.Length);
                 foreach (SectionSearchQueryPlan q in subqueries)
                 {
-                    if (q != null) _pq.Add(q);
+                    if (q != null) m_pq.Add(q);
                 }
-                _curDoc = -1;
+                m_curDoc = -1;
             }
         }
 
         public override int FetchDoc(int targetDoc)
         {
-            if (_curDoc == DocIdSetIterator.NO_MORE_DOCS) return _curDoc;
+            if (m_curDoc == DocIdSetIterator.NO_MORE_DOCS) return m_curDoc;
 
-            if (targetDoc <= _curDoc) targetDoc = _curDoc + 1;
+            if (targetDoc <= m_curDoc) targetDoc = m_curDoc + 1;
 
-            _curSec = -1;
+            m_curSec = -1;
 
-            SectionSearchQueryPlan node = (SectionSearchQueryPlan)_pq.Top;
+            SectionSearchQueryPlan node = (SectionSearchQueryPlan)m_pq.Top;
             while (true)
             {
                 if (node.DocId < targetDoc)
                 {
                     if (node.FetchDoc(targetDoc) < DocIdSetIterator.NO_MORE_DOCS)
                     {
-                        node = (SectionSearchQueryPlan)_pq.UpdateTop();
+                        node = (SectionSearchQueryPlan)m_pq.UpdateTop();
                     }
                     else
                     {
-                        _pq.Pop();
-                        if (_pq.Count <= 0)
+                        m_pq.Pop();
+                        if (m_pq.Count <= 0)
                         {
-                            _curDoc = DocIdSetIterator.NO_MORE_DOCS;
-                            return _curDoc;
+                            m_curDoc = DocIdSetIterator.NO_MORE_DOCS;
+                            return m_curDoc;
                         }
-                        node = (SectionSearchQueryPlan)_pq.Top;
+                        node = (SectionSearchQueryPlan)m_pq.Top;
                     }
                 }
                 else
                 {
-                    _curDoc = node.DocId;
-                    return _curDoc;
+                    m_curDoc = node.DocId;
+                    return m_curDoc;
                 }
             }
         }
 
         public override int FetchSec(int targetSec)
         {
-            if (_curSec == SectionSearchQueryPlan.NO_MORE_SECTIONS) return _curSec;
+            if (m_curSec == SectionSearchQueryPlan.NO_MORE_SECTIONS) return m_curSec;
 
-            if (targetSec <= _curSec) targetSec = _curSec + 1;
+            if (targetSec <= m_curSec) targetSec = m_curSec + 1;
 
-            SectionSearchQueryPlan node = (SectionSearchQueryPlan)_pq.Top;
+            SectionSearchQueryPlan node = (SectionSearchQueryPlan)m_pq.Top;
             while (true)
             {
-                if (node.DocId == _curDoc && _curSec < SectionSearchQueryPlan.NO_MORE_SECTIONS)
+                if (node.DocId == m_curDoc && m_curSec < SectionSearchQueryPlan.NO_MORE_SECTIONS)
                 {
                     if (node.SecId < targetSec)
                     {
                         node.FetchSec(targetSec);
-                        node = (SectionSearchQueryPlan)_pq.UpdateTop();
+                        node = (SectionSearchQueryPlan)m_pq.UpdateTop();
                     }
                     else
                     {
-                        _curSec = node.SecId;
-                        return _curSec;
+                        m_curSec = node.SecId;
+                        return m_curSec;
                     }
                 }
                 else
                 {
-                    _curSec = SectionSearchQueryPlan.NO_MORE_SECTIONS;
-                    return _curSec;
+                    m_curSec = SectionSearchQueryPlan.NO_MORE_SECTIONS;
+                    return m_curSec;
                 }
             }
         }

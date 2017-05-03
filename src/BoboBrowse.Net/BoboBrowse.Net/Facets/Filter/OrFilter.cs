@@ -29,24 +29,24 @@ namespace BoboBrowse.Net.Facets.Filter
 
     public class OrFilter : Filter
     {
-        private readonly IEnumerable<Filter> _filters;
+        private readonly IList<Filter> m_filters;
 
-        public OrFilter(IEnumerable<Filter> filters)
+        public OrFilter(IList<Filter> filters)
         {
-            _filters = filters;
+            m_filters = filters;
         }
 
         public override DocIdSet GetDocIdSet(AtomicReaderContext context, IBits acceptDocs)
         {
-            var count = _filters.Count();
+            var count = m_filters.Count;
             if (count == 1)
             {
-                return _filters.ElementAt(0).GetDocIdSet(context, acceptDocs);
+                return m_filters[0].GetDocIdSet(context, acceptDocs);
             }
             else
             {
                 List<DocIdSet> list = new List<DocIdSet>(count);
-                foreach (Filter f in _filters)
+                foreach (Filter f in m_filters)
                 {
                     list.Add(f.GetDocIdSet(context, acceptDocs));
                 }

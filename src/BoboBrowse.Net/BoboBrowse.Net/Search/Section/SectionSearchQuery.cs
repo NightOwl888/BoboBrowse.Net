@@ -28,39 +28,39 @@ namespace BoboBrowse.Net.Search.Section
 
     public class SectionSearchQuery : Query
     { 
-        private Query _query;
+        private Query m_query;
 
         private class SectionSearchWeight : Weight
         {
-            Weight _weight;
-            private readonly SectionSearchQuery _parent;
+            Weight m_weight;
+            private readonly SectionSearchQuery m_parent;
 
             public SectionSearchWeight(SectionSearchQuery parent, IndexSearcher searcher, Query query)
             {
-                _parent = parent;
-                _weight = searcher.CreateNormalizedWeight(query);
+                m_parent = parent;
+                m_weight = searcher.CreateNormalizedWeight(query);
             }
 
             public override string ToString()
             {
-                return "weight(" + _parent.ToString() + ")";
+                return "weight(" + m_parent.ToString() + ")";
             }
 
             public override Query Query
             {
-                get { return _parent; }
+                get { return m_parent; }
             }
 
             public float Value
             {
-                get { return _parent.Boost; }
+                get { return m_parent.Boost; }
             }
 
             public override Explanation Explain(AtomicReaderContext context, int doc)
             {
                 Explanation result = new Explanation();
-                result.Value = _parent.Boost;
-                result.Description = _parent.ToString();
+                result.Value = m_parent.Boost;
+                result.Description = m_parent.ToString();
                 return result;
             }
 
@@ -70,49 +70,49 @@ namespace BoboBrowse.Net.Search.Section
 
             public override Scorer GetScorer(AtomicReaderContext context, IBits acceptDocs)
             {
-                SectionSearchScorer scorer = new SectionSearchScorer(this.Query, _weight, this.Value, context.AtomicReader);
+                SectionSearchScorer scorer = new SectionSearchScorer(this.Query, m_weight, this.Value, context.AtomicReader);
                 return scorer;
             }
 
             public override float GetValueForNormalization()
             {
-                return _weight.GetValueForNormalization();
+                return m_weight.GetValueForNormalization();
             }
 
 
             public override void Normalize(float norm, float topLevelBoost)
             {
-                _weight.Normalize(norm, topLevelBoost);
+                m_weight.Normalize(norm, topLevelBoost);
             }
         }
 
         public class SectionSearchScorer : Scorer
         {
-            private int _curDoc = -1;
-            private float _curScr;
+            private int m_curDoc = -1;
+            private float m_curScr;
             //private bool _more = true; // more hits // NOT USED
-            private SectionSearchQueryPlan _plan;
+            private SectionSearchQueryPlan m_plan;
 
             public SectionSearchScorer(Query query, Weight weight, float score, AtomicReader reader)
                 : base(weight)
             {
-                _curScr = score;
+                m_curScr = score;
 
                 SectionSearchQueryPlanBuilder builer = new SectionSearchQueryPlanBuilder(reader);
-                _plan = builer.GetPlan(query);
-                if (_plan != null)
+                m_plan = builer.GetPlan(query);
+                if (m_plan != null)
                 {
-                    _curDoc = -1;
+                    m_curDoc = -1;
                 }
                 else
                 {
-                    _curDoc = DocIdSetIterator.NO_MORE_DOCS;
+                    m_curDoc = DocIdSetIterator.NO_MORE_DOCS;
                 }
             }
 
             public override int DocID
             {
-                get { return _curDoc; }
+                get { return m_curDoc; }
             }
 
             public override int NextDoc()
@@ -122,18 +122,18 @@ namespace BoboBrowse.Net.Search.Section
 
             public override float GetScore()
             {
-                return _curScr;
+                return m_curScr;
             }
 
             public override int Advance(int target)
             {
-                if (_curDoc < DocIdSetIterator.NO_MORE_DOCS)
+                if (m_curDoc < DocIdSetIterator.NO_MORE_DOCS)
                 {
-                    if (target <= _curDoc) target = _curDoc + 1;
+                    if (target <= m_curDoc) target = m_curDoc + 1;
 
-                    return _plan.Fetch(target);
+                    return m_plan.Fetch(target);
                 }
-                return _curDoc;
+                return m_curDoc;
             }
 
             public override int Freq
@@ -153,24 +153,24 @@ namespace BoboBrowse.Net.Search.Section
         /// <param name="query"></param>
         public SectionSearchQuery(Query query)
         {
-            _query = query;
+            m_query = query;
         }
 
         public override string ToString(string field)
         {
             StringBuilder buffer = new StringBuilder();
-            buffer.Append("SECTION(" + _query.ToString() + ")");
+            buffer.Append("SECTION(" + m_query.ToString() + ")");
             return buffer.ToString();
         }
 
         public override Weight CreateWeight(IndexSearcher searcher)
         {
-            return new SectionSearchWeight(this, searcher, _query);
+            return new SectionSearchWeight(this, searcher, m_query);
         }
 
         public override Query Rewrite(IndexReader reader)
         {
-            _query.Rewrite(reader);
+            m_query.Rewrite(reader);
             return this;
         }
     }

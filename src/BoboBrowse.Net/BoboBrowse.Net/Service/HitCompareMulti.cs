@@ -24,20 +24,20 @@ namespace BoboBrowse.Net.Service
 
     public class HitCompareMulti : IComparer<BrowseHit>
     {
-        private IComparer<BrowseHit>[] _hcmp;
+        private IComparer<BrowseHit>[] m_hcmp;
 
         public HitCompareMulti(IComparer<BrowseHit>[] hcmp)
         {
-            _hcmp = hcmp;
+            m_hcmp = hcmp;
         }
 
         // HitCompare
         public virtual int Compare(BrowseHit h1, BrowseHit h2)
         {
             int retVal = 0;
-            for (int i = 0; i < _hcmp.Length; ++i)
+            for (int i = 0; i < m_hcmp.Length; ++i)
             {
-                retVal = _hcmp[i].Compare(h1, h2);
+                retVal = m_hcmp[i].Compare(h1, h2);
                 if (retVal != 0) break;
             }
             return retVal;

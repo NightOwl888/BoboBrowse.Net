@@ -168,14 +168,14 @@ namespace BoboBrowse.Net.Facets.Impl
 
         private class PathValueConverter : IFacetValueConverter
         {
-            private readonly bool _strict;
-            private readonly string _sep;
-            private readonly int _depth;
+            private readonly bool m_strict;
+            private readonly string m_sep;
+            private readonly int m_depth;
             public PathValueConverter(int depth, bool strict, string sep)
             {
-                _strict = strict;
-                _sep = sep;
-                _depth = depth;
+                m_strict = strict;
+                m_sep = sep;
+                m_depth = depth;
             }
 
             private void GetFilters(FacetDataCache dataCache, IList<int> intSet, string[] vals, int depth, bool strict)
@@ -191,7 +191,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 IList<string> termList = dataCache.ValArray;
                 int index = termList.IndexOf(val);
 
-                int startDepth = GetPathDepth(val, _sep);
+                int startDepth = GetPathDepth(val, m_sep);
 
                 if (index < 0)
                 {
@@ -209,7 +209,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     string path = termList[i];
                     if (path.StartsWith(val))
                     {
-                        if (!strict || GetPathDepth(path, _sep) - startDepth == depth)
+                        if (!strict || GetPathDepth(path, m_sep) - startDepth == depth)
                         {
                             intSet.Add(i);
                         }
@@ -224,7 +224,7 @@ namespace BoboBrowse.Net.Facets.Impl
             public virtual int[] Convert(FacetDataCache dataCache, string[] vals)
             {
                 IList<int> intSet = new List<int>();
-                GetFilters(dataCache, intSet, vals, _depth, _strict);
+                GetFilters(dataCache, intSet, vals, m_depth, m_strict);
                 return intSet.ToArray();
             }
 
@@ -315,38 +315,38 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec fspec)
         {
-            return new PathFacetHandlerFacetCountCollectorSource(this, _name, _separator, sel, fspec, _multiValue);
+            return new PathFacetHandlerFacetCountCollectorSource(this, m_name, _separator, sel, fspec, _multiValue);
         }
 
         private class PathFacetHandlerFacetCountCollectorSource : FacetCountCollectorSource
         {
-            private readonly PathFacetHandler _parent;
-            private readonly string _name;
-            private readonly string _separator;
-            private readonly BrowseSelection _sel;
-            private readonly FacetSpec _ospec;
-            private readonly bool _multiValue;
+            private readonly PathFacetHandler m_parent;
+            private readonly string m_name;
+            private readonly string m_separator;
+            private readonly BrowseSelection m_sel;
+            private readonly FacetSpec m_ospec;
+            private readonly bool m_multiValue;
 
             public PathFacetHandlerFacetCountCollectorSource(PathFacetHandler parent, string name, string separator, BrowseSelection sel, FacetSpec ospec, bool multiValue)
             {
-                _parent = parent;
-                _name = name;
-                _separator = separator;
-                _sel = sel;
-                _ospec = ospec;
-                _multiValue = multiValue;
+                m_parent = parent;
+                m_name = name;
+                m_separator = separator;
+                m_sel = sel;
+                m_ospec = ospec;
+                m_multiValue = multiValue;
             }
 
             public override IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase)
             {
-                FacetDataCache dataCache = _parent.GetFacetData<FacetDataCache>(reader);
-				if (_multiValue)
+                FacetDataCache dataCache = m_parent.GetFacetData<FacetDataCache>(reader);
+				if (m_multiValue)
                 {
-					return new MultiValuedPathFacetCountCollector(_name, _separator, _sel, _ospec, dataCache);
+					return new MultiValuedPathFacetCountCollector(m_name, m_separator, m_sel, m_ospec, dataCache);
 				}
 				else
                 {
-					return new PathFacetCountCollector(_name, _separator, _sel, _ospec, dataCache);
+					return new PathFacetCountCollector(m_name, m_separator, m_sel, m_ospec, dataCache);
 				}
             }
         }

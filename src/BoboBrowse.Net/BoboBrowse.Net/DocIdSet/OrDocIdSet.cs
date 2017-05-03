@@ -38,18 +38,18 @@ namespace BoboBrowse.Net.DocIdSet
             }
         }
 
-        List<DocIdSet> sets = null;
+        private List<DocIdSet> m_sets = null;
 
-        private int _size = INVALID;
+        private int m_size = INVALID;
 
         public OrDocIdSet(List<DocIdSet> docSets)
         {
-            this.sets = docSets;
+            this.m_sets = docSets;
         }
 
         public override DocIdSetIterator GetIterator()
         {
-            return new OrDocIdSetIterator(sets);
+            return new OrDocIdSetIterator(m_sets);
         }
 
 
@@ -62,7 +62,7 @@ namespace BoboBrowse.Net.DocIdSet
         /// <returns> index where the value is </returns>
         public override int FindWithIndex(int val)
         {
-            DocIdSetIterator finder = new OrDocIdSetIterator(sets);
+            DocIdSetIterator finder = new OrDocIdSetIterator(m_sets);
             int cursor = -1;
             try
             {
@@ -88,22 +88,22 @@ namespace BoboBrowse.Net.DocIdSet
         {
             get 
             {
-                if (_size == INVALID)
+                if (m_size == INVALID)
                 {
-                    _size = 0;
+                    m_size = 0;
                     DocIdSetIterator it = this.GetIterator();
 
                     try
                     {
                         while (it.NextDoc() != DocIdSetIterator.NO_MORE_DOCS)
-                            _size++;
+                            m_size++;
                     }
                     catch
                     {
-                        _size = INVALID;
+                        m_size = INVALID;
                     }
                 }
-                return _size;
+                return m_size;
             }
         }
     }

@@ -213,7 +213,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: CLSCompliantAttribute(false)]
+[assembly: CLSCompliantAttribute(true)]
 [assembly: ComVisibleAttribute(false)]
 [assembly: AssemblyCompanyAttribute(""$company"")]
 [assembly: AssemblyCopyrightAttribute(""$copyright"")]

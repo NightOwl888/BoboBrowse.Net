@@ -44,7 +44,7 @@ namespace BoboBrowse.Net.Facets
         RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, IDictionary<string, string> prop);
         RandomAccessFilter BuildRandomAccessFilter(string value, IDictionary<string, string> selectionProperty);
         RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, IDictionary<string, string> prop, bool isNot);
-        IEnumerable<string> DependsOn { get; }
+        ICollection<string> DependsOn { get; }
         IFacetHandler GetDependedFacetHandler(string name);
         DocComparerSource GetDocComparerSource();
         FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec fspec);
@@ -56,7 +56,7 @@ namespace BoboBrowse.Net.Facets
         object[] GetRawFieldValues(BoboSegmentReader reader, int id);
         void LoadFacetData(BoboSegmentReader reader);
         void LoadFacetData(BoboSegmentReader reader, BoboSegmentReader.WorkArea workArea);
-        IFacetAccessible Merge(FacetSpec fspec, IEnumerable<IFacetAccessible> facetList);
+        IFacetAccessible Merge(FacetSpec fspec, ICollection<IFacetAccessible> facetList);
         string Name { get; }
         void PutDependedFacetHandler(IFacetHandler facetHandler);
         void SetTermCountSize(string termCountSize);
@@ -67,7 +67,7 @@ namespace BoboBrowse.Net.Facets
     public class FacetDataNone
     {
         //private static long serialVersionUID = 1L; // NOT USED
-        private readonly static FacetDataNone instance = new FacetDataNone();
+        private readonly static FacetDataNone m_instance = new FacetDataNone();
         private FacetDataNone() { }
 
         /// <summary>
@@ -76,40 +76,40 @@ namespace BoboBrowse.Net.Facets
         /// <returns></returns>
         public static FacetDataNone Instance
         {
-            get { return instance; }
+            get { return m_instance; }
         }
     }
 
     public abstract class FacetHandler<D> : IFacetHandler
     {
-        protected readonly string _name;
-        private readonly IEnumerable<string> _dependsOn;
+        protected readonly string m_name;
+        private readonly ICollection<string> m_dependsOn;
         // original was <string, FacetHandler<?>>
-        private readonly IDictionary<string, IFacetHandler> _dependedFacetHandlers;
-        private TermCountSize _termCountSize;
+        private readonly IDictionary<string, IFacetHandler> m_dependedFacetHandlers;
+        private TermCountSize m_termCountSize;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="name"></param>
         /// <param name="dependsOn">Set of names of facet handlers this facet handler depend on for loading</param>
-        protected FacetHandler(string name, IEnumerable<string> dependsOn)
+        protected FacetHandler(string name, ICollection<string> dependsOn)
         {
-            _name = name;
-            _dependsOn = dependsOn == null ? new List<string>() : new List<string>(dependsOn);
-            _dependedFacetHandlers = new Dictionary<string, IFacetHandler>();
-            _termCountSize = TermCountSize.Large;
+            m_name = name;
+            m_dependsOn = dependsOn == null ? new List<string>() : new List<string>(dependsOn);
+            m_dependedFacetHandlers = new Dictionary<string, IFacetHandler>();
+            m_termCountSize = TermCountSize.Large;
         }
 
         public virtual void SetTermCountSize(string termCountSize)
         {
-            _termCountSize = (TermCountSize)Enum.Parse(typeof(TermCountSize), termCountSize, true);
+            m_termCountSize = (TermCountSize)Enum.Parse(typeof(TermCountSize), termCountSize, true);
         }
 
         public virtual TermCountSize TermCountSize
         {
-            get { return _termCountSize; }
-            set { _termCountSize = value; }
+            get { return m_termCountSize; }
+            set { m_termCountSize = value; }
         }
 
         /// <summary>
@@ -125,15 +125,15 @@ namespace BoboBrowse.Net.Facets
         /// </summary>
         public string Name
         {
-            get { return _name; }
+            get { return m_name; }
         }
 
         /// <summary>
         /// Gets names of the facet handler this depends on
         /// </summary>
-        public IEnumerable<string> DependsOn
+        public ICollection<string> DependsOn
         {
-            get { return _dependsOn; }
+            get { return m_dependsOn; }
         }
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace BoboBrowse.Net.Facets
         /// <param name="facetHandler">Handler depended facet handler</param>
         public void PutDependedFacetHandler(IFacetHandler facetHandler)
         {
-            _dependedFacetHandlers.Put(facetHandler.Name, facetHandler);
+            m_dependedFacetHandlers.Put(facetHandler.Name, facetHandler);
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace BoboBrowse.Net.Facets
         /// <returns>facet handler instance</returns>
         public IFacetHandler GetDependedFacetHandler(string name)
         {
-            return _dependedFacetHandlers.Get(name);
+            return m_dependedFacetHandlers.Get(name);
         }
 
         /// <summary>
@@ -161,14 +161,14 @@ namespace BoboBrowse.Net.Facets
         /// <param name="reader"></param>
         public abstract D Load(BoboSegmentReader reader);
 
-        public virtual IFacetAccessible Merge(FacetSpec fspec, IEnumerable<IFacetAccessible> facetList)
+        public virtual IFacetAccessible Merge(FacetSpec fspec, ICollection<IFacetAccessible> facetList)
         {
             return new CombinedFacetAccessible(fspec, facetList);
         }
 
         public virtual T GetFacetData<T>(BoboSegmentReader reader)
         {
-            return (T)reader.GetFacetData(_name);
+            return (T)reader.GetFacetData(m_name);
         }
 
         public virtual D Load(BoboSegmentReader reader, BoboSegmentReader.WorkArea workArea)
@@ -178,12 +178,12 @@ namespace BoboBrowse.Net.Facets
 
         public virtual void LoadFacetData(BoboSegmentReader reader, BoboSegmentReader.WorkArea workArea)
         {
-            reader.PutFacetData(_name, Load(reader, workArea));
+            reader.PutFacetData(m_name, Load(reader, workArea));
         }
 
         public virtual void LoadFacetData(BoboSegmentReader reader)
         {
-            reader.PutFacetData(_name, Load(reader));
+            reader.PutFacetData(m_name, Load(reader));
         }
 
         public virtual RandomAccessFilter BuildFilter(BrowseSelection sel)
@@ -340,13 +340,10 @@ namespace BoboBrowse.Net.Facets
         /// <returns>a sort comparer</returns>
         public abstract DocComparerSource GetDocComparerSource();
 
-        // Removed clone method (differs from Java). For it to work, all facet handlers and any nested types
-        // (such as TermListFactory and subclasses) would all need to be marked [Serializable].
-        // There doesn't seem to be much benefit in cloning a facet handler, since it is tied to
-        // a specific field at construction anyway.
-        //public virtual object Clone()
-        //{
-        //    return ObjectCopier.Clone(this);
-        //}
+
+        public virtual object Clone()
+        {
+            return this.MemberwiseClone();
+        }
     }
 }

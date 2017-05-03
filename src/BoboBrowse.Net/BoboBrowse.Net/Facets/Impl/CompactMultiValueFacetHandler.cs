@@ -41,8 +41,8 @@ namespace BoboBrowse.Net.Facets.Impl
     public class CompactMultiValueFacetHandler : FacetHandler<FacetDataCache>, IFacetScoreable
     {
         private const int MAX_VAL_COUNT = 32;
-        private readonly TermListFactory _termListFactory;
-        private readonly string _indexFieldName;
+        private readonly TermListFactory m_termListFactory;
+        private readonly string m_indexFieldName;
 
         /// <summary>
         /// Initializes a new instance of <see cref="T:CompactMultiValueFacetHandler"/> with the specified name,
@@ -55,8 +55,8 @@ namespace BoboBrowse.Net.Facets.Impl
         public CompactMultiValueFacetHandler(string name, string indexFieldName, TermListFactory termListFactory)
             : base(name)
         {
-            _indexFieldName = indexFieldName;
-            _termListFactory = termListFactory;
+            m_indexFieldName = indexFieldName;
+            m_termListFactory = termListFactory;
         }
 
         /// <summary>
@@ -217,28 +217,28 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec fspec)
         {
-            return new CompactMultiValueFacetCountCollectorSource(this.GetFacetData<FacetDataCache>, _name, sel, fspec);
+            return new CompactMultiValueFacetCountCollectorSource(this.GetFacetData<FacetDataCache>, m_name, sel, fspec);
         }
 
         private class CompactMultiValueFacetCountCollectorSource : FacetCountCollectorSource
         {
-            private readonly Func<BoboSegmentReader, FacetDataCache> getFacetData;
-            private readonly string _name;
-            private readonly BrowseSelection _sel;
-            private readonly FacetSpec _ospec;
+            private readonly Func<BoboSegmentReader, FacetDataCache> m_getFacetData;
+            private readonly string m_name;
+            private readonly BrowseSelection m_sel;
+            private readonly FacetSpec m_ospec;
 
             public CompactMultiValueFacetCountCollectorSource(Func<BoboSegmentReader, FacetDataCache> getFacetData, string name, BrowseSelection sel, FacetSpec ospec)
             {
-                this.getFacetData = getFacetData;
-                _name = name;
-                _ospec = ospec;
-                _sel = sel;
+                this.m_getFacetData = getFacetData;
+                m_name = name;
+                m_ospec = ospec;
+                m_sel = sel;
             }
 
             public override IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase)
             {
-                FacetDataCache dataCache = getFacetData(reader);
-                return new CompactMultiValueFacetCountCollector(_name, _sel, dataCache, docBase, _ospec);
+                FacetDataCache dataCache = m_getFacetData(reader);
+                return new CompactMultiValueFacetCountCollector(m_name, m_sel, dataCache, docBase, m_ospec);
             }
         }
 
@@ -248,7 +248,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
             BigIntArray order = new BigIntArray(maxDoc);
 
-            ITermValueList mterms = _termListFactory == null ? new TermStringList() : _termListFactory.CreateTermList();
+            ITermValueList mterms = m_termListFactory == null ? new TermStringList() : m_termListFactory.CreateTermList();
 
             List<int> minIDList = new List<int>();
             List<int> maxIDList = new List<int>();
@@ -260,7 +260,7 @@ namespace BoboBrowse.Net.Facets.Impl
             maxIDList.Add(-1);
             freqList.Add(0);
             t++;
-            Terms terms = reader.GetTerms(_indexFieldName);
+            Terms terms = reader.GetTerms(m_indexFieldName);
             if (terms != null)
             {
                 TermsEnum termsEnum = terms.GetIterator(null);
@@ -276,7 +276,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     string val = text.Utf8ToString();
                     mterms.Add(val);
                     int bit = (0x00000001 << (t - 1));
-                    Term term = new Term(_indexFieldName, val);
+                    Term term = new Term(m_indexFieldName, val);
                     DocsEnum docsEnum = reader.GetTermDocsEnum(term);
                     //freqList.add(termEnum.docFreq());  // removed because the df doesn't take into account the 
                     // num of deletedDocs
@@ -311,10 +311,10 @@ namespace BoboBrowse.Net.Facets.Impl
 
         private class CompactMultiFacetDocComparerSource : DocComparerSource
         {
-            private readonly CompactMultiValueFacetHandler _facetHandler;
+            private readonly CompactMultiValueFacetHandler m_facetHandler;
             public CompactMultiFacetDocComparerSource(CompactMultiValueFacetHandler facetHandler)
             {
-                _facetHandler = facetHandler;
+                m_facetHandler = facetHandler;
             }
 
             public override DocComparer GetComparer(AtomicReader reader, int docbase)
@@ -322,33 +322,33 @@ namespace BoboBrowse.Net.Facets.Impl
                 if (!(reader is BoboSegmentReader))
                     throw new InvalidOperationException("reader must be instance of BoboSegmentReader");
                 var boboReader = (BoboSegmentReader)reader;
-                FacetDataCache dataCache = _facetHandler.GetFacetData<FacetDataCache>(boboReader);
-                return new CompactMultiValueDocComparer(dataCache, _facetHandler, boboReader);
+                FacetDataCache dataCache = m_facetHandler.GetFacetData<FacetDataCache>(boboReader);
+                return new CompactMultiValueDocComparer(dataCache, m_facetHandler, boboReader);
             }
 
             public class CompactMultiValueDocComparer : DocComparer
             {
-                private readonly FacetDataCache _dataCache;
-                private readonly IFacetHandler _facetHandler;
-                private readonly BoboSegmentReader _reader;
+                private readonly FacetDataCache m_dataCache;
+                private readonly IFacetHandler m_facetHandler;
+                private readonly BoboSegmentReader m_reader;
 
                 public CompactMultiValueDocComparer(FacetDataCache dataCache, IFacetHandler facetHandler, BoboSegmentReader reader)
                 {
-                    _dataCache = dataCache;
-                    _facetHandler = facetHandler;
-                    _reader = reader;
+                    m_dataCache = dataCache;
+                    m_facetHandler = facetHandler;
+                    m_reader = reader;
                 }
 
                 public override int Compare(ScoreDoc doc1, ScoreDoc doc2)
                 {
-                    int encoded1 = _dataCache.OrderArray.Get(doc1.Doc);
-                    int encoded2 = _dataCache.OrderArray.Get(doc2.Doc);
+                    int encoded1 = m_dataCache.OrderArray.Get(doc1.Doc);
+                    int encoded2 = m_dataCache.OrderArray.Get(doc2.Doc);
                     return encoded1 - encoded2;
                 }
 
                 public override IComparable Value(ScoreDoc doc)
                 {
-                    return new StringArrayComparer(_facetHandler.GetFieldValues(_reader, doc.Doc));
+                    return new StringArrayComparer(m_facetHandler.GetFieldValues(m_reader, doc.Doc));
                 }
             }
         }
@@ -362,32 +362,32 @@ namespace BoboBrowse.Net.Facets.Impl
 
         private sealed class CompactMultiValueDocScorer : BoboDocScorer
         {
-            private readonly FacetDataCache _dataCache;
+            private readonly FacetDataCache m_dataCache;
             internal CompactMultiValueDocScorer(FacetDataCache dataCache, IFacetTermScoringFunctionFactory scoreFunctionFactory, float[] boostList)
                 : base(scoreFunctionFactory.GetFacetTermScoringFunction(dataCache.ValArray.Count, dataCache.OrderArray.Length), boostList)
             {
-                _dataCache = dataCache;
+                m_dataCache = dataCache;
             }
 
             public override Explanation Explain(int doc)
             {
-                int encoded = _dataCache.OrderArray.Get(doc);
+                int encoded = m_dataCache.OrderArray.Get(doc);
 
                 int count = 1;
-                List<float> scoreList = new List<float>(_dataCache.ValArray.Count);
+                List<float> scoreList = new List<float>(m_dataCache.ValArray.Count);
                 List<Explanation> explList = new List<Explanation>(scoreList.Count);
                 while (encoded != 0)
                 {
                     if ((encoded & 0x00000001) != 0x0)
                     {
                         int idx = count - 1;
-                        scoreList.Add(_function.Score(_dataCache.Freqs[idx], _boostList[idx]));
-                        explList.Add(_function.Explain(_dataCache.Freqs[idx], _boostList[idx]));
+                        scoreList.Add(m_function.Score(m_dataCache.Freqs[idx], m_boostList[idx]));
+                        explList.Add(m_function.Explain(m_dataCache.Freqs[idx], m_boostList[idx]));
                     }
                     count++;
                     encoded = (int)(((uint)encoded) >> 1);
                 }
-                Explanation topLevel = _function.Explain(scoreList.ToArray());
+                Explanation topLevel = m_function.Explain(scoreList.ToArray());
                 foreach (Explanation sub in explList)
                 {
                     topLevel.AddDetail(sub);
@@ -397,8 +397,8 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override sealed float Score(int docid)
             {
-                _function.ClearScores();
-                int encoded = _dataCache.OrderArray.Get(docid);
+                m_function.ClearScores();
+                int encoded = m_dataCache.OrderArray.Get(docid);
 
                 int count = 1;
 
@@ -407,49 +407,49 @@ namespace BoboBrowse.Net.Facets.Impl
                     int idx = count - 1;
                     if ((encoded & 0x00000001) != 0x0)
                     {
-                        _function.ScoreAndCollect(_dataCache.Freqs[idx], _boostList[idx]);
+                        m_function.ScoreAndCollect(m_dataCache.Freqs[idx], m_boostList[idx]);
                     }
                     count++;
                     encoded = (int)(((uint)encoded) >> 1);
                 }
-                return _function.GetCurrentScore();
+                return m_function.GetCurrentScore();
             }
         }
 
         private sealed class CompactMultiValueFacetCountCollector : DefaultFacetCountCollector
         {
-            private readonly new BigSegmentedArray _array;
-            private readonly int[] _combinationCount = new int[16 * 8];
-            private int _noValCount = 0;
-            private bool _aggregated = false;
+            private readonly new BigSegmentedArray m_array;
+            private readonly int[] m_combinationCount = new int[16 * 8];
+            private int m_noValCount = 0;
+            private bool m_aggregated = false;
 
 
             internal CompactMultiValueFacetCountCollector(string name, BrowseSelection sel, FacetDataCache dataCache, int docBase, FacetSpec ospec)
                 : base(name, dataCache, docBase, sel, ospec)
             {
-                _array = _dataCache.OrderArray;
+                m_array = m_dataCache.OrderArray;
             }
 
 
             public override sealed void CollectAll()
             {
-                _count = BigIntArray.FromArray(_dataCache.Freqs);
-                _aggregated = true;
+                m_count = BigIntArray.FromArray(m_dataCache.Freqs);
+                m_aggregated = true;
             }
 
             public override sealed void Collect(int docid)
             {
-                int encoded = _array.Get(docid);
+                int encoded = m_array.Get(docid);
                 if (encoded == 0)
                 {
-                    _noValCount++;
+                    m_noValCount++;
                 }
                 else
                 {
                     int offset = 0;
                     while (true)
                     {
-                        _combinationCount[(encoded & 0x0F) + offset]++;
+                        m_combinationCount[(encoded & 0x0F) + offset]++;
                         encoded = (int)(((uint)encoded) >> 4);
                         if (encoded == 0)
                             break;
@@ -460,39 +460,39 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override BrowseFacet GetFacet(string value)
             {
-                if (!_aggregated)
+                if (!m_aggregated)
                     AggregateCounts();
                 return base.GetFacet(value);
             }
 
             public override int GetFacetHitsCount(object value)
             {
-                if (!_aggregated)
+                if (!m_aggregated)
                     AggregateCounts();
                 return base.GetFacetHitsCount(value);
             }
 
             public override BigSegmentedArray GetCountDistribution()
             {
-                if (!_aggregated)
+                if (!m_aggregated)
                     AggregateCounts();
-                return _count;
+                return m_count;
             }
 
-            public override IEnumerable<BrowseFacet> GetFacets()
+            public override ICollection<BrowseFacet> GetFacets()
             {
-                if (!_aggregated)
+                if (!m_aggregated)
                     AggregateCounts();
                 return base.GetFacets();
             }
 
             private void AggregateCounts()
             {
-                _count.Add(0, _noValCount);
+                m_count.Add(0, m_noValCount);
 
-                for (int i = 1; i < _combinationCount.Length; i++)
+                for (int i = 1; i < m_combinationCount.Length; i++)
                 {
-                    int count = _combinationCount[i];
+                    int count = m_combinationCount[i];
                     if (count > 0)
                     {
                         int offset = (i >> 4) * 4;
@@ -503,19 +503,19 @@ namespace BoboBrowse.Net.Facets.Impl
                             if ((encoded & 0x00000001) != 0x0)
                             {
                                 int idx = index + offset;
-                                _count.Add(idx, _count.Get(idx) + count);
+                                base.m_count.Add(idx, base.m_count.Get(idx) + count);
                             }
                             index++;
                             encoded = (int)(((uint)encoded) >> 1);
                         }
                     }
                 }
-                _aggregated = true;
+                m_aggregated = true;
             }
 
             public override FacetIterator GetIterator()
             {
-                if (!_aggregated) AggregateCounts();
+                if (!m_aggregated) AggregateCounts();
                 return base.GetIterator();
             }
         }

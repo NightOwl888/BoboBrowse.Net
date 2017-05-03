@@ -26,8 +26,8 @@ namespace BoboBrowse.Net.Facets.Data
 
     public class TermShortList : TermNumberList<short>
     {
-        private short[] _elements;
-        private bool withDummy = true;
+        private short[] m_elements;
+        private bool m_withDummy = true;
         public const short VALUE_MISSING = short.MinValue;
 
         private short Parse(string s)
@@ -83,9 +83,9 @@ namespace BoboBrowse.Net.Facets.Data
 
         public override void Add(string o)
         {
-            if (_innerList.Count == 0 && o != null) withDummy = false; // the first value added is not null
+            if (m_innerList.Count == 0 && o != null) m_withDummy = false; // the first value added is not null
             short item = Parse(o);
-            _innerList.Add(item);
+            m_innerList.Add(item);
         }
 
         public override void Clear()
@@ -102,10 +102,10 @@ namespace BoboBrowse.Net.Facets.Data
         {
             get
             {
-                if (index < _innerList.Count)
+                if (index < m_innerList.Count)
                 {
-                    short val = _elements[index];
-                    if (withDummy && index == 0)
+                    short val = m_elements[index];
+                    if (m_withDummy && index == 0)
                     {
                         val = 0;
                     }
@@ -125,15 +125,15 @@ namespace BoboBrowse.Net.Facets.Data
 
         public virtual short GetPrimitiveValue(int index)
         {
-            if (index < _innerList.Count)
-                return _elements[index];
+            if (index < m_innerList.Count)
+                return m_elements[index];
             else
                 return VALUE_MISSING;
         }
 
         public override int IndexOf(object o)
         {
-            if (withDummy)
+            if (m_withDummy)
             {
                 if (o == null) return -1;
                 short val;
@@ -141,7 +141,7 @@ namespace BoboBrowse.Net.Facets.Data
                     val = Parse((string)o);
                 else
                     val = (short)o;
-                return Array.BinarySearch(_elements, 1, _elements.Length - 1, val);
+                return Array.BinarySearch(m_elements, 1, m_elements.Length - 1, val);
             }
             else
             {
@@ -150,37 +150,37 @@ namespace BoboBrowse.Net.Facets.Data
                     val = Parse((string)o);
                 else
                     val = (short)o;
-                return Array.BinarySearch(_elements, val);
+                return Array.BinarySearch(m_elements, val);
             }
         }
 
         public virtual int IndexOf(short val)
         {
-            if (withDummy)
-                return Array.BinarySearch(_elements, 1, _elements.Length - 1, val);
+            if (m_withDummy)
+                return Array.BinarySearch(m_elements, 1, m_elements.Length - 1, val);
             else
-                return Array.BinarySearch(_elements, val);
+                return Array.BinarySearch(m_elements, val);
         }
 
         public override int IndexOfWithType(short val)
         {
-            if (withDummy)
+            if (m_withDummy)
             {
-                return Array.BinarySearch(_elements, 1, _elements.Length - 1, val);
+                return Array.BinarySearch(m_elements, 1, m_elements.Length - 1, val);
             }
             else
             {
-                return Array.BinarySearch(_elements, val);
+                return Array.BinarySearch(m_elements, val);
             }
         }
 
         public override void Seal()
         {
-            _innerList.TrimExcess();
-            _elements = _innerList.ToArray();
-            int negativeIndexCheck = withDummy ? 1 : 0;
+            m_innerList.TrimExcess();
+            m_elements = m_innerList.ToArray();
+            int negativeIndexCheck = m_withDummy ? 1 : 0;
             //reverse negative elements, because string order and numeric orders are completely opposite
-            if (_elements.Length > negativeIndexCheck && _elements[negativeIndexCheck] < 0)
+            if (m_elements.Length > negativeIndexCheck && m_elements[negativeIndexCheck] < 0)
             {
                 int endPosition = IndexOfWithType((short)0);
                 if (endPosition < 0)
@@ -190,9 +190,9 @@ namespace BoboBrowse.Net.Facets.Data
                 short tmp;
                 for (int i = 0; i < (endPosition - negativeIndexCheck) / 2; i++)
                 {
-                    tmp = _elements[i + negativeIndexCheck];
-                    _elements[i + negativeIndexCheck] = _elements[endPosition - i - 1];
-                    _elements[endPosition - i - 1] = tmp;
+                    tmp = m_elements[i + negativeIndexCheck];
+                    m_elements[i + negativeIndexCheck] = m_elements[endPosition - i - 1];
+                    m_elements[endPosition - i - 1] = tmp;
                 }
             }
         }
@@ -204,28 +204,28 @@ namespace BoboBrowse.Net.Facets.Data
 
         public virtual bool Contains(short val)
         {
-            if (withDummy)
-                return Array.BinarySearch(_elements, 1, _elements.Length - 1, val) >= 0;
+            if (m_withDummy)
+                return Array.BinarySearch(m_elements, 1, m_elements.Length - 1, val) >= 0;
             else
-                return Array.BinarySearch(_elements, val) >= 0;
+                return Array.BinarySearch(m_elements, val) >= 0;
         }
 
         public override bool ContainsWithType(short val)
         {
-            if (withDummy)
-                return Array.BinarySearch(_elements, 1, _elements.Length - 1, val) >= 0;
+            if (m_withDummy)
+                return Array.BinarySearch(m_elements, 1, m_elements.Length - 1, val) >= 0;
             else
-                return Array.BinarySearch(_elements, val) >= 0;
+                return Array.BinarySearch(m_elements, val) >= 0;
         }
 
         public virtual short[] Elements
         {
-            get { return _elements; }
+            get { return m_elements; }
         }
 
         public override double GetDoubleValue(int index)
         {
-            return _elements[index];
+            return m_elements[index];
         }
     }
 }

@@ -27,44 +27,44 @@ namespace BoboBrowse.Net.Search.Section
     /// </summary>
     public class AndNotNode : SectionSearchQueryPlan
     {
-        SectionSearchQueryPlan _positiveNode;
-        SectionSearchQueryPlan _negativeNode;
+        private SectionSearchQueryPlan m_positiveNode;
+        private SectionSearchQueryPlan m_negativeNode;
 
         public AndNotNode(SectionSearchQueryPlan positiveNode, SectionSearchQueryPlan negativeNode)
         {
-            _positiveNode = positiveNode;
-            _negativeNode = negativeNode;
+            m_positiveNode = positiveNode;
+            m_negativeNode = negativeNode;
         }
 
         public override int FetchDoc(int targetDoc)
         {
-            _curDoc = _positiveNode.FetchDoc(targetDoc);
-            _curSec = -1;
-            return _curDoc;
+            m_curDoc = m_positiveNode.FetchDoc(targetDoc);
+            m_curSec = -1;
+            return m_curDoc;
         }
 
         public override int FetchSec(int targetSec)
         {
-            while (_curSec < SectionSearchQueryPlan.NO_MORE_SECTIONS)
+            while (m_curSec < SectionSearchQueryPlan.NO_MORE_SECTIONS)
             {
-                _curSec = _positiveNode.FetchSec(targetSec);
-                if (_curSec == SectionSearchQueryPlan.NO_MORE_SECTIONS) break;
+                m_curSec = m_positiveNode.FetchSec(targetSec);
+                if (m_curSec == SectionSearchQueryPlan.NO_MORE_SECTIONS) break;
 
-                targetSec = _curSec;
+                targetSec = m_curSec;
 
-                if (_negativeNode.DocId < _curDoc)
+                if (m_negativeNode.DocId < m_curDoc)
                 {
-                    if (_negativeNode.FetchDoc(_curDoc) == DocIdSetIterator.NO_MORE_DOCS) break;
+                    if (m_negativeNode.FetchDoc(m_curDoc) == DocIdSetIterator.NO_MORE_DOCS) break;
                 }
 
-                if (_negativeNode.DocId == _curDoc &&
-                    (_negativeNode.SecId == SectionSearchQueryPlan.NO_MORE_SECTIONS ||
-                     _negativeNode.FetchSec(targetSec) > _curSec))
+                if (m_negativeNode.DocId == m_curDoc &&
+                    (m_negativeNode.SecId == SectionSearchQueryPlan.NO_MORE_SECTIONS ||
+                     m_negativeNode.FetchSec(targetSec) > m_curSec))
                 {
                     break;
                 }
             }
-            return _curSec;
+            return m_curSec;
         }
     }
 }

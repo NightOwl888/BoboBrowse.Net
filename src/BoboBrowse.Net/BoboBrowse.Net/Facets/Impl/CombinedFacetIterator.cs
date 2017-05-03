@@ -29,79 +29,79 @@ namespace BoboBrowse.Net.Facets.Impl
     /// </summary>
     public class CombinedFacetIterator : FacetIterator
     {
-        private readonly FacetIterator[] heap;
-        private int size;
-        internal IList<FacetIterator> _iterators;
+        private readonly FacetIterator[] m_heap;
+        private int m_size;
+        internal IList<FacetIterator> m_iterators;
 
         public CombinedFacetIterator(IList<FacetIterator> iterators)
         {
-            _iterators = iterators;
-            heap = new FacetIterator[iterators.Count + 1];
-            size = 0;
+            m_iterators = iterators;
+            m_heap = new FacetIterator[iterators.Count + 1];
+            m_size = 0;
             foreach (FacetIterator iterator in iterators)
             {
                 if (iterator.Next(0) != null)
                     Add(iterator);
             }
-            facet = null;
-            count = 0;
+            m_facet = null;
+            m_count = 0;
         }
 
         private void Add(FacetIterator element)
         {
-            size++;
-            heap[size] = element;
+            m_size++;
+            m_heap[m_size] = element;
             UpHeap();
         }
 
         private void UpHeap()
         {
-            int i = size;
-            FacetIterator node = heap[i];   // save bottom node
+            int i = m_size;
+            FacetIterator node = m_heap[i];   // save bottom node
             var val = node.Facet;
             int j = (int)(((uint)i) >> 1);
             //while (j > 0 && val.CompareTo(heap[j].Facet) < 0)
-            while (j > 0 && string.CompareOrdinal(val, heap[j].Facet) < 0)
+            while (j > 0 && string.CompareOrdinal(val, m_heap[j].Facet) < 0)
             {
-                heap[i] = heap[j];          // shift parents down
+                m_heap[i] = m_heap[j];          // shift parents down
                 i = j;
                 j = (int)(((uint)j) >> 1);
             }
-            heap[i] = node;                 // install saved node
+            m_heap[i] = node;                 // install saved node
         }
 
         private void DownHeap()
         {
             int i = 1;
-            FacetIterator node = heap[i];   // save top node
+            FacetIterator node = m_heap[i];   // save top node
             var val = node.Facet;
             int j = i << 1;                 // find smaller child
             int k = j + 1;
-            if (k <= size && string.CompareOrdinal(heap[k].Facet, heap[j].Facet) < 0)
+            if (k <= m_size && string.CompareOrdinal(m_heap[k].Facet, m_heap[j].Facet) < 0)
             {
                 j = k;
             }
-            while (j <= size && string.CompareOrdinal(heap[j].Facet, val) < 0)
+            while (j <= m_size && string.CompareOrdinal(m_heap[j].Facet, val) < 0)
             {
-                heap[i] = heap[j];          // shift up child
+                m_heap[i] = m_heap[j];          // shift up child
                 i = j;
                 j = i << 1;
                 k = j + 1;
-                if (k <= size && string.CompareOrdinal(heap[k].Facet, heap[j].Facet) < 0)
+                if (k <= m_size && string.CompareOrdinal(m_heap[k].Facet, m_heap[j].Facet) < 0)
                 {
                     j = k;
                 }
             }
-            heap[i] = node;                 // install saved node
+            m_heap[i] = node;                 // install saved node
         }
 
         private void Pop()
         {
-            if (size > 0)
+            if (m_size > 0)
             {
-                heap[1] = heap[size];       // move last to first
-                heap[size] = null;          // permit GC of objects
-                if (--size > 0) DownHeap(); // adjust heap
+                m_heap[1] = m_heap[m_size];       // move last to first
+                m_heap[m_size] = null;          // permit GC of objects
+                if (--m_size > 0) DownHeap(); // adjust heap
             }
         }
 
@@ -125,16 +125,16 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <returns>The next facet that obeys the minHits</returns>
         public override string Next(int minHits)
         {
-            if (size == 0)
+            if (m_size == 0)
             {
-                facet = null;
-                count = 0;
+                m_facet = null;
+                m_count = 0;
                 return null;
             }
 
-            FacetIterator node = heap[1];
-            facet = node.Facet;
-            count = node.Count;
+            FacetIterator node = m_heap[1];
+            m_facet = node.Facet;
+            m_count = node.Count;
             int min = (minHits > 0 ? 1 : 0);
             while (true)
             {
@@ -143,43 +143,43 @@ namespace BoboBrowse.Net.Facets.Impl
                 if (!string.IsNullOrEmpty(node.Next(min)))
                 {
                     DownHeap();
-                    node = heap[1];
+                    node = m_heap[1];
                 }
                 else
                 {
                     Pop();
-                    if (size > 0)
+                    if (m_size > 0)
                     {
-                        node = heap[1];
+                        node = m_heap[1];
                     }
                     else
                     {
                         // we reached the end. check if this facet obeys the minHits
-                        if (count < minHits)
+                        if (m_count < minHits)
                         {
-                            facet = null;
-                            count = 0;
+                            m_facet = null;
+                            m_count = 0;
                         }
                         break;
                     }
                 }
                 var next = node.Facet;
                 if (next == null) throw new RuntimeException();
-                if (!next.Equals(facet))
+                if (!next.Equals(m_facet))
                 {
                     // check if this facet obeys the minHits
-                    if (count >= minHits)
+                    if (m_count >= minHits)
                         break;
                     // else, continue iterating to the next facet
-                    facet = next;
-                    count = node.Count;
+                    m_facet = next;
+                    m_count = node.Count;
                 }
                 else
                 {
-                    count += node.Count;
+                    m_count += node.Count;
                 }
             }
-            return Format(facet);
+            return Format(m_facet);
         }
 
         /// <summary>
@@ -189,7 +189,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <returns></returns>
         public override bool HasNext()
         {
-            return (size > 0);
+            return (m_size > 0);
         }
 
         /// <summary>
@@ -203,7 +203,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override string Format(object val)
         {
-            return _iterators[0].Format(val);
+            return m_iterators[0].Format(val);
         }
     }
 }

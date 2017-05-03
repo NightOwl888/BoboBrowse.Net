@@ -33,32 +33,32 @@ namespace BoboBrowse.Net.Facets
     public class CombinedFacetAccessible : IFacetAccessible
     {
         private static readonly ILog log = LogProvider.For<CombinedFacetAccessible>();
-        protected readonly IEnumerable<IFacetAccessible> _list;
-        protected readonly FacetSpec _fspec;
-        protected bool _closed;
+        protected readonly ICollection<IFacetAccessible> m_list;
+        protected readonly FacetSpec m_fspec;
+        protected bool m_closed;
 
-        public CombinedFacetAccessible(FacetSpec fspec, IEnumerable<IFacetAccessible> list)
+        public CombinedFacetAccessible(FacetSpec fspec, ICollection<IFacetAccessible> list)
         {
-            _list = list;
-            _fspec = fspec;
+            m_list = list;
+            m_fspec = fspec;
         }
 
         public override string ToString()
         {
-            return "_list:" + _list + " _fspec:" + _fspec;
+            return "_list:" + m_list + " _fspec:" + m_fspec;
         }
 
         public virtual BrowseFacet GetFacet(string value)
         {
-            if (_closed)
+            if (m_closed)
             {
                 throw new InvalidOperationException("This instance of count collector was already closed");
             }
             int sum = -1;
             string foundValue = null;
-            if (_list != null)
+            if (m_list != null)
             {
-                foreach (IFacetAccessible facetAccessor in _list)
+                foreach (IFacetAccessible facetAccessor in m_list)
                 {
                     BrowseFacet facet = facetAccessor.GetFacet(value);
                     if (facet != null)
@@ -75,14 +75,14 @@ namespace BoboBrowse.Net.Facets
 
         public virtual int GetCappedFacetCount(object value, int cap)
         {
-            if (_closed)
+            if (m_closed)
             {
                 throw new InvalidOperationException("This instance of count collector was already closed");
             }
             int sum = 0;
-            if (_list != null)
+            if (m_list != null)
             {
-                foreach (IFacetAccessible facetAccessor in _list)
+                foreach (IFacetAccessible facetAccessor in m_list)
                 {
                     sum += facetAccessor.GetFacetHitsCount(value);
                     if (sum >= cap)
@@ -94,14 +94,14 @@ namespace BoboBrowse.Net.Facets
 
         public virtual int GetFacetHitsCount(object value)
         {
-            if (_closed)
+            if (m_closed)
             {
                 throw new InvalidOperationException("This instance of count collector was already closed");
             }
             int sum = 0;
-            if (_list != null)
+            if (m_list != null)
             {
-                foreach (IFacetAccessible facetAccessor in _list)
+                foreach (IFacetAccessible facetAccessor in m_list)
                 {
                     sum += facetAccessor.GetFacetHitsCount(value);
                 }
@@ -109,23 +109,23 @@ namespace BoboBrowse.Net.Facets
             return sum;
         }
 
-        public virtual IEnumerable<BrowseFacet> GetFacets()
+        public virtual ICollection<BrowseFacet> GetFacets()
         {
-            if (_closed)
+            if (m_closed)
             {
                 throw new InvalidOperationException("This instance of count collector was already closed");
             }
-            int maxCnt = _fspec.MaxCount;
+            int maxCnt = m_fspec.MaxCount;
             if (maxCnt <= 0)
                 maxCnt = int.MaxValue;
-            int minHits = _fspec.MinHitCount;
+            int minHits = m_fspec.MinHitCount;
             List<BrowseFacet> list = new List<BrowseFacet>();
 
             int cnt = 0;
             string facet = null;
             FacetIterator iter = this.GetIterator();
             IComparer<BrowseFacet> comparer;
-            if (FacetSpec.FacetSortSpec.OrderValueAsc.Equals(_fspec.OrderBy))
+            if (FacetSpec.FacetSortSpec.OrderValueAsc.Equals(m_fspec.OrderBy))
             {
                 while (!string.IsNullOrEmpty((facet = iter.Next(minHits))))
                 {
@@ -134,7 +134,7 @@ namespace BoboBrowse.Net.Facets
                     if (++cnt >= maxCnt) break;
                 }
             }
-            else if (FacetSpec.FacetSortSpec.OrderHitsDesc.Equals(_fspec.OrderBy))
+            else if (FacetSpec.FacetSortSpec.OrderHitsDesc.Equals(m_fspec.OrderBy))
             {
                 comparer = new BrowseFacetComparer();
                 if (maxCnt != int.MaxValue)
@@ -180,7 +180,7 @@ namespace BoboBrowse.Net.Facets
             }
             else // FacetSortSpec.OrderByCustom.equals(_fspec.getOrderBy()
             {
-                comparer = _fspec.CustomComparerFactory.NewComparer();
+                comparer = m_fspec.CustomComparerFactory.NewComparer();
                 if (maxCnt != int.MaxValue)
                 {
                     var queue = CreatePQ(maxCnt, comparer);
@@ -240,19 +240,19 @@ namespace BoboBrowse.Net.Facets
 
         private class BrowseFacetPriorityQueue : PriorityQueue<BrowseFacet>
         {
-            private readonly IComparer<BrowseFacet> comparer;
+            private readonly IComparer<BrowseFacet> m_comparer;
 
             public BrowseFacetPriorityQueue(int max, IComparer<BrowseFacet> comparer)
                 : base(max)
             {
-                this.comparer = comparer;
+                this.m_comparer = comparer;
             }
 
             protected override bool LessThan(BrowseFacet a, BrowseFacet b)
             {
                 BrowseFacet o1 = a;
                 BrowseFacet o2 = b;
-                return comparer.Compare(o1, o2) > 0;
+                return m_comparer.Compare(o1, o2) > 0;
             }
         }
 
@@ -265,16 +265,16 @@ namespace BoboBrowse.Net.Facets
         {
             if (disposing)
             {
-                if (_closed)
+                if (m_closed)
                 {
                     log.Warn("This instance of count collector was already closed. This operation is no-op.");
                     return;
                 }
-                _closed = true;
-                if (_list != null)
+                m_closed = true;
+                if (m_list != null)
                 {
                     Exception exception = null;
-                    foreach (IFacetAccessible fa in _list)
+                    foreach (IFacetAccessible fa in m_list)
                     {
                         try
                         {
@@ -299,14 +299,14 @@ namespace BoboBrowse.Net.Facets
 
         public virtual FacetIterator GetIterator()
         {
-            if (_closed)
+            if (m_closed)
             {
                 throw new InvalidOperationException("This instance of count collector was already closed");
             }
 
-            List<FacetIterator> iterList = new List<FacetIterator>(_list.Count());
+            List<FacetIterator> iterList = new List<FacetIterator>(m_list.Count);
             FacetIterator iter;
-            foreach (IFacetAccessible facetAccessor in _list)
+            foreach (IFacetAccessible facetAccessor in m_list)
             {
                 iter = (FacetIterator)facetAccessor.GetIterator();
                 if (iter != null)
@@ -315,57 +315,57 @@ namespace BoboBrowse.Net.Facets
             if (iterList.Count > 0 && iterList[0] is IntFacetIterator)
             {
                 List<IntFacetIterator> il = new List<IntFacetIterator>();
-                foreach (IFacetAccessible facetAccessor in _list)
+                foreach (IFacetAccessible facetAccessor in m_list)
                 {
                     iter = (FacetIterator)facetAccessor.GetIterator();
                     if (iter != null)
                         il.Add((IntFacetIterator)iter);
                 }
-                return new CombinedIntFacetIterator(il, _fspec.MinHitCount);
+                return new CombinedIntFacetIterator(il, m_fspec.MinHitCount);
             }
             if (iterList.Count > 0 && iterList[0] is LongFacetIterator)
             {
                 List<LongFacetIterator> il = new List<LongFacetIterator>();
-                foreach (IFacetAccessible facetAccessor in _list)
+                foreach (IFacetAccessible facetAccessor in m_list)
                 {
                     iter = (FacetIterator)facetAccessor.GetIterator();
                     if (iter != null)
                         il.Add((LongFacetIterator)iter);
                 }
-                return new CombinedLongFacetIterator(il, _fspec.MinHitCount);
+                return new CombinedLongFacetIterator(il, m_fspec.MinHitCount);
             }
             if (iterList.Count > 0 && iterList[0] is ShortFacetIterator)
             {
                 List<ShortFacetIterator> il = new List<ShortFacetIterator>();
-                foreach (IFacetAccessible facetAccessor in _list)
+                foreach (IFacetAccessible facetAccessor in m_list)
                 {
                     iter = (FacetIterator)facetAccessor.GetIterator();
                     if (iter != null)
                         il.Add((ShortFacetIterator)iter);
                 }
-                return new CombinedShortFacetIterator(il, _fspec.MinHitCount);
+                return new CombinedShortFacetIterator(il, m_fspec.MinHitCount);
             }
             if (iterList.Count > 0 && iterList[0] is FloatFacetIterator)
             {
                 List<FloatFacetIterator> il = new List<FloatFacetIterator>();
-                foreach (IFacetAccessible facetAccessor in _list)
+                foreach (IFacetAccessible facetAccessor in m_list)
                 {
                     iter = (FacetIterator)facetAccessor.GetIterator();
                     if (iter != null)
                         il.Add((FloatFacetIterator)iter);
                 }
-                return new CombinedFloatFacetIterator(il, _fspec.MinHitCount);
+                return new CombinedFloatFacetIterator(il, m_fspec.MinHitCount);
             }
             if (iterList.Count > 0 && iterList[0] is DoubleFacetIterator)
             {
                 List<DoubleFacetIterator> il = new List<DoubleFacetIterator>();
-                foreach (IFacetAccessible facetAccessor in _list)
+                foreach (IFacetAccessible facetAccessor in m_list)
                 {
                     iter = (FacetIterator)facetAccessor.GetIterator();
                     if (iter != null)
                         il.Add((DoubleFacetIterator)iter);
                 }
-                return new CombinedDoubleFacetIterator(il, _fspec.MinHitCount);
+                return new CombinedDoubleFacetIterator(il, m_fspec.MinHitCount);
             }
             return new CombinedFacetIterator(iterList);
         }

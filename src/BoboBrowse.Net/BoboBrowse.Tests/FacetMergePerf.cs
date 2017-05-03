@@ -89,9 +89,9 @@ namespace BoboBrowse.Net
             private readonly AtomicLong _timeCounter;
             private readonly int _numIters;
             private readonly FacetSpec _fspec;
-            private readonly IEnumerable<IFacetAccessible> _list1;
+            private readonly ICollection<IFacetAccessible> _list1;
 
-            public RunnerThread(AtomicLong timeCounter, int numIters, FacetSpec fspec, IEnumerable<IFacetAccessible> list1)
+            public RunnerThread(AtomicLong timeCounter, int numIters, FacetSpec fspec, ICollection<IFacetAccessible> list1)
             {
                 _timeCounter = timeCounter;
                 _numIters = numIters;

@@ -25,16 +25,16 @@ namespace BoboBrowse.Net.Search.Section
 
     public abstract class MetaDataQuery : Query
     {
-        protected Term _term;
+        protected Term m_term;
 
         public MetaDataQuery(Term term)
         {
-            _term = term;
+            m_term = term;
         }
 
         public virtual Term Term
         {
-            get { return _term; }
+            get { return m_term; }
         }
 
         public abstract SectionSearchQueryPlan GetPlan(AtomicReader reader);

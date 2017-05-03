@@ -29,52 +29,52 @@ namespace BoboBrowse.Net.Facets.Impl
 
     public class BucketFacetCountCollector : IFacetCountCollector
     {
-        private readonly string _name;
-        private readonly DefaultFacetCountCollector _subCollector;
-        private readonly FacetSpec _ospec;
-        private readonly IDictionary<string, string[]> _predefinedBuckets;
-        private BigSegmentedArray _collapsedCounts;
-        private readonly TermStringList _bucketValues;
-        private readonly int _numdocs;
+        private readonly string m_name;
+        private readonly DefaultFacetCountCollector m_subCollector;
+        private readonly FacetSpec m_ospec;
+        private readonly IDictionary<string, string[]> m_predefinedBuckets;
+        private BigSegmentedArray m_collapsedCounts;
+        private readonly TermStringList m_bucketValues;
+        private readonly int m_numdocs;
 
         public BucketFacetCountCollector(string name, DefaultFacetCountCollector subCollector, FacetSpec ospec, IDictionary<string, string[]> predefinedBuckets, int numdocs)
         {
-            _name = name;
-            _subCollector = subCollector;
-            _ospec = ospec;
-            _numdocs = numdocs;
+            m_name = name;
+            m_subCollector = subCollector;
+            m_ospec = ospec;
+            m_numdocs = numdocs;
 
-            _predefinedBuckets = predefinedBuckets;
-            _collapsedCounts = null;
+            m_predefinedBuckets = predefinedBuckets;
+            m_collapsedCounts = null;
 
-            _bucketValues = new TermStringList();
-            _bucketValues.Add("");
+            m_bucketValues = new TermStringList();
+            m_bucketValues.Add("");
 
-            List<string> bucketArray = _predefinedBuckets.Keys.ToList();
+            List<string> bucketArray = m_predefinedBuckets.Keys.ToList();
             bucketArray.Sort();
             foreach (string bucket in bucketArray)
             {
-                _bucketValues.Add(bucket);
+                m_bucketValues.Add(bucket);
             }
-            _bucketValues.Seal();
+            m_bucketValues.Seal();
         }
 
         private BigSegmentedArray GetCollapsedCounts()
         {
-            if (_collapsedCounts == null)
+            if (m_collapsedCounts == null)
             {
-                _collapsedCounts = new LazyBigIntArray(_bucketValues.Count);
-                FacetDataCache dataCache = _subCollector.DataCache;
+                m_collapsedCounts = new LazyBigIntArray(m_bucketValues.Count);
+                FacetDataCache dataCache = m_subCollector.DataCache;
                 ITermValueList subList = dataCache.ValArray;
-                BigSegmentedArray subcounts = _subCollector.Count;
+                BigSegmentedArray subcounts = m_subCollector.Count;
                 FixedBitSet indexSet = new FixedBitSet(subcounts.Length);
                 int c = 0;
                 int i = 0;
-                foreach (string val in _bucketValues)
+                foreach (string val in m_bucketValues)
                 {
                     if (val.Length > 0)
                     {
-                        string[] subVals = _predefinedBuckets.Get(val);
+                        string[] subVals = m_predefinedBuckets.Get(val);
                         int count = 0;
                         foreach (string subVal in subVals)
                         {
@@ -90,13 +90,13 @@ namespace BoboBrowse.Net.Facets.Impl
                                 }
                             }
                         }
-                        _collapsedCounts.Add(i, count);
+                        m_collapsedCounts.Add(i, count);
                     }
                     i++;
                 }
-                _collapsedCounts.Add(0, (_numdocs - c));
+                m_collapsedCounts.Add(0, (m_numdocs - c));
             }
-            return _collapsedCounts;
+            return m_collapsedCounts;
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public virtual string Name
         {
-            get { return _name; }
+            get { return m_name; }
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <returns></returns>
         public virtual BrowseFacet GetFacet(string bucketValue)
         {
-            int index = _bucketValues.IndexOf(bucketValue);
+            int index = m_bucketValues.IndexOf(bucketValue);
             if (index < 0)
             {
                 return new BrowseFacet(bucketValue, 0);
@@ -133,7 +133,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public virtual int GetFacetHitsCount(object value)
         {
-            int index = _bucketValues.IndexOf(value);
+            int index = m_bucketValues.IndexOf(value);
             if (index < 0)
             {
                 return 0;
@@ -146,18 +146,18 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public void Collect(int docid)
         {
-            _subCollector.Collect(docid);
+            m_subCollector.Collect(docid);
         }
 
         public void CollectAll()
         {
-            _subCollector.CollectAll();
+            m_subCollector.CollectAll();
         }
 
-        public virtual IEnumerable<BrowseFacet> GetFacets()
+        public virtual ICollection<BrowseFacet> GetFacets()
         {
             BigSegmentedArray counts = GetCollapsedCounts();
-            return DefaultFacetCountCollector.GetFacets(_ospec, counts, counts.Length, _bucketValues);
+            return DefaultFacetCountCollector.GetFacets(m_ospec, counts, counts.Length, m_bucketValues);
         }
 
         public virtual void Dispose()
@@ -169,14 +169,14 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             if (disposing)
             {
-                _subCollector.Dispose();
+                m_subCollector.Dispose();
             }
         }
 
         public virtual FacetIterator GetIterator()
         {
             BigSegmentedArray counts = GetCollapsedCounts();
-            return new DefaultFacetIterator(_bucketValues, counts, counts.Length, true);
+            return new DefaultFacetIterator(m_bucketValues, counts, counts.Length, true);
         }
     }
 }

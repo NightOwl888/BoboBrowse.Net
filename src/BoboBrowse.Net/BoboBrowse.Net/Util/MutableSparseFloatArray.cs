@@ -27,19 +27,19 @@ namespace BoboBrowse.Net.Util
 
     public class MutableSparseFloatArray : SparseFloatArray
     {
-        private IDictionary<int, float> _map;
-        private bool _isDirty;
+        private IDictionary<int, float> m_map;
+        private bool m_isDirty;
 
         public MutableSparseFloatArray(float[] floats)
             : base(floats)
         {
-            _map = new Dictionary<int, float>();
-            _isDirty = false;
+            m_map = new Dictionary<int, float>();
+            m_isDirty = false;
         }
 
         public bool IsDirty
         {
-            get { return _isDirty; }
+            get { return m_isDirty; }
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
@@ -52,9 +52,9 @@ namespace BoboBrowse.Net.Util
             }
             // else, check here!
             float? stored = null;
-            if (_map.ContainsKey(index))
+            if (m_map.ContainsKey(index))
             {
-                stored = _map[index];
+                stored = m_map[index];
             }
             if (stored != null)
             {
@@ -66,58 +66,58 @@ namespace BoboBrowse.Net.Util
         [MethodImpl(MethodImplOptions.Synchronized)]
         public void Set(int idx, float val)
         {
-            _isDirty = true;
-            if (null == _bits && null != _floats)
+            m_isDirty = true;
+            if (null == m_bits && null != m_floats)
             {
-                _floats[idx] = val;
+                m_floats[idx] = val;
             }
             else
             {
-                if (null != _bits && _bits.Get(idx))
+                if (null != m_bits && m_bits.Get(idx))
                 {
                     // count the number of bits that are on BEFORE this idx
                     int count;
                     int @ref = idx / REFERENCE_POINT_EVERY - 1;
                     if (@ref >= 0)
                     {
-                        count = _referencePoints[@ref];
+                        count = m_referencePoints[@ref];
                     }
                     else
                     {
                         count = 0;
                     }
                     int i = idx - idx % REFERENCE_POINT_EVERY;
-                    while ((i = _bits.NextSetBit(i)) >= 0 && i < idx)
+                    while ((i = m_bits.NextSetBit(i)) >= 0 && i < idx)
                     {
                         count++;
                         i++;
                     }
-                    _floats[count] = val;
+                    m_floats[count] = val;
                 }
                 else
                 {
                     if (val != 0f)
                     {
-                        _map.Put(idx, val);
+                        m_map.Put(idx, val);
                     }
                     else
                     {
                         float? stored = null;
-                        if (_map.ContainsKey(idx))
+                        if (m_map.ContainsKey(idx))
                         {
-                            stored = _map[idx];
+                            stored = m_map[idx];
                         }
                         if (stored != null)
                         {
-                            _map.Remove(idx);
+                            m_map.Remove(idx);
                         }
                     }
-                    int sz = _map.Count;
+                    int sz = m_map.Count;
                     // keep something on the order of 32KB, or 0.4*compressed size, in _map
                     // if _floats is null, then that's the same as it existing but being of length 0
                     // if sz > 512, and _floats is null, that's the same as checking if sz > 0.4f*0 and that sz > 2f*0, which is true
                     // in other words, if _floats is null, and sz > 512, then our expansion rule says to condense()
-                    if (sz > 512 && (null == _floats || (sz > 4096 ? sz > 0.4f * _floats.Length : sz > 2f * _floats.Length)))
+                    if (sz > 512 && (null == m_floats || (sz > 4096 ? sz > 0.4f * m_floats.Length : sz > 2f * m_floats.Length)))
                     {
                         Condense();
                     }
@@ -135,9 +135,9 @@ namespace BoboBrowse.Net.Util
         public override float[] Expand()
         {
             float[] all = base.Expand();
-            foreach (int key in _map.Keys)
+            foreach (int key in m_map.Keys)
             {
-                float val = _map[key];
+                float val = m_map[key];
                 all[key] = val;
             }
             return all;
@@ -156,7 +156,7 @@ namespace BoboBrowse.Net.Util
         public void Condense()
         {
             base.Condense(this.Expand());
-            _map = new Dictionary<int, float>();
+            m_map = new Dictionary<int, float>();
         }
     }
 }

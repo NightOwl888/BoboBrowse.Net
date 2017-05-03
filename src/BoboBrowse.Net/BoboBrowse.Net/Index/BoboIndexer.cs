@@ -30,46 +30,46 @@ namespace BoboBrowse.Net.Index
 
     public class BoboIndexer
     {
-        private readonly Directory _index;
-	    private readonly DataDigester _digester;
-	    private IndexWriter _writer;	
-	    private Analyzer _analyzer;
+        private readonly Directory m_index;
+	    private readonly DataDigester m_digester;
+	    private IndexWriter m_writer;	
+	    private Analyzer m_analyzer;
 	
 	    private class MyDataHandler : DataDigester.IDataHandler
         {
-		    private readonly IndexWriter _writer;
+		    private readonly IndexWriter m_writer;
 
             public MyDataHandler(IndexWriter writer)
             {
-                _writer = writer;
+                m_writer = writer;
             }
             public virtual void HandleDocument(Document doc)
             {
-                _writer.AddDocument(doc);
+                m_writer.AddDocument(doc);
             }
 	    }
 
         public virtual Analyzer Analyzer
         {
-            get { return _analyzer == null ? new StandardAnalyzer(LuceneVersion.LUCENE_48) : _analyzer; }
-            set { _analyzer = value; }
+            get { return m_analyzer == null ? new StandardAnalyzer(LuceneVersion.LUCENE_48) : m_analyzer; }
+            set { m_analyzer = value; }
         }
 	
 	    public BoboIndexer(DataDigester digester, Directory index)
             : base()
         {
-		    _index = index;
-		    _digester = digester;
+		    m_index = index;
+		    m_digester = digester;
 	    }	
 
 	    public virtual void Index() 
         {
             IndexWriterConfig config = new IndexWriterConfig(LuceneVersion.LUCENE_48, Analyzer);
-            using (_writer = new IndexWriter(_index, config))
+            using (m_writer = new IndexWriter(m_index, config))
             {
-                MyDataHandler handler = new MyDataHandler(_writer);
-                _digester.Digest(handler);
-                _writer.ForceMerge(1);
+                MyDataHandler handler = new MyDataHandler(m_writer);
+                m_digester.Digest(handler);
+                m_writer.ForceMerge(1);
             }
 	    }	
     }

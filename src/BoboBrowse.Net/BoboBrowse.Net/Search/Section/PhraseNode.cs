@@ -27,24 +27,24 @@ namespace BoboBrowse.Net.Search.Section
     /// </summary>
     public class PhraseNode : AndNode
     {
-        private TermNode[] _termNodes;
-        private int _curPos;
+        private TermNode[] m_termNodes;
+        private int m_curPos;
 
         public PhraseNode(TermNode[] termNodes, IndexReader reader)
             : base(termNodes)
         {
-            _termNodes = termNodes;
+            m_termNodes = termNodes;
         }
 
         public override int FetchDoc(int targetDoc)
         {
-            _curPos = -1;
+            m_curPos = -1;
             return base.FetchDoc(targetDoc);
         }
 
         public override int FetchSec(int targetSec)
         {
-            TermNode firstNode = _termNodes[0];
+            TermNode firstNode = m_termNodes[0];
 
             while (FetchPos() < SectionSearchQueryPlan.NO_MORE_POSITIONS)
             {
@@ -53,37 +53,37 @@ namespace BoboBrowse.Net.Search.Section
                 {
                     targetSec = secId;
                     bool matched = true;
-                    for (int i = 1; i < _termNodes.Length; i++)
+                    for (int i = 1; i < m_termNodes.Length; i++)
                     {
-                        matched = (targetSec == _termNodes[i].ReadSecId());
+                        matched = (targetSec == m_termNodes[i].ReadSecId());
                         if (!matched) break;
                     }
                     if (matched)
                     {
-                        _curSec = targetSec;
-                        return _curSec;
+                        m_curSec = targetSec;
+                        return m_curSec;
                     }
                 }
             }
-            _curSec = SectionSearchQueryPlan.NO_MORE_SECTIONS;
-            return _curSec;
+            m_curSec = SectionSearchQueryPlan.NO_MORE_SECTIONS;
+            return m_curSec;
         }
 
         protected override int FetchPos()
         {
-            int targetPhrasePos = _curPos + 1;
+            int targetPhrasePos = m_curPos + 1;
 
             int i = 0;
-            while (i < _termNodes.Length)
+            while (i < m_termNodes.Length)
             {
-                TermNode node = _termNodes[i];
+                TermNode node = m_termNodes[i];
                 int targetTermPos = (targetPhrasePos + node.PositionInPhrase);
                 while (node.CurPos < targetTermPos)
                 {
                     if (node.FetchPosInternal() == SectionSearchQueryPlan.NO_MORE_POSITIONS)
                     {
-                        _curPos = SectionSearchQueryPlan.NO_MORE_POSITIONS;
-                        return _curPos;
+                        m_curPos = SectionSearchQueryPlan.NO_MORE_POSITIONS;
+                        return m_curPos;
                     }
                 }
                 if (node.CurPos == targetTermPos)
@@ -96,8 +96,8 @@ namespace BoboBrowse.Net.Search.Section
                     i = 0;
                 }
             }
-            _curPos = targetPhrasePos;
-            return _curPos;
+            m_curPos = targetPhrasePos;
+            return m_curPos;
         }
     }
 }

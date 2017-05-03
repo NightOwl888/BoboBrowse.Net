@@ -28,41 +28,41 @@ namespace BoboBrowse.Net.Facets.Impl
     
     public abstract class DefaultFacetCountCollector : IFacetCountCollector
     {
-        private static ILog log = LogProvider.For<DefaultFacetCountCollector>();
-        protected readonly FacetSpec _ospec;
-        protected BigSegmentedArray _count;
+        private static ILog m_log = LogProvider.For<DefaultFacetCountCollector>();
+        protected readonly FacetSpec m_ospec;
+        protected BigSegmentedArray m_count;
 
-        protected int _countlength;
-        protected readonly FacetDataCache _dataCache;
-        private readonly string _name;
-        protected readonly BrowseSelection _sel;
-        protected readonly BigSegmentedArray _array;
+        protected int m_countlength;
+        protected readonly FacetDataCache m_dataCache;
+        private readonly string m_name;
+        protected readonly BrowseSelection m_sel;
+        protected readonly BigSegmentedArray m_array;
         // NOTE: Removed memory manager implementation
         //protected readonly List<BigSegmentedArray> intarraylist = new List<BigSegmentedArray>();
-        private bool _closed = false;
+        private bool m_closed = false;
 
         public DefaultFacetCountCollector(string name, FacetDataCache dataCache, int docBase, BrowseSelection sel, FacetSpec ospec)
         {
-            _sel = sel;
-            _ospec = ospec;
-            _name = name;
-            _dataCache = dataCache;
-            _countlength = _dataCache.Freqs.Length;
+            m_sel = sel;
+            this.m_ospec = ospec;
+            m_name = name;
+            m_dataCache = dataCache;
+            m_countlength = m_dataCache.Freqs.Length;
 
-            if (_dataCache.Freqs.Length <= 3096)
+            if (m_dataCache.Freqs.Length <= 3096)
             {
-                _count = new LazyBigIntArray(_countlength);
+                m_count = new LazyBigIntArray(m_countlength);
             }
             else
             {
-                _count = new LazyBigIntArray(_countlength);
+                m_count = new LazyBigIntArray(m_countlength);
 
                 // NOTE: Removed memory manager implementation
                 //_count = intarraymgr.Get(_countlength);
                 //intarraylist.Add(_count);
             }
 
-            _array = _dataCache.OrderArray;
+            m_array = m_dataCache.OrderArray;
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// </summary>
         public virtual BigSegmentedArray Count
         {
-            get { return _count; }
+            get { return m_count; }
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// </summary>
         public virtual FacetDataCache DataCache
         {
-            get { return _dataCache; }
+            get { return m_dataCache; }
         }
 
         /// <summary>
@@ -86,12 +86,12 @@ namespace BoboBrowse.Net.Facets.Impl
         /// </summary>
         public virtual int CountLength
         {
-            get { return _countlength; }
+            get { return m_countlength; }
         }
 
         public virtual string Name
         {
-            get { return _name; }
+            get { return m_name; }
         }
 
         public abstract void Collect(int docid);
@@ -100,33 +100,33 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public virtual BrowseFacet GetFacet(string value)
         {
-            if (_closed)
+            if (m_closed)
             {
-                throw new InvalidOperationException("This instance of count collector for " + _name + " was already closed");
+                throw new InvalidOperationException("This instance of count collector for " + m_name + " was already closed");
             }
             BrowseFacet facet = null;
-            int index = _dataCache.ValArray.IndexOf(value);
+            int index = m_dataCache.ValArray.IndexOf(value);
             if (index >= 0)
             {
-                facet = new BrowseFacet(_dataCache.ValArray.Get(index), _count.Get(index));
+                facet = new BrowseFacet(m_dataCache.ValArray.Get(index), m_count.Get(index));
             }
             else
             {
-                facet = new BrowseFacet(_dataCache.ValArray.Format(@value), 0);
+                facet = new BrowseFacet(m_dataCache.ValArray.Format(@value), 0);
             }
             return facet;
         }
 
         public virtual int GetFacetHitsCount(object value)
         {
-            if (_closed)
+            if (m_closed)
             {
-                throw new InvalidOperationException("This instance of count collector for " + _name + " was already closed");
+                throw new InvalidOperationException("This instance of count collector for " + m_name + " was already closed");
             }
-            int index = _dataCache.ValArray.IndexOf(value);
+            int index = m_dataCache.ValArray.IndexOf(value);
             if (index >= 0)
             {
-                return _count.Get(index);
+                return m_count.Get(index);
             }
             else
             {
@@ -136,15 +136,15 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public virtual BigSegmentedArray GetCountDistribution()
         {
-            return _count;
+            return m_count;
         }
 
         public virtual FacetDataCache FacetDataCache
         {
-            get { return _dataCache; }
+            get { return m_dataCache; }
         }
 
-        public static IEnumerable<BrowseFacet> GetFacets(FacetSpec ospec, BigSegmentedArray count, int countlength, ITermValueList valList)
+        public static ICollection<BrowseFacet> GetFacets(FacetSpec ospec, BigSegmentedArray count, int countlength, ITermValueList valList)
         {
             if (ospec != null)
             {
@@ -212,38 +212,38 @@ namespace BoboBrowse.Net.Facets.Impl
             }
             else
             {
-                return FacetCountCollector_Fields.EMPTY_FACET_LIST;
+                return FacetCountCollector.EMPTY_FACET_LIST;
             }
         }
 
         private class DefaultFacetCountCollectorFieldAccessor : IFieldValueAccessor
         {
-            private ITermValueList valList;
+            private ITermValueList m_valList;
 
             public DefaultFacetCountCollectorFieldAccessor(ITermValueList valList)
             {
-                this.valList = valList;
+                this.m_valList = valList;
             }
 
             public virtual string GetFormatedValue(int index)
             {
-                return valList.Get(index);
+                return m_valList.Get(index);
             }
 
             public virtual object GetRawValue(int index)
             {
-                return valList.GetRawValue(index);
+                return m_valList.GetRawValue(index);
             }
         }
 
-        public virtual IEnumerable<BrowseFacet> GetFacets()
+        public virtual ICollection<BrowseFacet> GetFacets()
         {
-            if (_closed)
+            if (m_closed)
             {
-                throw new InvalidOperationException("This instance of count collector for " + _name + " was already closed");
+                throw new InvalidOperationException("This instance of count collector for " + m_name + " was already closed");
             }
 
-            return GetFacets(_ospec, _count, _countlength, _dataCache.ValArray);
+            return GetFacets(m_ospec, m_count, m_countlength, m_dataCache.ValArray);
         }
 
         public virtual void Dispose()
@@ -255,12 +255,12 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             if (disposing)
             {
-                if (_closed)
+                if (m_closed)
                 {
-                    log.Warn("This instance of count collector for '" + _name + "' was already closed. This operation is no-op.");
+                    m_log.Warn("This instance of count collector for '" + m_name + "' was already closed. This operation is no-op.");
                     return;
                 }
-                _closed = true;
+                m_closed = true;
                 // NOTE: Removed memory manager implementation
                 //while (!intarraylist.isEmpty())
                 //{
@@ -275,32 +275,32 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <returns>The Iterator to iterate over the facets in value order</returns>
         public virtual FacetIterator GetIterator()
         {
-            if (_closed)
+            if (m_closed)
             {
-                throw new InvalidOperationException("This instance of count collector for '" + _name + "' was already closed");
+                throw new InvalidOperationException("This instance of count collector for '" + m_name + "' was already closed");
             }
-            if (_dataCache.ValArray.Type.Equals(typeof(int)))
+            if (m_dataCache.ValArray.Type.Equals(typeof(int)))
             {
-                return new DefaultIntFacetIterator((TermIntList)_dataCache.ValArray, _count, _countlength, false);
+                return new DefaultIntFacetIterator((TermIntList)m_dataCache.ValArray, m_count, m_countlength, false);
             }
-            else if (_dataCache.ValArray.Type.Equals(typeof(long)))
+            else if (m_dataCache.ValArray.Type.Equals(typeof(long)))
             {
-                return new DefaultLongFacetIterator((TermLongList)_dataCache.ValArray, _count, _countlength, false);
+                return new DefaultLongFacetIterator((TermLongList)m_dataCache.ValArray, m_count, m_countlength, false);
             }
-            else if (_dataCache.ValArray.Type.Equals(typeof(short)))
+            else if (m_dataCache.ValArray.Type.Equals(typeof(short)))
             {
-                return new DefaultShortFacetIterator((TermShortList)_dataCache.ValArray, _count, _countlength, false);
+                return new DefaultShortFacetIterator((TermShortList)m_dataCache.ValArray, m_count, m_countlength, false);
             }
-            else if (_dataCache.ValArray.Type.Equals(typeof(float)))
+            else if (m_dataCache.ValArray.Type.Equals(typeof(float)))
             {
-                return new DefaultFloatFacetIterator((TermFloatList)_dataCache.ValArray, _count, _countlength, false);
+                return new DefaultFloatFacetIterator((TermFloatList)m_dataCache.ValArray, m_count, m_countlength, false);
             }
-            else if (_dataCache.ValArray.Type.Equals(typeof(double)))
+            else if (m_dataCache.ValArray.Type.Equals(typeof(double)))
             {
-                return new DefaultDoubleFacetIterator((TermDoubleList)_dataCache.ValArray, _count, _countlength, false);
+                return new DefaultDoubleFacetIterator((TermDoubleList)m_dataCache.ValArray, m_count, m_countlength, false);
             }
             else
-                return new DefaultFacetIterator(_dataCache.ValArray, _count, _countlength, false);
+                return new DefaultFacetIterator(m_dataCache.ValArray, m_count, m_countlength, false);
         }
     }
 }

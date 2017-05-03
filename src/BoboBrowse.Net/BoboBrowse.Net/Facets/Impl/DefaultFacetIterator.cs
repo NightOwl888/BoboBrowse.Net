@@ -29,24 +29,24 @@ namespace BoboBrowse.Net.Facets.Impl
     /// </summary>
     public class DefaultFacetIterator : FacetIterator
     {
-        private readonly ITermValueList _valList;
-        private readonly BigSegmentedArray _count;
-        private readonly int _countlength;
-        private readonly int _countLengthMinusOne;
-        private int _index;
+        private readonly ITermValueList m_valList;
+        new private readonly BigSegmentedArray m_count;
+        private readonly int m_countlength;
+        private readonly int m_countLengthMinusOne;
+        private int m_index;
 
 
         public DefaultFacetIterator(ITermValueList valList, BigSegmentedArray countarray, int countlength, bool zeroBased)
         {
-            _valList = valList;
-            _count = countarray;
-            _countlength = countlength;
-            _index = -1;
-            _countLengthMinusOne = _countlength - 1;
+            m_valList = valList;
+            m_count = countarray;
+            m_countlength = countlength;
+            m_index = -1;
+            m_countLengthMinusOne = m_countlength - 1;
             if (!zeroBased)
-                _index++;
-            facet = null;
-            count = 0;
+                m_index++;
+            m_facet = null;
+            base.m_count = 0;
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// </summary>
         public virtual ITermValueList ValList
         {
-            get { return _valList; }
+            get { return m_valList; }
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <returns></returns>
         public override bool HasNext()
         {
-            return (_index < _countLengthMinusOne);
+            return (m_index < m_countLengthMinusOne);
         }
 
         /// <summary>
@@ -74,10 +74,10 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <returns></returns>
         public override string Next()
         {
-            _index++;
-            facet = Convert.ToString(_valList.GetRawValue(_index));
-            count = _count.Get(_index);
-            return Format(facet);
+            m_index++;
+            m_facet = Convert.ToString(m_valList.GetRawValue(m_index));
+            base.m_count = m_count.Get(m_index);
+            return Format(m_facet);
         }
 
         /// <summary>
@@ -97,23 +97,23 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <returns></returns>
         public override string Next(int minHits)
         {
-            while (++_index < _countlength)
+            while (++m_index < m_countlength)
             {
-                if (_count.Get(_index) >= minHits)
+                if (m_count.Get(m_index) >= minHits)
                 {
-                    facet = Convert.ToString(_valList.GetRawValue(_index));
-                    count = _count.Get(_index);
-                    return Format(facet);
+                    m_facet = Convert.ToString(m_valList.GetRawValue(m_index));
+                    base.m_count = m_count.Get(m_index);
+                    return Format(m_facet);
                 }
             }
-            facet = null;
-            count = 0;
+            m_facet = null;
+            base.m_count = 0;
             return null;   
         }
 
         public override string Format(object val)
         {
-            return _valList.Format(val);
+            return m_valList.Format(val);
         }
     }
 }

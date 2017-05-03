@@ -33,33 +33,33 @@ namespace BoboBrowse.Net.Util
         {
             private class IteratorNode
             {
-                public IEnumerator<T> _iterator;
-                public T _curVal;
+                public IEnumerator<T> m_iterator;
+                public T m_curVal;
 
                 public IteratorNode(IEnumerator<T> iterator)
                 {
-                    _iterator = iterator;
-                    _curVal = default(T);
+                    m_iterator = iterator;
+                    m_curVal = default(T);
                 }
 
                 public bool Fetch()
                 {
-                    if (_iterator.MoveNext())
+                    if (m_iterator.MoveNext())
                     {
-                        _curVal = _iterator.Current;
+                        m_curVal = m_iterator.Current;
                         return true;
                     }
-                    _curVal = default(T);
+                    m_curVal = default(T);
                     return false;
                 }
             }
 
-            private readonly MergedQueue _queue;
-            private T _current;
+            private readonly MergedQueue m_queue;
+            private T m_current;
 
             private MergedIterator(int length, IComparer<T> comparer)
             {
-                _queue = new MergedQueue(length, comparer);
+                m_queue = new MergedQueue(length, comparer);
             }
 
             private class MergedQueue : PriorityQueue<IteratorNode>
@@ -74,17 +74,17 @@ namespace BoboBrowse.Net.Util
 
                 protected override bool LessThan(IteratorNode a, IteratorNode b)
                 {
-                    return (comparer.Compare(a._curVal, b._curVal) < 0);
+                    return (comparer.Compare(a.m_curVal, b.m_curVal) < 0);
                 }
             }
 
-            public MergedIterator(IEnumerable<IEnumerator<T>> iterators, IComparer<T> comparer)
-                : this(iterators.Count(), comparer)
+            public MergedIterator(IList<IEnumerator<T>> iterators, IComparer<T> comparer)
+                : this(iterators.Count, comparer)
             {
                 foreach (IEnumerator<T> iterator in iterators)
                 {
                     IteratorNode ctx = new IteratorNode(iterator);
-                    if (ctx.Fetch()) _queue.Add(ctx); // NOTE: This was InsertWithOverflow in codeplex version
+                    if (ctx.Fetch()) m_queue.Add(ctx); // NOTE: This was InsertWithOverflow in codeplex version
                 }
             }
 
@@ -94,7 +94,7 @@ namespace BoboBrowse.Net.Util
                 foreach (IEnumerator<T> iterator in iterators)
                 {
                     IteratorNode ctx = new IteratorNode(iterator);
-                    if (ctx.Fetch()) _queue.Add(ctx); // NOTE: This was InsertWithOverflow in codeplex version
+                    if (ctx.Fetch()) m_queue.Add(ctx); // NOTE: This was InsertWithOverflow in codeplex version
                 }
             }
 
@@ -125,7 +125,7 @@ namespace BoboBrowse.Net.Util
 
             public T Current
             {
-                get { return _current; }
+                get { return m_current; }
             }
 
             public void Dispose()
@@ -134,24 +134,24 @@ namespace BoboBrowse.Net.Util
 
             object IEnumerator.Current
             {
-                get { return _current; }
+                get { return m_current; }
             }
 
             public bool MoveNext()
             {
-                if (_queue.Count > 0)
+                if (m_queue.Count > 0)
                 {
-                    IteratorNode ctx = (IteratorNode)_queue.Top;
-                    T val = ctx._curVal;
+                    IteratorNode ctx = (IteratorNode)m_queue.Top;
+                    T val = ctx.m_curVal;
                     if (ctx.Fetch())
                     {
-                        _queue.UpdateTop();
+                        m_queue.UpdateTop();
                     }
                     else
                     {
-                        _queue.Pop();
+                        m_queue.Pop();
                     }
-                    this._current = val;
+                    this.m_current = val;
                     return true;
                 }
                 else
@@ -175,22 +175,22 @@ namespace BoboBrowse.Net.Util
             return new MergedIterator<T>(iterators, comparer);
         }
 
-        public static MergedIterator<T> MergeLists<T>(IEnumerable<IEnumerator<T>> iterators, IComparer<T> comparer)
+        public static MergedIterator<T> MergeLists<T>(IList<IEnumerator<T>> iterators, IComparer<T> comparer)
         {
             return new MergedIterator<T>(iterators, comparer);
         }
 
-        public static List<T> MergeLists<T>(int offset, int count, IEnumerator<T>[] iterators, IComparer<T> comparer)
+        public static IList<T> MergeLists<T>(int offset, int count, IEnumerator<T>[] iterators, IComparer<T> comparer)
         {
             return MergeLists(offset, count, new MergedIterator<T>(iterators, comparer));
         }
 
-        public static List<T> MergeLists<T>(int offset, int count, IEnumerable<IEnumerator<T>> iterators, IComparer<T> comparer)
+        public static IList<T> MergeLists<T>(int offset, int count, IList<IEnumerator<T>> iterators, IComparer<T> comparer)
         {
             return MergeLists(offset, count, new MergedIterator<T>(iterators, comparer));
         }
 
-        private static List<T> MergeLists<T>(int offset, int count, MergedIterator<T> mergedIter)
+        private static IList<T> MergeLists<T>(int offset, int count, MergedIterator<T> mergedIter)
         {
             if (count == 0) return new List<T>();
             for (int c = 0; c < offset && mergedIter.MoveNext(); c++)

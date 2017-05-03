@@ -26,33 +26,33 @@ namespace BoboBrowse.Net.Impl
 
     public class DefaultBrowseServiceImpl : IBrowseService
     {
-        private BoboMultiReader _reader;
-        private bool _closeReader;
+        private BoboMultiReader m_reader;
+        private bool m_closeReader;
 
         public DefaultBrowseServiceImpl(BoboMultiReader reader)
         {
-            _reader = reader;
-            _closeReader = false;
+            m_reader = reader;
+            m_closeReader = false;
         }
 
         public virtual bool CloseReaderOnCleanup
         {
-            set { _closeReader = value; }
+            set { m_closeReader = value; }
         }
 
         public virtual BrowseResult Browse(BrowseRequest req)
         {
-            BrowseResult result = BrowseService_Fields.EMPTY_RESULT;
+            BrowseResult result = BrowseService.EMPTY_RESULT;
             if (req.Offset < 0)
             {
                 throw new BrowseException("Invalid offset: " + req.Offset);
             }
-            if (_reader != null)
+            if (m_reader != null)
             {
                 BoboBrowser browser;
                 try
                 {
-                    browser = new BoboBrowser(_reader);
+                    browser = new BoboBrowser(m_reader);
                 }
                 catch (Exception e)
                 {
@@ -66,22 +66,23 @@ namespace BoboBrowse.Net.Impl
         public virtual void Dispose()
         {
             this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
             {
-                if (_closeReader)
+                if (m_closeReader)
                 {
                     lock (this)
                     {
-                        if (_reader != null)
+                        if (m_reader != null)
                         {
                             try
                             {
-                                _reader.Dispose();
-                                _reader = null;
+                                m_reader.Dispose();
+                                m_reader = null;
                             }
                             catch (Exception ioe)
                             {

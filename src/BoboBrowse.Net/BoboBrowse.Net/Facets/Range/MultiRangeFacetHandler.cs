@@ -35,19 +35,19 @@ namespace BoboBrowse.Net.Facets.Range
 
     public class MultiRangeFacetHandler : RangeFacetHandler
     {
-        private readonly Term sizePayloadTerm;
+        private readonly Term m_sizePayloadTerm;
         private int maxItems = BigNestedIntArray.MAX_ITEMS;
 
         public MultiRangeFacetHandler(string name, string indexFieldName, Term sizePayloadTerm,
-            TermListFactory termListFactory, IEnumerable<string> predefinedRanges)
+            TermListFactory termListFactory, IList<string> predefinedRanges)
             : base(name, indexFieldName, termListFactory, predefinedRanges)
         {
-            this.sizePayloadTerm = sizePayloadTerm;
+            this.m_sizePayloadTerm = sizePayloadTerm;
         }
 
         public override DocComparerSource GetDocComparerSource()
         {
-            return new MultiFacetDocComparerSource(new MultiDataCacheBuilder(Name, _indexFieldName));
+            return new MultiFacetDocComparerSource(new MultiDataCacheBuilder(Name, m_indexFieldName));
         }
 
         public override string[] GetFieldValues(BoboSegmentReader reader, int id)
@@ -71,7 +71,7 @@ namespace BoboBrowse.Net.Facets.Range
 
         public override T GetFacetData<T>(BoboSegmentReader reader)
         {
-            return (T)reader.GetFacetData(_name);
+            return (T)reader.GetFacetData(m_name);
         }
 
         public override RandomAccessFilter BuildRandomAccessFilter(string value, IDictionary<string, string> prop)
@@ -86,36 +86,36 @@ namespace BoboBrowse.Net.Facets.Range
 
         private class MultiRangeFacetCountCollectorSource : FacetCountCollectorSource
         {
-            private readonly MultiRangeFacetHandler parent;
-            private readonly FacetSpec ospec;
+            private readonly MultiRangeFacetHandler m_parent;
+            private readonly FacetSpec m_ospec;
 
             public MultiRangeFacetCountCollectorSource(MultiRangeFacetHandler parent, FacetSpec ospec)
             {
-                this.parent = parent;
-                this.ospec = ospec;
+                this.m_parent = parent;
+                this.m_ospec = ospec;
             }
 
             public override IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase)
             {
-                MultiValueFacetDataCache dataCache = parent.GetFacetData<MultiValueFacetDataCache>(reader);
+                MultiValueFacetDataCache dataCache = m_parent.GetFacetData<MultiValueFacetDataCache>(reader);
                 BigNestedIntArray _nestedArray = dataCache.NestedArray;
-                return new MultiRangeFacetCountCollector(parent.Name, dataCache, docBase, this.ospec, parent._predefinedRanges, _nestedArray);
+                return new MultiRangeFacetCountCollector(m_parent.Name, dataCache, docBase, this.m_ospec, m_parent.m_predefinedRanges, _nestedArray);
             }
 
             public class MultiRangeFacetCountCollector : RangeFacetCountCollector
             {
-                private readonly BigNestedIntArray _nestedArray;
+                private readonly BigNestedIntArray m_nestedArray;
 
                 public MultiRangeFacetCountCollector(string name, MultiValueFacetDataCache dataCache, 
-                    int docBase, FacetSpec ospec, IEnumerable<string> predefinedRanges, BigNestedIntArray nestedArray)
+                    int docBase, FacetSpec ospec, IList<string> predefinedRanges, BigNestedIntArray nestedArray)
                     : base(name, dataCache, docBase, ospec, predefinedRanges)
                 {
-                    _nestedArray = nestedArray;
+                    m_nestedArray = nestedArray;
                 }
 
                 public override void Collect(int docid)
                 {
-                    _nestedArray.CountNoReturn(docid, _count);
+                    m_nestedArray.CountNoReturn(docid, m_count);
                 }
             }
         }
@@ -137,13 +137,13 @@ namespace BoboBrowse.Net.Facets.Range
         {
             MultiValueFacetDataCache dataCache = new MultiValueFacetDataCache();
             dataCache.MaxItems = maxItems;
-            if (sizePayloadTerm == null)
+            if (m_sizePayloadTerm == null)
             {
-                dataCache.Load(_indexFieldName, reader, _termListFactory, workArea);
+                dataCache.Load(m_indexFieldName, reader, m_termListFactory, workArea);
             }
             else
             {
-                dataCache.Load(_indexFieldName, reader, _termListFactory, sizePayloadTerm);
+                dataCache.Load(m_indexFieldName, reader, m_termListFactory, m_sizePayloadTerm);
             }
             return dataCache;
         }

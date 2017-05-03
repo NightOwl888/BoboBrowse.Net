@@ -65,32 +65,32 @@ namespace BoboBrowse.Net.Facets
                 return new double[0];
             }
 
-            public override IEnumerable<string> BooleanParamNames
+            public override ICollection<string> BooleanParamNames
             {
                 get { return new List<string>(); }
             }
 
-            public override IEnumerable<string> StringParamNames
+            public override ICollection<string> StringParamNames
             {
                 get { return new List<string>(); }
             }
 
-            public override IEnumerable<string> IntParamNames
+            public override ICollection<string> IntParamNames
             {
                 get { return new List<string>(); }
             }
 
-            public override IEnumerable<string> ByteArrayParamNames
+            public override ICollection<string> ByteArrayParamNames
             {
                 get { return new List<string>(); }
             }
 
-            public override IEnumerable<string> LongParamNames
+            public override ICollection<string> LongParamNames
             {
                 get { return new List<string>(); }
             }
 
-            public override IEnumerable<string> DoubleParamNames
+            public override ICollection<string> DoubleParamNames
             {
                 get { return new List<string>(); }
             }
@@ -101,7 +101,7 @@ namespace BoboBrowse.Net.Facets
         /// <summary>
         /// The transaction ID
         /// </summary>
-        private long tid = -1;
+        private long m_tid = -1;
 
         /// <summary>
         /// Get or sets the transaction ID.
@@ -109,8 +109,8 @@ namespace BoboBrowse.Net.Facets
         /// <returns>the transaction ID.</returns>
         public long Tid 
         { 
-            get { return tid; }
-            set { this.tid = value; }
+            get { return m_tid; }
+            set { this.m_tid = value; }
         }
 
         public abstract IEnumerable<string> GetStringParam(string name);
@@ -119,11 +119,11 @@ namespace BoboBrowse.Net.Facets
         public abstract long[] GetLongParam(string name);
         public abstract sbyte[] GetByteArrayParam(string name);
         public abstract double[] GetDoubleParam(string name);
-        public abstract IEnumerable<string> BooleanParamNames { get; }
-        public abstract IEnumerable<string> StringParamNames { get; }
-        public abstract IEnumerable<string> IntParamNames { get; }
-        public abstract IEnumerable<string> ByteArrayParamNames { get; }
-        public abstract IEnumerable<string> LongParamNames { get; }
-        public abstract IEnumerable<string> DoubleParamNames { get; }
+        public abstract ICollection<string> BooleanParamNames { get; }
+        public abstract ICollection<string> StringParamNames { get; }
+        public abstract ICollection<string> IntParamNames { get; }
+        public abstract ICollection<string> ByteArrayParamNames { get; }
+        public abstract ICollection<string> LongParamNames { get; }
+        public abstract ICollection<string> DoubleParamNames { get; }
     }
 }

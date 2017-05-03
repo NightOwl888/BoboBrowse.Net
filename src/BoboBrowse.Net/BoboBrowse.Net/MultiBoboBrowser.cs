@@ -40,7 +40,7 @@ namespace BoboBrowse.Net
     {
         private static readonly ILog logger = LogProvider.For<MultiBoboBrowser>();
 
-        protected readonly IBrowsable[] _subBrowsers;
+        protected readonly IBrowsable[] m_subBrowsers;
 
         /// <summary>
         /// 
@@ -49,7 +49,7 @@ namespace BoboBrowse.Net
         public MultiBoboBrowser(IBrowsable[] browsers)
             : base(GetSegmentReaders(browsers), false)
         {
-            _subBrowsers = browsers;
+            m_subBrowsers = browsers;
         }
 
         private static IndexReader[] GetSegmentReaders(IBrowsable[] browsers)
@@ -78,7 +78,7 @@ namespace BoboBrowse.Net
             int start)
         {
             // index empty
-            if (_subBrowsers == null || _subBrowsers.Length == 0)
+            if (m_subBrowsers == null || m_subBrowsers.Length == 0)
             {
                 return;
             }
@@ -108,11 +108,11 @@ namespace BoboBrowse.Net
             try
             {
                 var facetColMap = new Dictionary<string, IFacetAccessible>();
-                for (int i = 0; i < _subBrowsers.Length; i++)
+                for (int i = 0; i < m_subBrowsers.Length; i++)
                 {
                     try
                     {
-                        _subBrowsers[i].Browse(req, hitCollector, facetColMap, (start + ReaderBase(i)));
+                        m_subBrowsers[i].Browse(req, hitCollector, facetColMap, (start + ReaderBase(i)));
                     }
                     finally
                     {
@@ -123,7 +123,7 @@ namespace BoboBrowse.Net
                             var list = mergedMap.Get(name);
                             if (list == null)
                             {
-                                list = new List<IFacetAccessible>(_subBrowsers.Length);
+                                list = new List<IFacetAccessible>(m_subBrowsers.Length);
                                 mergedMap.Put(name, list);
                             }
                             list.Add(facetAccessor);
@@ -170,7 +170,7 @@ namespace BoboBrowse.Net
             BrowseResult result = new BrowseResult();
 
             // index empty
-            if (_subBrowsers == null || _subBrowsers.Length == 0)
+            if (m_subBrowsers == null || m_subBrowsers.Length == 0)
             {
                 return result;
             }
@@ -217,7 +217,7 @@ namespace BoboBrowse.Net
                         int doc = hit.DocId;
                         int idx = ReaderIndex(doc);
                         int deBasedDoc = doc - ReaderBase(idx);
-                        Explanation expl = _subBrowsers[idx].Explain(q, deBasedDoc);
+                        Explanation expl = m_subBrowsers[idx].Explain(q, deBasedDoc);
                         hit.SetExplanation(expl);
                     }
                     catch (Exception e)
@@ -251,7 +251,7 @@ namespace BoboBrowse.Net
         public virtual string[] GetFieldVal(int docid, string fieldname)
         {
             int i = ReaderIndex(docid);
-            IBrowsable browser = _subBrowsers[i];
+            IBrowsable browser = m_subBrowsers[i];
             return browser.GetFieldVal(docid - ReaderBase(i), fieldname);
         }
 
@@ -264,7 +264,7 @@ namespace BoboBrowse.Net
         public virtual object[] GetRawFieldVal(int docid, string fieldname)
         {
             int i = ReaderIndex(docid);
-            IBrowsable browser = _subBrowsers[i];
+            IBrowsable browser = m_subBrowsers[i];
             return browser.GetRawFieldVal(docid - ReaderBase(i), fieldname);
         }
        
@@ -287,14 +287,14 @@ namespace BoboBrowse.Net
         public virtual IBrowsable SubBrowser(int docid)
         {
             int i = ReaderIndex(docid);
-            return _subBrowsers[i];
+            return m_subBrowsers[i];
         }
 
         public virtual Similarity Similarity
         {
             set
             {
-                foreach (IBrowsable subBrowser in _subBrowsers)
+                foreach (IBrowsable subBrowser in m_subBrowsers)
                 {
                     subBrowser.Similarity = value;
                 }
@@ -306,7 +306,7 @@ namespace BoboBrowse.Net
             get
             {
                 var names = new List<string>();
-                foreach (IBrowsable subBrowser in _subBrowsers)
+                foreach (IBrowsable subBrowser in m_subBrowsers)
                 {
                     names.AddRange(subBrowser.FacetNames);
                 }
@@ -321,7 +321,7 @@ namespace BoboBrowse.Net
         /// <returns>The facet handler instance.</returns>
         public virtual IFacetHandler GetFacetHandler(string name)
         {
-            foreach (IBrowsable subBrowser in _subBrowsers)
+            foreach (IBrowsable subBrowser in m_subBrowsers)
             {
                 IFacetHandler subHandler = subBrowser.GetFacetHandler(name);
                 if (subHandler != null)
@@ -335,7 +335,7 @@ namespace BoboBrowse.Net
             get 
             {
                 var map = new Dictionary<string, IFacetHandler>();
-                foreach (IBrowsable subBrowser in _subBrowsers)
+                foreach (IBrowsable subBrowser in m_subBrowsers)
                 {
                     map.PutAll(subBrowser.FacetHandlerMap);
                 }
@@ -350,19 +350,19 @@ namespace BoboBrowse.Net
         /// <param name="facetHandler">A facet handler.</param>
         public virtual void SetFacetHandler(IFacetHandler facetHandler)
         {
-            foreach (IBrowsable subBrowser in _subBrowsers)
+            foreach (IBrowsable subBrowser in m_subBrowsers)
             {
                 subBrowser.SetFacetHandler(facetHandler);
             }
         }
 
         public virtual SortCollector GetSortCollector(SortField[] sort, Lucene.Net.Search.Query q, int offset, int count, 
-            bool fetchStoredFields, IEnumerable<string> termVectorsToFetch, string[] groupBy, int maxPerGroup, 
+            bool fetchStoredFields, ICollection<string> termVectorsToFetch, string[] groupBy, int maxPerGroup, 
             bool collectDocIdCache)
         {
-            if (_subBrowsers.Length == 1)
+            if (m_subBrowsers.Length == 1)
             {
-                return _subBrowsers[0].GetSortCollector(sort, q, offset, count, fetchStoredFields, 
+                return m_subBrowsers[0].GetSortCollector(sort, q, offset, count, fetchStoredFields, 
                     termVectorsToFetch, groupBy, maxPerGroup, collectDocIdCache);
             }
             return SortCollector.BuildSortCollector(this, q, sort, offset, count, fetchStoredFields, 
@@ -375,7 +375,7 @@ namespace BoboBrowse.Net
             lock (this)
             {
                 Exception exception = null;
-                foreach (IBrowsable subBrowser in _subBrowsers)
+                foreach (IBrowsable subBrowser in m_subBrowsers)
                 {
                     try
                     {

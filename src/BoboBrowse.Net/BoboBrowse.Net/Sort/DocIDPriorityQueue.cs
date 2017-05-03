@@ -25,24 +25,24 @@ namespace BoboBrowse.Net.Sort
 
     public class DocIDPriorityQueue
     {
-        public int size;
-        protected readonly ScoreDoc[] heap;
-        public readonly int @base;
+        public int m_size;
+        protected readonly ScoreDoc[] m_heap;
+        public readonly int m_base;
 
         private readonly DocComparer comparer;
 
         public DocIDPriorityQueue(DocComparer comparer, int maxSize, int @base)
         {
             this.comparer = comparer;
-            size = 0;
-            this.@base = @base;
+            m_size = 0;
+            this.m_base = @base;
             int heapSize;
             if (0 == maxSize)
                 // We allocate 1 extra to avoid if statement in top()
                 heapSize = 2;
             else
                 heapSize = maxSize + 1;
-            this.heap = new ScoreDoc[heapSize];
+            this.m_heap = new ScoreDoc[heapSize];
         }
 
         /// <summary>
@@ -54,10 +54,10 @@ namespace BoboBrowse.Net.Sort
         /// <returns>the new 'bottom' element in the queue.</returns>
         public ScoreDoc Add(ScoreDoc element)
         {
-            size++;
-            heap[size] = element;
-            UpHeap(size);
-            return heap[1];
+            m_size++;
+            m_heap[m_size] = element;
+            UpHeap(m_size);
+            return m_heap[1];
         }
 
         public virtual IComparable SortValue(ScoreDoc doc)
@@ -80,9 +80,9 @@ namespace BoboBrowse.Net.Sort
 
         public virtual ScoreDoc Replace(ScoreDoc element)
         {
-            heap[1] = element;
+            m_heap[1] = element;
             DownHeap(1);
-            return heap[1];
+            return m_heap[1];
         }
 
         /// <summary>
@@ -93,17 +93,17 @@ namespace BoboBrowse.Net.Sort
         /// <returns>the 'bottom' element in the queue.</returns>
         public virtual ScoreDoc Replace(ScoreDoc newEle, ScoreDoc oldEle)
         {
-            for (int i = 1; i <= size; ++i)
+            for (int i = 1; i <= m_size; ++i)
             {
-                if (heap[i] == oldEle)
+                if (m_heap[i] == oldEle)
                 {
-                    heap[i] = newEle;
+                    m_heap[i] = newEle;
                     UpHeap(i);
                     DownHeap(i);
                     break;
                 }
             }
-            return heap[1];
+            return m_heap[1];
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace BoboBrowse.Net.Sort
                 // We don't need to check size here: if maxSize is 0,
                 // then heap is length 2 array with both entries null.
                 // If size is 0 then heap[1] is already null.
-                return heap[1];
+                return m_heap[1];
             }
         }
 
@@ -128,12 +128,12 @@ namespace BoboBrowse.Net.Sort
         /// <returns></returns>
         public ScoreDoc Pop()
         {
-            if (size > 0)
+            if (m_size > 0)
             {
-                ScoreDoc result = heap[1];			  // save first value
-                heap[1] = heap[size];			  // move last to first
-                heap[size] = null;			  // permit GC of objects
-                size--;
+                ScoreDoc result = m_heap[1];			  // save first value
+                m_heap[1] = m_heap[m_size];			  // move last to first
+                m_heap[m_size] = null;			  // permit GC of objects
+                m_size--;
                 DownHeap(1);				  // adjust heap
                 return result;
             }
@@ -162,7 +162,7 @@ namespace BoboBrowse.Net.Sort
         public ScoreDoc UpdateTop()
         {
             DownHeap(1);
-            return heap[1];
+            return m_heap[1];
         }
 
         /// <summary>
@@ -171,7 +171,7 @@ namespace BoboBrowse.Net.Sort
         // BoboBrowse.Net: we use Count instead of Size() in .NET
         public int Count
         {
-            get { return size; }
+            get { return m_size; }
         }
 
         /// <summary>
@@ -179,47 +179,47 @@ namespace BoboBrowse.Net.Sort
         /// </summary>
         public void Clear()
         {
-            for (int i = 0; i <= size; i++)
+            for (int i = 0; i <= m_size; i++)
             {
-                heap[i] = null;
+                m_heap[i] = null;
             }
-            size = 0;
+            m_size = 0;
         }
 
         private void UpHeap(int i)
         {
-            ScoreDoc node = heap[i];    // save bottom node
+            ScoreDoc node = m_heap[i];    // save bottom node
             int j = (int)(((uint)i) >> 1);
-            while (j > 0 && Compare(node, heap[j]) < 0)
+            while (j > 0 && Compare(node, m_heap[j]) < 0)
             {
-                heap[i] = heap[j];      // shift parents down
+                m_heap[i] = m_heap[j];      // shift parents down
                 i = j;
                 j = (int)(((uint)j) >> 1);
             }
-            heap[i] = node;             // install saved node
+            m_heap[i] = node;             // install saved node
         }
 
         private void DownHeap(int i)
         {
-            ScoreDoc node = heap[i];    // save top node
+            ScoreDoc node = m_heap[i];    // save top node
             int j = i << 1;             // find smaller child
             int k = j + 1;
-            if (k <= size && Compare(heap[k], heap[j]) < 0)
+            if (k <= m_size && Compare(m_heap[k], m_heap[j]) < 0)
             {
                 j = k;
             }
-            while (j <= size && Compare(heap[j], node) < 0)
+            while (j <= m_size && Compare(m_heap[j], node) < 0)
             {
-                heap[i] = heap[j];      // shift up child
+                m_heap[i] = m_heap[j];      // shift up child
                 i = j;
                 j = i << 1;
                 k = j + 1;
-                if (k <= size && Compare(heap[k], heap[j]) < 0)
+                if (k <= m_size && Compare(m_heap[k], m_heap[j]) < 0)
                 {
                     j = k;
                 }
             }
-            heap[i] = node;             // install saved node
+            m_heap[i] = node;             // install saved node
         }
     }
 }

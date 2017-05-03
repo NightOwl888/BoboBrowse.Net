@@ -28,36 +28,36 @@ namespace BoboBrowse.Net.Search.Section
     /// </summary>
     public abstract class AbstractTerminalNode : SectionSearchQueryPlan
     {
-        protected DocsAndPositionsEnum _dp;
-        protected int _posLeft;
-        protected int _curPos;
+        protected DocsAndPositionsEnum m_dp;
+        protected int m_posLeft;
+        protected int m_curPos;
 
         public AbstractTerminalNode(Term term, AtomicReader reader)
         {
-            _dp = reader.GetTermPositionsEnum(term);
-            _posLeft = 0;
+            m_dp = reader.GetTermPositionsEnum(term);
+            m_posLeft = 0;
         }
 
         public virtual int CurPos
         {
-            get { return _curPos; }
+            get { return m_curPos; }
         }
 
         public override int FetchDoc(int targetDoc)
         {
-            if (targetDoc <= _curDoc) targetDoc = _curDoc + 1;
+            if (targetDoc <= m_curDoc) targetDoc = m_curDoc + 1;
 
-            if ((_curDoc = _dp.Advance(targetDoc)) != DocsEnum.NO_MORE_DOCS)
+            if ((m_curDoc = m_dp.Advance(targetDoc)) != DocsEnum.NO_MORE_DOCS)
             {
-                _posLeft = _dp.Freq;
-                _curSec = -1;
-                _curPos = -1;
-                return _curDoc;
+                m_posLeft = m_dp.Freq;
+                m_curSec = -1;
+                m_curPos = -1;
+                return m_curDoc;
             }
             else
             {
-                _curDoc = DocIdSetIterator.NO_MORE_DOCS;
-                return _curDoc;
+                m_curDoc = DocIdSetIterator.NO_MORE_DOCS;
+                return m_curDoc;
             }
         }
 

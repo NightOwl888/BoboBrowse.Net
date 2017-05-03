@@ -25,11 +25,11 @@ namespace BoboBrowse.Net
     /// </summary>
     public abstract class FloatFacetIterator : FacetIterator
     {
-        protected float _facet;
+        new protected float m_facet;
 
         new public virtual float Facet
         {
-            get { return _facet; }
+            get { return m_facet; }
         }
 
         public abstract float NextFloat();

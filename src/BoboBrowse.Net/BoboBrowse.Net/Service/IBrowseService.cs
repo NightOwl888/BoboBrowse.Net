@@ -27,7 +27,7 @@ namespace BoboBrowse.Net.Service
         BrowseResult Browse(BrowseRequest req);
     }
 
-    public static class BrowseService_Fields
+    public static class BrowseService
     {
         public static BrowseResult EMPTY_RESULT = new BrowseResult();
     }

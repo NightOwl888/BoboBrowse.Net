@@ -44,14 +44,14 @@ namespace BoboBrowse.Tests
     public class FacetNameTest
     {
         //private static readonly BoboBrowse.Net.Support.Logging.ILog logger = LogProvider.For<FacetNameTest>();  // NOT USED
-        private IEnumerable<IFacetHandler> _facetHandlers;
+        private IList<IFacetHandler> _facetHandlers;
         private int _documentSize;
 
         private class TestDataDigester : DataDigester
         {
             private readonly Document[] _data;
 
-            public TestDataDigester(IEnumerable<IFacetHandler> facetHandlers, Document[] data)
+            public TestDataDigester(IList<IFacetHandler> facetHandlers, Document[] data)
             {
                 _data = data;
             }
@@ -124,7 +124,7 @@ namespace BoboBrowse.Tests
             return dir;
         }
 
-        public static IEnumerable<IFacetHandler> CreateFacetHandlers()
+        public static IList<IFacetHandler> CreateFacetHandlers()
         {
             var facetHandlers = new List<IFacetHandler>();
             facetHandlers.Add(new SimpleFacetHandler("id"));

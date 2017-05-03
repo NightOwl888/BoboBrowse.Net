@@ -27,17 +27,17 @@ namespace BoboBrowse.Net.Facets.Filter
 
     public class RandomAccessAndFilter : RandomAccessFilter
     {
-        protected IEnumerable<RandomAccessFilter> _filters;
+        protected IList<RandomAccessFilter> m_filters;
 
-        public RandomAccessAndFilter(IEnumerable<RandomAccessFilter> filters)
+        public RandomAccessAndFilter(IList<RandomAccessFilter> filters)
         {
-            _filters = filters;
+            m_filters = filters;
         }
 
         public override double GetFacetSelectivity(BoboSegmentReader reader)
         {
             double selectivity = double.MaxValue;
-            foreach (RandomAccessFilter filter in _filters)
+            foreach (RandomAccessFilter filter in m_filters)
             {
                 double curSelectivity = filter.GetFacetSelectivity(reader);
                 if(selectivity > curSelectivity)
@@ -54,16 +54,16 @@ namespace BoboBrowse.Net.Facets.Filter
 
         public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboSegmentReader reader)
         {
-            var count = _filters.Count();
+            var count = m_filters.Count;
             if (count == 1)
             {
-                return _filters.ElementAt(0).GetRandomAccessDocIdSet(reader);
+                return m_filters[0].GetRandomAccessDocIdSet(reader);
             }
             else
             {
                 List<DocIdSet> list = new List<DocIdSet>(count);
                 List<RandomAccessDocIdSet> randomAccessList = new List<RandomAccessDocIdSet>(count);
-                foreach (RandomAccessFilter f in _filters)
+                foreach (RandomAccessFilter f in m_filters)
                 {
                     RandomAccessDocIdSet s = f.GetRandomAccessDocIdSet(reader);
                     list.Add(s);
@@ -77,18 +77,18 @@ namespace BoboBrowse.Net.Facets.Filter
 
         private class RandomAccessAndFilterSet : RandomAccessDocIdSet
         {
-            private RandomAccessDocIdSet[] randomAccessDocIdSets;
-            private DocIdSet andDocIdSet;
+            private RandomAccessDocIdSet[] m_randomAccessDocIdSets;
+            private DocIdSet m_andDocIdSet;
 
             public RandomAccessAndFilterSet(RandomAccessDocIdSet[] randomAccessDocIdSets, DocIdSet andDocIdSet)
             {
-                this.randomAccessDocIdSets = randomAccessDocIdSets;
-                this.andDocIdSet = andDocIdSet;
+                this.m_randomAccessDocIdSets = randomAccessDocIdSets;
+                this.m_andDocIdSet = andDocIdSet;
             }
 
             public override bool Get(int docId)
             {
-                foreach (RandomAccessDocIdSet s in randomAccessDocIdSets)
+                foreach (RandomAccessDocIdSet s in m_randomAccessDocIdSets)
                 {
                     if (!s.Get(docId))
                         return false;
@@ -98,7 +98,7 @@ namespace BoboBrowse.Net.Facets.Filter
 
             public override DocIdSetIterator GetIterator()
             {
-                return andDocIdSet.GetIterator();
+                return m_andDocIdSet.GetIterator();
             }
         }
     }

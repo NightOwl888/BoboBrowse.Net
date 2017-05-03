@@ -152,9 +152,9 @@ namespace BoboBrowse.Net.Facets.Attribute
             BrowseResult res = browser.Browse(request);
             Assert.AreEqual(res.NumHits, 2);
             IFacetAccessible fa = res.GetFacetAccessor(AttributeHandlerName);
-            IEnumerable<BrowseFacet> facets = fa.GetFacets();
+            ICollection<BrowseFacet> facets = fa.GetFacets();
             Console.WriteLine(facets);
-            Assert.AreEqual(3, facets.Count());
+            Assert.AreEqual(3, facets.Count);
             BrowseFacet facet = facets.Get(0);
             Assert.AreEqual(1, facet.FacetValueHitCount);
         }
@@ -167,8 +167,8 @@ namespace BoboBrowse.Net.Facets.Attribute
             Assert.AreEqual(res.NumHits, 2);
             Assert.AreEqual(res.Hits[0].DocId, 1);
             Assert.AreEqual(res.Hits[1].DocId, 2);
-            IEnumerable<BrowseFacet> facets = res.GetFacetAccessor(AttributeHandlerName).GetFacets();
-            Assert.AreEqual(facets.Count(), 3);
+            ICollection<BrowseFacet> facets = res.GetFacetAccessor(AttributeHandlerName).GetFacets();
+            Assert.AreEqual(facets.Count, 3);
             Assert.AreEqual(facets.Get(0).Value, "prop3=val1");
             Assert.AreEqual(facets.Get(0).FacetValueHitCount, 1);
             Assert.AreEqual(facets.Get(2).Value, "prop3=val3");
@@ -183,8 +183,8 @@ namespace BoboBrowse.Net.Facets.Attribute
             Assert.AreEqual(res.NumHits, 6);
             Assert.AreEqual(res.Hits[0].DocId, 0);
             Assert.AreEqual(res.Hits[5].DocId, 5);
-            IEnumerable<BrowseFacet> facets = res.GetFacetAccessor(AttributeHandlerName).GetFacets();
-            Assert.AreEqual(facets.Count(), 2);
+            ICollection<BrowseFacet> facets = res.GetFacetAccessor(AttributeHandlerName).GetFacets();
+            Assert.AreEqual(facets.Count, 2);
             Assert.AreEqual(facets.Get(0).Value, "prop1=val1");
             Assert.AreEqual(facets.Get(0).FacetValueHitCount, 4);
             Assert.AreEqual(facets.Get(1).Value, "prop1=val2");
@@ -199,8 +199,8 @@ namespace BoboBrowse.Net.Facets.Attribute
             Assert.AreEqual(res.NumHits, 1);
             Assert.AreEqual(res.Hits[0].DocId, 0);
 
-            IEnumerable<BrowseFacet> facets = res.GetFacetAccessor(AttributeHandlerName).GetFacets();
-            Assert.AreEqual(facets.Count(), 1);
+            ICollection<BrowseFacet> facets = res.GetFacetAccessor(AttributeHandlerName).GetFacets();
+            Assert.AreEqual(facets.Count, 1);
             Assert.AreEqual(facets.Get(0).Value, "prop5=val1");
             Assert.AreEqual(facets.Get(0).FacetValueHitCount, 1);
         }
@@ -214,8 +214,8 @@ namespace BoboBrowse.Net.Facets.Attribute
             Assert.AreEqual(res.NumHits, 1);
             Assert.AreEqual(res.Hits[0].DocId, 5);
 
-            IEnumerable<BrowseFacet> facets = res.GetFacetAccessor(AttributeHandlerName).GetFacets();
-            Assert.AreEqual(facets.Count(), 2);
+            ICollection<BrowseFacet> facets = res.GetFacetAccessor(AttributeHandlerName).GetFacets();
+            Assert.AreEqual(facets.Count, 2);
             Assert.AreEqual(facets.Get(0).Value, "prop4=val2");
             Assert.AreEqual(facets.Get(0).FacetValueHitCount, 1);
             Assert.AreEqual(facets.Get(1).Value, "prop4=val3");
@@ -239,8 +239,8 @@ namespace BoboBrowse.Net.Facets.Attribute
             Assert.AreEqual(res.NumHits, 2);
             Assert.AreEqual(res.Hits[0].DocId, 1);
             Assert.AreEqual(res.Hits[1].DocId, 2);
-            IEnumerable<BrowseFacet> facets = res.GetFacetAccessor(AttributeHandlerName).GetFacets();
-            Assert.AreEqual(facets.Count(), 4);
+            ICollection<BrowseFacet> facets = res.GetFacetAccessor(AttributeHandlerName).GetFacets();
+            Assert.AreEqual(facets.Count, 4);
             Assert.AreEqual(facets.Get(0).Value, "prop1=val2");
             Assert.AreEqual(facets.Get(0).FacetValueHitCount, 2);
             Assert.AreEqual(facets.Get(1).Value, "prop3=val1");
@@ -255,8 +255,8 @@ namespace BoboBrowse.Net.Facets.Attribute
             request.GetFacetSpec(AttributeHandlerName).OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc;
             BrowseResult res = browser.Browse(request);
             Console.WriteLine(res);
-            IEnumerable<BrowseFacet> facets = res.GetFacetAccessor(AttributeHandlerName).GetFacets();
-            Assert.AreEqual(facets.Count(), 6);
+            ICollection<BrowseFacet> facets = res.GetFacetAccessor(AttributeHandlerName).GetFacets();
+            Assert.AreEqual(facets.Count, 6);
             Assert.AreEqual(facets.Get(0).Value, "prop1=val1");
             Assert.AreEqual(facets.Get(0).FacetValueHitCount, 4);
             Assert.AreEqual(facets.Get(1).Value, "prop2=val1");
@@ -274,8 +274,8 @@ namespace BoboBrowse.Net.Facets.Attribute
             Console.WriteLine(res);
             Assert.AreEqual(res.NumHits, 1);
             Assert.AreEqual(res.Hits[0].DocId, 2);
-            IEnumerable<BrowseFacet> facets = res.GetFacetAccessor(AttributeHandlerName).GetFacets();
-            Assert.AreEqual(facets.Count(), 3);
+            ICollection<BrowseFacet> facets = res.GetFacetAccessor(AttributeHandlerName).GetFacets();
+            Assert.AreEqual(facets.Count, 3);
             Assert.AreEqual(facets.Get(0).Value, "prop1=val2");
             Assert.AreEqual(facets.Get(0).FacetValueHitCount, 1);
             Assert.AreEqual(facets.Get(1).Value, "prop3=val2");
@@ -294,8 +294,8 @@ namespace BoboBrowse.Net.Facets.Attribute
             request.GetFacetSpec(AttributeHandlerName).OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc;
             BrowseResult res = browser.Browse(request);
             Console.WriteLine(res);
-            IEnumerable<BrowseFacet> facets = res.GetFacetAccessor(AttributeHandlerName).GetFacets();
-            Assert.AreEqual(facets.Count(), 9);
+            ICollection<BrowseFacet> facets = res.GetFacetAccessor(AttributeHandlerName).GetFacets();
+            Assert.AreEqual(facets.Count, 9);
             Assert.AreEqual(facets.Get(0).Value, "prop1=val1");
             Assert.AreEqual(facets.Get(0).FacetValueHitCount, 4);
             Assert.AreEqual(facets.Get(1).Value, "prop2=val1");

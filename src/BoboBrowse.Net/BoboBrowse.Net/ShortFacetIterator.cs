@@ -25,11 +25,11 @@ namespace BoboBrowse.Net
     /// </summary>
     public abstract class ShortFacetIterator : FacetIterator
     {
-        public short _facet;
+        new public short m_facet;
 
         new public virtual short Facet
         {
-            get { return _facet; }
+            get { return m_facet; }
         }
 
         public abstract short NextShort();

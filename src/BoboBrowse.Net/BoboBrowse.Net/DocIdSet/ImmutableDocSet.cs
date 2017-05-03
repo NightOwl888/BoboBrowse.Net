@@ -26,7 +26,7 @@ namespace BoboBrowse.Net.DocIdSet
 
     public abstract class ImmutableDocSet : DocSet
     {
-        private int size = -1;
+        private int m_size = -1;
         private static readonly ILog log = LogProvider.For<ImmutableDocSet>();
 
         public override void AddDoc(int docid)
@@ -38,18 +38,18 @@ namespace BoboBrowse.Net.DocIdSet
         {
             get { 
                 // Do the size if we haven't done it so far.
-                if (size < 0) {
+                if (m_size < 0) {
                   DocIdSetIterator dcit = this.GetIterator();
-                  size = 0;
+                  m_size = 0;
                   try {
                     while (dcit.NextDoc() != DocIdSetIterator.NO_MORE_DOCS)
-                      size++;
+                      m_size++;
                   } catch (Exception) {
                     log.Error("Error computing size..");
                     return -1;
                   }
                 }
-                return size;
+                return m_size;
             }
         }
     }

@@ -24,87 +24,86 @@ namespace BoboBrowse.Net.Facets.Impl
     using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Facets.Filter;
     using BoboBrowse.Net.Sort;
-    using BoboBrowse.Net.Support;
     using System.Collections.Generic;
     using System.IO;
 
     public class FilteredRangeFacetHandler : FacetHandler<FacetDataNone>
 	{
-        private readonly IEnumerable<string> _predefinedRanges;
-		private readonly string _inner;
-		private RangeFacetHandler _innerHandler;
+        private readonly IList<string> m_predefinedRanges;
+		private readonly string m_inner;
+		private RangeFacetHandler m_innerHandler;
 
-        public FilteredRangeFacetHandler(string name, string underlyingHandler, IEnumerable<string> predefinedRanges)
+        public FilteredRangeFacetHandler(string name, string underlyingHandler, IList<string> predefinedRanges)
             : base(name, new string[] { underlyingHandler })
         {
-            _predefinedRanges = predefinedRanges;
-            _inner = underlyingHandler;
-            _innerHandler = null;
+            m_predefinedRanges = predefinedRanges;
+            m_inner = underlyingHandler;
+            m_innerHandler = null;
         }
 
         public override RandomAccessFilter BuildRandomAccessFilter(string value, IDictionary<string, string> selectionProperty)
 		{
-			return _innerHandler.BuildRandomAccessFilter(value, selectionProperty);
+			return m_innerHandler.BuildRandomAccessFilter(value, selectionProperty);
 		}
 
 
         public override RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, IDictionary<string, string> prop)
 		{
-			return _innerHandler.BuildRandomAccessAndFilter(vals, prop);
+			return m_innerHandler.BuildRandomAccessAndFilter(vals, prop);
 		}
 
         public override RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, IDictionary<string, string> prop, bool isNot)
 		{
-			return _innerHandler.BuildRandomAccessOrFilter(vals, prop, isNot);
+			return m_innerHandler.BuildRandomAccessOrFilter(vals, prop, isNot);
 		}
 
         public override FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec fspec) 
         {
-            return new FilteredRangeFacetCountCollectorSource(_innerHandler, _name, fspec, _predefinedRanges);
+            return new FilteredRangeFacetCountCollectorSource(m_innerHandler, m_name, fspec, m_predefinedRanges);
 		}
 
         private class FilteredRangeFacetCountCollectorSource : FacetCountCollectorSource
         {
-            private readonly RangeFacetHandler _innerHandler;
-            private readonly string _name;
-            private readonly FacetSpec _fspec;
-            private readonly IEnumerable<string> _predefinedRanges;
+            private readonly RangeFacetHandler m_innerHandler;
+            private readonly string m_name;
+            private readonly FacetSpec m_fspec;
+            private readonly IList<string> m_predefinedRanges;
 
-            public FilteredRangeFacetCountCollectorSource(RangeFacetHandler innerHandler, string name, FacetSpec fspec, IEnumerable<string> predefinedRanges)
+            public FilteredRangeFacetCountCollectorSource(RangeFacetHandler innerHandler, string name, FacetSpec fspec, IList<string> predefinedRanges)
             {
-                this._innerHandler = innerHandler;
-                this._name = name;
-                this._fspec = fspec;
-                this._predefinedRanges = predefinedRanges;
+                this.m_innerHandler = innerHandler;
+                this.m_name = name;
+                this.m_fspec = fspec;
+                this.m_predefinedRanges = predefinedRanges;
             }
             public override IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase)
             {
-                FacetDataCache dataCache = _innerHandler.GetFacetData<FacetDataCache>(reader);
-                return new RangeFacetCountCollector(_name, dataCache, docBase, _fspec, _predefinedRanges);
+                FacetDataCache dataCache = m_innerHandler.GetFacetData<FacetDataCache>(reader);
+                return new RangeFacetCountCollector(m_name, dataCache, docBase, m_fspec, m_predefinedRanges);
             }
         }
 
         public override string[] GetFieldValues(BoboSegmentReader reader, int id)
 		{
-			return _innerHandler.GetFieldValues(reader, id);
+			return m_innerHandler.GetFieldValues(reader, id);
 		}
 
         public override object[] GetRawFieldValues(BoboSegmentReader reader, int id)
 		{
-			return _innerHandler.GetRawFieldValues(reader, id);
+			return m_innerHandler.GetRawFieldValues(reader, id);
 		}
 
         public override DocComparerSource GetDocComparerSource()
         {
-            return _innerHandler.GetDocComparerSource();
+            return m_innerHandler.GetDocComparerSource();
         }
 
         public override FacetDataNone Load(BoboSegmentReader reader)
 		{
-			IFacetHandler handler = reader.GetFacetHandler(_inner);
+			IFacetHandler handler = reader.GetFacetHandler(m_inner);
 			if (handler is RangeFacetHandler)
 			{
-				_innerHandler = (RangeFacetHandler)handler;
+				m_innerHandler = (RangeFacetHandler)handler;
                 return FacetDataNone.Instance;
 			}
 			else

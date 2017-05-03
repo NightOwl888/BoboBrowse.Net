@@ -29,7 +29,7 @@ namespace BoboBrowse.Net.DocIdSet
     public class AndDocIdSet : ImmutableDocSet
     {
         // private static long serialVersionUID = 1L; // NOT USED
-        private readonly IList<int> _interSectionResult = new List<int>();
+        private readonly IList<int> m_interSectionResult = new List<int>();
 
         [Serializable]
         public class DescDocIdSetComparer : IComparer<StatefulDSIterator>
@@ -61,7 +61,7 @@ namespace BoboBrowse.Net.DocIdSet
 
         public IEnumerable<int> GetIntersection()
         {
-            return _interSectionResult;
+            return m_interSectionResult;
         }
 
         private class AndDocIdSetIterator : DocIdSetIterator

@@ -31,61 +31,62 @@ namespace BoboBrowse.Net.Facets.Attribute
 
     public class AttributesFacetCountCollector : DefaultFacetCountCollector
     {
-        //public readonly BigNestedIntArray _array; // NOT USED
-        private IEnumerable<BrowseFacet> cachedFacets;
-        private readonly int numFacetsPerKey;
-        private readonly char separator;
-        private readonly MultiValueFacetDataCache dataCache;
-        private string[] values;
+        //public readonly BigNestedIntArray m_array; // NOT USED
+        private ICollection<BrowseFacet> m_cachedFacets;
+        private readonly int m_numFacetsPerKey;
+        private readonly char m_separator;
+        new private readonly MultiValueFacetDataCache m_dataCache;
+        private string[] m_values;
 
         public AttributesFacetCountCollector(AttributesFacetHandler attributesFacetHandler, string name, 
             MultiValueFacetDataCache dataCache, int docBase, BrowseSelection browseSelection, 
             FacetSpec ospec, int numFacetsPerKey, char separator)
             : base(name, dataCache, docBase, browseSelection, ospec)
         {
-            this.dataCache = dataCache;
-            this.numFacetsPerKey = numFacetsPerKey;
-            this.separator = separator;
+            this.m_dataCache = dataCache;
+            this.m_numFacetsPerKey = numFacetsPerKey;
+            this.m_separator = separator;
             //_array = dataCache.NestedArray; // NOT USED
             if (browseSelection != null)
             {
-                values = browseSelection.Values;
+                m_values = browseSelection.Values;
             }
         }
 
         public override void Collect(int docid)
         {
-            dataCache.NestedArray.CountNoReturn(docid, _count);
+            m_dataCache.NestedArray.CountNoReturn(docid, m_count);
         }
 
         public override void CollectAll()
         {
-            _count = BigIntArray.FromArray(_dataCache.Freqs);
+            m_count = BigIntArray.FromArray(base.m_dataCache.Freqs);
         }
 
-        public override IEnumerable<BrowseFacet> GetFacets()
+        public override ICollection<BrowseFacet> GetFacets()
         {
-            if (cachedFacets == null)
+            if (m_cachedFacets == null)
             {
-                int max = _ospec.MaxCount;
-                _ospec.MaxCount = max * 10;
-                IEnumerable<BrowseFacet> facets = base.GetFacets();
-                _ospec.MaxCount = max;
-                cachedFacets = FilterByKeys(facets, separator, numFacetsPerKey, values);
+                int max = m_ospec.MaxCount;
+                m_ospec.MaxCount = max * 10;
+                ICollection<BrowseFacet> facets = base.GetFacets();
+                m_ospec.MaxCount = max;
+                FilterByKeys(facets, m_separator, m_numFacetsPerKey, m_values);
+                m_cachedFacets = facets;
             }
-            return cachedFacets;
+            return m_cachedFacets;
         }
 
-        private IEnumerable<BrowseFacet> FilterByKeys(IEnumerable<BrowseFacet> facets, char separator, int numFacetsPerKey, string[] values) {
+        private void FilterByKeys(ICollection<BrowseFacet> facets, char separator, int numFacetsPerKey, string[] values) {
             var keyOccurences = new Dictionary<string, AtomicInt32>();
-            var editable = facets.ToList();
-            string separatorString = Convert.ToString(separator);
-            for (int i = 0; i < facets.Count(); i++)
+            var toDelete = new List<BrowseFacet>();
+            string separatorString = separator.ToString();
+            foreach (var facet in facets)
             {
-                BrowseFacet facet = facets.ElementAt(i);
                 string value = facet.Value;
-                if (!value.Contains(separatorString)) {
-                    editable.Remove(facet);
+                if (!value.Contains(separatorString))
+                {
+                    toDelete.Add(facet);
                     continue;
                 }
 
@@ -102,7 +103,7 @@ namespace BoboBrowse.Net.Facets.Attribute
                     }
                     if (!belongsToKeys)
                     {
-                        editable.Remove(facet);
+                        toDelete.Add(facet);
                         continue;
                     }
                 }
@@ -116,10 +117,10 @@ namespace BoboBrowse.Net.Facets.Attribute
                 int count = numOfKeys.IncrementAndGet();
                 if (count > numFacetsPerKey)
                 {
-                    editable.Remove(facet);
+                    toDelete.Add(facet);
                 }
             }
-            return editable;
+            facets.RemoveAll(toDelete);
         }
 
         public override FacetIterator GetIterator()

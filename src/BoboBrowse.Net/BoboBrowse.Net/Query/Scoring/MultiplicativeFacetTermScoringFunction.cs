@@ -26,11 +26,11 @@ namespace BoboBrowse.Net.Query.Scoring
 
     public class MultiplicativeFacetTermScoringFunction : IFacetTermScoringFunction
     {
-        private float _boost = 1.0f;
+        private float m_boost = 1.0f;
 
         public void ClearScores()
         {
-            _boost = 1.0f;
+            m_boost = 1.0f;
         }
 
         public float Score(int df, float boost)
@@ -42,13 +42,13 @@ namespace BoboBrowse.Net.Query.Scoring
         {
             if (boost > 0)
             {
-                _boost *= boost;
+                m_boost *= boost;
             }
         }
 
         public float GetCurrentScore()
         {
-            return _boost;
+            return m_boost;
         }
 
         public virtual Explanation Explain(int df, float boost)

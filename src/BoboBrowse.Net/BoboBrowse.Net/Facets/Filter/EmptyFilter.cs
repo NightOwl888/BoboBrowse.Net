@@ -24,7 +24,7 @@ namespace BoboBrowse.Net.Facets.Filter
 
     public class EmptyFilter : RandomAccessFilter
     {
-        private readonly static EmptyFilter instance = new EmptyFilter();
+        private readonly static EmptyFilter m_instance = new EmptyFilter();
 
         private EmptyFilter()
         {
@@ -42,7 +42,7 @@ namespace BoboBrowse.Net.Facets.Filter
 
         public static EmptyFilter Instance
         {
-            get { return instance; }
+            get { return m_instance; }
         }
     }
 }

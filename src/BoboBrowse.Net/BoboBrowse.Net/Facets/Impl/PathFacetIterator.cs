@@ -29,19 +29,19 @@ namespace BoboBrowse.Net.Facets.Impl
     /// </summary>
     public class PathFacetIterator : FacetIterator
     {
-        private readonly BrowseFacet[] _facets;
-        private int _index;
+        private readonly BrowseFacet[] m_facets;
+        private int m_index;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="facets">a value ascending sorted list of BrowseFacets</param>
-        public PathFacetIterator(IEnumerable<BrowseFacet> facets)
+        public PathFacetIterator(IList<BrowseFacet> facets)
         {
-            _facets = facets.ToArray();
-            _index = -1;
-            facet = null;
-            count = 0;
+            m_facets = facets.ToArray();
+            m_index = -1;
+            m_facet = null;
+            m_count = 0;
         }
 
         /// <summary>
@@ -51,12 +51,12 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <returns></returns>
         public override string Next()
         {
-            if ((_index >= 0) && !HasNext())
+            if ((m_index >= 0) && !HasNext())
                 throw new IndexOutOfRangeException("No more facets in this iteration");
-            _index++;
-            facet = _facets[_index].Value;
-            count = _facets[_index].FacetValueHitCount;
-            return facet;
+            m_index++;
+            m_facet = m_facets[m_index].Value;
+            m_count = m_facets[m_index].FacetValueHitCount;
+            return m_facet;
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <returns></returns>
         public override bool HasNext()
         {
-            return ((_index >= 0) && (_index < (_facets.Length - 1)));
+            return ((m_index >= 0) && (m_index < (m_facets.Length - 1)));
         }
 
 
@@ -87,18 +87,18 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <returns></returns>
         public override string Next(int minHits)
         {
-            while (++_index < _facets.Length)
+            while (++m_index < m_facets.Length)
             {
-                if (_facets[_index].FacetValueHitCount >= minHits)
+                if (m_facets[m_index].FacetValueHitCount >= minHits)
                 {
-                    facet = _facets[_index].Value;
-                    count = _facets[_index].FacetValueHitCount;
-                    return facet;
+                    m_facet = m_facets[m_index].Value;
+                    m_count = m_facets[m_index].FacetValueHitCount;
+                    return m_facet;
                 }
             }
-            facet = null;
-            count = 0;
-            return facet; 
+            m_facet = null;
+            m_count = 0;
+            return m_facet; 
         }
 
         /// <summary>

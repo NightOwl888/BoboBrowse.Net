@@ -102,7 +102,7 @@ namespace BoboBrowse.Net
         int NumDocs { get; }
 
         SortCollector GetSortCollector(SortField[] sort, Lucene.Net.Search.Query q, int offset, int count, 
-            bool fetchStoredFields, IEnumerable<string> termVectorsToFetch, string[] groupBy, int maxPerGroup, 
+            bool fetchStoredFields, ICollection<string> termVectorsToFetch, string[] groupBy, int maxPerGroup, 
             bool collectDocIdCache);
 
         Explanation Explain(Lucene.Net.Search.Query q, int docid);

@@ -27,11 +27,11 @@ namespace BoboBrowse.Net.Facets.Impl
     {
         private class FacetHitComparer : IComparer<int>
         {
-            internal BigSegmentedArray counts;
+            internal BigSegmentedArray m_counts;
 
             public virtual int Compare(int f1, int f2)
             {
-                int val = counts.Get(f1) - counts.Get(f2);
+                int val = m_counts.Get(f1) - m_counts.Get(f2);
                 if (val == 0)
                 {
                     val = f2 - f1;
@@ -42,7 +42,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public virtual IComparer<int> NewComparer(IFieldValueAccessor valueList, BigSegmentedArray counts)
         {
-            return new FacetHitComparer { counts = counts };
+            return new FacetHitComparer { m_counts = counts };
         }
 
         private class DefaultFacetHitsComparer : IComparer<BrowseFacet>

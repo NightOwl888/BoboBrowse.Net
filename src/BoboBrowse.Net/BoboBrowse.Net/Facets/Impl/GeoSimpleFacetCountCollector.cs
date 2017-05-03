@@ -25,6 +25,7 @@ namespace BoboBrowse.Net.Facets.Impl
     using BoboBrowse.Net.Util;
     using BoboBrowse.Net.Support.Logging;
     using System.Collections.Generic;
+    using Lucene.Net.Support;
 
     /// <summary>
     /// author nnarkhed
@@ -32,54 +33,53 @@ namespace BoboBrowse.Net.Facets.Impl
     public class GeoSimpleFacetCountCollector : IFacetCountCollector
     {
         private static readonly ILog log = LogProvider.For<GeoSimpleFacetCountCollector>();
-	    private readonly FacetSpec _spec;
-	    private readonly string _name;
-	    private int[] _latCount;
-	    private int[] _longCount;
-	    private readonly BigSegmentedArray _latOrderArray;
-	    private readonly FacetDataCache _latDataCache;
-	    private readonly TermStringList _predefinedRanges;
-	    private int[][] _latPredefinedRangeIndexes;
-        private readonly BigSegmentedArray _longOrderArray;
-	    private readonly FacetDataCache _longDataCache;
-	    private int[][] _longPredefinedRangeIndexes;
+	    private readonly FacetSpec m_spec;
+	    private readonly string m_name;
+	    private int[] m_latCount;
+	    private int[] m_longCount;
+	    private readonly BigSegmentedArray m_latOrderArray;
+	    private readonly FacetDataCache m_latDataCache;
+	    private readonly TermStringList m_predefinedRanges;
+	    private int[][] m_latPredefinedRangeIndexes;
+        private readonly BigSegmentedArray m_longOrderArray;
+	    private readonly FacetDataCache m_longDataCache;
+	    private int[][] m_longPredefinedRangeIndexes;
 
-        public GeoSimpleFacetCountCollector(string name, FacetDataCache latDataCache, FacetDataCache longDataCache, int docBase, FacetSpec spec, IEnumerable<string> predefinedRanges)
+        public GeoSimpleFacetCountCollector(string name, FacetDataCache latDataCache, FacetDataCache longDataCache, int docBase, FacetSpec spec, IList<string> predefinedRanges)
         {
-            _name = name;
-            _latDataCache = latDataCache;
-            _longDataCache = longDataCache;
-            _latCount = new int[_latDataCache.Freqs.Length];
-            _longCount = new int[_longDataCache.Freqs.Length];
-            log.Info("latCount: " + _latDataCache.Freqs.Length + " longCount: " + _longDataCache.Freqs.Length);
-            _latOrderArray = _latDataCache.OrderArray;
-            _longOrderArray = _longDataCache.OrderArray;
-            _spec = spec;
-            _predefinedRanges = new TermStringList();
-            var predefinedRangesTemp = new List<string>(predefinedRanges);
-            predefinedRangesTemp.Sort();
-            _predefinedRanges.AddAll(predefinedRangesTemp);
+            m_name = name;
+            m_latDataCache = latDataCache;
+            m_longDataCache = longDataCache;
+            m_latCount = new int[m_latDataCache.Freqs.Length];
+            m_longCount = new int[m_longDataCache.Freqs.Length];
+            log.Info("latCount: " + m_latDataCache.Freqs.Length + " longCount: " + m_longDataCache.Freqs.Length);
+            m_latOrderArray = m_latDataCache.OrderArray;
+            m_longOrderArray = m_longDataCache.OrderArray;
+            m_spec = spec;
+            m_predefinedRanges = new TermStringList();
+            predefinedRanges.Sort();
+            m_predefinedRanges.AddAll(predefinedRanges);
 
             if (predefinedRanges != null)
             {
-                _latPredefinedRangeIndexes = new int[_predefinedRanges.Count][];
-                for (int j = 0; j < _latPredefinedRangeIndexes.Length; j++)
+                m_latPredefinedRangeIndexes = new int[m_predefinedRanges.Count][];
+                for (int j = 0; j < m_latPredefinedRangeIndexes.Length; j++)
                 {
-                    _latPredefinedRangeIndexes[j] = new int[2];
+                    m_latPredefinedRangeIndexes[j] = new int[2];
                 }
-                _longPredefinedRangeIndexes = new int[_predefinedRanges.Count][];
-                for (int j = 0; j < _longPredefinedRangeIndexes.Length; j++)
+                m_longPredefinedRangeIndexes = new int[m_predefinedRanges.Count][];
+                for (int j = 0; j < m_longPredefinedRangeIndexes.Length; j++)
                 {
-                    _longPredefinedRangeIndexes[j] = new int[2];
+                    m_longPredefinedRangeIndexes[j] = new int[2];
                 }
                 int i = 0;
-                foreach (string range in _predefinedRanges)
+                foreach (string range in m_predefinedRanges)
                 {
-                    int[] ranges = GeoSimpleFacetFilter.Parse(_latDataCache, _longDataCache, range);
-                    _latPredefinedRangeIndexes[i][0] = ranges[0];   // latStart 
-                    _latPredefinedRangeIndexes[i][1] = ranges[1];   // latEnd
-                    _longPredefinedRangeIndexes[i][0] = ranges[2];  // longStart
-                    _longPredefinedRangeIndexes[i][1] = ranges[3];  // longEnd
+                    int[] ranges = GeoSimpleFacetFilter.Parse(m_latDataCache, m_longDataCache, range);
+                    m_latPredefinedRangeIndexes[i][0] = ranges[0];   // latStart 
+                    m_latPredefinedRangeIndexes[i][1] = ranges[1];   // latEnd
+                    m_longPredefinedRangeIndexes[i][0] = ranges[2];  // longStart
+                    m_longPredefinedRangeIndexes[i][1] = ranges[3];  // longEnd
                     i++;
                 }
             }
@@ -93,22 +93,22 @@ namespace BoboBrowse.Net.Facets.Impl
         public virtual void Collect(int docid)
         {
             // increment the count only if both latitude and longitude ranges are true for a particular docid
-            foreach (int[] range in _latPredefinedRangeIndexes)
+            foreach (int[] range in m_latPredefinedRangeIndexes)
             {
-                int latValue = _latOrderArray.Get(docid);
-                int longValue = _longOrderArray.Get(docid);
+                int latValue = m_latOrderArray.Get(docid);
+                int longValue = m_longOrderArray.Get(docid);
                 int latStart = range[0];
                 int latEnd = range[1];
                 if (latValue >= latStart && latValue <= latEnd)
                 {
-                    foreach (int[] longRange in _longPredefinedRangeIndexes)
+                    foreach (int[] longRange in m_longPredefinedRangeIndexes)
                     {
                         int longStart = longRange[0];
                         int longEnd = longRange[1];
                         if (longValue >= longStart && longValue <= longEnd)
                         {
-                            _latCount[_latOrderArray.Get(docid)]++;
-                            _longCount[_longOrderArray.Get(docid)]++;
+                            m_latCount[m_latOrderArray.Get(docid)]++;
+                            m_longCount[m_longOrderArray.Get(docid)]++;
                         }
                     }
                 }
@@ -121,8 +121,8 @@ namespace BoboBrowse.Net.Facets.Impl
         /// </summary>
         public virtual void CollectAll()
         {
-            _latCount = _latDataCache.Freqs;
-            _longCount = _longDataCache.Freqs;
+            m_latCount = m_latDataCache.Freqs;
+            m_longCount = m_longDataCache.Freqs;
         }
 
         /// <summary>
@@ -133,20 +133,20 @@ namespace BoboBrowse.Net.Facets.Impl
         public virtual BigSegmentedArray GetCountDistribution()
         {
             BigSegmentedArray dist = null;
-            if (_latPredefinedRangeIndexes != null)
+            if (m_latPredefinedRangeIndexes != null)
             {
-                dist = new LazyBigIntArray(_latPredefinedRangeIndexes.Length);
+                dist = new LazyBigIntArray(m_latPredefinedRangeIndexes.Length);
                 int n = 0;
                 int start;
                 int end;
-                foreach (int[] range in _latPredefinedRangeIndexes)
+                foreach (int[] range in m_latPredefinedRangeIndexes)
                 {
                     start = range[0];
                     end = range[1];
                     int sum = 0;
                     for (int i = start; i < end; i++)
                     {
-                        sum += _latCount[i];
+                        sum += m_latCount[i];
                     }
                     dist.Add(n++, sum);
                 }
@@ -160,7 +160,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// </summary>
         public virtual string Name
         {
-            get { return _name; }
+            get { return m_name; }
         }
 
         /// <summary>
@@ -172,14 +172,14 @@ namespace BoboBrowse.Net.Facets.Impl
         public virtual BrowseFacet GetFacet(string value)
         {
             BrowseFacet facet = null;
-            int[] range = FacetRangeFilter.Parse(_latDataCache, value);
+            int[] range = FacetRangeFilter.Parse(m_latDataCache, value);
 
             if (range != null)
             {
                 int sum = 0;
                 for (int i = range[0]; i <= range[1]; ++i)
                 {
-                    sum += _latCount[i];
+                    sum += m_latCount[i];
                 }
                 facet = new BrowseFacet(value, sum);
             }
@@ -188,14 +188,14 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public virtual int GetFacetHitsCount(object value)
         {
-            int[] range = FacetRangeFilter.Parse(_latDataCache, (string)value);
+            int[] range = FacetRangeFilter.Parse(m_latDataCache, (string)value);
 
             if (range != null)
             {
                 int sum = 0;
                 for (int i = range[0]; i <= range[1]; ++i)
                 {
-                    sum += _latCount[i];
+                    sum += m_latCount[i];
                 }
                 return sum;
             }
@@ -207,23 +207,23 @@ namespace BoboBrowse.Net.Facets.Impl
         /// see com.browseengine.bobo.api.FacetAccessible#getFacets()
         /// </summary>
         /// <returns></returns>
-        public virtual IEnumerable<BrowseFacet> GetFacets()
+        public virtual ICollection<BrowseFacet> GetFacets()
         {
-            if (_spec != null)
+            if (m_spec != null)
             {
-                if (_latPredefinedRangeIndexes != null)
+                if (m_latPredefinedRangeIndexes != null)
                 {
-                    int minCount = _spec.MinHitCount;
-                    int[] rangeCounts = new int[_latPredefinedRangeIndexes.Length];
-                    for (int i = 0; i < _latCount.Length; ++i)
+                    int minCount = m_spec.MinHitCount;
+                    int[] rangeCounts = new int[m_latPredefinedRangeIndexes.Length];
+                    for (int i = 0; i < m_latCount.Length; ++i)
                     {
-                        if (_latCount[i] > 0)
+                        if (m_latCount[i] > 0)
                         {
-                            for (int k = 0; k < _latPredefinedRangeIndexes.Length; ++k)
+                            for (int k = 0; k < m_latPredefinedRangeIndexes.Length; ++k)
                             {
-                                if (i >= _latPredefinedRangeIndexes[k][0] && i <= _latPredefinedRangeIndexes[k][1])
+                                if (i >= m_latPredefinedRangeIndexes[k][0] && i <= m_latPredefinedRangeIndexes[k][1])
                                 {
-                                    rangeCounts[k] += _latCount[i];
+                                    rangeCounts[k] += m_latCount[i];
                                 }
                             }
                         }
@@ -235,7 +235,7 @@ namespace BoboBrowse.Net.Facets.Impl
                         {
                             BrowseFacet choice = new BrowseFacet();
                             choice.FacetValueHitCount = rangeCounts[i];
-                            choice.Value = _predefinedRanges.Get(i);
+                            choice.Value = m_predefinedRanges.Get(i);
                             list.Add(choice);
                         }
                     }
@@ -243,12 +243,12 @@ namespace BoboBrowse.Net.Facets.Impl
                 }
                 else
                 {
-                    return FacetCountCollector_Fields.EMPTY_FACET_LIST;
+                    return FacetCountCollector.EMPTY_FACET_LIST;
                 }
             }
             else
             {
-                return FacetCountCollector_Fields.EMPTY_FACET_LIST;
+                return FacetCountCollector.EMPTY_FACET_LIST;
             }
         }
 
@@ -258,21 +258,21 @@ namespace BoboBrowse.Net.Facets.Impl
         public virtual FacetIterator GetIterator()
         {
             // each range is of the form <lat, lon, radius>
-            LazyBigIntArray rangeCounts = new LazyBigIntArray(_latPredefinedRangeIndexes.Length);
-            for (int i = 0; i < _latCount.Length; ++i)
+            LazyBigIntArray rangeCounts = new LazyBigIntArray(m_latPredefinedRangeIndexes.Length);
+            for (int i = 0; i < m_latCount.Length; ++i)
             {
-                if (_latCount[i] > 0)
+                if (m_latCount[i] > 0)
                 {
-                    for (int k = 0; k < _latPredefinedRangeIndexes.Length; ++k)
+                    for (int k = 0; k < m_latPredefinedRangeIndexes.Length; ++k)
                     {
-                        if (i >= _latPredefinedRangeIndexes[k][0] && i <= _latPredefinedRangeIndexes[k][1])
+                        if (i >= m_latPredefinedRangeIndexes[k][0] && i <= m_latPredefinedRangeIndexes[k][1])
                         {
-                            rangeCounts.Add(k, rangeCounts.Get(k) + _latCount[i]);
+                            rangeCounts.Add(k, rangeCounts.Get(k) + m_latCount[i]);
                         }
                     }
                 }
             }
-            return new DefaultFacetIterator(_predefinedRanges, rangeCounts, rangeCounts.Length, true);
+            return new DefaultFacetIterator(m_predefinedRanges, rangeCounts, rangeCounts.Length, true);
         }
     }
 }

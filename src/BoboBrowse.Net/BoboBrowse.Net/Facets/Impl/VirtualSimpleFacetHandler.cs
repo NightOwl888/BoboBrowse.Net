@@ -35,7 +35,7 @@ namespace BoboBrowse.Net.Facets.Impl
     {
         private static readonly ILog log = LogProvider.For<VirtualSimpleFacetHandler>();
 
-        protected IFacetDataFetcher _facetDataFetcher;
+        protected IFacetDataFetcher m_facetDataFetcher;
 
         /// <summary>
         /// Plugin constructor for TreeView, which has its own way of logging.
@@ -54,16 +54,16 @@ namespace BoboBrowse.Net.Facets.Impl
                                          string indexFieldName,
                                          TermListFactory termListFactory,
                                          IFacetDataFetcher facetDataFetcher,
-                                         IEnumerable<string> dependsOn)
+                                         ICollection<string> dependsOn)
             : base(name, null, termListFactory, dependsOn)
         {
-            _facetDataFetcher = facetDataFetcher;
+            m_facetDataFetcher = facetDataFetcher;
         }
 
         public VirtualSimpleFacetHandler(string name,
                                    TermListFactory termListFactory,
                                    IFacetDataFetcher facetDataFetcher,
-                                   IEnumerable<string> dependsOn)
+                                   ICollection<string> dependsOn)
             : this(name, null, termListFactory, facetDataFetcher, dependsOn)
         {
         }
@@ -86,7 +86,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     continue;
                 }
                 doc = i;
-                object val = _facetDataFetcher.Fetch(reader, doc);
+                object val = m_facetDataFetcher.Fetch(reader, doc);
                 if (val == null)
                 {
                     if (nullMinId < 0)
@@ -100,8 +100,8 @@ namespace BoboBrowse.Net.Facets.Impl
                     // Initialize.
                     if (val is long[])
                     {
-                        if (_termListFactory == null)
-                            _termListFactory = new TermFixedLengthLongArrayListFactory(
+                        if (m_termListFactory == null)
+                            m_termListFactory = new TermFixedLengthLongArrayListFactory(
                               ((long[])val).Length);
 
                         dataMap = new TreeDictionary<object, List<int>>(new VirtualSimpleFacetHandlerLongArrayComparer());
@@ -129,15 +129,15 @@ namespace BoboBrowse.Net.Facets.Impl
                 docList.Add(doc);
             }
 
-            _facetDataFetcher.Cleanup(reader);
+            m_facetDataFetcher.Cleanup(reader);
 
             int maxDoc = reader.MaxDoc;
             int size = dataMap == null ? 1 : (dataMap.Count + 1);
 
             BigSegmentedArray order = new BigIntArray(maxDoc);
-            ITermValueList list = _termListFactory == null ?
+            ITermValueList list = m_termListFactory == null ?
               new TermStringList(size) :
-              _termListFactory.CreateTermList(size);
+              m_termListFactory.CreateTermList(size);
 
             int[] freqs = new int[size];
             int[] minIDs = new int[size];

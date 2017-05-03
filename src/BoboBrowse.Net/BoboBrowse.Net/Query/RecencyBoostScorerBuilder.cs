@@ -29,14 +29,14 @@ namespace BoboBrowse.Net.Query
 
     public class RecencyBoostScorerBuilder : IScorerBuilder
     {
-        private readonly float _maxFactor;
-	    private readonly TimeUnit _timeunit;
-	    private readonly float _min;
-	    private readonly float _max;
-	    private readonly long _cutoffInMillis;
-	    private readonly float _A;
-	    private readonly string _timeFacetName;
-        private readonly long _now;
+        private readonly float m_maxFactor;
+	    private readonly TimeUnit m_timeunit;
+	    private readonly float m_min;
+	    private readonly float m_max;
+	    private readonly long m_cutoffInMillis;
+	    private readonly float m_A;
+	    private readonly string m_timeFacetName;
+        private readonly long m_now;
 
         public RecencyBoostScorerBuilder(string timeFacetName, float maxFactor, long cutoff, TimeUnit timeunit)
             : this(timeFacetName, maxFactor, timeunit.Convert(System.Environment.TickCount, TimeUnit.MILLISECONDS), cutoff, timeunit)
@@ -45,14 +45,14 @@ namespace BoboBrowse.Net.Query
 
         public RecencyBoostScorerBuilder(string timeFacetName, float maxFactor, long from, long cutoff, TimeUnit timeunit)
         {
-            _timeFacetName = timeFacetName;
-            _maxFactor = maxFactor;
-            _min = 1.0f;
-            _max = _maxFactor + _min;
-            _timeunit = timeunit;
-            _cutoffInMillis = _timeunit.ToMillis(cutoff);
-            _A = (_min - _max) / (((float)_cutoffInMillis) * ((float)_cutoffInMillis));
-            _now = timeunit.ToMillis(from);
+            m_timeFacetName = timeFacetName;
+            m_maxFactor = maxFactor;
+            m_min = 1.0f;
+            m_max = m_maxFactor + m_min;
+            m_timeunit = timeunit;
+            m_cutoffInMillis = m_timeunit.ToMillis(cutoff);
+            m_A = (m_min - m_max) / (((float)m_cutoffInMillis) * ((float)m_cutoffInMillis));
+            m_now = timeunit.ToMillis(from);
         }
 
         public virtual Explanation Explain(AtomicReader reader, int doc, Explanation innerExplanation)
@@ -60,10 +60,10 @@ namespace BoboBrowse.Net.Query
             if (reader is BoboSegmentReader)
             {
                 BoboSegmentReader boboReader = (BoboSegmentReader)reader;
-                object dataObj = boboReader.GetFacetData(_timeFacetName);
+                object dataObj = boboReader.GetFacetData(m_timeFacetName);
                 if (dataObj is FacetDataCache)
                 {
-                    FacetDataCache facetDataCache = (FacetDataCache)(boboReader.GetFacetData(_timeFacetName));
+                    FacetDataCache facetDataCache = (FacetDataCache)(boboReader.GetFacetData(m_timeFacetName));
                     BigSegmentedArray orderArray = facetDataCache.OrderArray;
                     TermLongList termList = (TermLongList)facetDataCache.ValArray;
                     Explanation finalExpl = new Explanation();
@@ -97,10 +97,10 @@ namespace BoboBrowse.Net.Query
             if (reader is BoboSegmentReader)
             {
                 BoboSegmentReader boboReader = (BoboSegmentReader)reader;
-                object dataObj = boboReader.GetFacetData(_timeFacetName);
+                object dataObj = boboReader.GetFacetData(m_timeFacetName);
                 if (dataObj is FacetDataCache)
                 {
-                    FacetDataCache facetDataCache = (FacetDataCache)(boboReader.GetFacetData(_timeFacetName));
+                    FacetDataCache facetDataCache = (FacetDataCache)(boboReader.GetFacetData(m_timeFacetName));
                     BigSegmentedArray orderArray = facetDataCache.OrderArray;
                     TermLongList termList = (TermLongList)facetDataCache.ValArray;
                     return new RecencyBoostScorer(this, innerScorer, orderArray, termList);
@@ -118,41 +118,41 @@ namespace BoboBrowse.Net.Query
 
         private class RecencyBoostScorer : Scorer
         {
-            private readonly RecencyBoostScorerBuilder _parent;
-            private readonly Scorer _innerScorer;
-            private readonly BigSegmentedArray _orderArray;
-            private readonly TermLongList _termList;
+            private readonly RecencyBoostScorerBuilder m_parent;
+            private readonly Scorer m_innerScorer;
+            private readonly BigSegmentedArray m_orderArray;
+            private readonly TermLongList m_termList;
 
             public RecencyBoostScorer(RecencyBoostScorerBuilder parent, Scorer innerScorer, BigSegmentedArray orderArray, TermLongList termList)
                 : base(innerScorer.Weight)
             {
-                _parent = parent;
-                _innerScorer = innerScorer;
-                _orderArray = orderArray;
-                _termList = termList;
+                m_parent = parent;
+                m_innerScorer = innerScorer;
+                m_orderArray = orderArray;
+                m_termList = termList;
             }
 
             public override float GetScore()
             {
-                float rawScore = _innerScorer.GetScore();
-                long timeVal = (long)_termList.GetRawValue(_orderArray.Get(_innerScorer.DocID));
-                float timeScore = _parent.ComputeTimeFactor(timeVal);
+                float rawScore = m_innerScorer.GetScore();
+                long timeVal = (long)m_termList.GetRawValue(m_orderArray.Get(m_innerScorer.DocID));
+                float timeScore = m_parent.ComputeTimeFactor(timeVal);
                 return RecencyBoostScorerBuilder.CombineScores(timeScore, rawScore);
             }
 
             public override int Advance(int target)
             {
-                return _innerScorer.Advance(target);
+                return m_innerScorer.Advance(target);
             }
 
             public override int DocID
             {
-                get { return _innerScorer.DocID; }
+                get { return m_innerScorer.DocID; }
             }
 
             public override int NextDoc()
             {
-                return _innerScorer.NextDoc();
+                return m_innerScorer.NextDoc();
             }
 
             public override int Freq
@@ -169,15 +169,15 @@ namespace BoboBrowse.Net.Query
 
         protected virtual float ComputeTimeFactor(long timeVal)
         {
-            long xVal = _now - timeVal;
-            if (xVal > _cutoffInMillis)
+            long xVal = m_now - timeVal;
+            if (xVal > m_cutoffInMillis)
             {
-                return _min;
+                return m_min;
             }
             else
             {
                 float xValFloat = xVal;
-                return _A * xValFloat * xValFloat + _max;
+                return m_A * xValFloat * xValFloat + m_max;
             }
         }
 	

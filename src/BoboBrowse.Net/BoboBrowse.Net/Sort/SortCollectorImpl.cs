@@ -67,7 +67,7 @@ namespace BoboBrowse.Net.Sort
                     int v = s1.CompareTo(s2);
                     if (v == 0)
                     {
-                        r = o1.Doc + o1.queue.@base - o2.Doc - o2.queue.@base;
+                        r = o1.Doc + o1.m_queue.m_base - o2.Doc - o2.m_queue.m_base;
                     }
                     else
                     {
@@ -79,40 +79,40 @@ namespace BoboBrowse.Net.Sort
             }
         }
 
-        private readonly List<DocIDPriorityQueue> _pqList;
-        private readonly int _numHits;
-        private int _totalHits;
-        private ScoreDoc _bottom;
-        private ScoreDoc _tmpScoreDoc;
-        private bool _queueFull;
-        private DocComparer _currentComparer;
-        private readonly DocComparerSource _compSource;
-        private DocIDPriorityQueue _currentQueue;
-        private BoboSegmentReader _currentReader = null;
-        private IFacetCountCollector _facetCountCollector;
-        private IFacetCountCollector[] _facetCountCollectorMulti = null;
+        private readonly List<DocIDPriorityQueue> m_pqList;
+        private readonly int m_numHits;
+        private int m_totalHits;
+        private ScoreDoc m_bottom;
+        private ScoreDoc m_tmpScoreDoc;
+        private bool m_queueFull;
+        private DocComparer m_currentComparer;
+        private readonly DocComparerSource m_compSource;
+        private DocIDPriorityQueue m_currentQueue;
+        private BoboSegmentReader m_currentReader = null;
+        private IFacetCountCollector m_facetCountCollector;
+        private IFacetCountCollector[] m_facetCountCollectorMulti = null;
 
-        private readonly bool _doScoring;
-        private Scorer _scorer;
-        private readonly int _offset;
-        private readonly int _count;
+        private readonly bool m_doScoring;
+        private Scorer m_scorer;
+        private readonly int m_offset;
+        private readonly int m_count;
 
-        private readonly IBrowsable _boboBrowser;
+        private readonly IBrowsable m_boboBrowser;
 
         // NightOwl888: The _collectDocIdCache setting seems to put arrays into
         // memory, but then do nothing with the arrays. Seems wasteful and unnecessary.
         //private readonly bool _collectDocIdCache;
-        private CombinedFacetAccessible[] _groupAccessibles;
-        private readonly List<IFacetAccessible>[] _facetAccessibleLists;
-        private readonly IDictionary<int, ScoreDoc> _currentValueDocMaps;
+        private CombinedFacetAccessible[] m_groupAccessibles;
+        private readonly List<IFacetAccessible>[] m_facetAccessibleLists;
+        private readonly IDictionary<int, ScoreDoc> m_currentValueDocMaps;
 
         protected class MyScoreDoc : ScoreDoc
         {
             //private static long serialVersionUID = 1L; // NOT USED
 
-            public DocIDPriorityQueue queue;
-            public BoboSegmentReader reader;
-            public IComparable sortValue;
+            public DocIDPriorityQueue m_queue;
+            public BoboSegmentReader m_reader;
+            public IComparable m_sortValue;
 
             public MyScoreDoc()
                 : this(0, 0.0f, null, null)
@@ -122,18 +122,18 @@ namespace BoboBrowse.Net.Sort
             public MyScoreDoc(int docid, float score, DocIDPriorityQueue queue, BoboSegmentReader reader)
                 : base(docid, score)
             {
-                this.queue = queue;
-                this.reader = reader;
-                this.sortValue = null;
+                this.m_queue = queue;
+                this.m_reader = reader;
+                this.m_sortValue = null;
             }
 
             public virtual IComparable Value
             {
                 get
                 {
-                    if (sortValue == null)
-                        sortValue = queue.SortValue(this);
-                    return sortValue;
+                    if (m_sortValue == null)
+                        m_sortValue = m_queue.SortValue(this);
+                    return m_sortValue;
                 }
             }
         }
@@ -145,7 +145,7 @@ namespace BoboBrowse.Net.Sort
         //private float[] _currentScoreArray; // NOT USED
         //private int _docIdArrayCursor = 0; // NOT USED
         //private int _docIdCacheCapacity = 0; // NOT USED
-        private IEnumerable<string> _termVectorsToFetch;
+        private ICollection<string> m_termVectorsToFetch;
 
         public SortCollectorImpl(
             DocComparerSource compSource,
@@ -155,24 +155,24 @@ namespace BoboBrowse.Net.Sort
             int count,
             bool doScoring,
             bool fetchStoredFields,
-            IEnumerable<string> termVectorsToFetch,
+            ICollection<string> termVectorsToFetch,
             string[] groupBy,
             int maxPerGroup,
             bool collectDocIdCache)
             : base(sortFields, fetchStoredFields)
         {
             Debug.Assert(offset >= 0 && count >= 0);
-            _boboBrowser = boboBrowser;
-            _compSource = compSource;
-            _pqList = new List<DocIDPriorityQueue>();
-            _numHits = offset + count;
-            _offset = offset;
-            _count = count;
-            _totalHits = 0;
-            _queueFull = false;
-            _doScoring = doScoring;
-            _tmpScoreDoc = new MyScoreDoc();
-            _termVectorsToFetch = termVectorsToFetch;
+            m_boboBrowser = boboBrowser;
+            m_compSource = compSource;
+            m_pqList = new List<DocIDPriorityQueue>();
+            m_numHits = offset + count;
+            m_offset = offset;
+            m_count = count;
+            m_totalHits = 0;
+            m_queueFull = false;
+            m_doScoring = doScoring;
+            m_tmpScoreDoc = new MyScoreDoc();
+            m_termVectorsToFetch = termVectorsToFetch;
 
             // NightOwl888: The _collectDocIdCache setting seems to put arrays into
             // memory, but then do nothing with the arrays. Seems wasteful and unnecessary.
@@ -189,25 +189,25 @@ namespace BoboBrowse.Net.Sort
                 }
                 if (groupByList.Count > 0)
                 {
-                    this.groupByMulti = groupByList.ToArray();
-                    this.groupBy = groupByMulti[0];
+                    this.m_groupByMulti = groupByList.ToArray();
+                    this.m_groupBy = m_groupByMulti[0];
                 }
-                if (this.groupBy != null && _count > 0)
+                if (this.m_groupBy != null && m_count > 0)
                 {
-                    if (groupByMulti.Length == 1)
+                    if (m_groupByMulti.Length == 1)
                     {
                         //_currentValueDocMaps = new Int2ObjectOpenHashMap<ScoreDoc>(_count);
-                        _currentValueDocMaps = new Dictionary<int, ScoreDoc>(_count);
-                        _facetAccessibleLists = null;
+                        m_currentValueDocMaps = new Dictionary<int, ScoreDoc>(m_count);
+                        m_facetAccessibleLists = null;
                     }
                     else
                     {
-                        _currentValueDocMaps = null;
-                        _facetCountCollectorMulti = new IFacetCountCollector[groupByList.Count - 1];
-                        _facetAccessibleLists = new List<IFacetAccessible>[_facetCountCollectorMulti.Length];
-                        for (int i = 0; i < _facetCountCollectorMulti.Length; ++i)
+                        m_currentValueDocMaps = null;
+                        m_facetCountCollectorMulti = new IFacetCountCollector[groupByList.Count - 1];
+                        m_facetAccessibleLists = new List<IFacetAccessible>[m_facetCountCollectorMulti.Length];
+                        for (int i = 0; i < m_facetCountCollectorMulti.Length; ++i)
                         {
-                            _facetAccessibleLists[i] = new List<IFacetAccessible>();
+                            m_facetAccessibleLists[i] = new List<IFacetAccessible>();
                         }
                     }
 
@@ -223,14 +223,14 @@ namespace BoboBrowse.Net.Sort
                 }
                 else
                 {
-                    _currentValueDocMaps = null;
-                    _facetAccessibleLists = null;
+                    m_currentValueDocMaps = null;
+                    m_facetAccessibleLists = null;
                 }
             }
             else
             {
-                _currentValueDocMaps = null;
-                _facetAccessibleLists = null;
+                m_currentValueDocMaps = null;
+                m_facetAccessibleLists = null;
             }
         }
 
@@ -241,21 +241,21 @@ namespace BoboBrowse.Net.Sort
 
         public override void Collect(int doc)
         {
-            ++_totalHits;
+            ++m_totalHits;
 
-            if (groupBy != null)
+            if (m_groupBy != null)
             {
-                if (_facetCountCollectorMulti != null)
+                if (m_facetCountCollectorMulti != null)
                 {
-                    for (int i = 0; i < _facetCountCollectorMulti.Length; ++i)
+                    for (int i = 0; i < m_facetCountCollectorMulti.Length; ++i)
                     {
-                        if (_facetCountCollectorMulti[i] != null)
-                            _facetCountCollectorMulti[i].Collect(doc);
+                        if (m_facetCountCollectorMulti[i] != null)
+                            m_facetCountCollectorMulti[i].Collect(doc);
                     }
 
-                    if (_count > 0)
+                    if (m_count > 0)
                     {
-                        float score = (_doScoring ? _scorer.GetScore() : 0.0f);
+                        float score = (m_doScoring ? m_scorer.GetScore() : 0.0f);
 
                         // NightOwl888: The _collectDocIdCache setting seems to put arrays into
                         // memory, but then do nothing with the arrays. Seems wasteful and unnecessary.
@@ -284,9 +284,9 @@ namespace BoboBrowse.Net.Sort
                 }
                 else
                 {
-                    if (_count > 0)
+                    if (m_count > 0)
                     {
-                        float score = (_doScoring ? _scorer.GetScore() : 0.0f);
+                        float score = (m_doScoring ? m_scorer.GetScore() : 0.0f);
 
                         // NightOwl888: The _collectDocIdCache setting seems to put arrays into
                         // memory, but then do nothing with the arrays. Seems wasteful and unnecessary.
@@ -311,38 +311,38 @@ namespace BoboBrowse.Net.Sort
                         //    ++_currentContext.length;
                         //}
 
-                        _tmpScoreDoc.Doc = doc;
-                        _tmpScoreDoc.Score = score;
-                        if (!_queueFull || _currentComparer.Compare(_bottom, _tmpScoreDoc) > 0)
+                        m_tmpScoreDoc.Doc = doc;
+                        m_tmpScoreDoc.Score = score;
+                        if (!m_queueFull || m_currentComparer.Compare(m_bottom, m_tmpScoreDoc) > 0)
                         {
-                            int order = groupBy.GetFacetData<FacetDataCache>(_currentReader).OrderArray.Get(doc);
-                            ScoreDoc pre = _currentValueDocMaps.Get(order);
+                            int order = m_groupBy.GetFacetData<FacetDataCache>(m_currentReader).OrderArray.Get(doc);
+                            ScoreDoc pre = m_currentValueDocMaps.Get(order);
                             if (pre != null)
                             {
-                                if (_currentComparer.Compare(pre, _tmpScoreDoc) > 0)
+                                if (m_currentComparer.Compare(pre, m_tmpScoreDoc) > 0)
                                 {
                                     ScoreDoc tmp = pre;
-                                    _bottom = _currentQueue.Replace(_tmpScoreDoc, pre);
-                                    _currentValueDocMaps.Put(order, _tmpScoreDoc);
-                                    _tmpScoreDoc = tmp;
+                                    m_bottom = m_currentQueue.Replace(m_tmpScoreDoc, pre);
+                                    m_currentValueDocMaps.Put(order, m_tmpScoreDoc);
+                                    m_tmpScoreDoc = tmp;
                                 }
                             }
                             else
                             {
-                                if (_queueFull)
+                                if (m_queueFull)
                                 {
-                                    MyScoreDoc tmp = (MyScoreDoc)_bottom;
-                                    _currentValueDocMaps.Remove(groupBy.GetFacetData<FacetDataCache>(tmp.reader).OrderArray.Get(tmp.Doc));
-                                    _bottom = _currentQueue.Replace(_tmpScoreDoc);
-                                    _currentValueDocMaps.Put(order, _tmpScoreDoc);
-                                    _tmpScoreDoc = tmp;
+                                    MyScoreDoc tmp = (MyScoreDoc)m_bottom;
+                                    m_currentValueDocMaps.Remove(m_groupBy.GetFacetData<FacetDataCache>(tmp.m_reader).OrderArray.Get(tmp.Doc));
+                                    m_bottom = m_currentQueue.Replace(m_tmpScoreDoc);
+                                    m_currentValueDocMaps.Put(order, m_tmpScoreDoc);
+                                    m_tmpScoreDoc = tmp;
                                 }
                                 else
                                 {
-                                    ScoreDoc tmp = new MyScoreDoc(doc, score, _currentQueue, _currentReader);
-                                    _bottom = _currentQueue.Add(tmp);
-                                    _currentValueDocMaps.Put(order, tmp);
-                                    _queueFull = (_currentQueue.size >= _numHits);
+                                    ScoreDoc tmp = new MyScoreDoc(doc, score, m_currentQueue, m_currentReader);
+                                    m_bottom = m_currentQueue.Add(tmp);
+                                    m_currentValueDocMaps.Put(order, tmp);
+                                    m_queueFull = (m_currentQueue.m_size >= m_numHits);
                                 }
                             }
                         }
@@ -351,26 +351,26 @@ namespace BoboBrowse.Net.Sort
             }
             else
             {
-                if (_count > 0)
+                if (m_count > 0)
                 {
-                    float score = (_doScoring ? _scorer.GetScore() : 0.0f);
+                    float score = (m_doScoring ? m_scorer.GetScore() : 0.0f);
 
-                    if (_queueFull)
+                    if (m_queueFull)
                     {
-                        _tmpScoreDoc.Doc = doc;
-                        _tmpScoreDoc.Score = score;
+                        m_tmpScoreDoc.Doc = doc;
+                        m_tmpScoreDoc.Score = score;
 
-                        if (_currentComparer.Compare(_bottom, _tmpScoreDoc) > 0)
+                        if (m_currentComparer.Compare(m_bottom, m_tmpScoreDoc) > 0)
                         {
-                            ScoreDoc tmp = _bottom;
-                            _bottom = _currentQueue.Replace(_tmpScoreDoc);
-                            _tmpScoreDoc = tmp;
+                            ScoreDoc tmp = m_bottom;
+                            m_bottom = m_currentQueue.Replace(m_tmpScoreDoc);
+                            m_tmpScoreDoc = tmp;
                         }
                     }
                     else
                     {
-                        _bottom = _currentQueue.Add(new MyScoreDoc(doc, score, _currentQueue, _currentReader));
-                        _queueFull = (_currentQueue.size >= _numHits);
+                        m_bottom = m_currentQueue.Add(new MyScoreDoc(doc, score, m_currentQueue, m_currentReader));
+                        m_queueFull = (m_currentQueue.m_size >= m_numHits);
                     }
                 }
             }
@@ -383,31 +383,31 @@ namespace BoboBrowse.Net.Sort
             AtomicReader reader = context.AtomicReader;
             if (!(reader is BoboSegmentReader))
                 throw new ArgumentException("reader must be a BoboIndexReader");
-            _currentReader = (BoboSegmentReader)reader;
+            m_currentReader = (BoboSegmentReader)reader;
             int docBase = context.DocBase;
-            _currentComparer = _compSource.GetComparer(_currentReader, docBase);
-            _currentQueue = new DocIDPriorityQueue(_currentComparer, _numHits, docBase);
-            if (groupBy != null)
+            m_currentComparer = m_compSource.GetComparer(m_currentReader, docBase);
+            m_currentQueue = new DocIDPriorityQueue(m_currentComparer, m_numHits, docBase);
+            if (m_groupBy != null)
             {
-                if (_facetCountCollectorMulti != null)  // _facetCountCollectorMulti.Length >= 1
+                if (m_facetCountCollectorMulti != null)  // _facetCountCollectorMulti.Length >= 1
                 {
-                    for (int i = 0; i < _facetCountCollectorMulti.Length; ++i)
+                    for (int i = 0; i < m_facetCountCollectorMulti.Length; ++i)
                     {
-                        _facetCountCollectorMulti[i] = groupByMulti[i].GetFacetCountCollectorSource(null, null, true).GetFacetCountCollector(_currentReader, docBase);
+                        m_facetCountCollectorMulti[i] = m_groupByMulti[i].GetFacetCountCollectorSource(null, null, true).GetFacetCountCollector(m_currentReader, docBase);
                     }
                     //if (_facetCountCollector != null)
                     //    collectTotalGroups();
-                    _facetCountCollector = _facetCountCollectorMulti[0];
-                    if (_facetAccessibleLists != null)
+                    m_facetCountCollector = m_facetCountCollectorMulti[0];
+                    if (m_facetAccessibleLists != null)
                     {
-                        for (int i = 0; i < _facetCountCollectorMulti.Length; ++i)
+                        for (int i = 0; i < m_facetCountCollectorMulti.Length; ++i)
                         {
-                            _facetAccessibleLists[i].Add(_facetCountCollectorMulti[i]);
+                            m_facetAccessibleLists[i].Add(m_facetCountCollectorMulti[i]);
                         }
                     }
                 }
-                if (_currentValueDocMaps != null)
-                    _currentValueDocMaps.Clear();
+                if (m_currentValueDocMaps != null)
+                    m_currentValueDocMaps.Clear();
 
                 // NightOwl888: The _collectDocIdCache setting seems to put arrays into
                 // memory, but then do nothing with the arrays. Seems wasteful and unnecessary.
@@ -417,41 +417,41 @@ namespace BoboBrowse.Net.Sort
                 //    contextList.Add(_currentContext);
                 //}
             }
-            MyScoreDoc myScoreDoc = (MyScoreDoc)_tmpScoreDoc;
-            myScoreDoc.queue = _currentQueue;
-            myScoreDoc.reader = _currentReader;
-            myScoreDoc.sortValue = null;
-            _pqList.Add(_currentQueue);
-            _queueFull = false;
+            MyScoreDoc myScoreDoc = (MyScoreDoc)m_tmpScoreDoc;
+            myScoreDoc.m_queue = m_currentQueue;
+            myScoreDoc.m_reader = m_currentReader;
+            myScoreDoc.m_sortValue = null;
+            m_pqList.Add(m_currentQueue);
+            m_queueFull = false;
         }
 
         public override void SetScorer(Scorer scorer)
         {
-            _scorer = scorer;
-            _currentComparer.SetScorer(scorer);
+            m_scorer = scorer;
+            m_currentComparer.SetScorer(scorer);
         }
 
         public override int TotalHits
         {
-            get { return _totalHits; }
+            get { return m_totalHits; }
         }
 
         public override int TotalGroups
         {
-            get { return _totalHits; }
+            get { return m_totalHits; }
         }
 
         public override IFacetAccessible[] GroupAccessibles
         {
-            get { return _groupAccessibles; }
+            get { return m_groupAccessibles; }
         }
 
         public override BrowseHit[] TopDocs
         {
             get
             {
-                var iterList = new List<IEnumerator<MyScoreDoc>>(_pqList.Count);
-                foreach (DocIDPriorityQueue pq in _pqList)
+                var iterList = new List<IEnumerator<MyScoreDoc>>(m_pqList.Count);
+                foreach (DocIDPriorityQueue pq in m_pqList)
                 {
                     int count = pq.Count;
                     MyScoreDoc[] resList = new MyScoreDoc[count];
@@ -463,12 +463,12 @@ namespace BoboBrowse.Net.Sort
                 }
 
                 {
-                    List<MyScoreDoc> resList;
-                    if (_count > 0)
+                    IList<MyScoreDoc> resList;
+                    if (m_count > 0)
                     {
-                        if (groupBy == null)
+                        if (m_groupBy == null)
                         {
-                            resList = ListMerger.MergeLists(_offset, _count, iterList, MERGE_COMPATATOR);
+                            resList = ListMerger.MergeLists(m_offset, m_count, iterList, MERGE_COMPATATOR);
                         }
                         else
                         {
@@ -483,20 +483,20 @@ namespace BoboBrowse.Net.Sort
                             //collectTotalGroups();
                             //_facetCountCollector = null;
                             //}
-                            if (_facetAccessibleLists != null)
+                            if (m_facetAccessibleLists != null)
                             {
-                                _groupAccessibles = new CombinedFacetAccessible[_facetAccessibleLists.Length];
-                                for (int i = 0; i < _facetAccessibleLists.Length; ++i)
-                                    _groupAccessibles[i] = new CombinedFacetAccessible(new FacetSpec(), _facetAccessibleLists[i]);
+                                m_groupAccessibles = new CombinedFacetAccessible[m_facetAccessibleLists.Length];
+                                for (int i = 0; i < m_facetAccessibleLists.Length; ++i)
+                                    m_groupAccessibles[i] = new CombinedFacetAccessible(new FacetSpec(), m_facetAccessibleLists[i]);
                             }
-                            resList = new List<MyScoreDoc>(_count);
+                            resList = new List<MyScoreDoc>(m_count);
                             IEnumerator<MyScoreDoc> mergedIter = ListMerger.MergeLists(iterList, MERGE_COMPATATOR);
-                            IList<object> groupSet = new List<object>(_offset + _count);
-                            int offsetLeft = _offset;
+                            IList<object> groupSet = new List<object>(m_offset + m_count);
+                            int offsetLeft = m_offset;
                             while (mergedIter.MoveNext())
                             {
                                 MyScoreDoc scoreDoc = mergedIter.Current;
-                                object[] vals = groupBy.GetRawFieldValues(scoreDoc.reader, scoreDoc.Doc);
+                                object[] vals = m_groupBy.GetRawFieldValues(scoreDoc.m_reader, scoreDoc.Doc);
                                 rawGroupValue = null;
                                 if (vals != null && vals.Length > 0)
                                     rawGroupValue = vals[0];
@@ -524,7 +524,7 @@ namespace BoboBrowse.Net.Sort
                                     else
                                     {
                                         resList.Add(scoreDoc);
-                                        if (resList.Count >= _count)
+                                        if (resList.Count >= m_count)
                                             break;
                                     }
                                     groupSet.Add(new PrimitiveLongArrayWrapper(primitiveLongArrayWrapperTmp.Data));
@@ -535,28 +535,28 @@ namespace BoboBrowse.Net.Sort
                     else
                         resList = new List<MyScoreDoc>();
 
-                    var facetHandlerMap = _boboBrowser.FacetHandlerMap;
-                    return BuildHits(resList.ToArray(), _sortFields, facetHandlerMap, _fetchStoredFields, _termVectorsToFetch, groupBy, _groupAccessibles);
+                    var facetHandlerMap = m_boboBrowser.FacetHandlerMap;
+                    return BuildHits(resList.ToArray(), m_sortFields, facetHandlerMap, m_fetchStoredFields, m_termVectorsToFetch, m_groupBy, m_groupAccessibles);
                 }
             }
         }
 
         protected static BrowseHit[] BuildHits(MyScoreDoc[] scoreDocs, SortField[] sortFields,
             IDictionary<string, IFacetHandler> facetHandlerMap, bool fetchStoredFields,
-            IEnumerable<string> termVectorsToFetch, IFacetHandler groupBy, CombinedFacetAccessible[] groupAccessibles)
+            ICollection<string> termVectorsToFetch, IFacetHandler groupBy, CombinedFacetAccessible[] groupAccessibles)
         {
             BrowseHit[] hits = new BrowseHit[scoreDocs.Length];
             IEnumerable<IFacetHandler> facetHandlers = facetHandlerMap.Values;
             for (int i = scoreDocs.Length - 1; i >= 0; i--)
             {
                 MyScoreDoc fdoc = scoreDocs[i];
-                BoboSegmentReader reader = fdoc.reader;
+                BoboSegmentReader reader = fdoc.m_reader;
                 BrowseHit hit = new BrowseHit();
                 if (fetchStoredFields)
                 {
                     hit.SetStoredFields(reader.Document(fdoc.Doc));
                 }
-                if (termVectorsToFetch != null && termVectorsToFetch.Count() > 0)
+                if (termVectorsToFetch != null && termVectorsToFetch.Count > 0)
                 {
                     var tvMap = new Dictionary<string, IList<BrowseHit.BoboTerm>>();
                     hit.TermVectorMap = tvMap;
@@ -607,7 +607,7 @@ namespace BoboBrowse.Net.Sort
                 }
                 hit.FieldValues = map;
                 hit.RawFieldValues = rawMap;
-                hit.DocId = fdoc.Doc + fdoc.queue.@base;
+                hit.DocId = fdoc.Doc + fdoc.m_queue.m_base;
                 hit.Score = fdoc.Score;
                 hit.Comparable = fdoc.Value;
                 if (groupBy != null)

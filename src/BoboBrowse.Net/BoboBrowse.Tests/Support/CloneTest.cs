@@ -34,7 +34,7 @@ namespace BoboBrowse.Net.Support
             // Arrange
             var orig = new IntArray(7);
             orig.Array = new int[] { 5, 4, 3, 2, 1, 1, 2 };
-            orig.count = 4;
+            orig.m_count = 4;
             orig.Growth = 6;
             orig.Len = 7;
 
@@ -43,7 +43,7 @@ namespace BoboBrowse.Net.Support
 
             // Assert
             Assert.AreEqual(new int[] { 5, 4, 3, 2, 1, 1, 2 }, clone.Array);
-            Assert.AreEqual(4, clone.count);
+            Assert.AreEqual(4, clone.m_count);
             Assert.AreEqual(6, clone.Growth);
             Assert.AreEqual(7, clone.Len);
         }

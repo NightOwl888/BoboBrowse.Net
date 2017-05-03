@@ -53,7 +53,7 @@ namespace BoboBrowse.Net
     {
         //private static readonly ILog log = LogProvider.For<BoboTestCase>(); // NOT USED
         private Lucene.Net.Store.Directory _indexDir;
-        private IEnumerable<IFacetHandler> _fconf;
+        private ICollection<IFacetHandler> _fconf;
         private static Term tagSizePayloadTerm = new Term("tagSizePayload", "size");
 
         private class TestDataDigester : DataDigester
@@ -422,7 +422,7 @@ namespace BoboBrowse.Net
             return idxDir;
         }
 
-        public static IEnumerable<IFacetHandler> BuildFieldConf()
+        public static IList<IFacetHandler> BuildFieldConf()
         {
             List<IFacetHandler> facetHandlers = new List<IFacetHandler>();
             facetHandlers.Add(new SimpleFacetHandler("id"));
@@ -564,7 +564,7 @@ namespace BoboBrowse.Net
         }
 
         public static bool Check(BrowseResult res, int numHits, 
-            IDictionary<string, IEnumerable<BrowseFacet>> choiceMap, string[] ids)
+            IDictionary<string, IList<BrowseFacet>> choiceMap, string[] ids)
         {
             bool match = false;
             if (numHits == res.NumHits)
@@ -582,9 +582,9 @@ namespace BoboBrowse.Net
                             var l1 = c1.GetFacets();
                             var l2 = choiceMap.Get(name);
 
-                            if (l1.Count() == l2.Count())
+                            if (l1.Count == l2.Count)
                             {
-                                for (int i = 0; i < l1.Count(); i++)
+                                for (int i = 0; i < l1.Count; i++)
                                 {
                                     if (!l1.ElementAt(i).Equals(l2.ElementAt(i)))
                                     {
@@ -635,7 +635,7 @@ namespace BoboBrowse.Net
         /// <param name="choiceMap"></param>
         /// <param name="ids"></param>
         private void DoTest(BrowseResult result, BrowseRequest req, int numHits, 
-            IDictionary<string, IEnumerable<BrowseFacet>> choiceMap, string[] ids)
+            IDictionary<string, IList<BrowseFacet>> choiceMap, string[] ids)
         {
             if (!Check(result, numHits, choiceMap, ids))
             {
@@ -998,7 +998,7 @@ namespace BoboBrowse.Net
             br.SetFacetSpec("color", output);
             br.SetFacetSpec("shape", output);
 
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            var answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "color", new BrowseFacet[] { new BrowseFacet("blue", 2), new BrowseFacet("green", 2),
                     new BrowseFacet("red", 3) } },
@@ -1012,7 +1012,7 @@ namespace BoboBrowse.Net
             sel.AddValue("square");
             br.AddSelection(sel);
 
-            answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "color", new BrowseFacet[] { new BrowseFacet("blue", 1), new BrowseFacet("red", 2) } },
                 { "shape", new BrowseFacet[] { new BrowseFacet("rectangle", 1),
@@ -1039,7 +1039,7 @@ namespace BoboBrowse.Net
             pathSpec.OrderBy = FacetSpec.FacetSortSpec.OrderValueAsc;
             br.SetFacetSpec("path", pathSpec);
 
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            var answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "path", new BrowseFacet[] { new BrowseFacet("a-b", 1) ,new BrowseFacet("a-c", 4), 
                     new BrowseFacet("a-e", 2) } }
@@ -1047,7 +1047,7 @@ namespace BoboBrowse.Net
             DoTest(br, 7, answer, null);
 
             pathSpec.OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc;
-            answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "path", new BrowseFacet[] { new BrowseFacet("a-c", 4), new BrowseFacet("a-e", 2), 
                     new BrowseFacet("a-b", 1) } }
@@ -1055,7 +1055,7 @@ namespace BoboBrowse.Net
             DoTest(br, 7, answer, null);
 
             pathSpec.MaxCount = 2;
-            answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "path", new BrowseFacet[] { new BrowseFacet("a-c", 4), new BrowseFacet("a-e", 2) } }
             };
@@ -1140,7 +1140,7 @@ namespace BoboBrowse.Net
             FacetSpec geoSpec = new FacetSpec();
             geoSpec.OrderBy = FacetSpec.FacetSortSpec.OrderValueAsc;
             br.SetFacetSpec("distance", geoSpec);
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            var answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "distance", new BrowseFacet[] { new BrowseFacet("30,70:5", 2), 
                     new BrowseFacet("60,120:1", 2) } }
@@ -1180,7 +1180,7 @@ namespace BoboBrowse.Net
             geoSpec.MinHitCount = (0);
             br3.Query = (colorQ);             // query is color=red
             br3.AddSelection(sel);			  // count facets <30,70,5> and <60,120,1>
-            answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "distance", new BrowseFacet[] { new BrowseFacet("30,70:5", 0), 
                     new BrowseFacet("60,120:1", 1) } }
@@ -1210,7 +1210,7 @@ namespace BoboBrowse.Net
             geoSpec.OrderBy = FacetSpec.FacetSortSpec.OrderValueAsc;
             br.SetFacetSpec("correctDistance", geoSpec);
 
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            var answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "correctDistance", new BrowseFacet[] { new BrowseFacet("30,75:100", 1), 
                     new BrowseFacet("60,120:1", 2) } }
@@ -1250,7 +1250,7 @@ namespace BoboBrowse.Net
             geoSpec.MinHitCount = (1);
             br3.Query = (colorQ);             // query is color=red
             br3.AddSelection(sel);			  // count facets <30,70,5> and <60,120,1>
-            answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "correctDistance", new BrowseFacet[] { new BrowseFacet("60,120:1", 1) } }
             };
@@ -1276,7 +1276,7 @@ namespace BoboBrowse.Net
             pathSpec.OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc;
             br.SetFacetSpec("multipath", pathSpec);
 
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            var answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "multipath", new BrowseFacet[] { new BrowseFacet("a-b", 7), new BrowseFacet("a-c", 4),
                     new BrowseFacet("a-e", 2) } }
@@ -1304,7 +1304,7 @@ namespace BoboBrowse.Net
 
             pathSpec.OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc;
             br.SetFacetSpec("path", pathSpec);
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            var answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "path", new BrowseFacet[] { new BrowseFacet("a-c-d",2),
                     new BrowseFacet("a-e-f",1) } }
@@ -1314,7 +1314,7 @@ namespace BoboBrowse.Net
             pathSpec.OrderBy = FacetSpec.FacetSortSpec.OrderByCustom;
             pathSpec.CustomComparerFactory = new TestMultiSelectedPathsComparerFactory();
 
-            answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "path", new BrowseFacet[] { new BrowseFacet("a-c-d",2),
                     new BrowseFacet("a-e-f",1) } }
@@ -1394,7 +1394,7 @@ namespace BoboBrowse.Net
 
             br.SetFacetSpec("tag", tagOutput);
 
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            var answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "location", new BrowseFacet[] { new BrowseFacet("toy/lego/block",3) } },
                 { "tag", new BrowseFacet[] { new BrowseFacet("pet", 2), 
@@ -1433,7 +1433,7 @@ namespace BoboBrowse.Net
             br.SetFacetSpec("char", charOutput);
             br.AddSortField(new SortField("date", SortFieldType.CUSTOM, true));
 
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            var answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "char", new BrowseFacet[] { new BrowseFacet("a", 1), new BrowseFacet("i", 1), 
                     new BrowseFacet("k", 1) } }
@@ -1459,7 +1459,7 @@ namespace BoboBrowse.Net
 
             br.AddSortField(new SortField("date", SortFieldType.CUSTOM, true));
 
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            var answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "color", new BrowseFacet[] { new BrowseFacet("blue", 2), new BrowseFacet("green", 1), 
                     new BrowseFacet("red", 1) } }
@@ -1484,7 +1484,7 @@ namespace BoboBrowse.Net
 
             br.AddSortField(new SortField("date", SortFieldType.CUSTOM, true));
 
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            var answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "color", new BrowseFacet[] { new BrowseFacet("green", 1), new BrowseFacet("red", 1) } }
             };
@@ -1508,7 +1508,7 @@ namespace BoboBrowse.Net
 
             br.AddSortField(new SortField("date", SortFieldType.CUSTOM, true));
 
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            var answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "color", new BrowseFacet[] { new BrowseFacet("green", 1), new BrowseFacet("red", 1) } }
             };
@@ -1524,13 +1524,13 @@ namespace BoboBrowse.Net
         /// <param name="ids"></param>
         /// <returns></returns>
         private BrowseResult DoTest(BrowseRequest req, int numHits, 
-            IDictionary<string, IEnumerable<BrowseFacet>> choiceMap, string[] ids)
+            IDictionary<string, IList<BrowseFacet>> choiceMap, string[] ids)
         {
             return DoTest((BoboBrowser)null, req, numHits, choiceMap, ids);
         }
 
         private BrowseResult DoTest(BoboBrowser boboBrowser, BrowseRequest req, int numHits, 
-            IDictionary<string, IEnumerable<BrowseFacet>> choiceMap, string[] ids)
+            IDictionary<string, IList<BrowseFacet>> choiceMap, string[] ids)
         {
             BrowseResult result;
 
@@ -1585,7 +1585,7 @@ namespace BoboBrowse.Net
             shapeSpec.OrderBy = FacetSpec.FacetSortSpec.OrderValueAsc;
             br.SetFacetSpec("shape", shapeSpec);
 
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            var answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "color", new BrowseFacet[] { new BrowseFacet("red", 3), new BrowseFacet("blue", 2), 
                     new BrowseFacet("green", 2) } },
@@ -1630,7 +1630,7 @@ namespace BoboBrowse.Net
             sel.AddValue("circle");
             br.AddSelection(sel);
 
-            answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "color", new BrowseFacet[] { } },
                 { "shape", new BrowseFacet[] { } }
@@ -1671,7 +1671,7 @@ namespace BoboBrowse.Net
             ospec.ExpandSelection = false;
             br.SetFacetSpec("color", ospec);
 
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            var answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "color", new BrowseFacet[] { new BrowseFacet("red", 3) } }
             };
@@ -1824,7 +1824,7 @@ namespace BoboBrowse.Net
 
             br.Sort = new SortField[] { new SortField("number", SortFieldType.CUSTOM, false) };
 
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            var answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "color", new BrowseFacet[] { new BrowseFacet("red", 3), new BrowseFacet("blue", 2) } }
             };
@@ -1848,7 +1848,7 @@ namespace BoboBrowse.Net
             spec.OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc;
             br.SetFacetSpec("color", spec);
 
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            var answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "color", new BrowseFacet[] {  new BrowseFacet("red", 2), new BrowseFacet("blue", 1), 
                     new BrowseFacet("green", 0) } }
@@ -1947,7 +1947,7 @@ namespace BoboBrowse.Net
                 FacetSpec ospec = new FacetSpec();
                 ospec.ExpandSelection = true;
                 br.SetFacetSpec("color", ospec);
-                var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+                var answer = new Dictionary<string, IList<BrowseFacet>>()
                 {
                     { "color", new BrowseFacet[] { new BrowseFacet("blue", 2), new BrowseFacet("green", 1), 
                         new BrowseFacet("red", 2) } }
@@ -1955,7 +1955,7 @@ namespace BoboBrowse.Net
                 DoTest(br, 2, answer, new string[] { "7", "1" });
 
                 br.ClearSelections();
-                answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+                answer = new Dictionary<string, IList<BrowseFacet>>()
                 {
                     { "color", new BrowseFacet[] { new BrowseFacet("blue", 2), new BrowseFacet("green", 1), 
                         new BrowseFacet("red", 2) } }
@@ -1986,7 +1986,7 @@ namespace BoboBrowse.Net
 
             br.Sort = new SortField[] { new SortField("compactnum", SortFieldType.CUSTOM, true) };
 
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            var answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "compactnum", new BrowseFacet[] { new BrowseFacet("001", 3), new BrowseFacet("002", 1), 
                     new BrowseFacet("003", 3), new BrowseFacet("007", 2), new BrowseFacet("008", 1), 
@@ -2025,7 +2025,7 @@ namespace BoboBrowse.Net
 
             ospec = new FacetSpec();
             br.SetFacetSpec("compactnum", ospec);
-            answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "compactnum", new BrowseFacet[] { new BrowseFacet("001", 1), new BrowseFacet("003", 2), 
                     new BrowseFacet("008", 1) } },
@@ -2053,7 +2053,7 @@ namespace BoboBrowse.Net
             br.SetFacetSpec("multiwithweight", ospec);
             br.Sort = new SortField[] { new SortField("multiwithweight", SortFieldType.CUSTOM, true) };
 
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            var answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "multiwithweight", new BrowseFacet[] { new BrowseFacet("cool", 3), new BrowseFacet("good", 2) } }
             };
@@ -2091,7 +2091,7 @@ namespace BoboBrowse.Net
             FacetSpec ospec = new FacetSpec();
             br.SetFacetSpec("multinum", ospec);
             br.Sort = new SortField[] { new SortField("multinum", SortFieldType.CUSTOM, true) };
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            var answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "multinum", new BrowseFacet[] { new BrowseFacet("001", 3), new BrowseFacet("002", 1), 
                     new BrowseFacet("003", 3), new BrowseFacet("007", 2), new BrowseFacet("008", 1), 
@@ -2130,7 +2130,7 @@ namespace BoboBrowse.Net
 
             ospec = new FacetSpec();
             br.SetFacetSpec("multinum", ospec);
-            answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "multinum", new BrowseFacet[] { new BrowseFacet("001", 1), new BrowseFacet("003", 2), 
                     new BrowseFacet("008", 1) } },
@@ -2151,7 +2151,7 @@ namespace BoboBrowse.Net
             sel.AddValue("red");
             br.AddSelection(sel);
 
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>();
+            var answer = new Dictionary<string, IList<BrowseFacet>>();
 
             DoTest(br, 3, answer, new string[] { "1", "2", "7" });
 
@@ -2171,7 +2171,7 @@ namespace BoboBrowse.Net
                     sel = new BrowseSelection("color");
                     sel.AddValue("red");
                     br.AddSelection(sel);
-                    answer = new Dictionary<string, IEnumerable<BrowseFacet>>();
+                    answer = new Dictionary<string, IList<BrowseFacet>>();
 
                     DoTest(new BoboBrowser(reader), br, 1, answer, new string[] { "7" });
                 }
@@ -2184,7 +2184,7 @@ namespace BoboBrowse.Net
             sel = new BrowseSelection("color");
             sel.AddValue("red");
             br.AddSelection(sel);
-            answer = new Dictionary<string, IEnumerable<BrowseFacet>>();
+            answer = new Dictionary<string, IList<BrowseFacet>>();
 
             DoTest(br, 1, answer, new string[] { "7" });
         }
@@ -2203,7 +2203,7 @@ namespace BoboBrowse.Net
             FacetSpec simpleOutput = new FacetSpec();
             br.SetFacetSpec("shape", simpleOutput);
 
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            var answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "shape", new BrowseFacet[] { new BrowseFacet("circle", 2), 
                     new BrowseFacet("rectangle", 1), new BrowseFacet("square", 1) } }
@@ -2213,7 +2213,7 @@ namespace BoboBrowse.Net
 
             sel.AddNotValue("green");
 
-            answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "shape", new BrowseFacet[] { new BrowseFacet("circle", 1), 
                     new BrowseFacet("square", 1) } }
@@ -2272,7 +2272,7 @@ namespace BoboBrowse.Net
             simpleOutput.ExpandSelection = true;
             br.SetFacetSpec("date", simpleOutput);
 
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            var answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "date", new BrowseFacet[] { new BrowseFacet("[2000/01/01 TO 2003/05/05]", 4), 
                     new BrowseFacet("[2003/05/06 TO 2005/04/04]", 1) } }
@@ -2308,7 +2308,7 @@ namespace BoboBrowse.Net
 
             br.AddSelection(sel1);
 
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            var answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "date", new BrowseFacet[] { new BrowseFacet("[2000/01/01 TO 2003/02/14]", 4), 
                     new BrowseFacet("[2003/05/06 TO 2005/04/04]", 1) } }
@@ -2332,7 +2332,7 @@ namespace BoboBrowse.Net
             simpleOutput.ExpandSelection = true;
             br.SetFacetSpec("numendorsers", simpleOutput);
 
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            var answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "numendorsers", new BrowseFacet[] { new BrowseFacet("[000000 TO 000005]", 2), 
                     new BrowseFacet("[000006 TO 000010]", 2), new BrowseFacet("[000011 TO 000020]", 3) } }
@@ -2383,7 +2383,7 @@ namespace BoboBrowse.Net
 
             br.SetFacetSpec("tag", tagOutput);
 
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            var answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "color", new BrowseFacet[] { new BrowseFacet("green", 1), new BrowseFacet("red", 2) } },
                 { "size", new BrowseFacet[] { new BrowseFacet("[* TO 4]", 1), 
@@ -2444,7 +2444,7 @@ namespace BoboBrowse.Net
             using (MultiBoboBrowser multiBoboBrowser = new MultiBoboBrowser(new IBrowsable[] { boboBrowser, 
                 boboBrowser }))
             {
-                var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+                var answer = new Dictionary<string, IList<BrowseFacet>>()
                 {
                     { "color", new BrowseFacet[] {  new BrowseFacet("red", 4), new BrowseFacet("green", 2) } },
                     { "tag", new BrowseFacet[] { new BrowseFacet("animal", 2), new BrowseFacet("dog", 2), 
@@ -2636,7 +2636,7 @@ namespace BoboBrowse.Net
             BrowseRequest req = new BrowseRequest();
             req.SetFacetSpec("filtered_date", new FacetSpec());
 
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            var answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "filtered_date", new BrowseFacet[] { new BrowseFacet("[2001/01/01 TO 2001/12/30]", 1), 
                     new BrowseFacet("[2007/01/01 TO 2007/12/30]", 1) } }          
@@ -2656,7 +2656,7 @@ namespace BoboBrowse.Net
             numberSpec.MaxCount = 3;
             req.SetFacetSpec("number", numberSpec);
 
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            var answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "number", new BrowseFacet[] { new BrowseFacet("2130", 1), new BrowseFacet("1013", 1), 
                     new BrowseFacet("0913", 1) } }          
@@ -2665,7 +2665,7 @@ namespace BoboBrowse.Net
             DoTest(req, 7, answer, null);
 
             numberSpec.OrderBy = FacetSpec.FacetSortSpec.OrderValueAsc;
-            answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "number", new BrowseFacet[] { new BrowseFacet("0005", 1), new BrowseFacet("0010", 1), 
                     new BrowseFacet("0011", 1) } }          
@@ -2735,7 +2735,7 @@ namespace BoboBrowse.Net
             FacetSpec fspec = new FacetSpec();
             req.SetFacetSpec("groupby", fspec);
 
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            var answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "groupby", new BrowseFacet[] { new BrowseFacet("red,rectangle,0011", 1), 
                     new BrowseFacet("red,square,0005", 1), new BrowseFacet("red,square,0010", 1) } }          
@@ -2748,7 +2748,7 @@ namespace BoboBrowse.Net
             DoTest(req, 3, answer, null);
 
             sel.Values = new string[] { "red,square" };
-            answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "groupby", new BrowseFacet[] { new BrowseFacet("red,square,0005", 1), 
                     new BrowseFacet("red,square,0010", 1) } }          
@@ -2757,7 +2757,7 @@ namespace BoboBrowse.Net
             DoTest(req, 2, answer, null);
 
             sel.Values = new string[] { "red,square,0005" };
-            answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "groupby", new BrowseFacet[] { new BrowseFacet("red,square,0005",1) } }          
             };
@@ -2766,7 +2766,7 @@ namespace BoboBrowse.Net
 
             req.RemoveSelection("groupby");
             fspec.MaxCount = 2;
-            answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "groupby", new BrowseFacet[] { new BrowseFacet("blue,circle,0913",1),
                     new BrowseFacet("blue,square,1013",1) } }          
@@ -2825,7 +2825,7 @@ namespace BoboBrowse.Net
             req.SetFacetSpec("timerange", facetSpec);
             BrowseResult result = browser.Browse(req);
             IFacetAccessible facetholder = result.GetFacetAccessor("timerange");
-            IEnumerable<BrowseFacet> facets = facetholder.GetFacets();
+            ICollection<BrowseFacet> facets = facetholder.GetFacets();
             facet = facets.Get(0);
             Assert.AreEqual("000000001", facet.Value, "order by value");
             Assert.AreEqual(1, facet.FacetValueHitCount, "order by value");
@@ -2919,7 +2919,7 @@ namespace BoboBrowse.Net
             answerBucketFacets[3] = new BrowseFacet("0000000010", 1);
             answerBucketFacets[4] = new BrowseFacet("0000000021", 1);
 
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            var answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "numberhisto", answerBucketFacets }          
             };
@@ -2936,7 +2936,7 @@ namespace BoboBrowse.Net
             answerBucketFacets[0] = new BrowseFacet("0000000002", 1);
             answerBucketFacets[1] = new BrowseFacet("0000000021", 1);
 
-            answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "numberhisto", answerBucketFacets }          
             };
@@ -2960,7 +2960,7 @@ namespace BoboBrowse.Net
             answerBucketFacets[1] = new BrowseFacet("s2", 4);
             answerBucketFacets[2] = new BrowseFacet("s3", 3);
 
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            var answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "sets", answerBucketFacets }          
             };
@@ -2984,7 +2984,7 @@ namespace BoboBrowse.Net
             answerBucketFacets[1] = new BrowseFacet("s2", 3);
             answerBucketFacets[2] = new BrowseFacet("s3", 1);
 
-            answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "sets", answerBucketFacets }          
             };
@@ -3012,7 +3012,7 @@ namespace BoboBrowse.Net
             answerBucketFacets[1] = new BrowseFacet("g1", 1);
             answerBucketFacets[2] = new BrowseFacet("g3", 1);
 
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            var answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "groups", answerBucketFacets }          
             };
@@ -3036,7 +3036,7 @@ namespace BoboBrowse.Net
             answerBucketFacets[0] = new BrowseFacet("g1", 1);
             answerBucketFacets[1] = new BrowseFacet("g2", 1);
 
-            answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "groups", answerBucketFacets }          
             };
@@ -3061,7 +3061,7 @@ namespace BoboBrowse.Net
             answerBucketFacets[1] = new BrowseFacet("g2", 3);
             answerBucketFacets[2] = new BrowseFacet("g3", 1);
 
-            answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "groups", answerBucketFacets }          
             };
@@ -3084,7 +3084,7 @@ namespace BoboBrowse.Net
             spec.OrderBy = FacetSpec.FacetSortSpec.OrderValueAsc;
             br.SetFacetSpec("virtual", spec);
 
-            var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
+            var answer = new Dictionary<string, IList<BrowseFacet>>()
             {
                 { "virtual", new BrowseFacet[]{new BrowseFacet("0010", 1), new BrowseFacet("0011", 1)} }          
             };

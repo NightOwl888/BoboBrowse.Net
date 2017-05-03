@@ -35,66 +35,66 @@ namespace BoboBrowse.Net.Facets.Data
     {
         //private readonly static long serialVersionUID = 1L; // NOT USED
 
-        protected BigSegmentedArray orderArray;
-        protected ITermValueList valArray;
-        protected int[] freqs;
-        protected int[] minIDs;
-        protected int[] maxIDs;
+        protected BigSegmentedArray m_orderArray;
+        protected ITermValueList m_valArray;
+        protected int[] m_freqs;
+        protected int[] m_minIDs;
+        protected int[] m_maxIDs;
 
         public FacetDataCache(BigSegmentedArray orderArray, ITermValueList valArray, int[] freqs, int[] minIDs, 
             int[] maxIDs, TermCountSize termCountSize)
         {
-            this.orderArray = orderArray;
-            this.valArray = valArray;
-            this.freqs = freqs;
-            this.minIDs = minIDs;
-            this.maxIDs = maxIDs;
+            this.m_orderArray = orderArray;
+            this.m_valArray = valArray;
+            this.m_freqs = freqs;
+            this.m_minIDs = minIDs;
+            this.m_maxIDs = maxIDs;
         }
 
         public FacetDataCache()
         {
-            this.orderArray = null;
-            this.valArray = null;
-            this.maxIDs = null;
-            this.minIDs = null;
-            this.freqs = null;
+            this.m_orderArray = null;
+            this.m_valArray = null;
+            this.m_maxIDs = null;
+            this.m_minIDs = null;
+            this.m_freqs = null;
         }
 
         public virtual ITermValueList ValArray
         {
-            get { return this.valArray; }
-            internal set { this.valArray = value; }
+            get { return this.m_valArray; }
+            internal set { this.m_valArray = value; }
         }
 
         public virtual BigSegmentedArray OrderArray
         {
-            get { return this.orderArray; }
-            internal set { this.orderArray = value; }
+            get { return this.m_orderArray; }
+            internal set { this.m_orderArray = value; }
         }
 
         public virtual int[] Freqs
         {
-            get { return freqs; }
-            internal set { freqs = value; }
+            get { return m_freqs; }
+            internal set { m_freqs = value; }
         }
 
         public virtual int[] MinIDs
         {
-            get { return minIDs; }
-            internal set { minIDs = value; }
+            get { return m_minIDs; }
+            internal set { m_minIDs = value; }
         }
 
         public virtual int[] MaxIDs
         {
-            get { return maxIDs; }
-            internal set { maxIDs = value; }
+            get { return m_maxIDs; }
+            internal set { m_maxIDs = value; }
         }
 
         
 
         public virtual int GetNumItems(int docid)
         {
-            int valIdx = orderArray.Get(docid);
+            int valIdx = m_orderArray.Get(docid);
             return valIdx <= 0 ? 0 : 1;
         }
 
@@ -153,7 +153,7 @@ namespace BoboBrowse.Net.Facets.Data
             int dictValueCount = GetDictValueCount(reader, fieldName);
             BigSegmentedArray order = NewInstance(dictValueCount, maxDoc);
 
-            this.orderArray = order;
+            this.m_orderArray = order;
 
             List<int> minIDList = new List<int>();
             List<int> maxIDList = new List<int>();
@@ -215,10 +215,10 @@ namespace BoboBrowse.Net.Facets.Data
             }
 
             list.Seal();
-            this.valArray = list;
-            this.freqs = freqList.ToArray();
-            this.minIDs = minIDList.ToArray();
-            this.maxIDs = maxIDList.ToArray();
+            this.m_valArray = list;
+            this.m_freqs = freqList.ToArray();
+            this.m_minIDs = minIDList.ToArray();
+            this.m_maxIDs = maxIDList.ToArray();
 
             int doc = 0;
             while (doc < maxDoc && order.Get(doc) != 0)
@@ -227,16 +227,16 @@ namespace BoboBrowse.Net.Facets.Data
             }
             if (doc < maxDoc)
             {
-                this.minIDs[0] = doc;
+                this.m_minIDs[0] = doc;
                 // Try to get the max
                 doc = maxDoc - 1;
                 while (doc >= 0 && order.Get(doc) != 0)
                 {
                     --doc;
                 }
-                this.maxIDs[0] = doc;
+                this.m_maxIDs[0] = doc;
             }
-            this.freqs[0] = reader.NumDocs - totalFreq;
+            this.m_freqs[0] = reader.NumDocs - totalFreq;
         }
 
         private static int[] ConvertString(FacetDataCache dataCache, string[] vals)
@@ -293,11 +293,11 @@ namespace BoboBrowse.Net.Facets.Data
 
     public class FacetDocComparerSource : DocComparerSource
     {
-        private readonly IFacetHandler _facetHandler;
+        private readonly IFacetHandler m_facetHandler;
 
         public FacetDocComparerSource(IFacetHandler facetHandler)
         {
-            _facetHandler = facetHandler;
+            m_facetHandler = facetHandler;
         }
 
         public override DocComparer GetComparer(AtomicReader reader, int docbase)
@@ -305,31 +305,31 @@ namespace BoboBrowse.Net.Facets.Data
             if (!(reader is BoboSegmentReader))
                 throw new ArgumentException("reader not instance of BoboSegmentReader");
             BoboSegmentReader boboReader = (BoboSegmentReader)reader;
-            FacetDataCache dataCache = _facetHandler.GetFacetData<FacetDataCache>(boboReader);
+            FacetDataCache dataCache = m_facetHandler.GetFacetData<FacetDataCache>(boboReader);
             BigSegmentedArray orderArray = dataCache.OrderArray;
             return new FacetDocComparer(dataCache, orderArray);
         }
 
         public class FacetDocComparer : DocComparer
         {
-            private readonly FacetDataCache _dataCache;
-            private readonly BigSegmentedArray _orderArray;
+            private readonly FacetDataCache m_dataCache;
+            private readonly BigSegmentedArray m_orderArray;
 
             public FacetDocComparer(FacetDataCache dataCache, BigSegmentedArray orderArray)
             {
-                _dataCache = dataCache;
-                _orderArray = orderArray;
+                m_dataCache = dataCache;
+                m_orderArray = orderArray;
             }
 
             public override IComparable Value(ScoreDoc doc)
             {
-                int index = _orderArray.Get(doc.Doc);
-                return _dataCache.ValArray.GetComparableValue(index);
+                int index = m_orderArray.Get(doc.Doc);
+                return m_dataCache.ValArray.GetComparableValue(index);
             }
 
             public override int Compare(ScoreDoc doc1, ScoreDoc doc2)
             {
-                return _orderArray.Get(doc1.Doc) - _orderArray.Get(doc2.Doc);
+                return m_orderArray.Get(doc1.Doc) - m_orderArray.Get(doc2.Doc);
             }
         }
     }

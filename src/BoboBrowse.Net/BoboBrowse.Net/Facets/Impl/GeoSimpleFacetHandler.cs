@@ -54,10 +54,10 @@ namespace BoboBrowse.Net.Facets.Impl
     /// </summary>
     public class GeoSimpleFacetHandler : RuntimeFacetHandler<FacetDataNone>
     {
-	    protected readonly string _latFacetName;
-        protected readonly string _longFacetName;
-	    protected RangeFacetHandler _latFacetHandler;
-	    protected RangeFacetHandler _longFacetHandler;
+	    protected readonly string m_latFacetName;
+        protected readonly string m_longFacetName;
+	    protected RangeFacetHandler m_latFacetHandler;
+	    protected RangeFacetHandler m_longFacetHandler;
 
         public class GeoLatLonRange
         {
@@ -109,16 +109,16 @@ namespace BoboBrowse.Net.Facets.Impl
         public GeoSimpleFacetHandler(string name, string latFacetName, string longFacetName)
             : base(name, new string[] { latFacetName, longFacetName })
         {
-            _latFacetName = latFacetName;
-            _longFacetName = longFacetName;
+            m_latFacetName = latFacetName;
+            m_longFacetName = longFacetName;
         }
 
         public override RandomAccessFilter BuildRandomAccessFilter(string val, IDictionary<string, string> props)
         {
             GeoLatLonRange range = GeoLatLonRange.Parse(val);
 
-            RandomAccessFilter latFilter = _latFacetHandler.BuildRandomAccessFilter(range.latRange, props);
-            RandomAccessFilter longFilter = _longFacetHandler.BuildRandomAccessFilter(range.lonRange, props);
+            RandomAccessFilter latFilter = m_latFacetHandler.BuildRandomAccessFilter(range.latRange, props);
+            RandomAccessFilter longFilter = m_longFacetHandler.BuildRandomAccessFilter(range.lonRange, props);
             return new RandomAccessAndFilter(new RandomAccessFilter[] { latFilter, longFilter });
         }
 
@@ -132,8 +132,8 @@ namespace BoboBrowse.Net.Facets.Impl
                 latValList.Add(range.latRange);
                 longValList.Add(range.lonRange);
             }
-            RandomAccessFilter latFilter = _latFacetHandler.BuildRandomAccessAndFilter(latValList.ToArray(), props);
-            RandomAccessFilter longFilter = _longFacetHandler.BuildRandomAccessAndFilter(longValList.ToArray(), props);
+            RandomAccessFilter latFilter = m_latFacetHandler.BuildRandomAccessAndFilter(latValList.ToArray(), props);
+            RandomAccessFilter longFilter = m_longFacetHandler.BuildRandomAccessAndFilter(longValList.ToArray(), props);
             return new RandomAccessAndFilter(new RandomAccessFilter[] { latFilter, longFilter });
         }
 
@@ -147,12 +147,12 @@ namespace BoboBrowse.Net.Facets.Impl
                 latValList.Add(range.latRange);
                 longValList.Add(range.lonRange);
             }
-            RandomAccessFilter latFilter = _latFacetHandler.BuildRandomAccessOrFilter(latValList.ToArray(), props, isNot);
-            RandomAccessFilter longFilter = _longFacetHandler.BuildRandomAccessOrFilter(longValList.ToArray(), props, isNot);
+            RandomAccessFilter latFilter = m_latFacetHandler.BuildRandomAccessOrFilter(latValList.ToArray(), props, isNot);
+            RandomAccessFilter longFilter = m_longFacetHandler.BuildRandomAccessOrFilter(longValList.ToArray(), props, isNot);
             return new RandomAccessAndFilter(new RandomAccessFilter[] { latFilter, longFilter });
         }
 
-        private static IEnumerable<string> BuildAllRangeStrings(string[] values)
+        private static IList<string> BuildAllRangeStrings(string[] values)
         {
             if (values == null) return new List<string>();
             List<string> ranges = new List<string>(values.Length);
@@ -166,9 +166,9 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec fspec)
         {
-            IEnumerable<string> list = BuildAllRangeStrings(sel.Values);
+            IList<string> list = BuildAllRangeStrings(sel.Values);
             // every string in the above list is of the form <latitude, longitude, radius>, which can be interpreted by GeoSimpleFacetCountCollector
-            return new GeoSimpleFacetHandlerFacetCountCollectorSource(_latFacetHandler, _longFacetHandler, _name, fspec, list);
+            return new GeoSimpleFacetHandlerFacetCountCollectorSource(m_latFacetHandler, m_longFacetHandler, m_name, fspec, list);
         }
 
         private class GeoSimpleFacetHandlerFacetCountCollectorSource : FacetCountCollectorSource
@@ -177,10 +177,10 @@ namespace BoboBrowse.Net.Facets.Impl
             private readonly RangeFacetHandler _longFacetHandler;
             private readonly string _name;
             private readonly FacetSpec _fspec;
-            private readonly IEnumerable<string> _list;
+            private readonly IList<string> _list;
 
             public GeoSimpleFacetHandlerFacetCountCollectorSource(RangeFacetHandler latFacetHandler, RangeFacetHandler longFacetHandler,
-                string name, FacetSpec fspec, IEnumerable<string> list)
+                string name, FacetSpec fspec, IList<string> list)
             {
                 _latFacetHandler = latFacetHandler;
                 _longFacetHandler = longFacetHandler;
@@ -199,8 +199,8 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override string[] GetFieldValues(BoboSegmentReader reader, int docid)
         {
-            string[] latValues = _latFacetHandler.GetFieldValues(reader, docid);
-            string[] longValues = _longFacetHandler.GetFieldValues(reader, docid);
+            string[] latValues = m_latFacetHandler.GetFieldValues(reader, docid);
+            string[] longValues = m_longFacetHandler.GetFieldValues(reader, docid);
             string[] allValues = new string[latValues.Length + longValues.Length];
             int index = 0;
             foreach (string value in latValues)
@@ -216,8 +216,8 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override object[] GetRawFieldValues(BoboSegmentReader reader, int docid)
         {
-            object[] latValues = _latFacetHandler.GetRawFieldValues(reader, docid);
-            object[] longValues = _longFacetHandler.GetRawFieldValues(reader, docid);
+            object[] latValues = m_latFacetHandler.GetRawFieldValues(reader, docid);
+            object[] longValues = m_longFacetHandler.GetRawFieldValues(reader, docid);
             object[] allValues = new object[latValues.Length + longValues.Length];
             int index = 0;
             foreach (object value in latValues)
@@ -233,8 +233,8 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override FacetDataNone Load(BoboSegmentReader reader)
         {
-            _latFacetHandler = (RangeFacetHandler)GetDependedFacetHandler(_latFacetName);
-            _longFacetHandler = (RangeFacetHandler)GetDependedFacetHandler(_longFacetName);
+            m_latFacetHandler = (RangeFacetHandler)GetDependedFacetHandler(m_latFacetName);
+            m_longFacetHandler = (RangeFacetHandler)GetDependedFacetHandler(m_longFacetName);
             return FacetDataNone.Instance;
         }
 

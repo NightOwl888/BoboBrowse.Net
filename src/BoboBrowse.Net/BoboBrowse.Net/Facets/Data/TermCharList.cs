@@ -25,7 +25,7 @@ namespace BoboBrowse.Net.Facets.Data
 
     public class TermCharList : TermValueList<char>
     {
-        private List<char> _elements = new List<char>();
+        private List<char> m_elements = new List<char>();
         
         private char Parse(string s)
         {
@@ -44,12 +44,12 @@ namespace BoboBrowse.Net.Facets.Data
 
         public override void Add(string o)
         {
-            _innerList.Add(Parse(o));
+            m_innerList.Add(Parse(o));
         }
 
         public override bool ContainsWithType(char val)
         {
-            return _elements.BinarySearch(val) >= 0;
+            return m_elements.BinarySearch(val) >= 0;
         }
 
         public override int IndexOf(object o)
@@ -59,18 +59,18 @@ namespace BoboBrowse.Net.Facets.Data
                 val = Parse((string)o);
             else
                 val = (char)o;
-            return _innerList.BinarySearch(val);
+            return m_innerList.BinarySearch(val);
         }
 
         public override int IndexOfWithType(char val)
         {
-            return _elements.BinarySearch(val);
+            return m_elements.BinarySearch(val);
         }
 
         public override void Seal()
         {
-            _innerList.TrimExcess();
-            _elements = new List<char>(_innerList);
+            m_innerList.TrimExcess();
+            m_elements = new List<char>(m_innerList);
         }
 
         public override string Format(object o)

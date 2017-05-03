@@ -72,8 +72,8 @@ namespace BoboBrowse.Net.Sort
         //    }
         //}
 
-        public IFacetHandler groupBy = null; // Point to the first element of groupByMulti to avoid array lookups.
-        public IFacetHandler[] groupByMulti = null;
+        public IFacetHandler m_groupBy = null; // Point to the first element of groupByMulti to avoid array lookups.
+        public IFacetHandler[] m_groupByMulti = null;
 
         // NightOwl888: The _collectDocIdCache setting seems to put arrays into
         // memory, but then do nothing with the arrays. Seems wasteful and unnecessary.
@@ -84,14 +84,14 @@ namespace BoboBrowse.Net.Sort
 
         //public static int BLOCK_SIZE = 4096;
 
-        protected readonly SortField[] _sortFields;
-        protected readonly bool _fetchStoredFields;
-        protected bool _closed = false;
+        protected readonly SortField[] m_sortFields;
+        protected readonly bool m_fetchStoredFields;
+        protected bool m_closed = false;
 
         protected SortCollector(SortField[] sortFields, bool fetchStoredFields)
         {
-            _sortFields = sortFields;
-            _fetchStoredFields = fetchStoredFields;
+            m_sortFields = sortFields;
+            m_fetchStoredFields = fetchStoredFields;
         }
 
 
@@ -210,7 +210,7 @@ namespace BoboBrowse.Net.Sort
         }
 
         public static SortCollector BuildSortCollector(IBrowsable browser, Query q, SortField[] sort,
-            int offset, int count, bool fetchStoredFields, IEnumerable<string> termVectorsToFetch,
+            int offset, int count, bool fetchStoredFields, ICollection<string> termVectorsToFetch,
             string[] groupBy, int maxPerGroup, bool collectDocIdCache)
         {
             
@@ -266,9 +266,9 @@ namespace BoboBrowse.Net.Sort
         {
             if (disposing)
             {
-                if (!_closed)
+                if (!m_closed)
                 {
-                    _closed = true;
+                    m_closed = true;
 
                     // NightOwl888: The _collectDocIdCache setting seems to put arrays into
                     // memory, but then do nothing with the arrays. Seems wasteful and unnecessary.

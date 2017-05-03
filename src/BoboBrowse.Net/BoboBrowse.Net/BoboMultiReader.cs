@@ -33,7 +33,7 @@ namespace BoboBrowse.Net
 
     public class BoboMultiReader : FilterDirectoryReader
     {
-        protected IEnumerable<BoboSegmentReader> _subReaders = new List<BoboSegmentReader>();
+        protected IList<BoboSegmentReader> m_subReaders = new List<BoboSegmentReader>();
 
         /// <summary>
         /// Constructor
@@ -51,7 +51,7 @@ namespace BoboBrowse.Net
         /// <param name="reader">Directory reader</param>
         /// <param name="facetHandlers">List of facet handlers</param>
         /// <returns>A new BoboMultiReader instance.</returns>
-        public static BoboMultiReader GetInstance(DirectoryReader reader, IEnumerable<IFacetHandler> facetHandlers) 
+        public static BoboMultiReader GetInstance(DirectoryReader reader, ICollection<IFacetHandler> facetHandlers) 
         {
             BoboMultiReader boboReader = new BoboMultiReader(reader, facetHandlers);
             boboReader.FacetInit();
@@ -63,23 +63,23 @@ namespace BoboBrowse.Net
             // do nothing
         }
 
-        protected BoboMultiReader(DirectoryReader reader, IEnumerable<IFacetHandler> facetHandlers)
+        protected BoboMultiReader(DirectoryReader reader, ICollection<IFacetHandler> facetHandlers)
             : base(reader, new BoboSubReaderWrapper(reader, facetHandlers))
         {
-            _subReaders = GetSequentialSubReaders().Cast<BoboSegmentReader>().ToList();
+            m_subReaders = GetSequentialSubReaders().Cast<BoboSegmentReader>().ToList();
         }
 
         protected void FacetInit()
         {
-            foreach (BoboSegmentReader r in _subReaders)
+            foreach (BoboSegmentReader r in m_subReaders)
             {
                 r.FacetInit();
             }
         }
 
-        public IEnumerable<BoboSegmentReader> GetSubReaders()
+        public IList<BoboSegmentReader> GetSubReaders()
         {
-            return _subReaders;
+            return m_subReaders;
         }
 
         public int SubReaderBase(int readerIndex)
@@ -90,15 +90,15 @@ namespace BoboBrowse.Net
         public class BoboSubReaderWrapper : SubReaderWrapper
         {
             private const string SPRING_CONFIG = "bobo.spring";
-            private readonly BoboSegmentReader.WorkArea _workArea = new BoboSegmentReader.WorkArea();
-            private IEnumerable<IFacetHandler> _facetHandlers = null;
+            private readonly BoboSegmentReader.WorkArea m_workArea = new BoboSegmentReader.WorkArea();
+            private ICollection<IFacetHandler> m_facetHandlers = null;
 
             /// <summary>
             /// Constructor
             /// </summary>
             /// <param name="reader"></param>
             /// <param name="facetHandlers"></param>
-            public BoboSubReaderWrapper(DirectoryReader reader, IEnumerable<IFacetHandler> facetHandlers)
+            public BoboSubReaderWrapper(DirectoryReader reader, ICollection<IFacetHandler> facetHandlers)
             {
                 // NOTE: Spring support was removed in Bobo 4.0.2 in Java, but we are still including it in 
                 // the .NET version.
@@ -117,7 +117,7 @@ namespace BoboBrowse.Net
                             var loaderInstance = Activator.CreateInstance(loaderType);
 
                             MethodInfo methodInfo = loaderType.GetMethod("LoadFacetHandlers");
-                            facetHandlers = (IEnumerable<IFacetHandler>)methodInfo.Invoke(loaderInstance, new object[] { springConfigFile, _workArea });
+                            facetHandlers = (ICollection<IFacetHandler>)methodInfo.Invoke(loaderInstance, new object[] { springConfigFile, m_workArea });
                         }
                         else if (File.Exists(springConfigFile))
                         {
@@ -138,12 +138,12 @@ namespace BoboBrowse.Net
                     }
                 }
 
-                _facetHandlers = facetHandlers;
+                m_facetHandlers = facetHandlers;
             }
 
             public override AtomicReader Wrap(AtomicReader reader)
             {
-                return new BoboSegmentReader(reader, _facetHandlers, null, _workArea);
+                return new BoboSegmentReader(reader, m_facetHandlers, null, m_workArea);
             }
         }
 

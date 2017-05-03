@@ -47,68 +47,68 @@ namespace BoboBrowse.Net.Facets.Filter
 
         private sealed class GeoSimpleDocIdSetIterator : DocIdSetIterator
         {
-            private int _doc = -1;
-		    private int _minID = int.MaxValue;
-		    private int _maxID = -1;
-		    private readonly int _latStart;
-		    private readonly int _latEnd;
-		    private readonly int _longStart;
-		    private readonly int _longEnd;
-		    private readonly BigSegmentedArray _latOrderArray;
+            private int m_doc = -1;
+		    private int m_minID = int.MaxValue;
+		    private int m_maxID = -1;
+		    private readonly int m_latStart;
+		    private readonly int m_latEnd;
+		    private readonly int m_longStart;
+		    private readonly int m_longEnd;
+		    private readonly BigSegmentedArray m_latOrderArray;
 
             internal GeoSimpleDocIdSetIterator(int latStart, int latEnd, int longStart, int longEnd, FacetDataCache latDataCache, FacetDataCache longDataCache)
             {
-                _latStart = latStart;
-                _longStart = longStart;
-                _latEnd = latEnd;
-                _longEnd = longEnd;
+                m_latStart = latStart;
+                m_longStart = longStart;
+                m_latEnd = latEnd;
+                m_longEnd = longEnd;
                 for (int i = latStart; i <= latEnd; ++i)
                 {
-                    _minID = Math.Min(_minID, latDataCache.MinIDs[i]);
-                    _maxID = Math.Max(_maxID, latDataCache.MaxIDs[i]);
+                    m_minID = Math.Min(m_minID, latDataCache.MinIDs[i]);
+                    m_maxID = Math.Max(m_maxID, latDataCache.MaxIDs[i]);
                 }
                 for (int i = longStart; i <= longEnd; ++i)
                 {
-                    _minID = Math.Min(_minID, longDataCache.MinIDs[i]);
-                    _maxID = Math.Max(_maxID, longDataCache.MaxIDs[i]);
+                    m_minID = Math.Min(m_minID, longDataCache.MinIDs[i]);
+                    m_maxID = Math.Max(m_maxID, longDataCache.MaxIDs[i]);
                 }
-                _doc = Math.Max(-1, _minID - 1);
-                _latOrderArray = latDataCache.OrderArray;
+                m_doc = Math.Max(-1, m_minID - 1);
+                m_latOrderArray = latDataCache.OrderArray;
             }
 
             public override int DocID
             {
-                get { return _doc; }
+                get { return m_doc; }
             }
 
             public override int NextDoc()
             {
                 int latIndex;
                 int longIndex;
-                while (_doc < _maxID)
+                while (m_doc < m_maxID)
                 {	//not yet reached end
-                    latIndex = _latOrderArray.Get(++_doc);
-                    longIndex = _latOrderArray.Get(_doc);
-                    if ((latIndex >= _latStart && latIndex <= _latEnd) && (longIndex >= _longStart && longIndex <= _longEnd))
-                        return _doc;
+                    latIndex = m_latOrderArray.Get(++m_doc);
+                    longIndex = m_latOrderArray.Get(m_doc);
+                    if ((latIndex >= m_latStart && latIndex <= m_latEnd) && (longIndex >= m_longStart && longIndex <= m_longEnd))
+                        return m_doc;
                 }
                 return DocIdSetIterator.NO_MORE_DOCS;
             }
 
             public override int Advance(int id)
             {
-                if (_doc < id)
+                if (m_doc < id)
                 {
-                    _doc = id - 1;
+                    m_doc = id - 1;
                 }
                 int latIndex;
                 int longIndex;
-                while (_doc < _maxID)
+                while (m_doc < m_maxID)
                 {	//not yet reached end
-                    latIndex = _latOrderArray.Get(++_doc);
-                    longIndex = _latOrderArray.Get(_doc);
-                    if ((latIndex >= _latStart && latIndex <= _latEnd) && (longIndex >= _longStart && longIndex <= _longEnd))
-                        return _doc;
+                    latIndex = m_latOrderArray.Get(++m_doc);
+                    longIndex = m_latOrderArray.Get(m_doc);
+                    if ((latIndex >= m_latStart && latIndex <= m_latEnd) && (longIndex >= m_longStart && longIndex <= m_longEnd))
+                        return m_doc;
                 }
                 return DocIdSetIterator.NO_MORE_DOCS;
             }
@@ -133,33 +133,33 @@ namespace BoboBrowse.Net.Facets.Filter
 
         private class GeoSimpleRandomAccessDocIdSet : RandomAccessDocIdSet
         {
-            private readonly int _latStart;
-            private readonly int _latEnd;
-            private readonly int _longStart;
-            private readonly int _longEnd;
-            private readonly FacetDataCache _latDataCache;
-            private readonly FacetDataCache _longDataCache;
+            private readonly int m_latStart;
+            private readonly int m_latEnd;
+            private readonly int m_longStart;
+            private readonly int m_longEnd;
+            private readonly FacetDataCache m_latDataCache;
+            private readonly FacetDataCache m_longDataCache;
 
             public GeoSimpleRandomAccessDocIdSet(int[] latRange, int[] longRange, FacetDataCache latDataCache, FacetDataCache longDataCache)
             {
-                _latStart = latRange[0];
-                _latEnd = latRange[1];
-                _longStart = longRange[0];
-                _longEnd = longRange[1];
-                _latDataCache = latDataCache;
-                _longDataCache = longDataCache;
+                m_latStart = latRange[0];
+                m_latEnd = latRange[1];
+                m_longStart = longRange[0];
+                m_longEnd = longRange[1];
+                m_latDataCache = latDataCache;
+                m_longDataCache = longDataCache;
             }
 
             public override bool Get(int docid)
             {
-                int latIndex = _latDataCache.OrderArray.Get(docid);
-                int longIndex = _longDataCache.OrderArray.Get(docid);
-                return latIndex >= _latStart && latIndex <= _latEnd && longIndex >= _longStart && longIndex <= _longEnd;
+                int latIndex = m_latDataCache.OrderArray.Get(docid);
+                int longIndex = m_longDataCache.OrderArray.Get(docid);
+                return latIndex >= m_latStart && latIndex <= m_latEnd && longIndex >= m_longStart && longIndex <= m_longEnd;
             }
 
             public override DocIdSetIterator GetIterator()
             {
-                return new GeoSimpleDocIdSetIterator(_latStart, _latEnd, _longStart, _longEnd, _latDataCache, _longDataCache);
+                return new GeoSimpleDocIdSetIterator(m_latStart, m_latEnd, m_longStart, m_longEnd, m_latDataCache, m_longDataCache);
             }
         }
 

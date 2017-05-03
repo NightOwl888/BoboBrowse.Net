@@ -45,7 +45,7 @@ namespace BoboBrowse.Net.Facets
         /// <param name="name">the name of this FacetHandler, which is used in FacetSpec and 
         /// Selection to specify the facet. If we regard a facet as a field, the name is like a field name.</param>
         /// <param name="dependsOn">Set of names of facet handlers this facet handler depend on for loading.</param>
-        public RuntimeFacetHandler(string name, IEnumerable<string> dependsOn)
+        public RuntimeFacetHandler(string name, ICollection<string> dependsOn)
             : base(name, dependsOn)
         {}
 
@@ -60,19 +60,19 @@ namespace BoboBrowse.Net.Facets
 
         public override T GetFacetData<T>(BoboSegmentReader reader)
         {
-            return (T)reader.GetRuntimeFacetData(_name);
+            return (T)reader.GetRuntimeFacetData(m_name);
         }
 
         public override void LoadFacetData(BoboSegmentReader reader)
         {
-            reader.PutRuntimeFacetData(_name, Load(reader));
-            reader.PutRuntimeFacetData(_name, this);
+            reader.PutRuntimeFacetData(m_name, Load(reader));
+            reader.PutRuntimeFacetData(m_name, this);
         }
 
         public override void LoadFacetData(BoboSegmentReader reader, BoboSegmentReader.WorkArea workArea)
         {
-            reader.PutRuntimeFacetData(_name, Load(reader, workArea));
-            reader.PutRuntimeFacetHandler(_name, this);
+            reader.PutRuntimeFacetData(m_name, Load(reader, workArea));
+            reader.PutRuntimeFacetHandler(m_name, this);
         }
 
         public virtual void Dispose()

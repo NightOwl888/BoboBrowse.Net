@@ -27,16 +27,16 @@ namespace BoboBrowse.Net.Facets.Filter
 
     public class NotFilter : Filter
     {
-        private readonly Filter _innerFilter;
+        private readonly Filter m_innerFilter;
 
         public NotFilter(Filter innerFilter)
         {
-            _innerFilter = innerFilter;
+            m_innerFilter = innerFilter;
         }
 
         public override DocIdSet GetDocIdSet(AtomicReaderContext context, IBits acceptDocs)
         {
-            return new NotDocIdSet(_innerFilter.GetDocIdSet(context, acceptDocs), context.Reader.MaxDoc);
+            return new NotDocIdSet(m_innerFilter.GetDocIdSet(context, acceptDocs), context.Reader.MaxDoc);
         }
     }
 }

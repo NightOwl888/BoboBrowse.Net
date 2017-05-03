@@ -60,27 +60,27 @@ namespace BoboBrowse.Net
         {
 
             //private static long serialVersionUID = 1L; // NOT USED
-            private readonly string name;
+            private readonly string m_name;
 
             /** Field's value */
-            private object fieldsData;
+            private object m_fieldsData;
 
             public SerializableField(IIndexableField field)
             {
                 // TODO: Fix this property and push to Lucene.Net
-                name = field.Name;
+                m_name = field.Name;
                 if (field.GetNumericValue() != null)
                 {
-                    fieldsData = field.GetNumericValue();
+                    m_fieldsData = field.GetNumericValue();
                 }
                 else if (field.GetStringValue() != null)
                 {
-                    fieldsData = field.GetStringValue();
+                    m_fieldsData = field.GetStringValue();
                 }
                 else if (field.GetBinaryValue() != null)
                 {
                     // TODO: Fix this property and push to Lucene.Net
-                    fieldsData = field.GetBinaryValue().Bytes;
+                    m_fieldsData = field.GetBinaryValue().Bytes;
                 }
                 else
                 {
@@ -90,16 +90,16 @@ namespace BoboBrowse.Net
 
             public string Name
             {
-                get { return name; }
+                get { return m_name; }
             }
 
             public string StringValue
             {
                 get
                 {
-                    if (fieldsData is string || NumericUtil.IsNumeric(fieldsData))
+                    if (m_fieldsData is string || NumericUtil.IsNumeric(m_fieldsData))
                     {
-                        return fieldsData.ToString();
+                        return m_fieldsData.ToString();
                     }
                     else
                     {
@@ -112,9 +112,9 @@ namespace BoboBrowse.Net
             {
                 get
                 {
-                    if (NumericUtil.IsNumeric(fieldsData))
+                    if (NumericUtil.IsNumeric(m_fieldsData))
                     {
-                        return (Decimal)fieldsData;
+                        return (Decimal)m_fieldsData;
                     }
                     else
                     {
@@ -127,9 +127,9 @@ namespace BoboBrowse.Net
             {
                 get
                 {
-                    if (fieldsData is byte[])
+                    if (m_fieldsData is byte[])
                     {
-                        return (byte[])fieldsData;
+                        return (byte[])m_fieldsData;
                     }
                     else
                     {
@@ -145,7 +145,7 @@ namespace BoboBrowse.Net
                     return false;
                 }
                 SerializableField other = (SerializableField)o;
-                if (!name.Equals(other.Name))
+                if (!m_name.Equals(other.Name))
                 {
                     return false;
                 }
@@ -175,7 +175,7 @@ namespace BoboBrowse.Net
                     int hashCode = 0;
 
                     // String properties
-                    hashCode = (hashCode * 397) ^ (name != null ? name.GetHashCode() : string.Empty.GetHashCode());
+                    hashCode = (hashCode * 397) ^ (m_name != null ? m_name.GetHashCode() : string.Empty.GetHashCode());
 
                     string value = StringValue;
                     hashCode = (hashCode * 397) ^ (value != null ? value.GetHashCode() : string.Empty.GetHashCode());
@@ -194,9 +194,9 @@ namespace BoboBrowse.Net
         {
             //private static const long serialVersionUID = 1L; // NOT USED
 
-            private float value; // the value of this node
-            private string description;
-            private IList<SerializableExplanation> details; // sub-explanations
+            private float m_value; // the value of this node
+            private string m_description;
+            private IList<SerializableExplanation> m_details; // sub-explanations
 
             public SerializableExplanation(Explanation explanation)
             {
@@ -218,8 +218,8 @@ namespace BoboBrowse.Net
             /// </summary>
             public float Value
             {
-                get { return value; }
-                set { this.value = value; }
+                get { return m_value; }
+                set { this.m_value = value; }
             }
 
             /// <summary>
@@ -227,8 +227,8 @@ namespace BoboBrowse.Net
             /// </summary>
             public string Description
             {
-                get { return description; }
-                set { description = value; }
+                get { return m_description; }
+                set { m_description = value; }
             }
 
             /// <summary>
@@ -238,11 +238,11 @@ namespace BoboBrowse.Net
             {
                 get
                 {
-                    if (details == null)
+                    if (m_details == null)
                     {
                         return null;
                     }
-                    return details.ToArray();
+                    return m_details.ToArray();
                 }
             }
 
@@ -252,11 +252,11 @@ namespace BoboBrowse.Net
             /// <param name="detail"></param>
             public void AddDetail(SerializableExplanation detail)
             {
-                if (details == null)
+                if (m_details == null)
                 {
-                    details = new List<SerializableExplanation>();
+                    m_details = new List<SerializableExplanation>();
                 }
-                details.Add(detail);
+                m_details.Add(detail);
             }
 
 
@@ -357,7 +357,7 @@ namespace BoboBrowse.Net
         }
 
         [NonSerialized]
-        private IComparable _comparable;
+        private IComparable m_comparable;
 
         /// <summary>
         /// Gets or sets a dictionary of field names to <see cref="T:IList{BoboTerm}"/> instances. 
@@ -415,8 +415,8 @@ namespace BoboBrowse.Net
         /// </summary>
         public virtual IComparable Comparable
         {
-            get { return _comparable; }
-            set { _comparable = value; }
+            get { return m_comparable; }
+            set { m_comparable = value; }
         }
 
         /// <summary>

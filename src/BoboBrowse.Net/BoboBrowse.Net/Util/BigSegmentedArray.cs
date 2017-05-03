@@ -28,24 +28,24 @@ namespace BoboBrowse.Net.Util
     /// </summary>
     public abstract class BigSegmentedArray
     {
-        private readonly int _size;
-        private readonly int _blockSize;
-        private readonly int _shiftSize;
+        private readonly int m_size;
+        private readonly int m_blockSize;
+        private readonly int m_shiftSize;
 
-        protected internal int _numrows;
+        protected internal int m_numrows;
 
         protected BigSegmentedArray(int size)
         {
-            _size = size;
-            _blockSize = GetBlockSize();
-            _shiftSize = GetShiftSize();
-            _numrows = (size >> _shiftSize) + 1;
+            m_size = size;
+            m_blockSize = GetBlockSize();
+            m_shiftSize = GetShiftSize();
+            m_numrows = (size >> m_shiftSize) + 1;
         }
 
         // BoboBrowse.Net: This was Size() in Java
         public virtual int Length
         {
-            get { return _size; }
+            get { return m_size; }
         }
 
         protected abstract int GetBlockSize();
@@ -57,7 +57,7 @@ namespace BoboBrowse.Net.Util
 
         public virtual int Capacity()
         {
-            return _numrows * _blockSize;
+            return m_numrows * m_blockSize;
         }
 
         public abstract void Add(int id, int val);

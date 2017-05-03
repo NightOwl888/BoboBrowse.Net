@@ -29,23 +29,23 @@ namespace BoboBrowse.Net.Query
     {
         private class ScoreAdjusterWeight : Weight
         {
-            Weight _innerWeight;
-            private readonly ScoreAdjusterQuery _parent;
+            private Weight m_innerWeight;
+            private readonly ScoreAdjusterQuery m_parent;
 
             public ScoreAdjusterWeight(ScoreAdjusterQuery parent, Weight innerWeight)
             {
-                _parent = parent;
-                _innerWeight = innerWeight;
+                m_parent = parent;
+                m_innerWeight = innerWeight;
             }
 
             public override string ToString()
             {
-                return "weight(" + _parent.ToString() + ")";
+                return "weight(" + m_parent.ToString() + ")";
             }
 
             public override Query Query
             {
-                get { return _innerWeight.Query; }
+                get { return m_innerWeight.Query; }
             }
 
             // NOTE: The Weight.Scorer method lost the scoreDocsInOrder and topScorer parameters between
@@ -60,56 +60,56 @@ namespace BoboBrowse.Net.Query
 
             public override Scorer GetScorer(AtomicReaderContext context, IBits acceptDocs)
             {
-                Scorer innerScorer = _innerWeight.GetScorer(context, acceptDocs);
-                return _parent._scorerBuilder.CreateScorer(innerScorer, context.AtomicReader);
+                Scorer innerScorer = m_innerWeight.GetScorer(context, acceptDocs);
+                return m_parent.m_scorerBuilder.CreateScorer(innerScorer, context.AtomicReader);
             }
 
             public override Explanation Explain(AtomicReaderContext context, int doc)
             {
-                Explanation innerExplain = _innerWeight.Explain(context, doc);
-                return _parent._scorerBuilder.Explain(context.AtomicReader, doc, innerExplain);
+                Explanation innerExplain = m_innerWeight.Explain(context, doc);
+                return m_parent.m_scorerBuilder.Explain(context.AtomicReader, doc, innerExplain);
             }
 
             public override float GetValueForNormalization()
             {
-                return _innerWeight.GetValueForNormalization();
+                return m_innerWeight.GetValueForNormalization();
             }
 
 
             public override void Normalize(float norm, float topLevelBoost)
             {
-                _innerWeight.Normalize(norm, topLevelBoost);
+                m_innerWeight.Normalize(norm, topLevelBoost);
             }
         }
 
-        protected readonly Query _query;
-        protected readonly IScorerBuilder _scorerBuilder;
+        protected readonly Query m_query;
+        protected readonly IScorerBuilder m_scorerBuilder;
 
         public ScoreAdjusterQuery(Query query, IScorerBuilder scorerBuilder)
         {
-            _query = query;
-            _scorerBuilder = scorerBuilder;
+            this.m_query = query;
+            this.m_scorerBuilder = scorerBuilder;
         }
 
         public override void ExtractTerms(ISet<Term> terms)
         {
-            _query.ExtractTerms(terms);
+            m_query.ExtractTerms(terms);
         }
 
         public override Weight CreateWeight(IndexSearcher searcher)
         {
-            return new ScoreAdjusterWeight(this, _query.CreateWeight(searcher));
+            return new ScoreAdjusterWeight(this, m_query.CreateWeight(searcher));
         }
 
         public override Query Rewrite(IndexReader reader)
         {
-            _query.Rewrite(reader);
+            m_query.Rewrite(reader);
             return this;
         }
 
         public override string ToString(string field)
         {
-            return _query.ToString(field);
+            return m_query.ToString(field);
         }
     }
 }

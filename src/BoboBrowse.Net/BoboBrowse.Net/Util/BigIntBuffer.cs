@@ -30,15 +30,15 @@ namespace BoboBrowse.Net.Util
         private const int MASK = 0x3FF;
         private const int SHIFT = 10;
 
-        private readonly List<int[]> _buffer;
-        private int _allocSize;
-        private int _mark;
+        private readonly List<int[]> m_buffer;
+        private int m_allocSize;
+        private int m_mark;
 
         public BigIntBuffer()
         {
-            _buffer = new List<int[]>();
-            _allocSize = 0;
-            _mark = 0;
+            m_buffer = new List<int[]>();
+            m_allocSize = 0;
+            m_mark = 0;
         }
 
         public virtual int Alloc(int size)
@@ -46,32 +46,32 @@ namespace BoboBrowse.Net.Util
             if (size > PAGESIZE)
                 throw new System.ArgumentException("size too big");
 
-            if ((_mark + size) > _allocSize)
+            if ((m_mark + size) > m_allocSize)
             {
                 int[] page = new int[PAGESIZE];
-                _buffer.Add(page);
-                _allocSize += PAGESIZE;
+                m_buffer.Add(page);
+                m_allocSize += PAGESIZE;
             }
-            int ptr = _mark;
-            _mark += size;
+            int ptr = m_mark;
+            m_mark += size;
 
             return ptr;
         }
 
         public virtual void Reset()
         {
-            _mark = 0;
+            m_mark = 0;
         }
 
         public virtual void Set(int ptr, int val)
         {
-            int[] page = _buffer.Get(ptr >> SHIFT);
+            int[] page = m_buffer.Get(ptr >> SHIFT);
             page[ptr & MASK] = val;
         }
 
         public virtual int Get(int ptr)
         {
-            int[] page = _buffer.Get(ptr >> SHIFT);
+            int[] page = m_buffer.Get(ptr >> SHIFT);
             return page[ptr & MASK];
         }
     }

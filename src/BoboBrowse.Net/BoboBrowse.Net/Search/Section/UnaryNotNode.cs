@@ -28,16 +28,16 @@ namespace BoboBrowse.Net.Search.Section
     /// </summary>
     public class UnaryNotNode : SectionSearchQueryPlan
     {
-        private SectionSearchQueryPlan _subquery;
+        private SectionSearchQueryPlan m_subquery;
 
         public UnaryNotNode(SectionSearchQueryPlan subquery)
         {
-            _subquery = subquery;
+            m_subquery = subquery;
         }
 
         public virtual SectionSearchQueryPlan GetSubquery()
         {
-            return _subquery;
+            return m_subquery;
         }
 
         public override int FetchDoc(int targetDoc)

@@ -55,19 +55,19 @@ namespace BoboBrowse.Net.Facets.Data
         public abstract string Format(object o);
         public virtual void Seal()
         {
-            _innerList.TrimExcess();
+            m_innerList.TrimExcess();
         }
 
-        protected List<T> _innerList;
+        protected List<T> m_innerList;
 
         protected TermValueList()
         {
-            _innerList = new List<T>();
+            m_innerList = new List<T>();
         }
 
         protected TermValueList(int capacity)
         {
-            _innerList = new List<T>(capacity);
+            m_innerList = new List<T>(capacity);
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace BoboBrowse.Net.Facets.Data
         public virtual List<string> GetInnerList()
         {
             //return new List<string>(_innerList.Select(x => Format(x)));
-            return new List<string>(_innerList.Select(x => Convert.ToString(x)));
+            return new List<string>(m_innerList.Select(x => Convert.ToString(x)));
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace BoboBrowse.Net.Facets.Data
 
         public virtual void Clear() // From IList<string>
         {
-            _innerList.Clear();
+            m_innerList.Clear();
         }
 
         public virtual bool Contains(object o)
@@ -131,12 +131,12 @@ namespace BoboBrowse.Net.Facets.Data
 
         public virtual string Get(int index)
         {
-            return Format(_innerList[index]);
+            return Format(m_innerList[index]);
         }
 
         public virtual object GetRawValue(int index)
         {
-            return _innerList[index];
+            return m_innerList[index];
         }
 
         //public virtual TRaw GetRawValue<TRaw>(int index)
@@ -146,7 +146,7 @@ namespace BoboBrowse.Net.Facets.Data
 
         public virtual IComparable GetComparableValue(int index)
         {
-            return (IComparable)_innerList[index];
+            return (IComparable)m_innerList[index];
         }
 
         public abstract int IndexOf(object o);
@@ -160,7 +160,7 @@ namespace BoboBrowse.Net.Facets.Data
 
         public virtual bool IsEmpty()
         {
-            return _innerList.Count == 0;
+            return m_innerList.Count == 0;
         }
 
         public virtual int LastIndexOf(object o)
@@ -232,7 +232,7 @@ namespace BoboBrowse.Net.Facets.Data
         {
             get
             {
-                return Format(_innerList[index]);
+                return Format(m_innerList[index]);
             }
             set
             {
@@ -248,12 +248,12 @@ namespace BoboBrowse.Net.Facets.Data
 
         public virtual void CopyTo(string[] array, int arrayIndex)// From IList<string>
         {
-            _innerList.Select(x => Convert.ToString(x)).ToList().CopyTo(array, arrayIndex);
+            m_innerList.Select(x => Convert.ToString(x)).ToList().CopyTo(array, arrayIndex);
         }
 
         public virtual int Count// From IList<string>
         {
-            get { return _innerList.Count; }
+            get { return m_innerList.Count; }
         }
 
         public virtual bool IsReadOnly// From IList<string>
@@ -284,7 +284,7 @@ namespace BoboBrowse.Net.Facets.Data
             public TermValueListEnumerator(TermValueList<T> parent)
             {
                 this.parent = parent;
-                this.iter = parent._innerList.GetEnumerator();
+                this.iter = parent.m_innerList.GetEnumerator();
             }
 
             public string Current

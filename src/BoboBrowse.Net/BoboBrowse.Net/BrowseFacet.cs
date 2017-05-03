@@ -31,8 +31,8 @@ namespace BoboBrowse.Net
     {
         //private static long serialVersionUID = 1L; // NOT USED
 
-        private string _value;
-        private int _hitcount;
+        private string m_value;
+        private int m_hitcount;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:BrowseFacet"/> class.
@@ -46,8 +46,8 @@ namespace BoboBrowse.Net
         /// <param name="hitCount">The hit count.</param>
         public BrowseFacet(string value, int hitCount)
         {
-            _value = value;
-            _hitcount = hitCount;
+            m_value = value;
+            m_hitcount = hitCount;
         }
 
         /// <summary>
@@ -55,8 +55,8 @@ namespace BoboBrowse.Net
         /// </summary>
         public virtual string Value 
         {
-            get { return _value; }
-            set { _value = value; }
+            get { return m_value; }
+            set { m_value = value; }
         }
 
         /// <summary>
@@ -65,8 +65,8 @@ namespace BoboBrowse.Net
         [Obsolete("Use FacetValueHitCount instead")]
         public virtual int HitCount
         {
-            get { return _hitcount; }
-            set { _hitcount = value; }
+            get { return m_hitcount; }
+            set { m_hitcount = value; }
         }
 
         /// <summary>
@@ -74,13 +74,13 @@ namespace BoboBrowse.Net
         /// </summary>
         public virtual int FacetValueHitCount
         {
-            get { return _hitcount; }
-            set { _hitcount = value; }
+            get { return m_hitcount; }
+            set { m_hitcount = value; }
         }
 
         public override string ToString()
         {
-            return string.Concat(Value, "(", _hitcount, ")");
+            return string.Concat(Value, "(", m_hitcount, ")");
         }
 
         public override bool Equals(object obj)
@@ -90,7 +90,7 @@ namespace BoboBrowse.Net
             if (obj is BrowseFacet)
             {
                 BrowseFacet c2 = (BrowseFacet)obj;
-                if (_hitcount == c2._hitcount && _value.Equals(c2._value))
+                if (m_hitcount == c2.m_hitcount && m_value.Equals(c2.m_value))
                 {
                     equals = true;
                 }
@@ -127,7 +127,7 @@ namespace BoboBrowse.Net
                 int val = comparer.Compare(this, facet);
                 if (val == 0)
                 {
-                    facet._hitcount += _hitcount;
+                    facet.m_hitcount += m_hitcount;
                     return v;
                 }
                 // This seems pointless from the Java code. Commented.

@@ -38,15 +38,15 @@ namespace BoboBrowse.Net
     public class BoboSubBrowser : BoboSearcher, IBrowsable
     {
         private static readonly ILog logger = LogProvider.For<BoboSubBrowser>();
-        private readonly BoboSegmentReader _reader;
-        private readonly IDictionary<string, IRuntimeFacetHandlerFactory> _runtimeFacetHandlerFactoryMap;
-        private readonly IDictionary<string, IFacetHandler> _runtimeFacetHandlerMap;
-        private IDictionary<string, IFacetHandler> _allFacetHandlerMap;
-        private IList<IRuntimeFacetHandler> _runtimeFacetHandlers = null;
+        private readonly BoboSegmentReader m_reader;
+        private readonly IDictionary<string, IRuntimeFacetHandlerFactory> m_runtimeFacetHandlerFactoryMap;
+        private readonly IDictionary<string, IFacetHandler> m_runtimeFacetHandlerMap;
+        private IDictionary<string, IFacetHandler> m_allFacetHandlerMap;
+        private IList<IRuntimeFacetHandler> m_runtimeFacetHandlers = null;
 
         public override IndexReader IndexReader
         {
-            get { return _reader; }
+            get { return m_reader; }
         }
 
         /// <summary>
@@ -56,17 +56,17 @@ namespace BoboBrowse.Net
         public BoboSubBrowser(BoboSegmentReader reader)
             : base(reader)
         {
-            _reader = reader;
-            _runtimeFacetHandlerMap = new Dictionary<string, IFacetHandler>();
-            _runtimeFacetHandlerFactoryMap = reader.RuntimeFacetHandlerFactoryMap;
-            _allFacetHandlerMap = null;
+            m_reader = reader;
+            m_runtimeFacetHandlerMap = new Dictionary<string, IFacetHandler>();
+            m_runtimeFacetHandlerFactoryMap = reader.RuntimeFacetHandlerFactoryMap;
+            m_allFacetHandlerMap = null;
         }
 
         private bool IsNoQueryNoFilter(BrowseRequest req)
         {
             Lucene.Net.Search.Query q = req.Query;
             Filter filter = req.Filter;
-            return ((q == null || q is MatchAllDocsQuery) && filter == null && !_reader.HasDeletions); 
+            return ((q == null || q is MatchAllDocsQuery) && filter == null && !m_reader.HasDeletions); 
         }
 
         public virtual object[] GetRawFieldVal(int docid, string fieldname) 
@@ -78,7 +78,7 @@ namespace BoboBrowse.Net
             }
             else
             {
-                return facetHandler.GetRawFieldValues(_reader, docid);
+                return facetHandler.GetRawFieldValues(m_reader, docid);
             }
         }
 
@@ -89,13 +89,13 @@ namespace BoboBrowse.Net
         /// <param name="facetHandler">Runtime facet handler</param>
         public virtual void SetFacetHandler(IFacetHandler facetHandler)
         {
-            IEnumerable<string> dependsOn = facetHandler.DependsOn;
+            ICollection<string> dependsOn = facetHandler.DependsOn;
             BoboSegmentReader reader = (BoboSegmentReader)IndexReader;
-            if (dependsOn.Count() > 0)
+            if (dependsOn.Count > 0)
             {
                 foreach (var fn in dependsOn)
                 {
-                    var f = _runtimeFacetHandlerMap.Get(fn);
+                    var f = m_runtimeFacetHandlerMap.Get(fn);
                     if (f == null)
 		            {
 			            f = reader.GetFacetHandler(fn);
@@ -108,7 +108,7 @@ namespace BoboBrowse.Net
                 }
             }
             facetHandler.LoadFacetData(reader);
-            _runtimeFacetHandlerMap.Put(facetHandler.Name, facetHandler);
+            m_runtimeFacetHandlerMap.Put(facetHandler.Name, facetHandler);
         }
 
         /// <summary>
@@ -125,12 +125,12 @@ namespace BoboBrowse.Net
         {
             get
             {
-                if (_allFacetHandlerMap == null)
+                if (m_allFacetHandlerMap == null)
                 {
-                    _allFacetHandlerMap = new Dictionary<string, IFacetHandler>(_reader.FacetHandlerMap);
+                    m_allFacetHandlerMap = new Dictionary<string, IFacetHandler>(m_reader.FacetHandlerMap);
                 }
-                _allFacetHandlerMap.PutAll(_runtimeFacetHandlerMap);
-                return _allFacetHandlerMap;
+                m_allFacetHandlerMap.PutAll(m_runtimeFacetHandlerMap);
+                return m_allFacetHandlerMap;
             }
         }
   
@@ -161,14 +161,14 @@ namespace BoboBrowse.Net
             int start)
         {
 
-            if (_reader == null)
+            if (m_reader == null)
                 return;
 
     
             //      initialize all RuntimeFacetHandlers with data supplied by user at run-time.
-            _runtimeFacetHandlers = new List<IRuntimeFacetHandler>(_runtimeFacetHandlerFactoryMap.Count);
+            m_runtimeFacetHandlers = new List<IRuntimeFacetHandler>(m_runtimeFacetHandlerFactoryMap.Count);
 
-            IEnumerable<string> runtimeFacetNames = _runtimeFacetHandlerFactoryMap.Keys;
+            IEnumerable<string> runtimeFacetNames = m_runtimeFacetHandlerFactoryMap.Keys;
             foreach (string facetName in runtimeFacetNames)
             {
                 var sfacetHandler = this.GetFacetHandler(facetName);
@@ -177,7 +177,7 @@ namespace BoboBrowse.Net
                     logger.Warn("attempting to reset facetHandler: " + sfacetHandler);
                     continue;
                 }
-                IRuntimeFacetHandlerFactory factory = (IRuntimeFacetHandlerFactory)_runtimeFacetHandlerFactoryMap.Get(facetName);
+                IRuntimeFacetHandlerFactory factory = (IRuntimeFacetHandlerFactory)m_runtimeFacetHandlerFactoryMap.Get(facetName);
       
                 try
                 {
@@ -190,7 +190,7 @@ namespace BoboBrowse.Net
                         IRuntimeFacetHandler facetHandler = factory.Get(data);
                         if (facetHandler != null)
                         {
-                            _runtimeFacetHandlers.Add(facetHandler); // add to a list so we close them after search
+                            m_runtimeFacetHandlers.Add(facetHandler); // add to a list so we close them after search
                             this.SetFacetHandler(facetHandler);
                         }
                     }
@@ -258,20 +258,20 @@ namespace BoboBrowse.Net
                         FacetSpec fspec = ospec;
 
                         facetHitCollector = new FacetHitCollector();
-                        facetHitCollector.facetHandler = handler;
+                        facetHitCollector.FacetHandler = handler;
           
                         if (isDefaultSearch)
                         {
-        	                facetHitCollector._collectAllSource = handler.GetFacetCountCollectorSource(sel, fspec);
+        	                facetHitCollector.CollectAllSource = handler.GetFacetCountCollectorSource(sel, fspec);
                         }
                         else
                         {
-                            facetHitCollector._facetCountCollectorSource = handler.GetFacetCountCollectorSource(sel, fspec);            
+                            facetHitCollector.FacetCountCollectorSource = handler.GetFacetCountCollectorSource(sel, fspec);            
                             if (ospec.ExpandSelection)
                             {
                                 if (isNoQueryNoFilter && sel != null && selCount == 1)
                                 {
-            	                    facetHitCollector._collectAllSource = handler.GetFacetCountCollectorSource(sel, fspec);
+            	                    facetHitCollector.CollectAllSource = handler.GetFacetCountCollectorSource(sel, fspec);
                                     if (filter != null)
                                     {
                                         preFilterList.Add(filter);
@@ -281,7 +281,7 @@ namespace BoboBrowse.Net
                                 {
                                     if (filter != null)
                                     {
-                	                    facetHitCollector._filter = filter;
+                	                    facetHitCollector.Filter = filter;
                                     }
                                 }
                             }
@@ -313,7 +313,7 @@ namespace BoboBrowse.Net
                     }
                 }
 
-                this.FacetHitCollectorList = facetHitCollectorList;
+                this.SetFacetHitCollectorList(facetHitCollectorList);
 
                 try
                 {
@@ -325,12 +325,12 @@ namespace BoboBrowse.Net
                 {
                     foreach (FacetHitCollector facetCollector in facetHitCollectorList)
                     {
-                        string name = facetCollector.facetHandler.Name;
-                        List<IFacetCountCollector> resultcollector = null;
-                        resultcollector = facetCollector._countCollectorList;
+                        string name = facetCollector.FacetHandler.Name;
+                        IList<IFacetCountCollector> resultcollector = null;
+                        resultcollector = facetCollector.CountCollectorList;
                         if (resultcollector == null || resultcollector.Count == 0)
                         {
-        	                resultcollector = facetCollector._collectAllCollectorList;
+        	                resultcollector = facetCollector.CollectAllCollectorList;
                         }
                         if (resultcollector != null)
                         {
@@ -366,7 +366,7 @@ namespace BoboBrowse.Net
             int offset, 
             int count, 
             bool fetchStoredFields, 
-            IEnumerable<string> termVectorsToFetch, 
+            ICollection<string> termVectorsToFetch, 
             string[] groupBy, 
             int maxPerGroup, 
             bool collectDocIdCache)
@@ -396,20 +396,20 @@ namespace BoboBrowse.Net
 
         public virtual IDictionary<string, IFacetHandler> RuntimeFacetHandlerMap
         {
-            get { return _runtimeFacetHandlerMap; }
+            get { return m_runtimeFacetHandlerMap; }
         }
 
         public virtual int NumDocs
         {
-            get { return _reader.NumDocs; }
+            get { return m_reader.NumDocs; }
         }
 
         public override Document Doc(int docid)
         {
             Document doc = base.Doc(docid);
-            foreach (var handler in _runtimeFacetHandlerMap.Values)
+            foreach (var handler in m_runtimeFacetHandlerMap.Values)
             {
-                string[] vals = handler.GetFieldValues(_reader, docid);
+                string[] vals = handler.GetFieldValues(m_reader, docid);
                 foreach (var val in vals)
                 {
                     doc.Add(new StringField(handler.Name, val, Field.Store.NO));
@@ -429,7 +429,7 @@ namespace BoboBrowse.Net
             var facetHandler = GetFacetHandler(fieldname);
             if (facetHandler != null)
             {
-                return facetHandler.GetFieldValues(_reader, docid);
+                return facetHandler.GetFieldValues(m_reader, docid);
             }
             else
             {
@@ -437,7 +437,7 @@ namespace BoboBrowse.Net
                     + " not defined, looking at stored field.");
                 // this is not predefined, so it will be slow
 
-                return _reader.GetStoredFieldValue(docid, fieldname);
+                return m_reader.GetStoredFieldValue(docid, fieldname);
             }
         }
 
@@ -454,9 +454,9 @@ namespace BoboBrowse.Net
                 lock (this)
                 {
                     Exception exception = null;
-                    if (_runtimeFacetHandlers != null)
+                    if (m_runtimeFacetHandlers != null)
                     {
-                        foreach (var handler in _runtimeFacetHandlers)
+                        foreach (var handler in m_runtimeFacetHandlers)
                         {
                             try
                             {
@@ -468,10 +468,10 @@ namespace BoboBrowse.Net
                             }
                         }
                     }
-                    if (_reader != null)
+                    if (m_reader != null)
                     {
-                        _reader.ClearRuntimeFacetData();
-                        _reader.ClearRuntimeFacetHandler();
+                        m_reader.ClearRuntimeFacetData();
+                        m_reader.ClearRuntimeFacetHandler();
                     }
                     if (exception != null)
                     {

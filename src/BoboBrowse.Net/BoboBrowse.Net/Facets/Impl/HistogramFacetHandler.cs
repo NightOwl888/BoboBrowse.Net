@@ -48,12 +48,12 @@ namespace BoboBrowse.Net.Facets.Impl
     public class HistogramFacetHandler<T> : RuntimeFacetHandler<FacetDataNone> 
         where T : struct
     {
-        private readonly string _dataHandlerName;
-        private readonly T _start;
-        private readonly T _end;
-        private readonly T _unit;
+        private readonly string m_dataHandlerName;
+        private readonly T m_start;
+        private readonly T m_end;
+        private readonly T m_unit;
 
-        private IFacetHandler _dataFacetHandler;
+        private IFacetHandler m_dataFacetHandler;
 
         /// <summary>
         /// Initializes a new instance of <see cref="T:HistogramFacetHandler"/>.
@@ -66,18 +66,18 @@ namespace BoboBrowse.Net.Facets.Impl
         public HistogramFacetHandler(string name, string dataHandlerName, T start, T end, T unit)
             : base(name, new string[] { dataHandlerName })
         {
-            _dataHandlerName = dataHandlerName;
-            _start = start;
-            _end = end;
-            _unit = unit;
+            m_dataHandlerName = dataHandlerName;
+            m_start = start;
+            m_end = end;
+            m_unit = unit;
         }
 
         public override FacetDataNone Load(BoboSegmentReader reader)
         {
-            _dataFacetHandler = reader.GetFacetHandler(_dataHandlerName);
-            if (_dataFacetHandler is RangeFacetHandler)
+            m_dataFacetHandler = reader.GetFacetHandler(m_dataHandlerName);
+            if (m_dataFacetHandler is RangeFacetHandler)
             {
-                if (((RangeFacetHandler)_dataFacetHandler).HasPredefinedRanges)
+                if (((RangeFacetHandler)m_dataFacetHandler).HasPredefinedRanges)
                 {
                     throw new NotSupportedException("underlying range facet handler should not have the predefined ranges");
                 }
@@ -102,35 +102,35 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override RandomAccessFilter BuildRandomAccessFilter(string value, IDictionary<string, string> prop)
         {
-            return _dataFacetHandler.BuildRandomAccessFilter(value, prop);
+            return m_dataFacetHandler.BuildRandomAccessFilter(value, prop);
         }
 
         public override RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, IDictionary<string, string> prop)
         {
-            return _dataFacetHandler.BuildRandomAccessAndFilter(vals, prop);
+            return m_dataFacetHandler.BuildRandomAccessAndFilter(vals, prop);
         }
 
         public override RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, IDictionary<string, string> prop, bool isNot)
         {
-            return _dataFacetHandler.BuildRandomAccessOrFilter(vals, prop, isNot);
+            return m_dataFacetHandler.BuildRandomAccessOrFilter(vals, prop, isNot);
         }
 
         public override FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec ospec)
         {
-            FacetCountCollectorSource baseCollectorSrc = _dataFacetHandler.GetFacetCountCollectorSource(sel, ospec);
+            FacetCountCollectorSource baseCollectorSrc = m_dataFacetHandler.GetFacetCountCollectorSource(sel, ospec);
 
-            return new HistogramFacetCountCollectorSource(_dataHandlerName, baseCollectorSrc, _name, ospec, _start, _end, _unit);
+            return new HistogramFacetCountCollectorSource(m_dataHandlerName, baseCollectorSrc, m_name, ospec, m_start, m_end, m_unit);
         }
 
         public class HistogramFacetCountCollectorSource : FacetCountCollectorSource
         {
-            private readonly string _dataHandlerName;
-            private readonly FacetCountCollectorSource _baseCollectorSrc;
-            private readonly string _name;
-            private readonly FacetSpec _ospec;
-            private readonly T _start;
-            private readonly T _end;
-            private readonly T _unit;
+            private readonly string m_dataHandlerName;
+            private readonly FacetCountCollectorSource m_baseCollectorSrc;
+            private readonly string m_name;
+            private readonly FacetSpec m_ospec;
+            private readonly T m_start;
+            private readonly T m_end;
+            private readonly T m_unit;
 
             public HistogramFacetCountCollectorSource(
                 string dataHandlerName,
@@ -141,66 +141,66 @@ namespace BoboBrowse.Net.Facets.Impl
                 T end,
                 T unit)
             {
-                _dataHandlerName = dataHandlerName;
-                _baseCollectorSrc = baseCollectorSrc;
-                _name = name;
-                _ospec = ospec;
-                _start = start;
-                _end = end;
-                _unit = unit;
+                m_dataHandlerName = dataHandlerName;
+                m_baseCollectorSrc = baseCollectorSrc;
+                m_name = name;
+                m_ospec = ospec;
+                m_start = start;
+                m_end = end;
+                m_unit = unit;
             }
 
             public override IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase)
             {
-                FacetDataCache dataCache = (FacetDataCache)reader.GetFacetData(_dataHandlerName);
-                IFacetCountCollector baseCollector = _baseCollectorSrc.GetFacetCountCollector(reader, docBase);
-                return new HistogramCollector(_name, baseCollector, dataCache, _ospec, _start, _end, _unit);
+                FacetDataCache dataCache = (FacetDataCache)reader.GetFacetData(m_dataHandlerName);
+                IFacetCountCollector baseCollector = m_baseCollectorSrc.GetFacetCountCollector(reader, docBase);
+                return new HistogramCollector(m_name, baseCollector, dataCache, m_ospec, m_start, m_end, m_unit);
             }
         }
 
         public class HistogramCollector : IFacetCountCollector
         {
             private const string NUMBER_FORMAT = "0000000000";
-            private readonly FacetSpec _ospec;
-            private readonly T _start;
-            private readonly T _end;
-            private readonly T _unit;
-            private readonly BigSegmentedArray _count;
-            private readonly ITermValueList _valArray;
-            private readonly IFacetCountCollector _baseCollector;
-            private readonly string _facetName;
+            private readonly FacetSpec m_ospec;
+            private readonly T m_start;
+            private readonly T m_end;
+            private readonly T m_unit;
+            private readonly BigSegmentedArray m_count;
+            private readonly ITermValueList m_valArray;
+            private readonly IFacetCountCollector m_baseCollector;
+            private readonly string m_facetName;
 
-            private bool _isAggregated;
+            private bool m_isAggregated;
 
             public HistogramCollector(string facetName, IFacetCountCollector baseCollector, FacetDataCache dataCache, FacetSpec ospec, T start, T end, T unit)
             {
-                _facetName = facetName;
-                _baseCollector = baseCollector;
-                _valArray = dataCache.ValArray;
-                _ospec = ospec;
-                _isAggregated = false;
-                _start = start;
-                _end = end;
-                _unit = unit;
-                _count = new LazyBigIntArray(CountArraySize());
+                m_facetName = facetName;
+                m_baseCollector = baseCollector;
+                m_valArray = dataCache.ValArray;
+                m_ospec = ospec;
+                m_isAggregated = false;
+                m_start = start;
+                m_end = end;
+                m_unit = unit;
+                m_count = new LazyBigIntArray(CountArraySize());
             }
 
             private int CountArraySize()
             {
-                if (_start is long)
+                if (m_start is long)
                 {
-                    long range = Convert.ToInt64(_end) - Convert.ToInt64(_start);
-                    return (int)(range / Convert.ToInt64(_unit)) + 1;
+                    long range = Convert.ToInt64(m_end) - Convert.ToInt64(m_start);
+                    return (int)(range / Convert.ToInt64(m_unit)) + 1;
                 }
-                else if (_start is int)
+                else if (m_start is int)
                 {
-                    int range = Convert.ToInt32(_end) - Convert.ToInt32(_start);
-                    return (range / Convert.ToInt32(_unit)) + 1;
+                    int range = Convert.ToInt32(m_end) - Convert.ToInt32(m_start);
+                    return (range / Convert.ToInt32(m_unit)) + 1;
                 }
                 else
                 {
-                    double range = Convert.ToDouble(_end)- Convert.ToDouble(_start);
-                    return (int)(range / Convert.ToDouble(_unit)) + 1;
+                    double range = Convert.ToDouble(m_end)- Convert.ToDouble(m_start);
+                    return (int)(range / Convert.ToDouble(m_unit)) + 1;
                 }
             }
 
@@ -210,123 +210,123 @@ namespace BoboBrowse.Net.Facets.Impl
             /// <returns></returns>
             public virtual BigSegmentedArray GetCountDistribution()
             {
-                if (!_isAggregated) Aggregate();
-                return _count;
+                if (!m_isAggregated) Aggregate();
+                return m_count;
             }
 
             public virtual BrowseFacet GetFacet(string value)
             {
-                if (!_isAggregated) Aggregate();
+                if (!m_isAggregated) Aggregate();
 
                 int idx = int.Parse(value);
-                if (idx >= 0 && idx < _count.Length)
+                if (idx >= 0 && idx < m_count.Length)
                 {
-                    return new BrowseFacet(value, _count.Get(idx));
+                    return new BrowseFacet(value, m_count.Get(idx));
                 }
                 return null; 
             }
 
             public virtual int GetFacetHitsCount(object value)
             {
-                if (!_isAggregated) Aggregate();
+                if (!m_isAggregated) Aggregate();
 
                 int idx;
                 if (value is string)
                     idx = int.Parse((string)value);
                 else
                     idx = Convert.ToInt32(value);
-                if (idx >= 0 && idx < _count.Length)
+                if (idx >= 0 && idx < m_count.Length)
                 {
-                    return _count.Get(idx);
+                    return m_count.Get(idx);
                 }
                 return 0;
             }
 
             public void Collect(int docid)
             {
-                _baseCollector.Collect(docid);
+                m_baseCollector.Collect(docid);
             }
 
             public void CollectAll()
             {
-                _baseCollector.CollectAll();
+                m_baseCollector.CollectAll();
             }
 
             private void Aggregate()
             {
-                if (_isAggregated) return;
+                if (m_isAggregated) return;
 
-                _isAggregated = true;
+                m_isAggregated = true;
 
-                int startIdx = _valArray.IndexOf(_start);
+                int startIdx = m_valArray.IndexOf(m_start);
                 if (startIdx < 0) startIdx = -(startIdx + 1);
 
-                int endIdx = _valArray.IndexOf(_end);
+                int endIdx = m_valArray.IndexOf(m_end);
                 if (endIdx < 0) endIdx = -(endIdx + 1);
 
-                BigSegmentedArray baseCounts = _baseCollector.GetCountDistribution();
-                if (_start is long)
+                BigSegmentedArray baseCounts = m_baseCollector.GetCountDistribution();
+                if (m_start is long)
                 {
-                    long start = Convert.ToInt64(_start);
-                    long unit = Convert.ToInt64(_unit);
-                    TermLongList valArray = (TermLongList)_valArray;
+                    long start = Convert.ToInt64(m_start);
+                    long unit = Convert.ToInt64(m_unit);
+                    TermLongList valArray = (TermLongList)m_valArray;
                     for (int i = startIdx; i < endIdx; i++)
                     {
                         long val = valArray.GetPrimitiveValue(i);
                         int idx = (int)((val - start) / unit);
-                        if (idx >= 0 && idx < _count.Length)
+                        if (idx >= 0 && idx < m_count.Length)
                         {
-                            _count.Add(idx, _count.Get(idx) + baseCounts.Get(i));
+                            m_count.Add(idx, m_count.Get(idx) + baseCounts.Get(i));
                         }
                     }
                 }
-                else if (_start is int)
+                else if (m_start is int)
                 {
-                    int start = Convert.ToInt32(_start);
-                    int unit = Convert.ToInt32(_unit);
-                    TermIntList valArray = (TermIntList)_valArray;
+                    int start = Convert.ToInt32(m_start);
+                    int unit = Convert.ToInt32(m_unit);
+                    TermIntList valArray = (TermIntList)m_valArray;
                     for (int i = startIdx; i < endIdx; i++)
                     {
                         int val = valArray.GetPrimitiveValue(i);
                         int idx = ((val - start) / unit);
-                        if (idx >= 0 && idx < _count.Length)
+                        if (idx >= 0 && idx < m_count.Length)
                         {
-                            _count.Add(idx, _count.Get(idx) + baseCounts.Get(i));
+                            m_count.Add(idx, m_count.Get(idx) + baseCounts.Get(i));
                         }
                     }
                 }
                 else
                 {
-                    double start = Convert.ToDouble(_start);
-                    double unit = Convert.ToDouble(_unit);
+                    double start = Convert.ToDouble(m_start);
+                    double unit = Convert.ToDouble(m_unit);
                     for (int i = startIdx; i < endIdx; i++)
                     {
-                        double val = (double)_valArray.GetRawValue(i);
+                        double val = (double)m_valArray.GetRawValue(i);
                         int idx = (int)((val - start) / unit);
-                        if (idx >= 0 && idx < _count.Length)
+                        if (idx >= 0 && idx < m_count.Length)
                         {
-                            _count.Add(idx, _count.Get(idx) + baseCounts.Get(i));
+                            m_count.Add(idx, m_count.Get(idx) + baseCounts.Get(i));
                         }
                     }
                 }
             }
 
-            public virtual IEnumerable<BrowseFacet> GetFacets()
+            public virtual ICollection<BrowseFacet> GetFacets()
             {
-                if (_ospec != null)
+                if (m_ospec != null)
                 {
-                    int minCount = _ospec.MinHitCount;
-                    int max = _ospec.MaxCount;
-                    if (max <= 0) max = _count.Length;
+                    int minCount = m_ospec.MinHitCount;
+                    int max = m_ospec.MaxCount;
+                    if (max <= 0) max = m_count.Length;
 
                     List<BrowseFacet> facetColl;
-                    FacetSpec.FacetSortSpec sortspec = _ospec.OrderBy;
+                    FacetSpec.FacetSortSpec sortspec = m_ospec.OrderBy;
                     if (sortspec == FacetSpec.FacetSortSpec.OrderValueAsc)
                     {
                         facetColl = new List<BrowseFacet>(max);
-                        for (int i = 0; i < _count.Length; ++i)
+                        for (int i = 0; i < m_count.Length; ++i)
                         {
-                            int hits = _count.Get(i);
+                            int hits = m_count.Get(i);
                             if (hits >= minCount)
                             {
                                 BrowseFacet facet = new BrowseFacet(i.ToString(NUMBER_FORMAT), hits);
@@ -338,24 +338,24 @@ namespace BoboBrowse.Net.Facets.Impl
                     }
                     else
                     {
-                        return FacetCountCollector_Fields.EMPTY_FACET_LIST;
+                        return FacetCountCollector.EMPTY_FACET_LIST;
                     }
                 }
                 else
                 {
-                    return FacetCountCollector_Fields.EMPTY_FACET_LIST;
+                    return FacetCountCollector.EMPTY_FACET_LIST;
                 }
             }
 
             public virtual FacetIterator GetIterator()
             {
-                if (!_isAggregated) Aggregate();
-                return new HistogramFacetIterator(_count, NUMBER_FORMAT);
+                if (!m_isAggregated) Aggregate();
+                return new HistogramFacetIterator(m_count, NUMBER_FORMAT);
             }
 
             public virtual string Name
             {
-                get { return _facetName; }
+                get { return m_facetName; }
             }
 
             public virtual void Dispose()
@@ -364,37 +364,37 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public class HistogramFacetIterator : IntFacetIterator
         {
-            private readonly string _format;
-            private readonly BigSegmentedArray _count;
-            private readonly int _maxMinusOne;
-            private int _idx;
+            private readonly string m_format;
+            new private readonly BigSegmentedArray m_count;
+            private readonly int m_maxMinusOne;
+            private int m_idx;
 
             public HistogramFacetIterator(BigSegmentedArray count, string format)
             {
-                _idx = -1;
-                _count = count;
-                _maxMinusOne = count.Length - 1;
-                _format = format;
+                m_idx = -1;
+                m_count = count;
+                m_maxMinusOne = count.Length - 1;
+                m_format = format;
             }
 
             public override string Next()
             {
                 if (HasNext())
                 {
-                    base.count = _count.Get(++_idx);
-                    return (_facet = _idx).ToString();
+                    base.m_count = m_count.Get(++m_idx);
+                    return (m_facet = m_idx).ToString();
                 }
                 return null;
             }
 
             public override string Next(int minHits)
             {
-                while (_idx < _maxMinusOne)
+                while (m_idx < m_maxMinusOne)
                 {
-                    if (_count.Get(++_idx) >= minHits)
+                    if (m_count.Get(++m_idx) >= minHits)
                     {
-                        base.count = _count.Get(_idx);
-                        return (_facet = _idx).ToString();
+                        base.m_count = m_count.Get(m_idx);
+                        return (m_facet = m_idx).ToString();
                     }
                 }
                 return null;
@@ -404,20 +404,20 @@ namespace BoboBrowse.Net.Facets.Impl
             {
                 if (HasNext())
                 {
-                    base.count = _count.Get(++_idx);
-                    return (_facet = _idx);
+                    base.m_count = m_count.Get(++m_idx);
+                    return (m_facet = m_idx);
                 }
                 return TermIntList.VALUE_MISSING;
             }
 
             public override int NextInt(int minHits)
             {
-                while (_idx < _maxMinusOne)
+                while (m_idx < m_maxMinusOne)
                 {
-                    if (_count.Get(++_idx) >= minHits)
+                    if (m_count.Get(++m_idx) >= minHits)
                     {
-                        base.count = _count.Get(_idx);
-                        return (_facet = _idx);
+                        base.m_count = m_count.Get(m_idx);
+                        return (m_facet = m_idx);
                     }
                 }
                 return TermIntList.VALUE_MISSING; 
@@ -425,7 +425,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override bool HasNext()
             {
-                return (_idx < _maxMinusOne);
+                return (m_idx < m_maxMinusOne);
             }
 
             public override void Remove()
@@ -435,13 +435,13 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override string Format(int val)
             {
-                return val.ToString(_format);
+                return val.ToString(m_format);
             }
 
             public override string Format(object val)
             {
                 if (val == null) return string.Empty;
-                return string.Format("{0:" + _format + "}", val);
+                return string.Format("{0:" + m_format + "}", val);
             }
         }
     }

@@ -106,9 +106,9 @@ namespace BoboBrowse.Net
             BrowseResult res = browser.Browse(req);
             Assert.AreEqual(res.NumHits, 1);
             IFacetAccessible fa = res.GetFacetAccessor(PathHandlerName);
-            IEnumerable<BrowseFacet> facets = fa.GetFacets();
+            ICollection<BrowseFacet> facets = fa.GetFacets();
             Console.WriteLine(facets);
-            Assert.AreEqual(1, facets.Count());
+            Assert.AreEqual(1, facets.Count);
             BrowseFacet facet = facets.Get(0);
             Assert.AreEqual(2, facet.FacetValueHitCount);
         }

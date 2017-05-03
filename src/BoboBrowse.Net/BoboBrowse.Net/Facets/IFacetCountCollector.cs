@@ -45,7 +45,7 @@ namespace BoboBrowse.Net.Facets
         BigSegmentedArray GetCountDistribution();
     }
 
-    public static class FacetCountCollector_Fields
+    public static class FacetCountCollector
     {
         ///<summary>Empty facet list.  </summary>
         public static List<BrowseFacet> EMPTY_FACET_LIST = new List<BrowseFacet>();

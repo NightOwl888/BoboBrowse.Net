@@ -44,14 +44,14 @@ namespace BoboBrowse.Net.Facets.Attribute
 
         public override string Next()
         {
-            count = 0;
+            m_count = 0;
             BrowseFacet next = iterator.Current;
             if (next == null)
             {
                 return null;
             }
-            count = next.FacetValueHitCount;
-            facet = next.Value;
+            m_count = next.FacetValueHitCount;
+            m_facet = next.Value;
             return next.Value;
         }
 
@@ -60,8 +60,8 @@ namespace BoboBrowse.Net.Facets.Attribute
             while (iterator.MoveNext())
             {
                 BrowseFacet next = iterator.Current;
-                base.count = next.FacetValueHitCount;
-                base.facet = next.Value;
+                base.m_count = next.FacetValueHitCount;
+                base.m_facet = next.Value;
                 if (next.FacetValueHitCount >= minHits)
                 {
                     return next.Value;

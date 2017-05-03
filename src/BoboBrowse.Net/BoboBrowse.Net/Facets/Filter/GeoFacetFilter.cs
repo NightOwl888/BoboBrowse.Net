@@ -30,12 +30,12 @@ namespace BoboBrowse.Net.Facets.Filter
     /// </summary>
     public class GeoFacetFilter : RandomAccessFilter
     {
-	    private readonly FacetHandler<GeoFacetHandler.GeoFacetData> _handler;
-	    private readonly float _lat;
-	    private readonly float _lon;
-        private readonly float _rad;
+	    private readonly FacetHandler<GeoFacetHandler.GeoFacetData> m_handler;
+	    private readonly float m_lat;
+	    private readonly float m_lon;
+        private readonly float m_rad;
         // variable to specify if the geo distance calculations are in miles. Default is miles
-        private readonly bool _miles;
+        private readonly bool m_miles;
 
         /// <summary>
         /// 
@@ -47,35 +47,35 @@ namespace BoboBrowse.Net.Facets.Filter
         /// <param name="miles">variable to specify if the geo distance calculations are in miles. False indicates distance calculation is in kilometers</param>
         public GeoFacetFilter(FacetHandler<GeoFacetHandler.GeoFacetData> facetHandler, float lat, float lon, float radius, bool miles)
         {
-            _handler = facetHandler;
-            _lat = lat;
-            _lon = lon;
-            _rad = radius;
-            _miles = miles;
+            m_handler = facetHandler;
+            m_lat = lat;
+            m_lon = lon;
+            m_rad = radius;
+            m_miles = miles;
         }
 
         public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboSegmentReader reader)
         {
             int maxDoc = reader.MaxDoc;
 
-            GeoFacetHandler.GeoFacetData dataCache = _handler.GetFacetData<GeoFacetHandler.GeoFacetData>(reader);
+            GeoFacetHandler.GeoFacetData dataCache = m_handler.GetFacetData<GeoFacetHandler.GeoFacetData>(reader);
 		    return new GeoDocIdSet(dataCache.xValArray, dataCache.yValArray, dataCache.zValArray,
-				_lat, _lon, _rad, maxDoc, _miles);
+				m_lat, m_lon, m_rad, maxDoc, m_miles);
         }
 
         private sealed class GeoDocIdSet : RandomAccessDocIdSet
         {
-            private readonly BigFloatArray _xvals;
-		    private readonly BigFloatArray _yvals;
-		    private readonly BigFloatArray _zvals;
-		    private readonly float _radius;
-		    private readonly float _targetX;
-		    private readonly float _targetY;
-		    private readonly float _targetZ;
-            private readonly float _delta;
-		    private readonly int _maxDoc;
+            private readonly BigFloatArray m_xvals;
+		    private readonly BigFloatArray m_yvals;
+		    private readonly BigFloatArray m_zvals;
+		    private readonly float m_radius;
+		    private readonly float m_targetX;
+		    private readonly float m_targetY;
+		    private readonly float m_targetZ;
+            private readonly float m_delta;
+		    private readonly int m_maxDoc;
 	        // variable to specify if the geo distance calculations are in miles. Default is miles
-	        private readonly bool _miles;
+	        private readonly bool m_miles;
 
             /// <summary>
             /// Constructor
@@ -92,144 +92,144 @@ namespace BoboBrowse.Net.Facets.Filter
             internal GeoDocIdSet(BigFloatArray xvals, BigFloatArray yvals, BigFloatArray zvals, float lat, float lon,
                 float radius, int maxdoc, bool miles)
             {
-                _xvals = xvals;
-                _yvals = yvals;
-                _zvals = zvals;
-                _miles = miles;
-                if (_miles)
-                    _radius = GeoMatchUtil.GetMilesRadiusCosine(radius);
+                m_xvals = xvals;
+                m_yvals = yvals;
+                m_zvals = zvals;
+                m_miles = miles;
+                if (m_miles)
+                    m_radius = GeoMatchUtil.GetMilesRadiusCosine(radius);
                 else
-                    _radius = GeoMatchUtil.GetKMRadiusCosine(radius);
+                    m_radius = GeoMatchUtil.GetKMRadiusCosine(radius);
                 float[] coords = GeoMatchUtil.GeoMatchCoordsFromDegrees(lat, lon);
-                _targetX = coords[0];
-                _targetY = coords[1];
-                _targetZ = coords[2];
-                if (_miles)
-                    _delta = (float)(radius / GeoMatchUtil.EARTH_RADIUS_MILES);
+                m_targetX = coords[0];
+                m_targetY = coords[1];
+                m_targetZ = coords[2];
+                if (m_miles)
+                    m_delta = (float)(radius / GeoMatchUtil.EARTH_RADIUS_MILES);
                 else
-                    _delta = (float)(radius / GeoMatchUtil.EARTH_RADIUS_KM);
-                _maxDoc = maxdoc;
+                    m_delta = (float)(radius / GeoMatchUtil.EARTH_RADIUS_KM);
+                m_maxDoc = maxdoc;
             }
 
             public override bool Get(int docId)
             {
-                float docX = _xvals.Get(docId);
-                float docY = _yvals.Get(docId);
-                float docZ = _zvals.Get(docId);
+                float docX = m_xvals.Get(docId);
+                float docY = m_yvals.Get(docId);
+                float docZ = m_zvals.Get(docId);
 
-                return InCircle(docX, docY, docZ, _targetX, _targetY, _targetZ, _radius);
+                return InCircle(docX, docY, docZ, m_targetX, m_targetY, m_targetZ, m_radius);
             }
 
             public override DocIdSetIterator GetIterator()
             {
-                return new GeoDocIdSetIterator(_xvals, _yvals, _zvals, _targetX, _targetY, _targetZ, _delta, _radius, _maxDoc);
+                return new GeoDocIdSetIterator(m_xvals, m_yvals, m_zvals, m_targetX, m_targetY, m_targetZ, m_delta, m_radius, m_maxDoc);
             }
         }
 
         private class GeoDocIdSetIterator : DocIdSetIterator
         {
-            private readonly BigFloatArray _xvals;
-            private readonly BigFloatArray _yvals;
-            private readonly BigFloatArray _zvals;
-            private readonly float _radius;
-            private readonly float _targetX;
-            private readonly float _targetY;
-            private readonly float _targetZ;
-            private readonly float _delta;
-            private readonly int _maxDoc;
-            private int _doc;
+            private readonly BigFloatArray m_xvals;
+            private readonly BigFloatArray m_yvals;
+            private readonly BigFloatArray m_zvals;
+            private readonly float m_radius;
+            private readonly float m_targetX;
+            private readonly float m_targetY;
+            private readonly float m_targetZ;
+            private readonly float m_delta;
+            private readonly int m_maxDoc;
+            private int m_doc;
 
             internal GeoDocIdSetIterator(BigFloatArray xvals, BigFloatArray yvals, BigFloatArray zvals, float targetX, float targetY, float targetZ,
                 float delta, float radiusCosine, int maxdoc)
             {
-                _xvals = xvals;
-                _yvals = yvals;
-                _zvals = zvals;
-                _targetX = targetX;
-                _targetY = targetY;
-                _targetZ = targetZ;
-                _delta = delta;
-                _radius = radiusCosine;
-                _maxDoc = maxdoc;
-                _doc = -1;
+                m_xvals = xvals;
+                m_yvals = yvals;
+                m_zvals = zvals;
+                m_targetX = targetX;
+                m_targetY = targetY;
+                m_targetZ = targetZ;
+                m_delta = delta;
+                m_radius = radiusCosine;
+                m_maxDoc = maxdoc;
+                m_doc = -1;
             }
 
             public sealed override int DocID
             {
-                get { return _doc; }
+                get { return m_doc; }
             }
 
             public sealed override int NextDoc()
             {
-                float x = _targetX;
-                float xu = x + _delta;
-                float xl = x - _delta;
-                float y = _targetY;
-                float yu = y + _delta;
-                float yl = y - _delta;
-                float z = _targetZ;
-                float zu = z + _delta;
-                float zl = z - _delta;
+                float x = m_targetX;
+                float xu = x + m_delta;
+                float xl = x - m_delta;
+                float y = m_targetY;
+                float yu = y + m_delta;
+                float yl = y - m_delta;
+                float z = m_targetZ;
+                float zu = z + m_delta;
+                float zl = z - m_delta;
 
-                int docid = _doc;
-                while (++docid < _maxDoc)
+                int docid = m_doc;
+                while (++docid < m_maxDoc)
                 {
-                    float docX = _xvals.Get(docid);
+                    float docX = m_xvals.Get(docid);
                     if (docX > xu || docX < xl) continue;
 
-                    float docY = _yvals.Get(docid);
+                    float docY = m_yvals.Get(docid);
                     if (docY > yu || docY < yl) continue;
 
-                    float docZ = _zvals.Get(docid);
+                    float docZ = m_zvals.Get(docid);
                     if (docZ > zu || docZ < zl) continue;
 
-                    if (GeoFacetFilter.InCircle(docX, docY, docZ, _targetX, _targetY, _targetZ, _radius))
+                    if (GeoFacetFilter.InCircle(docX, docY, docZ, m_targetX, m_targetY, m_targetZ, m_radius))
                     {
-                        _doc = docid;
-                        return _doc;
+                        m_doc = docid;
+                        return m_doc;
                     }
                 }
-                _doc = DocIdSetIterator.NO_MORE_DOCS;
-                return _doc;
+                m_doc = DocIdSetIterator.NO_MORE_DOCS;
+                return m_doc;
             }
 
             public sealed override int Advance(int targetId)
             {
-                if (_doc < targetId)
+                if (m_doc < targetId)
                 {
-                    _doc = targetId - 1;
+                    m_doc = targetId - 1;
                 }
 
-                float x = _targetX;
-                float xu = x + _delta;
-                float xl = x - _delta;
-                float y = _targetY;
-                float yu = y + _delta;
-                float yl = y - _delta;
-                float z = _targetZ;
-                float zu = z + _delta;
-                float zl = z - _delta;
+                float x = m_targetX;
+                float xu = x + m_delta;
+                float xl = x - m_delta;
+                float y = m_targetY;
+                float yu = y + m_delta;
+                float yl = y - m_delta;
+                float z = m_targetZ;
+                float zu = z + m_delta;
+                float zl = z - m_delta;
 
-                int docid = _doc;
-                while (++docid < _maxDoc)
+                int docid = m_doc;
+                while (++docid < m_maxDoc)
                 {
-                    float docX = _xvals.Get(docid);
+                    float docX = m_xvals.Get(docid);
                     if (docX > xu || docX < xl) continue;
 
-                    float docY = _yvals.Get(docid);
+                    float docY = m_yvals.Get(docid);
                     if (docY > yu || docY < yl) continue;
 
-                    float docZ = _zvals.Get(docid);
+                    float docZ = m_zvals.Get(docid);
                     if (docZ > zu || docZ < zl) continue;
 
-                    if (GeoFacetFilter.InCircle(docX, docY, docZ, _targetX, _targetY, _targetZ, _radius))
+                    if (GeoFacetFilter.InCircle(docX, docY, docZ, m_targetX, m_targetY, m_targetZ, m_radius))
                     {
-                        _doc = docid;
-                        return _doc;
+                        m_doc = docid;
+                        return m_doc;
                     }
                 }
-                _doc = DocIdSetIterator.NO_MORE_DOCS;
-                return _doc;
+                m_doc = DocIdSetIterator.NO_MORE_DOCS;
+                return m_doc;
             }
 
             public override long GetCost()

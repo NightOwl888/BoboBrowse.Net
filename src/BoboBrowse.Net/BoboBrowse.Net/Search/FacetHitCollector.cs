@@ -28,44 +28,45 @@ namespace BoboBrowse.Net.Search
     
     public sealed class FacetHitCollector
     {
-        public FacetCountCollectorSource _facetCountCollectorSource;	
-	    public FacetCountCollectorSource _collectAllSource = null;
-	    public IFacetHandler facetHandler;
-	    public RandomAccessFilter _filter;
-	    public readonly CurrentPointers _currentPointers = new CurrentPointers();
-	    public List<IFacetCountCollector> _countCollectorList = new List<IFacetCountCollector>();
-	    public List<IFacetCountCollector> _collectAllCollectorList = new List<IFacetCountCollector>();
+        public FacetCountCollectorSource FacetCountCollectorSource { get; set; }
+	    public FacetCountCollectorSource CollectAllSource { get; set; } = null;
+	    public IFacetHandler FacetHandler { get; set; }
+        public RandomAccessFilter Filter { get; set; }
+        public CurrentPointers CurrentPointers { get; private set; } = new CurrentPointers();
+	    public IList<IFacetCountCollector> CountCollectorList { get; set; } = new List<IFacetCountCollector>();
+	    public IList<IFacetCountCollector> CollectAllCollectorList { get; set; } = new List<IFacetCountCollector>();
 
         public void SetNextReader(BoboSegmentReader reader, int docBase)
         {
-            if (_collectAllSource != null)
+            if (CollectAllSource != null)
             {
-                IFacetCountCollector collector = _collectAllSource.GetFacetCountCollector(reader, docBase);
-                _collectAllCollectorList.Add(collector);
+                IFacetCountCollector collector = CollectAllSource.GetFacetCountCollector(reader, docBase);
+                CollectAllCollectorList.Add(collector);
                 collector.CollectAll();
             }
             else
             {
-                if (_filter != null)
+                if (Filter != null)
                 {
-                    _currentPointers.DocIdSet = _filter.GetRandomAccessDocIdSet(reader);
-                    _currentPointers.PostDocIDSetIterator = _currentPointers.DocIdSet.GetIterator();
-                    _currentPointers.Doc = _currentPointers.PostDocIDSetIterator.NextDoc();
+                    CurrentPointers.DocIdSet = Filter.GetRandomAccessDocIdSet(reader);
+                    CurrentPointers.PostDocIDSetIterator = CurrentPointers.DocIdSet.GetIterator();
+                    CurrentPointers.Doc = CurrentPointers.PostDocIDSetIterator.NextDoc();
                 }
-                if (_facetCountCollectorSource != null)
+                if (FacetCountCollectorSource != null)
                 {
-                    _currentPointers.FacetCountCollector = _facetCountCollectorSource.GetFacetCountCollector(reader, docBase);
-                    _countCollectorList.Add(_currentPointers.FacetCountCollector);
+                    CurrentPointers.FacetCountCollector = FacetCountCollectorSource.GetFacetCountCollector(reader, docBase);
+                    CountCollectorList.Add(CurrentPointers.FacetCountCollector);
                 }
             }
         }
+    }
 
-        public class CurrentPointers
-        {
-            public RandomAccessDocIdSet DocIdSet = null;
-            public DocIdSetIterator PostDocIDSetIterator = null;
-            public int Doc;
-            public IFacetCountCollector FacetCountCollector;
-        }
+    // BoboBrowse.Net: de-nested this type from FacetHitCollector to prevent naming collision with property.
+    public class CurrentPointers
+    {
+        public RandomAccessDocIdSet DocIdSet { get; set; } = null;
+        public DocIdSetIterator PostDocIDSetIterator { get; set; } = null;
+        public int Doc { get; set; }
+        public IFacetCountCollector FacetCountCollector { get; set; }
     }
 }

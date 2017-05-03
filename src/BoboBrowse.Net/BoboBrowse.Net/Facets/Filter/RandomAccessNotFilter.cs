@@ -26,23 +26,23 @@ namespace BoboBrowse.Net.Facets.Filter
 
     public class RandomAccessNotFilter : RandomAccessFilter
     {
-        protected readonly RandomAccessFilter _innerFilter;
+        protected readonly RandomAccessFilter m_innerFilter;
 
         public RandomAccessNotFilter(RandomAccessFilter innerFilter)
         {
-            _innerFilter = innerFilter;
+            m_innerFilter = innerFilter;
         }
 
         public override double GetFacetSelectivity(BoboSegmentReader reader)
         {
-            double selectivity = _innerFilter.GetFacetSelectivity(reader);
+            double selectivity = m_innerFilter.GetFacetSelectivity(reader);
             selectivity = selectivity > 0.999 ? 0.0 : (1 - selectivity);
             return selectivity;
         }
 
         public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboSegmentReader reader)
         {
-            RandomAccessDocIdSet innerDocIdSet = _innerFilter.GetRandomAccessDocIdSet(reader);
+            RandomAccessDocIdSet innerDocIdSet = m_innerFilter.GetRandomAccessDocIdSet(reader);
             DocIdSet notInnerDocIdSet = new NotDocIdSet(innerDocIdSet, reader.MaxDoc);
             return new NotRandomAccessDocIdSet(innerDocIdSet, notInnerDocIdSet);
         }

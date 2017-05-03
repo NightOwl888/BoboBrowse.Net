@@ -22,8 +22,8 @@ namespace BoboBrowse.Net.Util
 {
     public class BigFloatArray
     {
-        private float[][] _array;
-        private int _numrows;
+        private float[][] m_array;
+        private int m_numrows;
 
         // Remember that 2^SHIFT_SIZE = BLOCK_SIZE 
         private const int BLOCK_SIZE = 1024;
@@ -32,43 +32,43 @@ namespace BoboBrowse.Net.Util
 
         public BigFloatArray(int size)
         {
-            _numrows = size >> SHIFT_SIZE;
-            _array = new float[_numrows + 1][];
-            for (int i = 0; i <= _numrows; i++)
+            m_numrows = size >> SHIFT_SIZE;
+            m_array = new float[m_numrows + 1][];
+            for (int i = 0; i <= m_numrows; i++)
             {
-                _array[i] = new float[BLOCK_SIZE];
+                m_array[i] = new float[BLOCK_SIZE];
             }
         }
 
         public virtual void Add(int docId, float val)
         {
-            _array[docId >> SHIFT_SIZE][docId & MASK] = val;
+            m_array[docId >> SHIFT_SIZE][docId & MASK] = val;
         }
 
         public virtual float Get(int docId)
         {
-            return _array[docId >> SHIFT_SIZE][docId & MASK];
+            return m_array[docId >> SHIFT_SIZE][docId & MASK];
         }
 
         public virtual int Capacity()
         {
-            return _numrows * BLOCK_SIZE;
+            return m_numrows * BLOCK_SIZE;
         }
 
         public virtual void EnsureCapacity(int size)
         {
             int newNumrows = (size >> SHIFT_SIZE) + 1;
-            if (newNumrows > _array.Length)
+            if (newNumrows > m_array.Length)
             {
                 float[][] newArray = new float[newNumrows][]; // grow
-                System.Array.Copy(_array, 0, newArray, 0, _array.Length);
-                for (int i = _array.Length; i < newNumrows; ++i)
+                System.Array.Copy(m_array, 0, newArray, 0, m_array.Length);
+                for (int i = m_array.Length; i < newNumrows; ++i)
                 {
                     newArray[i] = new float[BLOCK_SIZE];
                 }
-                _array = newArray;
+                m_array = newArray;
             }
-            _numrows = newNumrows;
+            m_numrows = newNumrows;
         }
     }
 }

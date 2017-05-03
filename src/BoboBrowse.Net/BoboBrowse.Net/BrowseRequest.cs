@@ -42,26 +42,26 @@ namespace BoboBrowse.Net
         /// <summary>
         /// The transaction ID
         /// </summary>
-        private long tid = -1;
+        private long m_tid = -1;
 
         /// <summary>
         /// Gets or sets the transaction ID.
         /// </summary>
         public long Tid
         {
-            get { return tid; }
-            set { tid = value; }
+            get { return m_tid; }
+            set { m_tid = value; }
         }
 
         // Fields
-        private readonly IDictionary<string, BrowseSelection> _selections;
-        private readonly IList<SortField> _sortSpecs;
+        private readonly IDictionary<string, BrowseSelection> m_selections;
+        private readonly IList<SortField> m_sortSpecs;
 
         /// <summary>
         /// Gets or sets a list of term vectors to fetch from the Lucene.Net index. The values are populated in the <see cref="P:BrowseHit.TermVectorMap"/>.
         /// A term vector is a list of the document's terms and their number of occurrences in that document.
         /// </summary>
-        public virtual IEnumerable<string> TermVectorsToFetch { get; set; }
+        public virtual ICollection<string> TermVectorsToFetch { get; set; }
 
         /// <summary>
         /// Gets or sets a flag indicating whether to set a <see cref="T:Lucene.Net.Search.Explanation"/> to the <see cref="P:BrowseHit.Explanation"/> property.
@@ -75,7 +75,7 @@ namespace BoboBrowse.Net
         /// <returns></returns>
         public virtual IEnumerable<string> GetSelectionNames()
         {
-            return _selections.Keys;
+            return m_selections.Keys;
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace BoboBrowse.Net
         /// <param name="name"></param>
         public virtual void RemoveSelection(string name)
         {
-            _selections.Remove(name);
+            m_selections.Remove(name);
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace BoboBrowse.Net
         /// </summary>
         public virtual int SelectionCount
         {
-            get { return _selections.Count; }
+            get { return m_selections.Count; }
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace BoboBrowse.Net
 
         public virtual void ClearSelections()
         {
-            _selections.Clear();
+            m_selections.Clear();
         }
 
         /// <summary>
@@ -131,8 +131,8 @@ namespace BoboBrowse.Net
         /// </summary>
         public BrowseRequest()
         {
-            _selections = new Dictionary<string, BrowseSelection>();
-            _sortSpecs = new List<SortField>();
+            m_selections = new Dictionary<string, BrowseSelection>();
+            m_sortSpecs = new List<SortField>();
             this.FacetSpecs = new Dictionary<string, FacetSpec>();
             this.FacetHandlerDataMap = new Dictionary<string, FacetHandlerInitializerParam>();
             Filter = null;
@@ -149,7 +149,7 @@ namespace BoboBrowse.Net
         /// </summary>
         public virtual void ClearSort()
         {
-            _sortSpecs.Clear();
+            m_sortSpecs.Clear();
         }
 
         /// <summary>
@@ -249,7 +249,7 @@ namespace BoboBrowse.Net
                     return;
                 }
             }
-            _selections.Put(sel.FieldName, sel);
+            m_selections.Put(sel.FieldName, sel);
         }
 
         /// <summary>
@@ -259,7 +259,7 @@ namespace BoboBrowse.Net
         /// <seealso cref="M:AddSelections"/>
         public virtual BrowseSelection[] GetSelections()
         {
-            return _selections.Values.ToArray();
+            return m_selections.Values.ToArray();
         }
 
         /// <summary>
@@ -269,7 +269,7 @@ namespace BoboBrowse.Net
         /// <returns>The selection on the field.</returns>
         public virtual BrowseSelection GetSelection(string fieldname)
         {
-            return _selections.Get(fieldname);
+            return m_selections.Get(fieldname);
         }
 
         /// <summary>
@@ -278,7 +278,7 @@ namespace BoboBrowse.Net
         /// <returns></returns>
         public virtual IDictionary<string, BrowseSelection> GetAllSelections()
         {
-            return _selections;
+            return m_selections;
         }
 
         /// <summary>
@@ -287,7 +287,7 @@ namespace BoboBrowse.Net
         /// <param name="map">A dictionary of field name to <see cref="T:BrowseSelection"/> pairs.</param>
         public virtual void PutAllSelections(IDictionary<string, BrowseSelection> map)
         {
-            _selections.PutAll(map);
+            m_selections.PutAll(map);
         }
 
         public virtual IBoboMapFunctionWrapper MapReduceWrapper { get; set; }
@@ -298,7 +298,7 @@ namespace BoboBrowse.Net
         /// <param name="sortSpec">sort specification</param>
         public virtual void AddSortField(SortField sortSpec)
         {
-            _sortSpecs.Add(sortSpec);
+            m_sortSpecs.Add(sortSpec);
         }
 
         /// <summary>
@@ -308,14 +308,14 @@ namespace BoboBrowse.Net
         {
             get
             {
-                return _sortSpecs.ToArray();
+                return m_sortSpecs.ToArray();
             }
             set
             {
-                _sortSpecs.Clear();
+                m_sortSpecs.Clear();
                 for (int i = 0; i < value.Length; ++i)
                 {
-                    _sortSpecs.Add(value[i]);
+                    m_sortSpecs.Add(value[i]);
                 }
             }
         }
@@ -329,8 +329,8 @@ namespace BoboBrowse.Net
             StringBuilder buf = new StringBuilder();
             buf.Append("query: ").Append(Query).AppendLine();
             buf.Append("page: [").Append(Offset).Append(',').Append(Count).Append("]").AppendLine();
-            buf.Append("sort spec: ").Append(_sortSpecs.ToDisplayString()).AppendLine();
-            buf.Append("selections: ").Append(_selections.ToDisplayString()).AppendLine();
+            buf.Append("sort spec: ").Append(m_sortSpecs.ToDisplayString()).AppendLine();
+            buf.Append("selections: ").Append(m_selections.ToDisplayString()).AppendLine();
             buf.Append("facet spec: ").Append(FacetSpecs.ToDisplayString()).AppendLine();
             buf.Append("fetch stored fields: ").Append(FetchStoredFields).AppendLine();
             buf.Append("group by: ").Append((GroupBy != null) ? string.Join(",", GroupBy) : string.Empty);

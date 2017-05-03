@@ -30,10 +30,10 @@ namespace BoboBrowse.Net.Facets.Impl
 
     public class GeoFacetHandler : FacetHandler<GeoFacetHandler.GeoFacetData>
     {
-	    private readonly string _latFieldName;
-	    private readonly string _lonFieldName;
+	    private readonly string m_latFieldName;
+	    private readonly string m_lonFieldName;
 	    // variable to specify if the geo distance calculations are in miles. Default is miles
-	    private bool _miles;
+	    private bool m_miles;
 
         /// <summary>
         /// Initializes a new instance of <see cref="T:GeoFacetHandler"/>.
@@ -44,9 +44,9 @@ namespace BoboBrowse.Net.Facets.Impl
         public GeoFacetHandler(string name, string latFieldName, string lonFieldName)
             : base(name, new List<string>(new string[] { latFieldName, lonFieldName }))
         {
-            _latFieldName = latFieldName;
-            _lonFieldName = lonFieldName;
-            _miles = true;
+            m_latFieldName = latFieldName;
+            m_lonFieldName = lonFieldName;
+            m_miles = true;
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace BoboBrowse.Net.Facets.Impl
         public GeoFacetHandler(string name, string latFieldName, string lonFieldName, bool miles)
             : this(name, latFieldName, lonFieldName)
         {
-            _miles = miles;
+            m_miles = miles;
         }
 
         /// <summary>
@@ -91,18 +91,18 @@ namespace BoboBrowse.Net.Facets.Impl
         /// </summary>
         public class GeoFacetData
         {
-            private BigFloatArray _xValArray;
-            private BigFloatArray _yValArray;
-            private BigFloatArray _zValArray;
+            private BigFloatArray m_xValArray;
+            private BigFloatArray m_yValArray;
+            private BigFloatArray m_zValArray;
 
             /// <summary>
             /// Initializes a new instance of <see cref="T:GeoFacetData"/>.
             /// </summary>
             public GeoFacetData()
             {
-                _xValArray = null;
-                _yValArray = null;
-                _zValArray = null;
+                m_xValArray = null;
+                m_yValArray = null;
+                m_zValArray = null;
             }
 
             /// <summary>
@@ -125,9 +125,9 @@ namespace BoboBrowse.Net.Facets.Impl
             /// </param>
             public GeoFacetData(BigFloatArray xvals, BigFloatArray yvals, BigFloatArray zvals)
             {
-                _xValArray = xvals;
-                _yValArray = yvals;
-                _zValArray = zvals;
+                m_xValArray = xvals;
+                m_yValArray = yvals;
+                m_zValArray = zvals;
             }
 
             /// <summary>
@@ -147,8 +147,8 @@ namespace BoboBrowse.Net.Facets.Impl
             /// </summary>
             public virtual BigFloatArray xValArray
             {
-                get { return _xValArray; }
-                set { _xValArray = value; }
+                get { return m_xValArray; }
+                set { m_xValArray = value; }
             }
 
             /// <summary>
@@ -156,8 +156,8 @@ namespace BoboBrowse.Net.Facets.Impl
             /// </summary>
             public virtual BigFloatArray yValArray
             {
-                get { return _yValArray; }
-                set { _yValArray = value; }
+                get { return m_yValArray; }
+                set { m_yValArray = value; }
             }
 
             /// <summary>
@@ -165,8 +165,8 @@ namespace BoboBrowse.Net.Facets.Impl
             /// </summary>
             public virtual BigFloatArray zValArray
             {
-                get { return _zValArray; }
-                set { _zValArray = value; }
+                get { return m_zValArray; }
+                set { m_zValArray = value; }
             }
 
             public virtual void Load(string latFieldName, string lonFieldName, BoboSegmentReader reader)
@@ -178,9 +178,9 @@ namespace BoboBrowse.Net.Facets.Impl
 
                 int maxDoc = reader.MaxDoc;
 
-                BigFloatArray xVals = this._xValArray;
-                BigFloatArray yVals = this._yValArray;
-                BigFloatArray zVals = this._zValArray;
+                BigFloatArray xVals = this.m_xValArray;
+                BigFloatArray yVals = this.m_yValArray;
+                BigFloatArray zVals = this.m_zValArray;
 
                 if (xVals == null)
                     xVals = NewInstance(maxDoc);
@@ -195,9 +195,9 @@ namespace BoboBrowse.Net.Facets.Impl
                 else
                     zVals.EnsureCapacity(maxDoc);
 
-                this._xValArray = xVals;
-                this._yValArray = yVals;
-                this._zValArray = zVals;
+                this.m_xValArray = xVals;
+                this.m_yValArray = yVals;
+                this.m_zValArray = zVals;
 
                 BigSegmentedArray latOrderArray = latCache.OrderArray;
                 ITermValueList latValList = latCache.ValArray;
@@ -223,9 +223,9 @@ namespace BoboBrowse.Net.Facets.Impl
                     }
 
                     float[] coords = GeoMatchUtil.GeoMatchCoordsFromDegrees(docLat, docLon);
-                    _xValArray.Add(i, coords[0]);
-                    _yValArray.Add(i, coords[1]);
-                    _zValArray.Add(i, coords[2]);
+                    m_xValArray.Add(i, coords[0]);
+                    m_yValArray.Add(i, coords[1]);
+                    m_zValArray.Add(i, coords[2]);
                 }
             }
         }
@@ -239,7 +239,7 @@ namespace BoboBrowse.Net.Facets.Impl
         public override RandomAccessFilter BuildRandomAccessFilter(string value, IDictionary<string, string> selectionProperty)
         {
             GeoFacetCountCollector.GeoRange range = GeoFacetCountCollector.Parse(value);
-            return new GeoFacetFilter(this, range.Lat, range.Lon, range.Rad, _miles);
+            return new GeoFacetFilter(this, range.Lat, range.Lon, range.Rad, m_miles);
         }
 
         public override DocComparerSource GetDocComparerSource()
@@ -249,27 +249,27 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec fspec)
         {
-            IEnumerable<string> ranges = sel.Values;
+            IList<string> ranges = sel.Values;
             return new GeoFacetHandlerFacetCountCollectorSource(this, ranges, fspec);
         }
 
         private class GeoFacetHandlerFacetCountCollectorSource : FacetCountCollectorSource
         {
-            private readonly GeoFacetHandler _parent;
-            private readonly IEnumerable<string> _ranges;
-            private readonly FacetSpec _fspec;
+            private readonly GeoFacetHandler m_parent;
+            private readonly IList<string> m_ranges;
+            private readonly FacetSpec m_fspec;
 
-            public GeoFacetHandlerFacetCountCollectorSource(GeoFacetHandler parent, IEnumerable<string> ranges, FacetSpec fspec)
+            public GeoFacetHandlerFacetCountCollectorSource(GeoFacetHandler parent, IList<string> ranges, FacetSpec fspec)
             {
-                _parent = parent;
-                _ranges = ranges;
-                _fspec = fspec;
+                m_parent = parent;
+                m_ranges = ranges;
+                m_fspec = fspec;
             }
 
             public override IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase)
             {
-                GeoFacetData dataCache = _parent.GetFacetData<GeoFacetData>(reader);
-                return new GeoFacetCountCollector(_parent._name, dataCache, docBase, _fspec, _ranges, _parent._miles);
+                GeoFacetData dataCache = m_parent.GetFacetData<GeoFacetData>(reader);
+                return new GeoFacetCountCollector(m_parent.m_name, dataCache, docBase, m_fspec, m_ranges, m_parent.m_miles);
             }
         }
 
@@ -287,7 +287,7 @@ namespace BoboBrowse.Net.Facets.Impl
             float lon = GeoMatchUtil.GetMatchLonDegreesFromXYZCoords(xvalue, yvalue, zvalue);
 
             string[] fieldValues = new string[2];
-            fieldValues[0] = Convert.ToString(lat);
+            fieldValues[0] = Convert.ToString(lat); // TODO: Culture
             fieldValues[1] = Convert.ToString(lon);
             return fieldValues;
         }
@@ -295,7 +295,7 @@ namespace BoboBrowse.Net.Facets.Impl
         public override GeoFacetData Load(BoboSegmentReader reader)
         {
             GeoFacetData dataCache = new GeoFacetData();
-            dataCache.Load(_latFieldName, _lonFieldName, reader);
+            dataCache.Load(m_latFieldName, m_lonFieldName, reader);
             return dataCache;
         }
     }

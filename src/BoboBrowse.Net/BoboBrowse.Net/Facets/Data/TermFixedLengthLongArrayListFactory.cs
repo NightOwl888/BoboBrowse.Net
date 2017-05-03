@@ -24,21 +24,21 @@ namespace BoboBrowse.Net.Facets.Data
 
     public class TermFixedLengthLongArrayListFactory : TermListFactory
     {
-        protected int width;
+        protected int m_width;
 
         public TermFixedLengthLongArrayListFactory(int width)
         {
-            this.width = width;
+            this.m_width = width;
         }
 
         public override ITermValueList CreateTermList()
         {
-            return new TermFixedLengthLongArrayList(width);
+            return new TermFixedLengthLongArrayList(m_width);
         }
 
         public override ITermValueList CreateTermList(int capacity)
         {
-            return new TermFixedLengthLongArrayList(width, capacity);
+            return new TermFixedLengthLongArrayList(m_width, capacity);
         }
 
         public override Type Type

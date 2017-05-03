@@ -39,23 +39,23 @@ namespace BoboBrowse.Net
         /// <summary>
         /// The transaction ID
         /// </summary>
-        private long tid = -1;
+        private long m_tid = -1;
 
         /// <summary>
         /// Get or sets the transaction ID.
         /// </summary>
         public long Tid
         {
-            get { return tid; }
-            set { tid = value; }
+            get { return m_tid; }
+            set { m_tid = value; }
         }
 
         [NonSerialized]
-        private SortCollector _sortCollector;
+        private SortCollector m_sortCollector;
         //private int totalGroups;
-	    private readonly IDictionary<string, IFacetAccessible> _facetMap;
-	    private BrowseHit[] hits;
-        private IList<string> errors = new List<string>();
+	    private readonly IDictionary<string, IFacetAccessible> m_facetMap;
+	    private BrowseHit[] m_hits;
+        private IList<string> m_errors = new List<string>();
 	    private static BrowseHit[] NO_HITS = new BrowseHit[0];
 
         /// <summary>
@@ -63,14 +63,14 @@ namespace BoboBrowse.Net
         /// </summary>
         public BrowseResult()
         {
-            _facetMap = new Dictionary<string, IFacetAccessible>();
+            m_facetMap = new Dictionary<string, IFacetAccessible>();
             this.GroupAccessibles = null;
             this.SortCollector = null;
             this.NumHits = 0;
             this.NumGroups = 0;
             this.TotalDocs = 0;
             //totalGroups = 0;
-            hits = null;
+            m_hits = null;
             this.Time = 0L;
         }
 
@@ -84,8 +84,8 @@ namespace BoboBrowse.Net
         /// </summary>
         public virtual SortCollector SortCollector 
         {
-            get { return _sortCollector; }
-            set { _sortCollector = value; }
+            get { return m_sortCollector; }
+            set { m_sortCollector = value; }
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace BoboBrowse.Net
         /// <returns>IFacetAccessible instance corresponding to the name</returns>
         public virtual IFacetAccessible GetFacetAccessor(string name)
         {
-            return _facetMap.Get(name);
+            return m_facetMap.Get(name);
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace BoboBrowse.Net
         /// <param name="facets">container full of facets</param>
         public virtual void AddFacets(string name, IFacetAccessible facets)
         {
-            _facetMap.Put(name, facets);
+            m_facetMap.Put(name, facets);
         }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace BoboBrowse.Net
         /// <param name="facets">map of facets to add to the result set</param>
         public virtual void AddAll(IDictionary<string, IFacetAccessible> facets)
         {
-            _facetMap.PutAll(facets);
+            m_facetMap.PutAll(facets);
         }
 
         /// <summary>
@@ -137,8 +137,8 @@ namespace BoboBrowse.Net
         /// </summary>
         public virtual BrowseHit[] Hits
         {
-            get { return hits == null ? NO_HITS : hits; }
-            set { hits = value; }
+            get { return m_hits == null ? NO_HITS : m_hits; }
+            set { m_hits = value; }
         }
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace BoboBrowse.Net
         /// </summary>
         public virtual IDictionary<string, IFacetAccessible> FacetMap
         {
-            get { return _facetMap; }
+            get { return m_facetMap; }
         }
 
         /// <summary>
@@ -198,7 +198,7 @@ namespace BoboBrowse.Net
             buf.Append("hit count: ").Append(NumHits).AppendLine();
             buf.Append("total docs: ").Append(TotalDocs).AppendLine();
             buf.Append("facets: ").Append(ToString(this.FacetMap));
-            buf.Append("hits: ").Append(Arrays.ToString(hits));
+            buf.Append("hits: ").Append(Arrays.ToString(m_hits));
             return buf.ToString();
         }
 
@@ -257,7 +257,7 @@ namespace BoboBrowse.Net
         /// <param name="message"></param>
         public virtual void AddError(string message)
         {
-            errors.Add(message);
+            m_errors.Add(message);
         }
 
         /// <summary>
@@ -265,7 +265,7 @@ namespace BoboBrowse.Net
         /// </summary>
         public virtual IEnumerable<string> BoboErrors
         {
-            get { return errors; }
+            get { return m_errors; }
         }
     }
 }

@@ -28,13 +28,13 @@ namespace BoboBrowse.Net.DocIdSet
     [Serializable]
     public abstract class PrimitiveArray<T> : ICloneable
     {
-        protected internal T[] Array { get; set; }
+        protected internal T[] Array { get; set; } // TODO: Change back to field ?
 
-        protected internal int count;
+        protected internal int m_count;
 
-        protected internal int Growth { get; set; }
+        protected internal int Growth { get; set; } // TODO: Change back to field ?
 
-        protected internal int Len { get; set; }
+        protected internal int Len { get; set; } // TODO: Change back to field ?
 
         private const int DEFAULT_SIZE = 1000;
 
@@ -47,7 +47,7 @@ namespace BoboBrowse.Net.DocIdSet
                 throw new ArgumentException("len must be greater than 0: " + len);
             }
             Array = BuildArray(len);
-            count = 0;
+            m_count = 0;
             Growth = 10;
             Len = len;
         }
@@ -59,7 +59,7 @@ namespace BoboBrowse.Net.DocIdSet
 
         public virtual void Clear()
         {
-            count = 0;
+            m_count = 0;
             Growth = 10;
         }
 
@@ -90,19 +90,19 @@ namespace BoboBrowse.Net.DocIdSet
 
         public virtual int Count
         {
-            get { return count; }
+            get { return m_count; }
         }
 
         ///<summary>called to shrink the array size to the current # of elements to save memory.</summary>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public virtual void Seal()
         {
-            if (Len > count)
+            if (Len > m_count)
             {
-                T[] newArray = BuildArray(count);
-                System.Array.Copy((Array)this.Array, 0, (Array)newArray, 0, count);
+                T[] newArray = BuildArray(m_count);
+                System.Array.Copy((Array)this.Array, 0, (Array)newArray, 0, m_count);
                 Array = newArray;
-                Len = count;
+                Len = m_count;
             }
             Growth = 10;
         }
@@ -110,15 +110,15 @@ namespace BoboBrowse.Net.DocIdSet
         [MethodImpl(MethodImplOptions.Synchronized)]
         public virtual T[] ToArray(T[] array)
         {
-            System.Array.Copy((Array)this.Array, 0, (Array)array, 0, count);
+            System.Array.Copy((Array)this.Array, 0, (Array)array, 0, m_count);
             return array;
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         public virtual object ToArray()
         {
-            object array = BuildArray(count);
-            System.Array.Copy((Array)this.Array, 0, (Array)array, 0, count);
+            object array = BuildArray(m_count);
+            System.Array.Copy((Array)this.Array, 0, (Array)array, 0, m_count);
             return array;
         }
 
@@ -130,7 +130,7 @@ namespace BoboBrowse.Net.DocIdSet
         public override string ToString()
         {
             StringBuilder buffer = new StringBuilder("[");
-            for (int i = 0; i < count; ++i)
+            for (int i = 0; i < m_count; ++i)
             {
                 if (i != 0)
                 {

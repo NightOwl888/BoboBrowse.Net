@@ -32,14 +32,14 @@ namespace BoboBrowse.Net.Facets.Impl
     public class ComboFacetHandler : FacetHandler<FacetDataNone>
     {
         private const string DFEAULT_SEPARATOR = ":";
-	    private readonly string _separator;
+	    private readonly string m_separator;
 
         /// <summary>
         /// Initializes a new instance of <see cref="T:ComboFacetHandler"/>. The separator will be assumed to be ":".
         /// </summary>
         /// <param name="name">The facet handler name. Must be the same value as the Lucene.Net index field name.</param>
         /// <param name="dependsOn">List of facets this one depends on for loading.</param>
-        public ComboFacetHandler(string name, IEnumerable<string> dependsOn)
+        public ComboFacetHandler(string name, ICollection<string> dependsOn)
             : this(name, DFEAULT_SEPARATOR, dependsOn)
         {}
 
@@ -49,36 +49,36 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <param name="name">The facet handler name. Must be the same value as the Lucene.Net index field name.</param>
         /// <param name="separator">The separator that is used to delineate the values of the different index fields.</param>
         /// <param name="dependsOn">List of facets this one depends on for loading.</param>
-        public ComboFacetHandler(string name, string separator, IEnumerable<string> dependsOn)
+        public ComboFacetHandler(string name, string separator, ICollection<string> dependsOn)
             : base(name, dependsOn)
         {
-            _separator = separator;
+            m_separator = separator;
         }
 
         public virtual string Separator
         {
-            get { return _separator; }
+            get { return m_separator; }
         }
 
         private class ComboSelection
         {
-            private readonly string name;
-		    private readonly string val;
+            private readonly string m_name;
+		    private readonly string m_val;
 
             public string Name
             {
-                get { return this.name; }
+                get { return this.m_name; }
             }
 
             public string Value
             {
-                get { return this.val; }
+                get { return this.m_val; }
             }
 
             private ComboSelection(string name, string val)
             {
-                this.name = name;
-                this.val = val;
+                this.m_name = name;
+                this.m_val = val;
             }
 
             public static ComboSelection Parse(string value, string sep)
@@ -98,7 +98,7 @@ namespace BoboBrowse.Net.Facets.Impl
         public override RandomAccessFilter BuildRandomAccessFilter(string value, IDictionary<string, string> selectionProperty)
         {
             RandomAccessFilter retFilter = EmptyFilter.Instance;
-            ComboSelection comboSel = ComboSelection.Parse(value, _separator);
+            ComboSelection comboSel = ComboSelection.Parse(value, m_separator);
             if (comboSel != null)
             {
                 IFacetHandler handler = GetDependedFacetHandler(comboSel.Name);
@@ -132,7 +132,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override RandomAccessFilter BuildRandomAccessAndFilter(string[] vals, IDictionary<string, string> prop)
         {
-            IDictionary<string, IList<string>> valMap = ConvertMap(vals, _separator);
+            IDictionary<string, IList<string>> valMap = ConvertMap(vals, m_separator);
 
             List<RandomAccessFilter> filterList = new List<RandomAccessFilter>();
             foreach (var entry in valMap)
@@ -163,7 +163,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override RandomAccessFilter BuildRandomAccessOrFilter(string[] vals, IDictionary<string, string> prop, bool isNot)
         {
-            IDictionary<string, IList<string>> valMap = ConvertMap(vals, _separator);
+            IDictionary<string, IList<string>> valMap = ConvertMap(vals, m_separator);
 
             List<RandomAccessFilter> filterList = new List<RandomAccessFilter>();
             foreach (var entry in valMap)
@@ -224,7 +224,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 foreach (string fieldVal in fieldValues)
                 {
                     StringBuilder buf = new StringBuilder();
-                    buf.Append(depends).Append(_separator).Append(fieldVal);
+                    buf.Append(depends).Append(m_separator).Append(fieldVal);
                     valueList.Add(buf.ToString());
                 }
             }

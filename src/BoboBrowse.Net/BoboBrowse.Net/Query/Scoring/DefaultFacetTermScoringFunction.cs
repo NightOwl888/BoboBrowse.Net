@@ -26,11 +26,11 @@ namespace BoboBrowse.Net.Query.Scoring
 
     public class DefaultFacetTermScoringFunction : IFacetTermScoringFunction
     {
-        private float _sum = 0.0f;
+        private float m_sum = 0.0f;
 
         public void ClearScores()
         {
-            _sum = 0.0f;
+            m_sum = 0.0f;
         }
 
         public float Score(int df, float boost)
@@ -40,12 +40,12 @@ namespace BoboBrowse.Net.Query.Scoring
 
         public void ScoreAndCollect(int df, float boost)
         {
-            _sum += boost;
+            m_sum += boost;
         }
 
         public float GetCurrentScore()
         {
-            return _sum;
+            return m_sum;
         }
 
         public virtual Explanation Explain(int df, float boost)

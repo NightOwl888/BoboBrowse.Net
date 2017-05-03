@@ -45,7 +45,7 @@ namespace BoboBrowse.Tests
             {
             }
 
-            public NoopFacetHandler(string name, IEnumerable<string> dependsOn)
+            public NoopFacetHandler(string name, ICollection<string> dependsOn)
                 : base(name, dependsOn)
             {
             }

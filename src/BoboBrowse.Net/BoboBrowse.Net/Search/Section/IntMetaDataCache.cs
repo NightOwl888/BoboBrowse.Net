@@ -29,57 +29,57 @@ namespace BoboBrowse.Net.Search.Section
         private static readonly int MAX_SLOTS = 1024;
         private static readonly int MISSING = int.MinValue;
 
-        private readonly AtomicReader _reader;
-        private int[][] _list;
+        private readonly AtomicReader m_reader;
+        private int[][] m_list;
 
-        private int _curPageNo;
-        private int[] _curPage;
-        private int _curSlot;
-        private int _curData;
+        private int m_curPageNo;
+        private int[] m_curPage;
+        private int m_curSlot;
+        private int m_curData;
 
         public IntMetaDataCache(Term term, AtomicReader reader)
         {
-            _reader = reader;
+            m_reader = reader;
 
             int maxDoc = reader.MaxDoc;
-            _list = new int[(maxDoc + MAX_SLOTS - 1) / MAX_SLOTS][];
-            _curPageNo = 0;
-            _curSlot = 0;
-            _curData = MAX_SLOTS;
+            m_list = new int[(maxDoc + MAX_SLOTS - 1) / MAX_SLOTS][];
+            m_curPageNo = 0;
+            m_curSlot = 0;
+            m_curData = MAX_SLOTS;
 
             if (maxDoc > 0)
             {
-                _curPage = new int[MAX_SLOTS * 2];
+                m_curPage = new int[MAX_SLOTS * 2];
                 LoadPayload(term);
             }
 
-            _curPage = null;
+            m_curPage = null;
         }
 
         protected virtual void Add(int docid, byte[] data, int blen)
         {
             int pageNo = docid / MAX_SLOTS;
-            if (pageNo != _curPageNo)
+            if (pageNo != m_curPageNo)
             {
                 // save the page
 
-                while (_curSlot < MAX_SLOTS)
+                while (m_curSlot < MAX_SLOTS)
                 {
-                    _curPage[_curSlot++] = MISSING;
+                    m_curPage[m_curSlot++] = MISSING;
                 }
-                _list[_curPageNo++] = CopyPage(new int[_curData]);  // optimize the page to make getMaxItems work
-                _curSlot = 0;
-                _curData = MAX_SLOTS;
+                m_list[m_curPageNo++] = CopyPage(new int[m_curData]);  // optimize the page to make getMaxItems work
+                m_curSlot = 0;
+                m_curData = MAX_SLOTS;
 
-                while (_curPageNo < pageNo)
+                while (m_curPageNo < pageNo)
                 {
-                    _list[_curPageNo++] = null;
+                    m_list[m_curPageNo++] = null;
                 }
             }
 
-            while (_curSlot < docid % MAX_SLOTS)
+            while (m_curSlot < docid % MAX_SLOTS)
             {
-                _curPage[_curSlot++] = MISSING;
+                m_curPage[m_curSlot++] = MISSING;
             }
 
             if (blen <= 4)
@@ -100,7 +100,7 @@ namespace BoboBrowse.Net.Search.Section
                 }
                 if (val >= 0)
                 {
-                    _curPage[_curSlot] = val;
+                    m_curPage[m_curSlot] = val;
                 }
                 else
                 {
@@ -111,20 +111,20 @@ namespace BoboBrowse.Net.Search.Section
             {
                 AppendToTail(data, blen);
             }
-            _curSlot++;
+            m_curSlot++;
         }
 
         private void AppendToTail(byte[] data, int blen)
         {
             int ilen = (blen + 3) / 4; // length in ints
 
-            if (_curPage.Length <= _curData + ilen)
+            if (m_curPage.Length <= m_curData + ilen)
             {
                 // double the size of the variable part at least
-                _curPage = CopyPage(new int[_curPage.Length + Math.Max((_curPage.Length - MAX_SLOTS), ilen)]);
+                m_curPage = CopyPage(new int[m_curPage.Length + Math.Max((m_curPage.Length - MAX_SLOTS), ilen)]);
             }
-            _curPage[_curSlot] = (-_curData);
-            _curData = CopyByteToInt(data, 0, blen, _curPage, _curData);
+            m_curPage[m_curSlot] = (-m_curData);
+            m_curData = CopyByteToInt(data, 0, blen, m_curPage, m_curData);
         }
 
         private int CopyByteToInt(byte[] src, int off, int blen, int[] dst, int dstoff)
@@ -147,13 +147,13 @@ namespace BoboBrowse.Net.Search.Section
 
         private int[] CopyPage(int[] dst)
         {
-            Array.Copy(_curPage, 0, dst, 0, _curData);
+            Array.Copy(m_curPage, 0, dst, 0, m_curData);
             return dst;
         }
 
         protected virtual void LoadPayload(Term term)
         {
-            DocsAndPositionsEnum dp = _reader.GetTermPositionsEnum(term);
+            DocsAndPositionsEnum dp = m_reader.GetTermPositionsEnum(term);
             int docID = -1;
             while ((docID = dp.NextDoc()) != DocsEnum.NO_MORE_DOCS)
             {
@@ -170,17 +170,17 @@ namespace BoboBrowse.Net.Search.Section
 
             // save the last page
 
-            while (_curSlot < MAX_SLOTS)
+            while (m_curSlot < MAX_SLOTS)
             {
-                _curPage[_curSlot++] = MISSING;
+                m_curPage[m_curSlot++] = MISSING;
             }
-            _list[_curPageNo] = CopyPage(new int[_curData]); // optimize the page to make getNumItems work
-            _curPage = null;
+            m_list[m_curPageNo] = CopyPage(new int[m_curData]); // optimize the page to make getNumItems work
+            m_curPage = null;
         }
 
         public virtual int GetValue(int docid, int idx, int defaultValue)
         {
-            int[] page = _list[docid / MAX_SLOTS];
+            int[] page = m_list[docid / MAX_SLOTS];
             if (page == null) return defaultValue;
 
             int val = page[docid % MAX_SLOTS];
@@ -196,7 +196,7 @@ namespace BoboBrowse.Net.Search.Section
 
         public virtual int GetNumItems(int docid)
         {
-            int[] page = _list[docid / MAX_SLOTS];
+            int[] page = m_list[docid / MAX_SLOTS];
             if (page == null) return 0;
 
             int slotNo = docid % MAX_SLOTS;
@@ -220,7 +220,7 @@ namespace BoboBrowse.Net.Search.Section
 
         public virtual int MaxDoc
         {
-            get { return _reader.MaxDoc; }
+            get { return m_reader.MaxDoc; }
         }
     }
 }

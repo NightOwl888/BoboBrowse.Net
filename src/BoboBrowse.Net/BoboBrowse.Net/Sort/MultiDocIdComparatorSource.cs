@@ -24,19 +24,19 @@ namespace BoboBrowse.Net.Sort
 
     public class MultiDocIdComparerSource : DocComparerSource
     {
-        private readonly DocComparerSource[] _compSources;
+        private readonly DocComparerSource[] m_compSources;
 
         public MultiDocIdComparerSource(DocComparerSource[] compSources)
         {
-            _compSources = compSources;
+            m_compSources = compSources;
         }
 
         public override DocComparer GetComparer(AtomicReader reader, int docbase)
         {
-            DocComparer[] comparers = new DocComparer[_compSources.Length];
-            for (int i = 0; i < _compSources.Length; ++i)
+            DocComparer[] comparers = new DocComparer[m_compSources.Length];
+            for (int i = 0; i < m_compSources.Length; ++i)
             {
-                comparers[i] = _compSources[i].GetComparer(reader, docbase);
+                comparers[i] = m_compSources[i].GetComparer(reader, docbase);
             }
             return new MultiDocIdComparer(comparers);
         }

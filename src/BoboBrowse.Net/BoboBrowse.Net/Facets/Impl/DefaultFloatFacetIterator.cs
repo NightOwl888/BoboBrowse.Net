@@ -29,23 +29,23 @@ namespace BoboBrowse.Net.Facets.Impl
     /// </summary>
     public class DefaultFloatFacetIterator : FloatFacetIterator
     {
-        private readonly TermFloatList _valList;
+        private readonly TermFloatList m_valList;
         private readonly BigSegmentedArray _count;
-        private readonly int _countlength;
-        private readonly int _countLengthMinusOne;
-        private int _index;
+        private readonly int m_countlength;
+        private readonly int m_countLengthMinusOne;
+        private int m_index;
 
         public DefaultFloatFacetIterator(TermFloatList valList, BigSegmentedArray countarray, int countlength, bool zeroBased)
         {
-            _valList = valList;
-            _countlength = countlength;
+            m_valList = valList;
+            m_countlength = countlength;
             _count = countarray;
-            _countLengthMinusOne = _countlength - 1;
-            _index = -1;
+            m_countLengthMinusOne = m_countlength - 1;
+            m_index = -1;
             if (!zeroBased)
-                _index++;
-            _facet = TermFloatList.VALUE_MISSING;
-            count = 0;
+                m_index++;
+            m_facet = TermFloatList.VALUE_MISSING;
+            base.m_count = 0;
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// </summary>
         public virtual TermFloatList ValList
         {
-            get { return _valList; }
+            get { return m_valList; }
         }
 
         /// <summary>
@@ -64,24 +64,24 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             get
             {
-                if (_facet == TermFloatList.VALUE_MISSING) return null;
-                return _valList.Format(_facet);
+                if (m_facet == TermFloatList.VALUE_MISSING) return null;
+                return m_valList.Format(m_facet);
             }
         }
 
         public override string Format(float val)
         {
-            return _valList.Format(val);
+            return m_valList.Format(val);
         }
 
         public override string Format(object val)
         {
-            return _valList.Format(val);
+            return m_valList.Format(val);
         }
 
         public virtual int FacetCount
         {
-            get { return count; }
+            get { return base.m_count; }
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <returns></returns>
         public override bool HasNext()
         {
-            return (_index < _countLengthMinusOne);
+            return (m_index < m_countLengthMinusOne);
         }
 
         /// <summary>
@@ -101,12 +101,12 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <returns></returns>
         public override string Next()
         {
-            if ((_index >= 0) && (_index >= _countLengthMinusOne))
+            if ((m_index >= 0) && (m_index >= m_countLengthMinusOne))
                 throw new IndexOutOfRangeException("No more facets in this iteration");
-            _index++;
-            _facet = _valList.GetPrimitiveValue(_index);
-            count = _count.Get(_index);
-            return _valList.Get(_index);
+            m_index++;
+            m_facet = m_valList.GetPrimitiveValue(m_index);
+            base.m_count = _count.Get(m_index);
+            return m_valList.Get(m_index);
         }
 
         /// <summary>
@@ -116,12 +116,12 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <returns></returns>
         public override float NextFloat()
         {
-            if (_index >= _countLengthMinusOne)
+            if (m_index >= m_countLengthMinusOne)
                 throw new IndexOutOfRangeException("No more facets in this iteration");
-            _index++;
-            _facet = _valList.GetPrimitiveValue(_index);
-            count = _count.Get(_index);
-            return _facet;
+            m_index++;
+            m_facet = m_valList.GetPrimitiveValue(m_index);
+            base.m_count = _count.Get(m_index);
+            return m_facet;
         }
 
         /// <summary>
@@ -141,17 +141,17 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <returns></returns>
         public override string Next(int minHits)
         {
-            while (++_index < _countlength)
+            while (++m_index < m_countlength)
             {
-                if (_count.Get(_index) >= minHits)
+                if (_count.Get(m_index) >= minHits)
                 {
-                    _facet = _valList.GetPrimitiveValue(_index);
-                    count = _count.Get(_index);
-                    return _valList.Format(_facet);
+                    m_facet = m_valList.GetPrimitiveValue(m_index);
+                    base.m_count = _count.Get(m_index);
+                    return m_valList.Format(m_facet);
                 }
             }
-            _facet = TermFloatList.VALUE_MISSING;
-            count = 0;
+            m_facet = TermFloatList.VALUE_MISSING;
+            base.m_count = 0;
             return null;
         }
 
@@ -163,18 +163,18 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <returns></returns>
         public override float NextFloat(int minHits)
         {
-            while (++_index < _countlength)
+            while (++m_index < m_countlength)
             {
-                if (_count.Get(_index) >= minHits)
+                if (_count.Get(m_index) >= minHits)
                 {
-                    _facet = _valList.GetPrimitiveValue(_index);
-                    count = _count.Get(_index);
-                    return _facet;
+                    m_facet = m_valList.GetPrimitiveValue(m_index);
+                    base.m_count = _count.Get(m_index);
+                    return m_facet;
                 }
             }
-            _facet = TermFloatList.VALUE_MISSING;
-            count = 0;
-            return _facet;
+            m_facet = TermFloatList.VALUE_MISSING;
+            base.m_count = 0;
+            return m_facet;
         }
     }
 }

@@ -36,8 +36,8 @@ namespace BoboBrowse.Net.Facets.Impl
     /// </summary>
     public class SimpleFacetHandler : FacetHandler<FacetDataCache>, IFacetScoreable
     {
-        protected TermListFactory _termListFactory;
-        protected readonly string _indexFieldName;
+        protected TermListFactory m_termListFactory;
+        protected readonly string m_indexFieldName;
 
         /// <summary>
         /// Initializes a new instance of <see cref="T:SimpleFacetHandler"/> with the specified name, Lucene.Net index field name, 
@@ -48,11 +48,11 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <param name="termListFactory">A <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance that will create a 
         /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
         /// <param name="dependsOn">List of facets this one depends on for loading.</param>
-        public SimpleFacetHandler(string name, string indexFieldName, TermListFactory termListFactory, IEnumerable<string> dependsOn)
+        public SimpleFacetHandler(string name, string indexFieldName, TermListFactory termListFactory, ICollection<string> dependsOn)
             : base(name, dependsOn)
         {
-            _indexFieldName = indexFieldName;
-            _termListFactory = termListFactory;
+            m_indexFieldName = indexFieldName;
+            m_termListFactory = termListFactory;
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <param name="termListFactory">A <see cref="T:BoboBrowse.Net.Facets.Data.TermListFactory"/> instance that will create a 
         /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
         /// <param name="dependsOn">List of facets this one depends on for loading.</param>
-        public SimpleFacetHandler(string name, TermListFactory termListFactory, IEnumerable<string> dependsOn)
+        public SimpleFacetHandler(string name, TermListFactory termListFactory, ICollection<string> dependsOn)
             : this(name, name, termListFactory, dependsOn)
         {
         }
@@ -152,7 +152,7 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             FacetFilter f = new FacetFilter(this, value);
             AdaptiveFacetFilter af = new AdaptiveFacetFilter(
-                new SimpleFacetHandlerFacetDataCacheBuilder(this.GetFacetData<FacetDataCache>, _name, _indexFieldName), 
+                new SimpleFacetHandlerFacetDataCacheBuilder(this.GetFacetData<FacetDataCache>, m_name, m_indexFieldName), 
                 f, 
                 new string[] { value }, 
                 false);
@@ -208,7 +208,7 @@ namespace BoboBrowse.Net.Facets.Impl
             {
                 RandomAccessFilter f = new FacetOrFilter(this, vals, false);
                 filter = new AdaptiveFacetFilter(
-                    new SimpleFacetHandlerFacetDataCacheBuilder(this.GetFacetData<FacetDataCache>, _name, _indexFieldName),
+                    new SimpleFacetHandlerFacetDataCacheBuilder(this.GetFacetData<FacetDataCache>, m_name, m_indexFieldName),
                     f,
                     vals,
                     isNot);
@@ -239,33 +239,33 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             if (groupMode)
             {
-                return new SimpleGroupByFacetHandlerFacetCountCollectorSource(this.GetFacetData<FacetDataCache>, _name, sel, ospec);
+                return new SimpleGroupByFacetHandlerFacetCountCollectorSource(this.GetFacetData<FacetDataCache>, m_name, sel, ospec);
             }
             else
             {
-                return new SimpleFacetHandlerFacetCountCollectorSource(this.GetFacetData<FacetDataCache>, _name, sel, ospec);
+                return new SimpleFacetHandlerFacetCountCollectorSource(this.GetFacetData<FacetDataCache>, m_name, sel, ospec);
             }
         }
 
         private class SimpleGroupByFacetHandlerFacetCountCollectorSource : FacetCountCollectorSource
         {
             private readonly Func<BoboSegmentReader, FacetDataCache> getFacetData;
-            private readonly string _name;
-            private readonly BrowseSelection _sel;
-            private readonly FacetSpec _ospec;
+            private readonly string m_name;
+            private readonly BrowseSelection m_sel;
+            private readonly FacetSpec m_ospec;
 
             public SimpleGroupByFacetHandlerFacetCountCollectorSource(Func<BoboSegmentReader, FacetDataCache> getFacetData, string name, BrowseSelection sel, FacetSpec ospec)
             {
                 this.getFacetData = getFacetData;
-                _name = name;
-                _sel = sel;
-                _ospec = ospec;
+                m_name = name;
+                m_sel = sel;
+                m_ospec = ospec;
             }
 
             public override IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase)
             {
                 FacetDataCache dataCache = getFacetData(reader);
-                return new SimpleGroupByFacetCountCollector(_name, dataCache, docBase, _sel, _ospec);
+                return new SimpleGroupByFacetCountCollector(m_name, dataCache, docBase, m_sel, m_ospec);
             }
         }
 
@@ -294,7 +294,7 @@ namespace BoboBrowse.Net.Facets.Impl
         public override FacetDataCache Load(BoboSegmentReader reader)
         {
             FacetDataCache dataCache = new FacetDataCache();
-            dataCache.Load(_indexFieldName, reader, _termListFactory);
+            dataCache.Load(m_indexFieldName, reader, m_termListFactory);
             return dataCache;
         }
 
@@ -314,13 +314,13 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override void Collect(int docid)
             {
-                int index = _array.Get(docid);
-                _count.Add(index, _count.Get(index) + 1);
+                int index = m_array.Get(docid);
+                m_count.Add(index, m_count.Get(index) + 1);
             }
 
             public override void CollectAll()
             {
-                _count = BigIntArray.FromArray(_dataCache.Freqs);
+                m_count = BigIntArray.FromArray(m_dataCache.Freqs);
             }
         }
 
@@ -336,16 +336,16 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override sealed void Collect(int docid)
             {
-                int index = _array.Get(docid);
-                int newValue = _count.Get(index) + 1;
-                _count.Add(index, newValue);
+                int index = m_array.Get(docid);
+                int newValue = m_count.Get(index) + 1;
+                m_count.Add(index, newValue);
                 if (newValue <= 1)
                     ++_totalGroups;
             }
 
             public override sealed void CollectAll()
             {
-                _count = BigIntArray.FromArray(_dataCache.Freqs);
+                m_count = BigIntArray.FromArray(m_dataCache.Freqs);
                 _totalGroups = -1;
             }
 
@@ -356,9 +356,9 @@ namespace BoboBrowse.Net.Facets.Impl
 
                 // If the user calls collectAll instead of collect, we have to collect all the groups here:
                 _totalGroups = 0;
-                for (int i = 0; i < _count.Length; i++)
+                for (int i = 0; i < m_count.Length; i++)
                 {
-                    int c = _count.Get(i);
+                    int c = m_count.Get(i);
                     if (c > 0)
                         ++_totalGroups;
                 }
@@ -368,24 +368,24 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public sealed class SimpleBoboDocScorer : BoboDocScorer
         {
-            private readonly FacetDataCache _dataCache;
+            private readonly FacetDataCache m_dataCache;
 
             public SimpleBoboDocScorer(FacetDataCache dataCache, IFacetTermScoringFunctionFactory scoreFunctionFactory, float[] boostList)
                 : base(scoreFunctionFactory.GetFacetTermScoringFunction(dataCache.ValArray.Count, dataCache.OrderArray.Length), boostList)
             {
-                _dataCache = dataCache;
+                m_dataCache = dataCache;
             }
 
             public override Explanation Explain(int doc)
             {
-                int idx = _dataCache.OrderArray.Get(doc);
-                return _function.Explain(_dataCache.Freqs[idx], _boostList[idx]);
+                int idx = m_dataCache.OrderArray.Get(doc);
+                return m_function.Explain(m_dataCache.Freqs[idx], m_boostList[idx]);
             }
 
             public override sealed float Score(int docid)
             {
-                int idx = _dataCache.OrderArray.Get(docid);
-                return _function.Score(_dataCache.Freqs[idx], _boostList[idx]);
+                int idx = m_dataCache.OrderArray.Get(docid);
+                return m_function.Score(m_dataCache.Freqs[idx], m_boostList[idx]);
             }
         }
     }

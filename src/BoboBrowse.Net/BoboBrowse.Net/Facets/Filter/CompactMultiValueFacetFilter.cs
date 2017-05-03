@@ -27,9 +27,9 @@ namespace BoboBrowse.Net.Facets.Filter
 
     public class CompactMultiValueFacetFilter : RandomAccessFilter
     {
-        private readonly FacetHandler<FacetDataCache> _facetHandler;
+        private readonly FacetHandler<FacetDataCache> m_facetHandler;
 
-        private readonly string[] _vals;
+        private readonly string[] m_vals;
 
         public CompactMultiValueFacetFilter(FacetHandler<FacetDataCache> facetHandler, string val)
             : this(facetHandler, new string[] { val })
@@ -38,15 +38,15 @@ namespace BoboBrowse.Net.Facets.Filter
 
         public CompactMultiValueFacetFilter(FacetHandler<FacetDataCache> facetHandler, string[] vals)
         {
-            _facetHandler = facetHandler;
-            _vals = vals;
+            m_facetHandler = facetHandler;
+            m_vals = vals;
         }
 
         public override double GetFacetSelectivity(BoboSegmentReader reader)
         {
             double selectivity = 0;
-            FacetDataCache dataCache = _facetHandler.GetFacetData<FacetDataCache>(reader);
-            int[] idxes = FacetDataCache.Convert(dataCache, _vals);
+            FacetDataCache dataCache = m_facetHandler.GetFacetData<FacetDataCache>(reader);
+            int[] idxes = FacetDataCache.Convert(dataCache, m_vals);
             if(idxes == null)
             {
                 return 0.0;
@@ -67,52 +67,52 @@ namespace BoboBrowse.Net.Facets.Filter
 
         private sealed class CompactMultiValueFacetDocIdSetIterator : DocIdSetIterator
         {
-            private readonly int _bits;
-            private int _doc;
-            private readonly int _maxID;
-            private readonly BigSegmentedArray _orderArray;
+            private readonly int m_bits;
+            private int m_doc;
+            private readonly int m_maxID;
+            private readonly BigSegmentedArray m_orderArray;
 
             public CompactMultiValueFacetDocIdSetIterator(FacetDataCache dataCache, int[] index, int bits)
             {
-                _bits = bits;
-                _doc = int.MaxValue;
-                _maxID = -1;
-                _orderArray = dataCache.OrderArray;
+                m_bits = bits;
+                m_doc = int.MaxValue;
+                m_maxID = -1;
+                m_orderArray = dataCache.OrderArray;
                 foreach (int i in index)
                 {
-                    if (_doc > dataCache.MinIDs[i])
+                    if (m_doc > dataCache.MinIDs[i])
                     {
-                        _doc = dataCache.MinIDs[i];
+                        m_doc = dataCache.MinIDs[i];
                     }
-                    if (_maxID < dataCache.MaxIDs[i])
+                    if (m_maxID < dataCache.MaxIDs[i])
                     {
-                        _maxID = dataCache.MaxIDs[i];
+                        m_maxID = dataCache.MaxIDs[i];
                     }
                 }
-                _doc--;
-                if (_doc < 0)
+                m_doc--;
+                if (m_doc < 0)
                 {
-                    _doc = -1;
+                    m_doc = -1;
                 }
             }
 
             public sealed override int DocID
             {
-                get { return _doc; }
+                get { return m_doc; }
             }
 
             public sealed override int NextDoc()
             {
-                _doc = (_doc < _maxID) ? _orderArray.FindBits(_bits, (_doc + 1), _maxID) : NO_MORE_DOCS;
-                return _doc;
+                m_doc = (m_doc < m_maxID) ? m_orderArray.FindBits(m_bits, (m_doc + 1), m_maxID) : NO_MORE_DOCS;
+                return m_doc;
             }
 
             public sealed override int Advance(int id)
             {
-                if (_doc < id)
+                if (m_doc < id)
                 {
-                    _doc = (id <= _maxID) ? _orderArray.FindBits(_bits, id, _maxID) : NO_MORE_DOCS;
-                    return _doc;
+                    m_doc = (id <= m_maxID) ? m_orderArray.FindBits(m_bits, id, m_maxID) : NO_MORE_DOCS;
+                    return m_doc;
                 }
                 return NextDoc();
             }
@@ -125,8 +125,8 @@ namespace BoboBrowse.Net.Facets.Filter
 
         public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboSegmentReader reader)
         {
-            FacetDataCache dataCache = _facetHandler.GetFacetData<FacetDataCache>(reader);
-            int[] indexes = FacetDataCache.Convert(dataCache, _vals);
+            FacetDataCache dataCache = m_facetHandler.GetFacetData<FacetDataCache>(reader);
+            int[] indexes = FacetDataCache.Convert(dataCache, m_vals);
 
             int bits;
 
@@ -152,27 +152,27 @@ namespace BoboBrowse.Net.Facets.Filter
 
         private class CompactMultiValueFacetFilterDocIdSet : RandomAccessDocIdSet
         {
-            private readonly FacetDataCache dataCache;
-            private readonly int[] indexes;
-            private readonly int finalBits;
-            private readonly BigSegmentedArray orderArray;
+            private readonly FacetDataCache m_dataCache;
+            private readonly int[] m_indexes;
+            private readonly int m_finalBits;
+            private readonly BigSegmentedArray m_orderArray;
 
             public CompactMultiValueFacetFilterDocIdSet(FacetDataCache dataCache, int[] indexes, int finalBits, BigSegmentedArray orderArray)
             {
-                this.dataCache = dataCache;
-                this.indexes = indexes;
-                this.finalBits = finalBits;
-                this.orderArray = orderArray;
+                this.m_dataCache = dataCache;
+                this.m_indexes = indexes;
+                this.m_finalBits = finalBits;
+                this.m_orderArray = orderArray;
             }
 
             public override DocIdSetIterator GetIterator()
             {
-                return new CompactMultiValueFacetDocIdSetIterator(this.dataCache, this.indexes, this.finalBits);
+                return new CompactMultiValueFacetDocIdSetIterator(this.m_dataCache, this.m_indexes, this.m_finalBits);
             }
 
             public override bool Get(int docId)
             {
-                return (orderArray.Get(docId) & this.finalBits) != 0x0;
+                return (m_orderArray.Get(docId) & this.m_finalBits) != 0x0;
             }
         } 
     }

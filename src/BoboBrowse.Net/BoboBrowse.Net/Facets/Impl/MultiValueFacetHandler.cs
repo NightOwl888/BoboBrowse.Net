@@ -39,11 +39,11 @@ namespace BoboBrowse.Net.Facets.Impl
     /// </summary>
     public class MultiValueFacetHandler : FacetHandler<MultiValueFacetDataCache>, IFacetScoreable
     {
-        protected readonly TermListFactory _termListFactory;
-        protected readonly string _indexFieldName;
+        protected readonly TermListFactory m_termListFactory;
+        protected readonly string m_indexFieldName;
 
-        protected int _maxItems = BigNestedIntArray.MAX_ITEMS;
-        protected Term _sizePayloadTerm;
+        protected int m_maxItems = BigNestedIntArray.MAX_ITEMS;
+        protected Term m_sizePayloadTerm;
         // protected IEnumerable<string> _depends; // NOT USED
 
         /// <summary>
@@ -57,13 +57,13 @@ namespace BoboBrowse.Net.Facets.Impl
         /// specialized <see cref="T:BoboBrowse.Net.Facets.Data.ITermValueList"/> to compare the field values, typically using their native or primitive data type.</param>
         /// <param name="sizePayloadTerm"></param>
         /// <param name="dependsOn">List of facets this one depends on for loading.</param>
-        public MultiValueFacetHandler(string name, string indexFieldName, TermListFactory termListFactory, Term sizePayloadTerm, IEnumerable<string> dependsOn)
+        public MultiValueFacetHandler(string name, string indexFieldName, TermListFactory termListFactory, Term sizePayloadTerm, ICollection<string> dependsOn)
             : base(name, dependsOn)
         {
             //_depends = dependsOn; // NOT USED
-            _indexFieldName = (!string.IsNullOrEmpty(indexFieldName) ? indexFieldName : name);
-            _termListFactory = termListFactory;
-            _sizePayloadTerm = sizePayloadTerm;
+            m_indexFieldName = (!string.IsNullOrEmpty(indexFieldName) ? indexFieldName : name);
+            m_termListFactory = termListFactory;
+            m_sizePayloadTerm = sizePayloadTerm;
         }
 
         public override int GetNumItems(BoboSegmentReader reader, int id)
@@ -153,19 +153,19 @@ namespace BoboBrowse.Net.Facets.Impl
         /// </summary>
         /// <param name="name">The facet handler name. Must be the same value as the Lucene.Net index field name.</param>
         /// <param name="dependsOn">List of facets this one depends on for loading.</param>
-        public MultiValueFacetHandler(string name, IEnumerable<string> dependsOn)
+        public MultiValueFacetHandler(string name, ICollection<string> dependsOn)
             : this(name, name, null, null, dependsOn)
         {
         }
 
         public override DocComparerSource GetDocComparerSource()
         {
-            return new MultiFacetDocComparerSource(new MultiDataCacheBuilder(Name, _indexFieldName));
+            return new MultiFacetDocComparerSource(new MultiDataCacheBuilder(Name, m_indexFieldName));
         }
 
         public virtual int MaxItems
         {
-            set { _maxItems = Math.Min(value, BigNestedIntArray.MAX_ITEMS); }
+            set { m_maxItems = Math.Min(value, BigNestedIntArray.MAX_ITEMS); }
         }
 
         public override string[] GetFieldValues(BoboSegmentReader reader, int id)
@@ -190,28 +190,28 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec ospec)
         {
-            return new MultiValueFacetCountCollectorSource(this, _name, sel, ospec);
+            return new MultiValueFacetCountCollectorSource(this, m_name, sel, ospec);
         }
 
         private class MultiValueFacetCountCollectorSource : FacetCountCollectorSource
         {
-            private readonly MultiValueFacetHandler _parent;
-            private readonly string _name;
-            private readonly BrowseSelection _sel;
-            private readonly FacetSpec _ospec;
+            private readonly MultiValueFacetHandler m_parent;
+            private readonly string m_name;
+            private readonly BrowseSelection m_sel;
+            private readonly FacetSpec m_ospec;
 
             public MultiValueFacetCountCollectorSource(MultiValueFacetHandler parent, string name, BrowseSelection sel, FacetSpec ospec)
             {
-                this._parent = parent;
-                this._name = name;
-                this._sel = sel;
-                this._ospec = ospec;
+                this.m_parent = parent;
+                this.m_name = name;
+                this.m_sel = sel;
+                this.m_ospec = ospec;
             }
 
             public override IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase)
             {
-                MultiValueFacetDataCache dataCache = _parent.GetFacetData<MultiValueFacetDataCache>(reader);
-                return new MultiValueFacetCountCollector(_name, dataCache, docBase, _sel, _ospec);
+                MultiValueFacetDataCache dataCache = m_parent.GetFacetData<MultiValueFacetDataCache>(reader);
+                return new MultiValueFacetCountCollector(m_name, dataCache, docBase, m_sel, m_ospec);
             }
         }
 
@@ -224,23 +224,23 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             var dataCache = new MultiValueFacetDataCache();
 
-            dataCache.MaxItems = _maxItems;
+            dataCache.MaxItems = m_maxItems;
 
-            if (_sizePayloadTerm == null)
+            if (m_sizePayloadTerm == null)
             {
-                dataCache.Load(_indexFieldName, reader, _termListFactory, workArea);
+                dataCache.Load(m_indexFieldName, reader, m_termListFactory, workArea);
             }
             else
             {
-                dataCache.Load(_indexFieldName, reader, _termListFactory, _sizePayloadTerm);
+                dataCache.Load(m_indexFieldName, reader, m_termListFactory, m_sizePayloadTerm);
             }
             return dataCache;
         }
 
         public override RandomAccessFilter BuildRandomAccessFilter(string value, IDictionary<string, string> prop)
         {
-            MultiValueFacetFilter f = new MultiValueFacetFilter(new MultiDataCacheBuilder(Name, _indexFieldName), value);
-            AdaptiveFacetFilter af = new AdaptiveFacetFilter(new SimpleDataCacheBuilder(Name, _indexFieldName), f, new string[] { value }, false);
+            MultiValueFacetFilter f = new MultiValueFacetFilter(new MultiDataCacheBuilder(Name, m_indexFieldName), value);
+            AdaptiveFacetFilter af = new AdaptiveFacetFilter(new SimpleDataCacheBuilder(Name, m_indexFieldName), f, new string[] { value }, false);
             return af;
         }
 
@@ -274,7 +274,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 MultiValueORFacetFilter f = new MultiValueORFacetFilter(this, vals, false);			// catch the "not" case later
                 if (!isNot)
                 {
-                    AdaptiveFacetFilter af = new AdaptiveFacetFilter(new SimpleDataCacheBuilder(Name, _indexFieldName), f, vals, false);
+                    AdaptiveFacetFilter af = new AdaptiveFacetFilter(new SimpleDataCacheBuilder(Name, m_indexFieldName), f, vals, false);
                     return af;
                 }
                 else
@@ -307,32 +307,32 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public sealed class MultiValueDocScorer : BoboDocScorer
         {
-            private readonly MultiValueFacetDataCache _dataCache;
-            private readonly BigNestedIntArray _array;
+            private readonly MultiValueFacetDataCache m_dataCache;
+            private readonly BigNestedIntArray m_array;
 
             public MultiValueDocScorer(MultiValueFacetDataCache dataCache, IFacetTermScoringFunctionFactory scoreFunctionFactory, float[] boostList)
                 : base(scoreFunctionFactory.GetFacetTermScoringFunction(dataCache.ValArray.Count, dataCache.NestedArray.Length), boostList)
             {
-                _dataCache = dataCache;
-                _array = _dataCache.NestedArray;
+                m_dataCache = dataCache;
+                m_array = m_dataCache.NestedArray;
             }
 
             public override Explanation Explain(int doc)
             {
-                string[] vals = _array.GetTranslatedData(doc, _dataCache.ValArray);
+                string[] vals = m_array.GetTranslatedData(doc, m_dataCache.ValArray);
 
-                List<float> scoreList = new List<float>(_dataCache.ValArray.Count);
+                List<float> scoreList = new List<float>(m_dataCache.ValArray.Count);
                 List<Explanation> explList = new List<Explanation>(scoreList.Count);
                 foreach (string val in vals)
                 {
-                    int idx = _dataCache.ValArray.IndexOf(val);
+                    int idx = m_dataCache.ValArray.IndexOf(val);
                     if (idx >= 0)
                     {
-                        scoreList.Add(_function.Score(_dataCache.Freqs[idx], _boostList[idx]));
-                        explList.Add(_function.Explain(_dataCache.Freqs[idx], _boostList[idx]));
+                        scoreList.Add(m_function.Score(m_dataCache.Freqs[idx], m_boostList[idx]));
+                        explList.Add(m_function.Explain(m_dataCache.Freqs[idx], m_boostList[idx]));
                     }
                 }
-                Explanation topLevel = _function.Explain(scoreList.ToArray());
+                Explanation topLevel = m_function.Explain(scoreList.ToArray());
                 foreach (Explanation sub in explList)
                 {
                     topLevel.AddDetail(sub);
@@ -342,13 +342,13 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override sealed float Score(int docid)
             {
-                return _array.GetScores(docid, _dataCache.Freqs, _boostList, _function);
+                return m_array.GetScores(docid, m_dataCache.Freqs, m_boostList, m_function);
             }
         }
 
         public sealed class MultiValueFacetCountCollector : DefaultFacetCountCollector
         {
-            private readonly new BigNestedIntArray _array;
+            new private readonly BigNestedIntArray m_array;
 
             public MultiValueFacetCountCollector(string name, 
                 MultiValueFacetDataCache dataCache, 
@@ -357,17 +357,17 @@ namespace BoboBrowse.Net.Facets.Impl
                 FacetSpec ospec)
                 : base(name, dataCache, docBase, sel, ospec)
             {
-                _array = dataCache.NestedArray;
+                m_array = dataCache.NestedArray;
             }
 
             public override sealed void Collect(int docid)
             {
-                _array.CountNoReturn(docid, _count);
+                m_array.CountNoReturn(docid, m_count);
             }
 
             public override sealed void CollectAll()
             {
-                _count = BigIntArray.FromArray(_dataCache.Freqs);
+                m_count = BigIntArray.FromArray(m_dataCache.Freqs);
             }
         }
     }

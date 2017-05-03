@@ -27,82 +27,82 @@ namespace BoboBrowse.Net.Search.Section
     /// </summary>
     public class AndNode : SectionSearchQueryPlan
     {
-        protected SectionSearchQueryPlan[] _subqueries;
+        protected SectionSearchQueryPlan[] m_subqueries;
 
         public AndNode(SectionSearchQueryPlan[] subqueries)
         {
-            _subqueries = subqueries;
-            _curDoc = (subqueries.Length > 0 ? -1 : DocIdSetIterator.NO_MORE_DOCS);
+            m_subqueries = subqueries;
+            m_curDoc = (subqueries.Length > 0 ? -1 : DocIdSetIterator.NO_MORE_DOCS);
         }
 
         public override int FetchDoc(int targetDoc)
         {
-            if (_curDoc == DocIdSetIterator.NO_MORE_DOCS)
+            if (m_curDoc == DocIdSetIterator.NO_MORE_DOCS)
             {
-                return _curDoc;
+                return m_curDoc;
             }
 
-            SectionSearchQueryPlan node = _subqueries[0];
-            _curDoc = node.FetchDoc(targetDoc);
-            targetDoc = _curDoc;
+            SectionSearchQueryPlan node = m_subqueries[0];
+            m_curDoc = node.FetchDoc(targetDoc);
+            targetDoc = m_curDoc;
 
             int i = 1;
-            while (i < _subqueries.Length)
+            while (i < m_subqueries.Length)
             {
-                node = _subqueries[i];
+                node = m_subqueries[i];
                 if (node.DocId < targetDoc)
                 {
-                    _curDoc = node.FetchDoc(targetDoc);
-                    if (_curDoc == DocIdSetIterator.NO_MORE_DOCS)
+                    m_curDoc = node.FetchDoc(targetDoc);
+                    if (m_curDoc == DocIdSetIterator.NO_MORE_DOCS)
                     {
-                        return _curDoc;
+                        return m_curDoc;
                     }
 
-                    if (_curDoc > targetDoc)
+                    if (m_curDoc > targetDoc)
                     {
-                        targetDoc = _curDoc;
+                        targetDoc = m_curDoc;
                         i = 0;
                         continue;
                     }
                 }
                 i++;
             }
-            _curSec = -1;
-            return _curDoc;
+            m_curSec = -1;
+            return m_curDoc;
         }
 
         public override int FetchSec(int targetSec)
         {
-            SectionSearchQueryPlan node = _subqueries[0];
+            SectionSearchQueryPlan node = m_subqueries[0];
             targetSec = node.FetchSec(targetSec);
             if (targetSec == SectionSearchQueryPlan.NO_MORE_SECTIONS)
             {
-                _curSec = SectionSearchQueryPlan.NO_MORE_SECTIONS;
+                m_curSec = SectionSearchQueryPlan.NO_MORE_SECTIONS;
                 return targetSec;
             }
 
             int i = 1;
-            while (i < _subqueries.Length)
+            while (i < m_subqueries.Length)
             {
-                node = _subqueries[i];
+                node = m_subqueries[i];
                 if (node.SecId < targetSec)
                 {
-                    _curSec = node.FetchSec(targetSec);
-                    if (_curSec == SectionSearchQueryPlan.NO_MORE_SECTIONS)
+                    m_curSec = node.FetchSec(targetSec);
+                    if (m_curSec == SectionSearchQueryPlan.NO_MORE_SECTIONS)
                     {
-                        return _curSec;
+                        return m_curSec;
                     }
 
-                    if (_curSec > targetSec)
+                    if (m_curSec > targetSec)
                     {
-                        targetSec = _curSec;
+                        targetSec = m_curSec;
                         i = 0;
                         continue;
                     }
                 }
                 i++;
             }
-            return _curSec;
+            return m_curSec;
         }
     }
 }

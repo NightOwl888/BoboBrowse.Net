@@ -25,8 +25,8 @@ namespace BoboBrowse.Net.Facets.Data
 
     public class TermStringList : TermValueList<string>
     {
-        private string sanity = null;
-        private bool withDummy = true;
+        private string m_sanity = null;
+        private bool m_withDummy = true;
 
         public TermStringList(int capacity)
             : base(capacity)
@@ -38,17 +38,17 @@ namespace BoboBrowse.Net.Facets.Data
 
         public override void Add(string o)
         {
-            if (_innerList.Count == 0 && o != null) withDummy = false; // the first value added is not null
+            if (m_innerList.Count == 0 && o != null) m_withDummy = false; // the first value added is not null
             if (o == null) o = "";
-            if (sanity != null && string.CompareOrdinal(sanity, o) >= 0)
-                throw new RuntimeException("Values need to be added in ascending order. Previous value: " + sanity + " adding value: " + o);
-            if (_innerList.Count > 0 || !withDummy) sanity = o;
-            _innerList.Add(o);
+            if (m_sanity != null && string.CompareOrdinal(m_sanity, o) >= 0)
+                throw new RuntimeException("Values need to be added in ascending order. Previous value: " + m_sanity + " adding value: " + o);
+            if (m_innerList.Count > 0 || !m_withDummy) m_sanity = o;
+            m_innerList.Add(o);
         }
 
         public override bool Contains(object o)
         {
-            if (withDummy)
+            if (m_withDummy)
             {
                 return IndexOf(o) > 0;
             }
@@ -65,59 +65,59 @@ namespace BoboBrowse.Net.Facets.Data
 
         public override int IndexOf(object o)
         {
-            if (withDummy)
+            if (m_withDummy)
             {
                 if (o == null) return -1;
 
                 if (o.Equals(""))
                 {
-                    if (_innerList.Count > 1 && "".Equals(_innerList[1]))
+                    if (m_innerList.Count > 1 && "".Equals(m_innerList[1]))
                         return 1;
-                    else if (_innerList.Count < 2)
+                    else if (m_innerList.Count < 2)
                         return -1;
                 }
-                return _innerList.BinarySearch(Convert.ToString(o), StringComparer.Ordinal);
+                return m_innerList.BinarySearch(Convert.ToString(o), StringComparer.Ordinal);
             }
             else
             {
-                return _innerList.BinarySearch(Convert.ToString(o), StringComparer.Ordinal);
+                return m_innerList.BinarySearch(Convert.ToString(o), StringComparer.Ordinal);
             }
         }
 
         public override bool ContainsWithType(string val)
         {
-            if (withDummy)
+            if (m_withDummy)
             {
                 if (val == null) return false;
                 if (val.Equals(""))
                 {
-                    return _innerList.Count > 1 && "".Equals(_innerList[1]);
+                    return m_innerList.Count > 1 && "".Equals(m_innerList[1]);
                 }
-                return _innerList.BinarySearch(val) >= 0;
+                return m_innerList.BinarySearch(val) >= 0;
             }
             else
             {
-                return _innerList.BinarySearch(val) >= 0;
+                return m_innerList.BinarySearch(val) >= 0;
             }
         }
 
         public override int IndexOfWithType(string o)
         {
-            if (withDummy)
+            if (m_withDummy)
             {
                 if (o == null) return -1;
                 if (o.Equals(""))
                 {
-                    if (_innerList.Count > 1 && "".Equals(_innerList[1]))
+                    if (m_innerList.Count > 1 && "".Equals(m_innerList[1]))
                         return 1;
-                    else if (_innerList.Count < 2)
+                    else if (m_innerList.Count < 2)
                         return -1;
                 }
-                return _innerList.BinarySearch((string)o);
+                return m_innerList.BinarySearch((string)o);
             }
             else
             {
-                return _innerList.BinarySearch((string)o);
+                return m_innerList.BinarySearch((string)o);
             }
         }
     }

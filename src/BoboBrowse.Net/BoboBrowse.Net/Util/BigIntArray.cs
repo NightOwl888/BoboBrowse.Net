@@ -36,7 +36,7 @@ namespace BoboBrowse.Net.Util
     {
         //private static long serialVersionUID = 1L; // NOT USED
 
-        private int[][] _array;
+        private int[][] m_array;
 
         // Remember that 2^SHIFT_SIZE = BLOCK_SIZE 
         private const int BLOCK_SIZE = 1024;
@@ -46,28 +46,28 @@ namespace BoboBrowse.Net.Util
         public BigIntArray(int size)
             : base(size)
         {
-            _array = new int[_numrows][];
-            for (int i = 0; i < _numrows; i++)
+            m_array = new int[m_numrows][];
+            for (int i = 0; i < m_numrows; i++)
             {
-                _array[i] = new int[BLOCK_SIZE];
+                m_array[i] = new int[BLOCK_SIZE];
             }
         }
 
         public override sealed void Add(int docId, int val)
         {
-            _array[docId >> SHIFT_SIZE][docId & MASK] = val;
+            m_array[docId >> SHIFT_SIZE][docId & MASK] = val;
         }
 
         public override sealed int Get(int docId)
         {
-            return _array[docId >> SHIFT_SIZE][docId & MASK];
+            return m_array[docId >> SHIFT_SIZE][docId & MASK];
         }
 
         public override sealed int FindValue(int val, int docId, int maxId)
         {
             while (true)
             {
-                if (_array[docId >> SHIFT_SIZE][docId & MASK] == val) return docId;
+                if (m_array[docId >> SHIFT_SIZE][docId & MASK] == val) return docId;
                 if (docId++ >= maxId) break;
             }
             return DocIdSetIterator.NO_MORE_DOCS;
@@ -77,7 +77,7 @@ namespace BoboBrowse.Net.Util
         {
             while (true)
             {
-                if (bitset.FastGet(_array[docId >> SHIFT_SIZE][docId & MASK])) return docId;
+                if (bitset.FastGet(m_array[docId >> SHIFT_SIZE][docId & MASK])) return docId;
                 if (docId++ >= maxId) break;
             }
             return DocIdSetIterator.NO_MORE_DOCS;
@@ -87,7 +87,7 @@ namespace BoboBrowse.Net.Util
         {
             while (true)
             {
-                int val = _array[docId >> SHIFT_SIZE][docId & MASK];
+                int val = m_array[docId >> SHIFT_SIZE][docId & MASK];
                 if (val >= minVal && val <= maxVal) return docId;
                 if (docId++ >= maxId) break;
             }
@@ -98,7 +98,7 @@ namespace BoboBrowse.Net.Util
         {
             while (true)
             {
-                if ((_array[docId >> SHIFT_SIZE][docId & MASK] & bits) != 0) return docId;
+                if ((m_array[docId >> SHIFT_SIZE][docId & MASK] & bits) != 0) return docId;
                 if (docId++ >= maxId) break;
             }
             return DocIdSetIterator.NO_MORE_DOCS;
@@ -106,7 +106,7 @@ namespace BoboBrowse.Net.Util
 
         public override sealed void Fill(int val)
         {
-            foreach (int[] block in _array)
+            foreach (int[] block in m_array)
             {
                 Arrays.Fill(block, val);
             }
@@ -115,17 +115,17 @@ namespace BoboBrowse.Net.Util
         public override void EnsureCapacity(int size)
         {
             int newNumrows = (size >> SHIFT_SIZE) + 1;
-            if (newNumrows > _array.Length)
+            if (newNumrows > m_array.Length)
             {
                 int[][] newArray = new int[newNumrows][]; // grow
-                System.Array.Copy(_array, 0, newArray, 0, _array.Length);
-                for (int i = _array.Length; i < newNumrows; ++i)
+                System.Array.Copy(m_array, 0, newArray, 0, m_array.Length);
+                for (int i = m_array.Length; i < newNumrows; ++i)
                 {
                     newArray[i] = new int[BLOCK_SIZE];
                 }
-                _array = newArray;
+                m_array = newArray;
             }
-            _numrows = newNumrows;
+            m_numrows = newNumrows;
         }
 
         protected override sealed int GetBlockSize()

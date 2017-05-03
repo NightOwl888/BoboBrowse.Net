@@ -38,9 +38,9 @@ namespace BoboBrowse.Net.Facets.Impl
         public const long MILLIS_IN_MIN = 60L * 1000L;
         public const long MILLIS_IN_SEC = 1000L;
 
-        private readonly IDictionary<string, string> _valueToRangeStringMap;
-        private readonly IDictionary<string, string> _rangeStringToValueMap;
-        private readonly IList<string> _rangeStringList;
+        private readonly IDictionary<string, string> m_valueToRangeStringMap;
+        private readonly IDictionary<string, string> m_rangeStringToValueMap;
+        private readonly IList<string> m_rangeStringList;
 
         /// <summary>
         /// Initializes a new instance of <see cref="T:DynamicTimeRangeFacetHandler"/>.
@@ -52,7 +52,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// The <see cref="M:BoboBrowse.Net.Support.DateTimeExtensions.GetTime"/> method can be used to convert the current time to 
         /// this format, e.g. DateTime.Now.GetTime().</param>
         /// <param name="ranges">A list of range strings in the format dddhhmmss. (ddd: days (000-999), hh : hours (00-23), mm: minutes (00-59), ss: seconds (00-59))</param>
-        public DynamicTimeRangeFacetHandler(string name, string dataFacetName, long currentTime, IEnumerable<string> ranges)
+        public DynamicTimeRangeFacetHandler(string name, string dataFacetName, long currentTime, IList<string> ranges)
             : base(name, dataFacetName)
         {
             if (log.IsDebugEnabled())
@@ -62,17 +62,17 @@ namespace BoboBrowse.Net.Facets.Impl
             List<string> sortedRanges = new List<string>(ranges);
             sortedRanges.Sort();
 
-            _valueToRangeStringMap = new Dictionary<string, string>();
-            _rangeStringToValueMap = new Dictionary<string, string>();
-            _rangeStringList = new List<string>(ranges.Count());
+            m_valueToRangeStringMap = new Dictionary<string, string>();
+            m_rangeStringToValueMap = new Dictionary<string, string>();
+            m_rangeStringList = new List<string>(ranges.Count);
 
             string prev = "000000000";
             foreach (string range in sortedRanges)
             {
                 string rangeString = BuildRangeString(currentTime, prev, range);
-                _valueToRangeStringMap.Put(range, rangeString);
-                _rangeStringToValueMap.Put(rangeString, range);
-                _rangeStringList.Add(rangeString);
+                m_valueToRangeStringMap.Put(range, rangeString);
+                m_rangeStringToValueMap.Put(rangeString, range);
+                m_rangeStringList.Add(rangeString);
                 prev = range;
 
                 if (log.IsDebugEnabled())
@@ -89,9 +89,9 @@ namespace BoboBrowse.Net.Facets.Impl
             : base(name, dataFacetName)
         {
             
-            _valueToRangeStringMap = valueToRangeStringMap;
-            _rangeStringToValueMap = rangeStringToValueMap;
-            _rangeStringList = new List<string>(rangeStringList);
+            m_valueToRangeStringMap = valueToRangeStringMap;
+            m_rangeStringToValueMap = rangeStringToValueMap;
+            m_rangeStringList = new List<string>(rangeStringList);
         }
 
         private static long GetTime(long time, string range)
@@ -136,22 +136,22 @@ namespace BoboBrowse.Net.Facets.Impl
 
         protected override string BuildRangeString(string val)
         {
-            return _valueToRangeStringMap.Get(val);
+            return m_valueToRangeStringMap.Get(val);
         }
 
-        protected override IEnumerable<string> BuildAllRangeStrings()
+        protected override IList<string> BuildAllRangeStrings()
         {
-            return _rangeStringList;
+            return m_rangeStringList;
         }
 
         protected override string GetValueFromRangeString(string val)
         {
-            return _rangeStringToValueMap.Get(val);
+            return m_rangeStringToValueMap.Get(val);
         }
 
         public DynamicTimeRangeFacetHandler NewInstance()
         {
-            return new DynamicTimeRangeFacetHandler(Name, _dataFacetName, _valueToRangeStringMap, _rangeStringToValueMap, _rangeStringList);
+            return new DynamicTimeRangeFacetHandler(Name, m_dataFacetName, m_valueToRangeStringMap, m_rangeStringToValueMap, m_rangeStringList);
         }
     }
 }

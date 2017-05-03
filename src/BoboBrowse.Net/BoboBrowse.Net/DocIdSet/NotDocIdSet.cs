@@ -27,13 +27,13 @@ namespace BoboBrowse.Net.DocIdSet
     {
         // private static long serialVersionUID = 1L; // NOT USED
 
-        private DocIdSet innerSet = null;
-        private int max = -1;
+        private DocIdSet m_innerSet = null;
+        private int m_max = -1;
 
         public NotDocIdSet(DocIdSet docSet, int maxVal)
         {
-            innerSet = docSet;
-            max = maxVal;
+            m_innerSet = docSet;
+            m_max = maxVal;
         }
 
         public class NotDocIdSetIterator : DocIdSetIterator
@@ -121,7 +121,7 @@ namespace BoboBrowse.Net.DocIdSet
 
         public override DocIdSetIterator GetIterator()
         {
-            return new NotDocIdSetIterator(this.innerSet, () => this.max);
+            return new NotDocIdSetIterator(this.m_innerSet, () => this.m_max);
         }
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace BoboBrowse.Net.DocIdSet
         /// <returns>index if the given value</returns>
         public override int FindWithIndex(int target)
         {
-            DocIdSetIterator finder = new NotDocIdSetIterator(this.innerSet, () => this.max);
+            DocIdSetIterator finder = new NotDocIdSetIterator(this.m_innerSet, () => this.m_max);
             int cursor = -1;
             try
             {

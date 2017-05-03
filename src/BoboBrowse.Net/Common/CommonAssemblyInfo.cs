@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: CLSCompliantAttribute(false)]
+[assembly: CLSCompliantAttribute(true)]
 [assembly: ComVisibleAttribute(false)]
 [assembly: AssemblyCompanyAttribute("BoboBrowse.Net")]
 [assembly: AssemblyCopyrightAttribute("Copyright © BoboBrowse.Net 2011 - 2014")]

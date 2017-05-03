@@ -37,14 +37,14 @@ namespace BoboBrowse.Net
     public class FacetRangeTest
     {
         private Directory _indexDir;
-        private IEnumerable<IFacetHandler> _facetHandlers;
+        private IList<IFacetHandler> _facetHandlers;
 
         private class TestDataDigester : DataDigester
         {
             private IEnumerable<IFacetHandler> _fconf;
             private Document[] _data;
 
-            public TestDataDigester(IEnumerable<IFacetHandler> fConf, Document[] data)
+            public TestDataDigester(IList<IFacetHandler> fConf, Document[] data)
                 : base()
             {
                 _fconf = fConf;
@@ -153,7 +153,7 @@ namespace BoboBrowse.Net
             return new StringField(name, val, Field.Store.YES);
         }
 
-        public static IEnumerable<IFacetHandler> CreateFacetHandlers()
+        public static IList<IFacetHandler> CreateFacetHandlers()
         {
             var facetHandlers = new List<IFacetHandler>();
             facetHandlers.Add(new RangeFacetHandler("pricedouble", "price", new PredefinedTermListFactory<double>("c"), new string[] { "[000000.000 TO 000999.220]", "[000999.230 TO 100000.000]" } ));
@@ -206,7 +206,7 @@ namespace BoboBrowse.Net
 
                         // Check.
                         Assert.AreEqual(10, totalHits);
-                        Assert.AreEqual(2, facetVals.Count());
+                        Assert.AreEqual(2, facetVals.Count);
                         Assert.AreEqual("[000000.000 TO 000999.220](7)", facetVals[0].ToString());
                         Assert.AreEqual("[000999.230 TO 100000.000](3)", facetVals[1].ToString());
                     }
@@ -259,7 +259,7 @@ namespace BoboBrowse.Net
 
                         // Check.
                         Assert.AreEqual(7, totalHits);
-                        Assert.AreEqual(1, facetVals.Count());
+                        Assert.AreEqual(1, facetVals.Count);
                         Assert.AreEqual("[000000.000 TO 000999.220](7)", facetVals[0].ToString());
                     }
                 }
@@ -310,7 +310,7 @@ namespace BoboBrowse.Net
 
                         // Check.
                         Assert.AreEqual(10, totalHits);
-                        Assert.AreEqual(2, facetVals.Count());
+                        Assert.AreEqual(2, facetVals.Count);
                         Assert.AreEqual("[000000.000 TO 000999.220](7)", facetVals[0].ToString());
                         Assert.AreEqual("[000999.230 TO 100000.000](3)", facetVals[1].ToString());
                     }
@@ -363,7 +363,7 @@ namespace BoboBrowse.Net
 
                         // Check.
                         Assert.AreEqual(7, totalHits);
-                        Assert.AreEqual(1, facetVals.Count());
+                        Assert.AreEqual(1, facetVals.Count);
                         Assert.AreEqual("[000000.000 TO 000999.220](7)", facetVals[0].ToString());
                     }
                 }
@@ -414,7 +414,7 @@ namespace BoboBrowse.Net
 
                         // Check.
                         Assert.AreEqual(10, totalHits);
-                        Assert.AreEqual(5, facetVals.Count());
+                        Assert.AreEqual(5, facetVals.Count);
                         Assert.AreEqual("[0000000000 TO 0000001000](3)", facetVals[0].ToString());
                         Assert.AreEqual("[0000001000 TO 0000010000](3)", facetVals[1].ToString());
                         Assert.AreEqual("[0000010000 TO 0000100000](2)", facetVals[2].ToString());

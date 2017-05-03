@@ -41,8 +41,8 @@ namespace BoboBrowse.Net
 
         //private static long serialVersionUID = 1L; // NOT USED
 
-        private readonly List<string> values;
-        private readonly List<string> notValues;
+        private readonly List<string> m_values;
+        private readonly List<string> m_notValues;
 
         /// <summary>
         /// A dictionary of custom properties that can be used by custom (or some built-in) 
@@ -110,11 +110,11 @@ namespace BoboBrowse.Net
         /// </summary>
         public virtual string[] Values
         {
-            get { return values.ToArray(); }
+            get { return m_values.ToArray(); }
             set
             {
-                values.Clear();
-                values.AddRange(value);
+                m_values.Clear();
+                m_values.AddRange(value);
             }
         }
 
@@ -123,11 +123,11 @@ namespace BoboBrowse.Net
         /// </summary>
         public virtual string[] NotValues
         {
-            get { return notValues.ToArray(); }
+            get { return m_notValues.ToArray(); }
             set
             {
-                notValues.Clear();
-                notValues.AddRange(value);
+                m_notValues.Clear();
+                m_notValues.AddRange(value);
             }
         }
 
@@ -137,7 +137,7 @@ namespace BoboBrowse.Net
         /// <param name="val">Value to select.</param>
         public virtual void AddValue(string val)
         {
-            values.Add(val);
+            m_values.Add(val);
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace BoboBrowse.Net
         /// <param name="val">Value to NOT select.</param>
         public virtual void AddNotValue(string val)
         {
-            notValues.Add(val);
+            m_notValues.Add(val);
         }
 
         /// <summary>
@@ -156,8 +156,8 @@ namespace BoboBrowse.Net
         public BrowseSelection(string fieldName)
         {
             this.FieldName = fieldName;
-            this.values = new List<string>();
-            this.notValues = new List<string>();
+            this.m_values = new List<string>();
+            this.m_notValues = new List<string>();
             this.SelectionOperation = ValueOperation.ValueOperationOr;
             this.SelectionProperties = new Dictionary<string, string>();
         }
@@ -175,8 +175,8 @@ namespace BoboBrowse.Net
         {
             StringBuilder buf = new StringBuilder();
             buf.Append("name: ").Append(FieldName).Append(" ");
-            buf.Append("values: " + string.Join(",", values.ToArray())).Append(" ");
-            buf.Append("nots: " + string.Join(",", notValues.ToArray())).Append(" ");
+            buf.Append("values: " + string.Join(",", m_values.ToArray())).Append(" ");
+            buf.Append("nots: " + string.Join(",", m_notValues.ToArray())).Append(" ");
             buf.Append("op: " + SelectionOperation.ToString()).Append(" ");
             buf.Append("sel props: " + SelectionProperties.ToDisplayString());
             return buf.ToString();

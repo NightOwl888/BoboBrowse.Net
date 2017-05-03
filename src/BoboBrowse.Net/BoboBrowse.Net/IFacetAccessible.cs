@@ -27,7 +27,7 @@ namespace BoboBrowse.Net
     {
         ///<summary>Gets gathered top facets </summary>
         ///<returns>list of facets </returns>
-        IEnumerable<BrowseFacet> GetFacets();
+        ICollection<BrowseFacet> GetFacets();
 
         ///<summary>Gets the facet given a value. This is a way for random accessing into the facet data structure. </summary>
         ///<param name="value">Facet value </param>

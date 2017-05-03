@@ -39,19 +39,19 @@ namespace BoboBrowse.Net.Util
     {
         //private static long serialVersionUID = 1L; // NOT USED
 
-        private int[][] _array;
+        private int[][] m_array;
         /* Remember that 2^SHIFT_SIZE = BLOCK_SIZE */
         private const int BLOCK_SIZE = 1024;
         private const int SHIFT_SIZE = 10;
         private const int MASK = BLOCK_SIZE - 1;
 
-        private int _fillValue = 0;
+        private int m_fillValue = 0;
 
         public LazyBigIntArray(int size)
             : base(size)
         {
             // initialize empty blocks
-            _array = new int[_numrows][];
+            m_array = new int[m_numrows][];
         }
 
         /// <summary>
@@ -83,10 +83,10 @@ namespace BoboBrowse.Net.Util
         public override int Get(int id)
         {
             int i = id >> SHIFT_SIZE;
-            if (_array[i] == null)
-                return _fillValue; // return _fillValue to mimic int[] behavior
+            if (m_array[i] == null)
+                return m_fillValue; // return _fillValue to mimic int[] behavior
             else
-                return _array[i][id & MASK];
+                return m_array[i][id & MASK];
         }
 
         /// <summary>
@@ -98,13 +98,13 @@ namespace BoboBrowse.Net.Util
         public override void Add(int id, int val)
         {
             int i = id >> SHIFT_SIZE;
-            if (_array[i] == null)
+            if (m_array[i] == null)
             {
-                _array[i] = new int[BLOCK_SIZE];
-                if (_fillValue != 0)
-                    Arrays.Fill(_array[i], _fillValue);
+                m_array[i] = new int[BLOCK_SIZE];
+                if (m_fillValue != 0)
+                    Arrays.Fill(m_array[i], m_fillValue);
             }
-            _array[i][id & MASK] = val;
+            m_array[i][id & MASK] = val;
         }
 
         /// <summary>
@@ -114,13 +114,13 @@ namespace BoboBrowse.Net.Util
         /// <param name="val"></param>
         public override void Fill(int val)
         {
-            foreach (int[] block in _array)
+            foreach (int[] block in m_array)
             {
                 if (block == null) continue;
                 Arrays.Fill(block, val);
             }
 
-            _fillValue = val;
+            m_fillValue = val;
         }
 
         /// <summary>
@@ -131,14 +131,14 @@ namespace BoboBrowse.Net.Util
         public override void EnsureCapacity(int size)
         {
             int newNumrows = (size >> SHIFT_SIZE) + 1;
-            if (newNumrows > _array.Length)
+            if (newNumrows > m_array.Length)
             {
                 int[][] newArray = new int[newNumrows][];           // grow
-                System.Array.Copy(_array, 0, newArray, 0, _array.Length);
+                System.Array.Copy(m_array, 0, newArray, 0, m_array.Length);
                 // don't allocate new rows
-                _array = newArray;
+                m_array = newArray;
             }
-            _numrows = newNumrows;
+            m_numrows = newNumrows;
         }
 
         /// <summary>
@@ -163,16 +163,16 @@ namespace BoboBrowse.Net.Util
             while (id <= maxId)
             {
                 int i = id >> SHIFT_SIZE;
-                if (_array[i] == null)
+                if (m_array[i] == null)
                 {
-                    if (val == _fillValue)
+                    if (val == m_fillValue)
                         return id;
                     else
                         id = (i + 1) << SHIFT_SIZE; // jump to next segment
                 }
                 else
                 {
-                    if (_array[i][id & MASK] == val)
+                    if (m_array[i][id & MASK] == val)
                         return id;
                     else
                         id++;
@@ -194,16 +194,16 @@ namespace BoboBrowse.Net.Util
             while (id <= maxId)
             {
                 int i = id >> SHIFT_SIZE;
-                if (_array[i] == null)
+                if (m_array[i] == null)
                 {
-                    if (bitset.FastGet(_fillValue))
+                    if (bitset.FastGet(m_fillValue))
                         return id;
                     else
                         id = (i + 1) << SHIFT_SIZE; // jump to next segment
                 }
                 else
                 {
-                    if (bitset.FastGet(_array[i][id & MASK]))
+                    if (bitset.FastGet(m_array[i][id & MASK]))
                         return id;
                     else
                         id++;
@@ -226,16 +226,16 @@ namespace BoboBrowse.Net.Util
             while (id <= maxId)
             {
                 int i = id >> SHIFT_SIZE;
-                if (_array[i] == null)
+                if (m_array[i] == null)
                 {
-                    if (_fillValue >= minVal && _fillValue <= maxVal)
+                    if (m_fillValue >= minVal && m_fillValue <= maxVal)
                         return id;
                     else
                         id = (i + 1) << SHIFT_SIZE; // jump to next segment
                 }
                 else
                 {
-                    int val = _array[i][id & MASK];
+                    int val = m_array[i][id & MASK];
                     if (val >= minVal && val <= maxVal)
                         return id;
                     else
@@ -258,16 +258,16 @@ namespace BoboBrowse.Net.Util
             while (id <= maxId)
             {
                 int i = id >> SHIFT_SIZE;
-                if (_array[i] == null)
+                if (m_array[i] == null)
                 {
-                    if ((_fillValue & bits) != 0)
+                    if ((m_fillValue & bits) != 0)
                         return id;
                     else
                         id = (i + 1) << SHIFT_SIZE; // jump to next segment
                 }
                 else
                 {
-                    int val = _array[i][id & MASK];
+                    int val = m_array[i][id & MASK];
                     if ((val & bits) != 0)
                         return id;
                     else

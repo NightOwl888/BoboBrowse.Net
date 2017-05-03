@@ -34,12 +34,12 @@ namespace BoboBrowse.Net.Facets.Impl
 
     public class SimpleGroupbyFacetHandler : FacetHandler<FacetDataNone>
     {
-        private readonly IEnumerable<string> _fieldsSet;
-        private IList<SimpleFacetHandler> _facetHandlers;
-        private IDictionary<string, SimpleFacetHandler> _facetHandlerMap;
+        private readonly IList<string> m_fieldsSet;
+        private IList<SimpleFacetHandler> m_facetHandlers;
+        private IDictionary<string, SimpleFacetHandler> m_facetHandlerMap;
 
         private const string SEP = ",";
-        private readonly string _sep;
+        private readonly string m_sep;
 
         /// <summary>
         /// Initializes a new instance of <see cref="T:SimpleFacetHandler"/> with the specified name, 
@@ -48,13 +48,13 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <param name="name">The facet handler name.</param>
         /// <param name="dependsOn">List of facet handler names that will be included in the group.</param>
         /// <param name="separator">The separator string that will be used to delineate each value in the group.</param>
-        public SimpleGroupbyFacetHandler(string name, IEnumerable<string> dependsOn, string separator)
+        public SimpleGroupbyFacetHandler(string name, IList<string> dependsOn, string separator)
             : base(name, dependsOn)
         {
-            _fieldsSet = dependsOn;
-            _facetHandlers = null;
-            _facetHandlerMap = null;
-            _sep = separator;
+            m_fieldsSet = dependsOn;
+            m_facetHandlers = null;
+            m_facetHandlerMap = null;
+            m_sep = separator;
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// </summary>
         /// <param name="name">The facet handler name.</param>
         /// <param name="dependsOn">List of facet handler names that will be included in the group.</param>
-        public SimpleGroupbyFacetHandler(string name, IEnumerable<string> dependsOn)
+        public SimpleGroupbyFacetHandler(string name, IList<string> dependsOn)
             : this(name, dependsOn, SEP)
         {
         }
@@ -71,10 +71,10 @@ namespace BoboBrowse.Net.Facets.Impl
         public override RandomAccessFilter BuildRandomAccessFilter(string value, IDictionary<string, string> selectionProperty)
         {
             List<RandomAccessFilter> filterList = new List<RandomAccessFilter>();
-            string[] vals = value.Split(new string[] { _sep }, StringSplitOptions.RemoveEmptyEntries);
+            string[] vals = value.Split(new string[] { m_sep }, StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i < vals.Length; ++i)
             {
-                SimpleFacetHandler handler = _facetHandlers[i];
+                SimpleFacetHandler handler = m_facetHandlers[i];
                 BrowseSelection sel = new BrowseSelection(handler.Name);
                 sel.AddValue(vals[i]);
                 filterList.Add(handler.BuildFilter(sel));
@@ -84,41 +84,41 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec fspec)
         {
-            return new GroupbyFacetCountCollectorSource(_facetHandlers, _name, _sep, sel, fspec);
+            return new GroupbyFacetCountCollectorSource(m_facetHandlers, m_name, m_sep, sel, fspec);
         }
 
         private class GroupbyFacetCountCollectorSource : FacetCountCollectorSource
         {
-            private readonly IEnumerable<SimpleFacetHandler> _facetHandlers;
-            private readonly string _name;
-            private readonly string _sep;
-            private readonly BrowseSelection _sel;
-            private readonly FacetSpec _fspec;
+            private readonly IList<SimpleFacetHandler> m_facetHandlers;
+            private readonly string m_name;
+            private readonly string m_sep;
+            private readonly BrowseSelection m_sel;
+            private readonly FacetSpec m_fspec;
 
-            public GroupbyFacetCountCollectorSource(IEnumerable<SimpleFacetHandler> facetHandlers, string name, string sep, BrowseSelection sel, FacetSpec fspec)
+            public GroupbyFacetCountCollectorSource(IList<SimpleFacetHandler> facetHandlers, string name, string sep, BrowseSelection sel, FacetSpec fspec)
             {
-                _facetHandlers = facetHandlers;
-                _name = name;
-                _sep = sep;
-                _sel = sel;
-                _fspec = fspec;
+                m_facetHandlers = facetHandlers;
+                m_name = name;
+                m_sep = sep;
+                m_sel = sel;
+                m_fspec = fspec;
             }
 
             public override IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase)
             {
-                var collectorList = new List<DefaultFacetCountCollector>(_facetHandlers.Count());
-                foreach (var facetHandler in _facetHandlers)
+                var collectorList = new List<DefaultFacetCountCollector>(m_facetHandlers.Count);
+                foreach (var facetHandler in m_facetHandlers)
                 {
-                    collectorList.Add((DefaultFacetCountCollector)facetHandler.GetFacetCountCollectorSource(_sel, _fspec).GetFacetCountCollector(reader, docBase));
+                    collectorList.Add((DefaultFacetCountCollector)facetHandler.GetFacetCountCollectorSource(m_sel, m_fspec).GetFacetCountCollector(reader, docBase));
                 }
-                return new GroupbyFacetCountCollector(_name, _fspec, collectorList.ToArray(), reader.MaxDoc, _sep);
+                return new GroupbyFacetCountCollector(m_name, m_fspec, collectorList.ToArray(), reader.MaxDoc, m_sep);
             }
         }
 
         public override string[] GetFieldValues(BoboSegmentReader reader, int id)
         {
             List<string> valList = new List<string>();
-            foreach (IFacetHandler handler in _facetHandlers)
+            foreach (IFacetHandler handler in m_facetHandlers)
             {
                 StringBuilder buf = new StringBuilder();
                 bool firsttime = true;
@@ -150,24 +150,24 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override DocComparerSource GetDocComparerSource()
         {
-            return new GroupbyDocComparerSource(_fieldsSet, _facetHandlers);
+            return new GroupbyDocComparerSource(m_fieldsSet, m_facetHandlers);
         }
 
         private class GroupbyDocComparerSource : DocComparerSource
         {
-            private readonly IEnumerable<string> _fieldsSet;
-            private readonly IEnumerable<SimpleFacetHandler> _facetHandlers;
+            private readonly IList<string> m_fieldsSet;
+            private readonly IList<SimpleFacetHandler> m_facetHandlers;
 
-            public GroupbyDocComparerSource(IEnumerable<string> fieldsSet, IEnumerable<SimpleFacetHandler> facetHandlers)
+            public GroupbyDocComparerSource(IList<string> fieldsSet, IList<SimpleFacetHandler> facetHandlers)
             {
-                _fieldsSet = fieldsSet;
-                _facetHandlers = facetHandlers;
+                m_fieldsSet = fieldsSet;
+                m_facetHandlers = facetHandlers;
             }
 
             public override DocComparer GetComparer(AtomicReader reader, int docbase)
             {
-                var comparerList = new List<DocComparer>(_fieldsSet.Count());
-                foreach (var handler in _facetHandlers)
+                var comparerList = new List<DocComparer>(m_fieldsSet.Count);
+                foreach (var handler in m_facetHandlers)
                 {
                     comparerList.Add(handler.GetDocComparerSource().GetComparer(reader, docbase));
                 }
@@ -177,9 +177,9 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override FacetDataNone Load(BoboSegmentReader reader)
         {
-            _facetHandlers = new List<SimpleFacetHandler>(_fieldsSet.Count());
-            _facetHandlerMap = new Dictionary<string, SimpleFacetHandler>(_fieldsSet.Count());
-            foreach (string name in _fieldsSet)
+            m_facetHandlers = new List<SimpleFacetHandler>(m_fieldsSet.Count);
+            m_facetHandlerMap = new Dictionary<string, SimpleFacetHandler>(m_fieldsSet.Count);
+            foreach (string name in m_fieldsSet)
             {
                 IFacetHandler handler = reader.GetFacetHandler(name);
                 if (handler == null || !(handler is SimpleFacetHandler))
@@ -187,25 +187,25 @@ namespace BoboBrowse.Net.Facets.Impl
                     throw new InvalidOperationException("only simple facet handlers supported");
                 }
                 SimpleFacetHandler sfh = (SimpleFacetHandler)handler;
-                _facetHandlers.Add(sfh);
-                _facetHandlerMap.Add(name, sfh);
+                m_facetHandlers.Add(sfh);
+                m_facetHandlerMap.Add(name, sfh);
             }
             return FacetDataNone.Instance;
         }
 
         private class GroupbyDocComparer : DocComparer
         {
-            private readonly DocComparer[] _comparers;
+            private readonly DocComparer[] m_comparers;
 
             public GroupbyDocComparer(DocComparer[] comparers)
             {
-                _comparers = comparers;
+                m_comparers = comparers;
             }
 
             public override sealed int Compare(ScoreDoc d1, ScoreDoc d2)
             {
                 int retval = 0;
-                foreach (DocComparer comparer in _comparers)
+                foreach (DocComparer comparer in m_comparers)
                 {
                     retval = comparer.Compare(d1, d2);
                     if (retval != 0) break;
@@ -215,27 +215,27 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override sealed IComparable Value(ScoreDoc doc)
             {
-                return new GroupbyComparable(_comparers, doc);
+                return new GroupbyComparable(m_comparers, doc);
             }
         }
 
         private class GroupbyComparable : IComparable
         {
-            private readonly DocComparer[] _comparers;
-            private readonly ScoreDoc _doc;
+            private readonly DocComparer[] m_comparers;
+            private readonly ScoreDoc m_doc;
 
             public GroupbyComparable(DocComparer[] comparers, ScoreDoc doc)
             {
-                _comparers = comparers;
-                _doc = doc;
+                m_comparers = comparers;
+                m_doc = doc;
             }
 
             public virtual int CompareTo(object o)
             {
                 int retval = 0;
-                foreach (DocComparer comparer in _comparers)
+                foreach (DocComparer comparer in m_comparers)
                 {
-                    retval = comparer.Value(_doc).CompareTo(o);
+                    retval = comparer.Value(m_doc).CompareTo(o);
                     if (retval != 0) break;
                 }
                 return retval;
@@ -244,49 +244,49 @@ namespace BoboBrowse.Net.Facets.Impl
 
         private class GroupbyFacetCountCollector : IFacetCountCollector
         {
-            private readonly DefaultFacetCountCollector[] _subcollectors;
-            private readonly string _name;
-            private readonly FacetSpec _fspec;
-            private readonly BigSegmentedArray _count;
-            private readonly int _countlength;
-            private readonly int[] _lens;
-            private readonly int _maxdoc;
-            private readonly string _sep;
+            private readonly DefaultFacetCountCollector[] m_subcollectors;
+            private readonly string m_name;
+            private readonly FacetSpec m_fspec;
+            private readonly BigSegmentedArray m_count;
+            private readonly int m_countlength;
+            private readonly int[] m_lens;
+            private readonly int m_maxdoc;
+            private readonly string m_sep;
 
             public GroupbyFacetCountCollector(string name, FacetSpec fspec, DefaultFacetCountCollector[] subcollectors, int maxdoc, string sep)
             {
-                _name = name;
-                _fspec = fspec;
-                _subcollectors = subcollectors;
-                _sep = sep;
+                m_name = name;
+                m_fspec = fspec;
+                m_subcollectors = subcollectors;
+                m_sep = sep;
                 int totalLen = 1;
-                _lens = new int[_subcollectors.Length];
-                for (int i = 0; i < _subcollectors.Length; ++i)
+                m_lens = new int[m_subcollectors.Length];
+                for (int i = 0; i < m_subcollectors.Length; ++i)
                 {
-                    _lens[i] = _subcollectors[i].CountLength;
-                    totalLen *= _lens[i];
+                    m_lens[i] = m_subcollectors[i].CountLength;
+                    totalLen *= m_lens[i];
                 }
-                _countlength = totalLen;
-                _count = new LazyBigIntArray(_countlength);
-                _maxdoc = maxdoc;
+                m_countlength = totalLen;
+                m_count = new LazyBigIntArray(m_countlength);
+                m_maxdoc = maxdoc;
             }
 
             public void Collect(int docid)
             {
                 int idx = 0;
                 int i = 0;
-                int segsize = _countlength;
-                foreach (DefaultFacetCountCollector subcollector in _subcollectors)
+                int segsize = m_countlength;
+                foreach (DefaultFacetCountCollector subcollector in m_subcollectors)
                 {
-                    segsize = segsize / _lens[i++];
+                    segsize = segsize / m_lens[i++];
                     idx += (subcollector.DataCache.OrderArray.Get(docid) * segsize);
                 }
-                _count.Add(idx, _count.Get(idx) + 1);
+                m_count.Add(idx, m_count.Get(idx) + 1);
             }
 
             public virtual void CollectAll()
             {
-                for (int i = 0; i < _maxdoc; ++i)
+                for (int i = 0; i < m_maxdoc; ++i)
                 {
                     Collect(i);
                 }
@@ -294,41 +294,41 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public virtual BigSegmentedArray GetCountDistribution()
             {
-                return _count;
+                return m_count;
             }
 
             public virtual string Name
             {
-                get { return _name; }
+                get { return m_name; }
             }
 
             public virtual BrowseFacet GetFacet(string value)
             {
-                string[] vals = value.Split(new string[] { _sep }, StringSplitOptions.RemoveEmptyEntries);
+                string[] vals = value.Split(new string[] { m_sep }, StringSplitOptions.RemoveEmptyEntries);
                 if (vals.Length == 0)
                     return null;
                 StringBuilder buf = new StringBuilder();
                 int startIdx = 0;
-                int segLen = _countlength;
+                int segLen = m_countlength;
 
                 for (int i = 0; i < vals.Length; ++i)
                 {
                     if (i > 0)
                     {
-                        buf.Append(_sep);
+                        buf.Append(m_sep);
                     }
-                    int index = _subcollectors[i].DataCache.ValArray.IndexOf(vals[i]);
-                    string facetName = _subcollectors[i].DataCache.ValArray.Get(index);
+                    int index = m_subcollectors[i].DataCache.ValArray.IndexOf(vals[i]);
+                    string facetName = m_subcollectors[i].DataCache.ValArray.Get(index);
                     buf.Append(facetName);
 
-                    segLen /= _subcollectors[i].CountLength;
+                    segLen /= m_subcollectors[i].CountLength;
                     startIdx += index * segLen;
                 }
 
                 int count = 0;
                 for (int i = startIdx; i < startIdx + segLen; ++i)
                 {
-                    count += _count.Get(i);
+                    count += m_count.Get(i);
                 }
 
                 BrowseFacet f = new BrowseFacet(buf.ToString(), count);
@@ -337,21 +337,21 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public virtual int GetFacetHitsCount(object value)
             {
-                string[] vals = ((string)value).Split(new string[] { _sep }, StringSplitOptions.RemoveEmptyEntries);
+                string[] vals = ((string)value).Split(new string[] { m_sep }, StringSplitOptions.RemoveEmptyEntries);
                 if (vals.Length == 0) return 0;
                 int startIdx = 0;
-                int segLen = _countlength;
+                int segLen = m_countlength;
 
                 for (int i = 0; i < vals.Length; ++i)
                 {
-                    int index = _subcollectors[i].DataCache.ValArray.IndexOf(vals[i]);
-                    segLen /= _subcollectors[i].CountLength;
+                    int index = m_subcollectors[i].DataCache.ValArray.IndexOf(vals[i]);
+                    segLen /= m_subcollectors[i].CountLength;
                     startIdx += index * segLen;
                 }
 
                 int count = 0;
                 for (int i = startIdx; i < startIdx + segLen; ++i)
-                    count += _count.Get(i);
+                    count += m_count.Get(i);
 
                 return count;
             }
@@ -360,18 +360,18 @@ namespace BoboBrowse.Net.Facets.Impl
             {
                 StringBuilder buf = new StringBuilder();
                 int i = 0;
-                foreach (int len in _lens)
+                foreach (int len in m_lens)
                 {
                     if (i > 0)
                     {
-                        buf.Append(_sep);
+                        buf.Append(m_sep);
                     }
 
                     int adjusted = idx * len;
 
-                    int bucket = adjusted / _countlength;
-                    buf.Append(_subcollectors[i].DataCache.ValArray.Get(bucket));
-                    idx = adjusted % _countlength;
+                    int bucket = adjusted / m_countlength;
+                    buf.Append(m_subcollectors[i].DataCache.ValArray.Get(bucket));
+                    idx = adjusted % m_countlength;
                     i++;
                 }
                 return buf.ToString();
@@ -379,35 +379,35 @@ namespace BoboBrowse.Net.Facets.Impl
 
             private object[] GetRawFaceValue(int idx)
             {
-                object[] retVal = new object[_lens.Length];
+                object[] retVal = new object[m_lens.Length];
                 int i = 0;
-                foreach (int len in _lens)
+                foreach (int len in m_lens)
                 {
                     int adjusted = idx * len;
-                    int bucket = adjusted / _countlength;
-                    retVal[i++] = _subcollectors[i].DataCache.ValArray.GetRawValue(bucket);
-                    idx = adjusted % _countlength;
+                    int bucket = adjusted / m_countlength;
+                    retVal[i++] = m_subcollectors[i].DataCache.ValArray.GetRawValue(bucket);
+                    idx = adjusted % m_countlength;
                 }
                 return retVal;
             }
 
-            public virtual IEnumerable<BrowseFacet> GetFacets()
+            public virtual ICollection<BrowseFacet> GetFacets()
             {
-                if (_fspec != null)
+                if (m_fspec != null)
                 {
-                    int minCount = _fspec.MinHitCount;
-                    int max = _fspec.MaxCount;
+                    int minCount = m_fspec.MinHitCount;
+                    int max = m_fspec.MaxCount;
                     if (max <= 0)
-                        max = _countlength;
+                        max = m_countlength;
 
-                    FacetSpec.FacetSortSpec sortspec = _fspec.OrderBy;
+                    FacetSpec.FacetSortSpec sortspec = m_fspec.OrderBy;
                     List<BrowseFacet> facetColl;
                     if (sortspec == FacetSpec.FacetSortSpec.OrderValueAsc)
                     {
                         facetColl = new List<BrowseFacet>(max);
-                        for (int i = 1; i < _countlength; ++i) // exclude zero
+                        for (int i = 1; i < m_countlength; ++i) // exclude zero
                         {
-                            int hits = _count.Get(i);
+                            int hits = m_count.Get(i);
                             if (hits >= minCount)
                             {
                                 BrowseFacet facet = new BrowseFacet(GetFacetString(i), hits);
@@ -426,7 +426,7 @@ namespace BoboBrowse.Net.Facets.Impl
                         }
                         else
                         {
-                            comparerFactory = _fspec.CustomComparerFactory;
+                            comparerFactory = m_fspec.CustomComparerFactory;
                         }
 
                         if (comparerFactory == null)
@@ -434,14 +434,14 @@ namespace BoboBrowse.Net.Facets.Impl
                             throw new System.ArgumentException("facet comparer factory not specified");
                         }
 
-                        IComparer<int> comparer = comparerFactory.NewComparer(new GroupbyFieldValueAccessor(this.GetFacetString, this.GetRawFaceValue), _count);
+                        IComparer<int> comparer = comparerFactory.NewComparer(new GroupbyFieldValueAccessor(this.GetFacetString, this.GetRawFaceValue), m_count);
                         facetColl = new List<BrowseFacet>();
                         int forbidden = -1;
                         IntBoundedPriorityQueue pq = new IntBoundedPriorityQueue(comparer, max, forbidden);
 
-                        for (int i = 1; i < _countlength; ++i) // exclude zero
+                        for (int i = 1; i < m_countlength; ++i) // exclude zero
                         {
-                            int hits = _count.Get(i);
+                            int hits = m_count.Get(i);
                             if (hits >= minCount)
                             {
                                 if (!pq.Offer(i))
@@ -455,7 +455,7 @@ namespace BoboBrowse.Net.Facets.Impl
                         int val;
                         while ((val = pq.Poll()) != forbidden)
                         {
-                            BrowseFacet facet = new BrowseFacet(GetFacetString(val), _count.Get(val));
+                            BrowseFacet facet = new BrowseFacet(GetFacetString(val), m_count.Get(val));
                             facetColl.Insert(0, facet);
                         }
                     }
@@ -463,7 +463,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 }
                 else
                 {
-                    return FacetCountCollector_Fields.EMPTY_FACET_LIST;
+                    return FacetCountCollector.EMPTY_FACET_LIST;
                 }
             }
 
@@ -500,15 +500,15 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public class GroupByFacetIterator : FacetIterator
             {
-                private readonly GroupbyFacetCountCollector _parent;
-                private int _index;
+                private readonly GroupbyFacetCountCollector m_parent;
+                private int m_index;
 
                 public GroupByFacetIterator(GroupbyFacetCountCollector parent)
                 {
-                    _parent = parent;
-                    _index = 0;
-                    facet = null;
-                    count = 0;
+                    m_parent = parent;
+                    m_index = 0;
+                    m_facet = null;
+                    m_count = 0;
                 }
 
                 /// <summary>
@@ -518,12 +518,12 @@ namespace BoboBrowse.Net.Facets.Impl
                 /// <returns></returns>
                 public override string Next()
                 {
-                    if ((_index >= 0) && !HasNext())
+                    if ((m_index >= 0) && !HasNext())
                         throw new IndexOutOfRangeException("No more facets in this iteration");
-                    _index++;
-                    facet = _parent.GetFacetString(_index);
-                    count = _parent._count.Get(_index);
-                    return facet;
+                    m_index++;
+                    m_facet = m_parent.GetFacetString(m_index);
+                    m_count = m_parent.m_count.Get(m_index);
+                    return m_facet;
                 }
 
                 /// <summary>
@@ -533,7 +533,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 /// <returns></returns>
                 public override bool HasNext()
                 {
-                    return (_index < (_parent._countlength - 1));
+                    return (m_index < (m_parent.m_countlength - 1));
                 }
 
                 /// <summary>
@@ -553,27 +553,27 @@ namespace BoboBrowse.Net.Facets.Impl
                 /// <returns></returns>
                 public override string Next(int minHits)
                 {
-                    if ((_index >= 0) && !HasNext())
+                    if ((m_index >= 0) && !HasNext())
                     {
-                        count = 0;
-                        facet = null;
+                        m_count = 0;
+                        m_facet = null;
                         return null;
                     }
                     do
                     {
-                        _index++;
-                    } while ((_index < (_parent._countlength - 1)) && (_parent._count.Get(_index) < minHits));
-                    if (_parent._count.Get(_index) >= minHits)
+                        m_index++;
+                    } while ((m_index < (m_parent.m_countlength - 1)) && (m_parent.m_count.Get(m_index) < minHits));
+                    if (m_parent.m_count.Get(m_index) >= minHits)
                     {
-                        facet = _parent.GetFacetString(_index);
-                        count = _parent._count.Get(_index);
+                        m_facet = m_parent.GetFacetString(m_index);
+                        m_count = m_parent.m_count.Get(m_index);
                     }
                     else
                     {
-                        count = 0;
-                        facet = null;
+                        m_count = 0;
+                        m_facet = null;
                     }
-                    return facet;
+                    return m_facet;
                 }
 
                 /// <summary>
@@ -582,7 +582,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 /// </summary>
                 /// <param name="val"></param>
                 /// <returns></returns>
-                public override string Format(Object val)
+                public override string Format(object val)
                 {
                     return (string)val;
                 }

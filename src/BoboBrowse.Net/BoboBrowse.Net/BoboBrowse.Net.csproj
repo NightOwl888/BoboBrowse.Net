@@ -245,7 +245,7 @@
     <Compile Include="Support\AtomicLong.cs" />
     <Compile Include="Support\DateTimeExtensions.cs" />
     <Compile Include="Support\IIterator.cs" />
-    <Compile Include="Support\IListExtensions.cs" />
+    <Compile Include="Support\ListExtensions.cs" />
     <Compile Include="Support\LibLog.cs" />
     <Compile Include="Support\MathUtil.cs" />
     <Compile Include="Support\NumericUtil.cs" />
@@ -272,7 +272,7 @@
     <Compile Include="Sort\ReverseDocComparatorSource.cs" />
     <Compile Include="Sort\SortCollector.cs" />
     <Compile Include="Sort\SortCollectorImpl.cs" />
-    <Compile Include="Support\IEnumerableExtensions.cs" />
+    <Compile Include="Support\CollectionExtensions.cs" />
     <Compile Include="Support\TimeUnit.cs" />
     <Compile Include="Util\BigByteArray.cs" />
     <Compile Include="Util\BigFloatArray.cs" />
@@ -283,7 +283,7 @@
     <Compile Include="Util\BigShortArray.cs" />
     <Compile Include="Util\BoundedPriorityQueue.cs" />
     <Compile Include="Util\DocIdSetUtil.cs" />
-    <Compile Include="Support\IDictionaryExtensions.cs" />
+    <Compile Include="Support\DictionaryExtensions.cs" />
     <Compile Include="Util\GeoMatchUtil.cs" />
     <Compile Include="Util\IntBoundedPriorityQueue.cs" />
     <Compile Include="Util\LazyBigIntArray.cs" />

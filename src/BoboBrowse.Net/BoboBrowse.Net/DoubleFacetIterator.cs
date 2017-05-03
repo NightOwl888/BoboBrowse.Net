@@ -25,11 +25,11 @@ namespace BoboBrowse.Net
     /// </summary>
     public abstract class DoubleFacetIterator : FacetIterator
     {
-        protected double _facet;
+        new protected double m_facet;
 
         new public virtual double Facet
         {
-            get { return _facet; }
+            get { return m_facet; }
         }
 
         public abstract double NextDouble();

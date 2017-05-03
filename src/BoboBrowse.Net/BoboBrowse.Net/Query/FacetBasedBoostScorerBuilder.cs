@@ -30,8 +30,8 @@ namespace BoboBrowse.Net.Query
 
     public class FacetBasedBoostScorerBuilder : IScorerBuilder
     {
-        protected readonly IDictionary<string, IDictionary<string, float>> _boostMaps;
-        protected readonly IFacetTermScoringFunctionFactory _scoringFunctionFactory;
+        protected readonly IDictionary<string, IDictionary<string, float>> m_boostMaps;
+        protected readonly IFacetTermScoringFunctionFactory m_scoringFunctionFactory;
 
         public FacetBasedBoostScorerBuilder(IDictionary<string, IDictionary<string, float>> boostMaps)
             : this(boostMaps, new MultiplicativeFacetTermScoringFunctionFactory())
@@ -40,8 +40,8 @@ namespace BoboBrowse.Net.Query
 
         protected FacetBasedBoostScorerBuilder(IDictionary<string, IDictionary<string, float>> boostMaps, IFacetTermScoringFunctionFactory scoringFunctionFactory)
         {
-            _boostMaps = boostMaps;
-            _scoringFunctionFactory = scoringFunctionFactory;
+            m_boostMaps = boostMaps;
+            m_scoringFunctionFactory = scoringFunctionFactory;
         }
 
         // NOTE: The Weight.Scorer method lost the scoreDocsInOrder and topScorer parameters between
@@ -66,7 +66,7 @@ namespace BoboBrowse.Net.Query
             exp.Description = "FacetBasedBoost";
 
             float boost = 1.0f;
-            foreach (var boostEntry in _boostMaps)
+            foreach (var boostEntry in m_boostMaps)
             {
                 string facetName = boostEntry.Key;
                 IFacetHandler handler = reader.GetFacetHandler(facetName);
@@ -74,7 +74,7 @@ namespace BoboBrowse.Net.Query
                     throw new ArgumentException(facetName + " does not implement IFacetScoreable");
 
                 IFacetScoreable facetScoreable = (IFacetScoreable)handler;
-                BoboDocScorer scorer = facetScoreable.GetDocScorer(reader, _scoringFunctionFactory, boostEntry.Value);
+                BoboDocScorer scorer = facetScoreable.GetDocScorer(reader, m_scoringFunctionFactory, boostEntry.Value);
                 float facetBoost = scorer.Score(docid);
 
                 Explanation facetExp = new Explanation();
@@ -91,38 +91,38 @@ namespace BoboBrowse.Net.Query
 
         private class FacetBasedBoostingScorer : Scorer
         {
-            private readonly Scorer _innerScorer;
-            private readonly BoboDocScorer[] _facetScorers;
+            private readonly Scorer m_innerScorer;
+            private readonly BoboDocScorer[] m_facetScorers;
     
-            private int _docid;
+            private int m_docid;
 
             public FacetBasedBoostingScorer(FacetBasedBoostScorerBuilder parent, BoboSegmentReader reader, Scorer innerScorer)
                 : base(innerScorer.Weight)
             {
-                _innerScorer = innerScorer;
+                m_innerScorer = innerScorer;
 
                 List<BoboDocScorer> list = new List<BoboDocScorer>();
 
-                foreach (var boostEntry in parent._boostMaps)
+                foreach (var boostEntry in parent.m_boostMaps)
                 {
                     string facetName = boostEntry.Key;
                     IFacetHandler handler = reader.GetFacetHandler(facetName);
                     if (!(handler is IFacetScoreable))
                         throw new ArgumentException(facetName + " does not implement IFacetScoreable");
                     IFacetScoreable facetScoreable = (IFacetScoreable)handler;
-                    BoboDocScorer scorer = facetScoreable.GetDocScorer(reader, parent._scoringFunctionFactory, boostEntry.Value);
+                    BoboDocScorer scorer = facetScoreable.GetDocScorer(reader, parent.m_scoringFunctionFactory, boostEntry.Value);
                     if (scorer != null) list.Add(scorer);
                 }
-                _facetScorers = list.ToArray();
-                _docid = -1;
+                m_facetScorers = list.ToArray();
+                m_docid = -1;
             }
 
             public override float GetScore()
             {
-                float score = _innerScorer.GetScore();
-                foreach (BoboDocScorer facetScorer in _facetScorers)
+                float score = m_innerScorer.GetScore();
+                foreach (BoboDocScorer facetScorer in m_facetScorers)
                 {
-                    float fscore = facetScorer.Score(_docid);
+                    float fscore = facetScorer.Score(m_docid);
                     if (fscore > 0.0)
                     {
                         score *= fscore;
@@ -133,17 +133,17 @@ namespace BoboBrowse.Net.Query
 
             public override int DocID
             {
-                get { return _docid; }
+                get { return m_docid; }
             }
 
             public override int NextDoc()
             {
-                return (_docid = _innerScorer.NextDoc());
+                return (m_docid = m_innerScorer.NextDoc());
             }
 
             public override int Advance(int target)
             {
-                return (_docid = _innerScorer.Advance(target));
+                return (m_docid = m_innerScorer.Advance(target));
             }
 
             public override int Freq

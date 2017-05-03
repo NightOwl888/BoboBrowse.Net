@@ -24,8 +24,8 @@ namespace BoboBrowse.Net.Client
 
     public class BrowseRequestBuilder
     {
-        private BrowseRequest _req;
-        private string _qString;
+        private BrowseRequest m_req;
+        private string m_qString;
 
         public BrowseRequestBuilder()
         {
@@ -34,7 +34,7 @@ namespace BoboBrowse.Net.Client
 
         public void AddSelection(string name, string val, bool isNot)
         {
-            BrowseSelection sel = _req.GetSelection(name);
+            BrowseSelection sel = m_req.GetSelection(name);
             if (sel == null)
             {
                 sel = new BrowseSelection(name);
@@ -47,12 +47,12 @@ namespace BoboBrowse.Net.Client
             {
                 sel.AddValue(val);
             }
-            _req.AddSelection(sel);
+            m_req.AddSelection(sel);
         }
 
         public void ClearSelection(string name)
         {
-            _req.RemoveSelection(name);
+            m_req.RemoveSelection(name);
         }
 
         public void ApplyFacetSpec(string name, int minHitCount, int maxCount, bool expand, FacetSpec.FacetSortSpec orderBy)
@@ -62,67 +62,67 @@ namespace BoboBrowse.Net.Client
             fspec.MaxCount = maxCount;
             fspec.ExpandSelection = expand;
             fspec.OrderBy = orderBy;
-            _req.SetFacetSpec(name, fspec);
+            m_req.SetFacetSpec(name, fspec);
         }
 
         public void ApplySort(SortField[] sorts)
         {
             if (sorts == null)
             {
-                _req.ClearSort();
+                m_req.ClearSort();
             }
             else
             {
-                _req.Sort = sorts;
+                m_req.Sort = sorts;
             }
         }
 
         public void ClearFacetSpecs()
         {
-            _req.FacetSpecs.Clear();
+            m_req.FacetSpecs.Clear();
         }
         public void ClearFacetSpec(string name)
         {
-            _req.FacetSpecs.Remove(name);
+            m_req.FacetSpecs.Remove(name);
         }
 
         public int Offset
         {
-            set { _req.Offset = value; }
+            set { m_req.Offset = value; }
         }
 
         public int Count
         {
-            set { _req.Count = value; }
+            set { m_req.Count = value; }
         }
 
         public string Query
         {
-            set { _qString = value; }
+            set { m_qString = value; }
         }
 
         public void Clear()
         {
-            _req = new BrowseRequest();
-            _req.Offset = 0;
-            _req.Count = 5;
-            _req.FetchStoredFields = true;
-            _qString = null;
+            m_req = new BrowseRequest();
+            m_req.Offset = 0;
+            m_req.Count = 5;
+            m_req.FetchStoredFields = true;
+            m_qString = null;
         }
 
         public void ClearSelections()
         {
-            _req.ClearSelections();
+            m_req.ClearSelections();
         }
 
         public BrowseRequest Request
         {
-            get { return _req; }
+            get { return m_req; }
         }
 
         public string QueryString
         {
-            get { return _qString; }
+            get { return m_qString; }
         }
     }
 }

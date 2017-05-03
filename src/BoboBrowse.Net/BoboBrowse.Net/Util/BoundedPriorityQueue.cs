@@ -28,24 +28,24 @@ namespace BoboBrowse.Net.Util
     {
         //private static long serialVersionUID = 1L; // NOT USED
 
-        private readonly int _maxSize;
+        private readonly int m_maxSize;
         public BoundedPriorityQueue(int maxSize)
             : base()
         {
-            this._maxSize = maxSize;
+            this.m_maxSize = maxSize;
         }
 
         public BoundedPriorityQueue(IComparer<E> comparer, int maxSize)
             : base(maxSize, comparer)
         {
-            this._maxSize = maxSize;
+            this.m_maxSize = maxSize;
         }
 
 
         public override bool Offer(E o)
         {
             int size = Count;
-            if (size < _maxSize)
+            if (size < m_maxSize)
             {
                 return base.Offer(o);
             }

@@ -34,19 +34,19 @@ namespace BoboBrowse.Net.Search.Section
         {
             //private static long serialVersionUID = 1L; // NOT USED
 
-            public TranslationException(String message)
+            public TranslationException(string message)
                 : base(message)
             {
             }
         }
 
-        protected readonly AtomicReader _reader;
-        protected readonly IMetaDataCacheProvider _cacheProvider;
+        protected readonly AtomicReader m_reader;
+        protected readonly IMetaDataCacheProvider m_cacheProvider;
 
         public SectionSearchQueryPlanBuilder(AtomicReader reader)
         {
-            _reader = reader;
-            _cacheProvider = (reader is IMetaDataCacheProvider ? (IMetaDataCacheProvider)reader : null);
+            this.m_reader = reader;
+            m_cacheProvider = (reader is IMetaDataCacheProvider ? (IMetaDataCacheProvider)reader : null);
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace BoboBrowse.Net.Search.Section
                 else if (query is MetaDataQuery)
                 {
                     MetaDataQuery mquery = (MetaDataQuery)query;
-                    IMetaDataCache cache = (_cacheProvider != null ? _cacheProvider.Get(mquery.Term) : null);
+                    IMetaDataCache cache = (m_cacheProvider != null ? m_cacheProvider.Get(mquery.Term) : null);
 
                     if (cache != null)
                     {
@@ -96,7 +96,7 @@ namespace BoboBrowse.Net.Search.Section
                     }
                     else
                     {
-                        return ((MetaDataQuery)query).GetPlan(_reader);
+                        return ((MetaDataQuery)query).GetPlan(m_reader);
                     }
                 }
                 else
@@ -109,7 +109,7 @@ namespace BoboBrowse.Net.Search.Section
 
         private SectionSearchQueryPlan TranslateTermQuery(TermQuery query)
         {
-            return new TermNode(query.Term, _reader);
+            return new TermNode(query.Term, m_reader);
         }
 
         private SectionSearchQueryPlan TranslatePhraseQuery(PhraseQuery query)
@@ -119,9 +119,9 @@ namespace BoboBrowse.Net.Search.Section
             int[] positions = query.GetPositions();
             for (int i = 0; i < terms.Length; i++)
             {
-                nodes[i] = new TermNode(terms[i], positions[i], _reader);
+                nodes[i] = new TermNode(terms[i], positions[i], m_reader);
             }
-            return new PhraseNode(nodes, _reader);
+            return new PhraseNode(nodes, m_reader);
         }
 
         private SectionSearchQueryPlan TranslateBooleanQuery(BooleanQuery query)
@@ -203,9 +203,9 @@ namespace BoboBrowse.Net.Search.Section
             }
         }
 
-        private SectionSearchQueryPlan[] Translate(IEnumerable<Query> queries)
+        private SectionSearchQueryPlan[] Translate(ICollection<Query> queries)
         {
-            int size = queries.Count();
+            int size = queries.Count;
             List<SectionSearchQueryPlan> result = new List<SectionSearchQueryPlan>(size);
             for (int i = 0; i < size; i++)
             {

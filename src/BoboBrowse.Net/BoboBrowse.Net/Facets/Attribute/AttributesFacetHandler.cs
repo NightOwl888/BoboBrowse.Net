@@ -107,26 +107,26 @@ namespace BoboBrowse.Net.Facets.Attribute
 
         public class AttributesFacetCountCollectorSource : FacetCountCollectorSource
         {
-            private readonly BrowseSelection _browseSelection;
-            private readonly FacetSpec _ospec;
-            private readonly AttributesFacetHandler _parent;
+            private readonly BrowseSelection m_browseSelection;
+            private readonly FacetSpec m_ospec;
+            private readonly AttributesFacetHandler m_parent;
 
             public AttributesFacetCountCollectorSource(AttributesFacetHandler parent, BrowseSelection browseSelection, FacetSpec ospec)
             {
-                _parent = parent;
-                _browseSelection = browseSelection;
-                _ospec = ospec;
+                m_parent = parent;
+                m_browseSelection = browseSelection;
+                m_ospec = ospec;
             }
 
             public override IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase)
             {
-                int facetsPerKey = _parent.GetFacetsPerKey(_browseSelection);
-                if (_ospec.Properties != null && _ospec.Properties.ContainsKey(MAX_FACETS_PER_KEY_PROP_NAME))
+                int facetsPerKey = m_parent.GetFacetsPerKey(m_browseSelection);
+                if (m_ospec.Properties != null && m_ospec.Properties.ContainsKey(MAX_FACETS_PER_KEY_PROP_NAME))
                 {
-                    facetsPerKey = int.Parse(_ospec.Properties.Get(MAX_FACETS_PER_KEY_PROP_NAME));
+                    facetsPerKey = int.Parse(m_ospec.Properties.Get(MAX_FACETS_PER_KEY_PROP_NAME));
                 }
-                MultiValueFacetDataCache dataCache = (MultiValueFacetDataCache)reader.GetFacetData(_parent.Name);
-                return new AttributesFacetCountCollector(_parent, _parent.Name, dataCache, docBase, _browseSelection, _ospec, facetsPerKey, _parent.GetSeparator(_browseSelection));
+                MultiValueFacetDataCache dataCache = (MultiValueFacetDataCache)reader.GetFacetData(m_parent.Name);
+                return new AttributesFacetCountCollector(m_parent, m_parent.Name, dataCache, docBase, m_browseSelection, m_ospec, facetsPerKey, m_parent.GetSeparator(m_browseSelection));
             }
         }
     }

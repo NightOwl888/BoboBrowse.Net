@@ -30,37 +30,37 @@ namespace BoboBrowse.Net
     [Serializable]
     public class MappedFacetAccessible : IFacetAccessible
     {
-        private const long serialVersionUID = 1L;
+        //private const long serialVersionUID = 1L;
 
-        private readonly IDictionary<object, BrowseFacet> _facetMap;
-        private readonly BrowseFacet[] _facets;
+        private readonly IDictionary<object, BrowseFacet> m_facetMap;
+        private readonly BrowseFacet[] m_facets;
 
         public MappedFacetAccessible(BrowseFacet[] facets)
         {
-            _facetMap = new Dictionary<object, BrowseFacet>();
+            m_facetMap = new Dictionary<object, BrowseFacet>();
             foreach (BrowseFacet facet in facets)
             {
-                _facetMap.Put(facet.Value, facet);
+                m_facetMap.Put(facet.Value, facet);
             }
-            _facets = facets;
+            m_facets = facets;
         }
 
         public virtual BrowseFacet GetFacet(string value)
         {
-            return _facetMap.Get(value);
+            return m_facetMap.Get(value);
         }
 
         public virtual int GetFacetHitsCount(object value)
         {
-            BrowseFacet facet = _facetMap.Get(value);
+            BrowseFacet facet = m_facetMap.Get(value);
             if (facet != null)
                 return facet.FacetValueHitCount;
             return 0;
         }
 
-        public virtual IEnumerable<BrowseFacet> GetFacets()
+        public virtual ICollection<BrowseFacet> GetFacets()
         {
-            return _facets.ToList();
+            return m_facets.ToList();
         }
 
         public virtual void Dispose()
@@ -68,7 +68,7 @@ namespace BoboBrowse.Net
 
         public virtual FacetIterator GetIterator()
         {
-            return new PathFacetIterator(_facets);
+            return new PathFacetIterator(m_facets);
         }
     }
 }

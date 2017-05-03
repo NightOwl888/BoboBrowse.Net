@@ -28,10 +28,10 @@ namespace BoboBrowse.Net.Facets.Filter
 
     public class FacetOrFilter : RandomAccessFilter
     {
-        protected readonly IFacetHandler _facetHandler;
-        protected readonly string[] _vals;
-        private readonly bool _takeCompliment;
-        private readonly IFacetValueConverter _valueConverter;
+        protected readonly IFacetHandler m_facetHandler;
+        protected readonly string[] m_vals;
+        private readonly bool m_takeCompliment;
+        private readonly IFacetValueConverter m_valueConverter;
 
         public FacetOrFilter(IFacetHandler facetHandler, string[] vals, bool takeCompliment)
             : this(facetHandler, vals, takeCompliment, FacetValueConverter_Fields.DEFAULT)
@@ -40,18 +40,18 @@ namespace BoboBrowse.Net.Facets.Filter
 
         public FacetOrFilter(IFacetHandler facetHandler, string[] vals, bool takeCompliment, IFacetValueConverter valueConverter)
         {
-            _facetHandler = facetHandler;
-            _vals = vals;
-            _takeCompliment = takeCompliment;
-            _valueConverter = valueConverter;
+            m_facetHandler = facetHandler;
+            m_vals = vals;
+            m_takeCompliment = takeCompliment;
+            m_valueConverter = valueConverter;
         }
 
         public override double GetFacetSelectivity(BoboSegmentReader reader)
         {
             double selectivity = 0;
-            FacetDataCache dataCache = _facetHandler.GetFacetData<FacetDataCache>(reader);
+            FacetDataCache dataCache = m_facetHandler.GetFacetData<FacetDataCache>(reader);
             int accumFreq = 0;
-            foreach (string val in _vals)
+            foreach (string val in m_vals)
             {
                 int idx = dataCache.ValArray.IndexOf(val);
                 if (idx < 0)
@@ -66,7 +66,7 @@ namespace BoboBrowse.Net.Facets.Filter
             {
                 selectivity = 1.0;
             }
-            if (_takeCompliment)
+            if (m_takeCompliment)
             {
                 selectivity = 1.0 - selectivity;
             }
@@ -75,111 +75,111 @@ namespace BoboBrowse.Net.Facets.Filter
 
         public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboSegmentReader reader)
         {
-            if (_vals.Length == 0)
+            if (m_vals.Length == 0)
             {
                 return EmptyDocIdSet.Instance;
             }
             else
             {
-                return new FacetOrRandomAccessDocIdSet(_facetHandler, reader, _vals, _valueConverter, _takeCompliment);
+                return new FacetOrRandomAccessDocIdSet(m_facetHandler, reader, m_vals, m_valueConverter, m_takeCompliment);
             }
         }
 
         public class FacetOrRandomAccessDocIdSet : RandomAccessDocIdSet
         {
-            private readonly OpenBitSet _bitset;
-	        private readonly BigSegmentedArray _orderArray;
-	        private readonly FacetDataCache _dataCache;
-            private readonly int[] _index;
+            private readonly OpenBitSet m_bitset;
+	        private readonly BigSegmentedArray m_orderArray;
+	        private readonly FacetDataCache m_dataCache;
+            private readonly int[] m_index;
 
             internal FacetOrRandomAccessDocIdSet(IFacetHandler facetHandler, BoboSegmentReader reader, 
                 string[] vals, IFacetValueConverter valConverter, bool takeCompliment)
             {
-		        _dataCache = facetHandler.GetFacetData<FacetDataCache>(reader);
-		        _orderArray = _dataCache.OrderArray;
-	            _index = valConverter.Convert(_dataCache, vals);
+		        m_dataCache = facetHandler.GetFacetData<FacetDataCache>(reader);
+		        m_orderArray = m_dataCache.OrderArray;
+	            m_index = valConverter.Convert(m_dataCache, vals);
 	    
-	            _bitset = new OpenBitSet(_dataCache.ValArray.Count);
-	            foreach (int i in _index)
+	            m_bitset = new OpenBitSet(m_dataCache.ValArray.Count);
+	            foreach (int i in m_index)
 	            {
-	              _bitset.FastSet(i);
+	              m_bitset.FastSet(i);
 	            }
       
                 if (takeCompliment)
                 {
                     // flip the bits
-                    for (int i = 0; i < _dataCache.ValArray.Count; ++i)
+                    for (int i = 0; i < m_dataCache.ValArray.Count; ++i)
                     {
-                        _bitset.FastFlip(i);
+                        m_bitset.FastFlip(i);
                     }
                 }
 	        }
 
             public override bool Get(int docId)
             {
-                return _bitset.FastGet(_orderArray.Get(docId));
+                return m_bitset.FastGet(m_orderArray.Get(docId));
             }
 
             public override DocIdSetIterator GetIterator()
             {
-                return new FacetOrDocIdSetIterator(_dataCache, _bitset);
+                return new FacetOrDocIdSetIterator(m_dataCache, m_bitset);
             }
         }
 
         public class FacetOrDocIdSetIterator : DocIdSetIterator
         {
-            protected int _doc;
-            protected readonly FacetDataCache _dataCache;
-            protected int _maxID;
-            protected readonly OpenBitSet _bitset;
-            protected readonly BigSegmentedArray _orderArray;
+            protected int m_doc;
+            protected readonly FacetDataCache m_dataCache;
+            protected int m_maxID;
+            protected readonly OpenBitSet m_bitset;
+            protected readonly BigSegmentedArray m_orderArray;
 
             public FacetOrDocIdSetIterator(FacetDataCache dataCache, OpenBitSet bitset)
             {
-                _dataCache = dataCache;
-                _orderArray = dataCache.OrderArray;
-                _bitset = bitset;
+                m_dataCache = dataCache;
+                m_orderArray = dataCache.OrderArray;
+                m_bitset = bitset;
 
-                _doc = int.MaxValue;
-                _maxID = -1;
-                int size = _dataCache.ValArray.Count;
+                m_doc = int.MaxValue;
+                m_maxID = -1;
+                int size = m_dataCache.ValArray.Count;
                 for (int i = 0; i < size; ++i)
                 {
                     if (!bitset.FastGet(i))
                     {
                         continue;
                     }
-                    if (_doc > _dataCache.MinIDs[i])
+                    if (m_doc > m_dataCache.MinIDs[i])
                     {
-                        _doc = _dataCache.MinIDs[i];
+                        m_doc = m_dataCache.MinIDs[i];
                     }
-                    if (_maxID < _dataCache.MaxIDs[i])
+                    if (m_maxID < m_dataCache.MaxIDs[i])
                     {
-                        _maxID = _dataCache.MaxIDs[i];
+                        m_maxID = m_dataCache.MaxIDs[i];
                     }
                 }
-                _doc--;
-                if (_doc < 0)
-                    _doc = -1;
+                m_doc--;
+                if (m_doc < 0)
+                    m_doc = -1;
             }
 
             public override int DocID
             {
-                get { return _doc; }
+                get { return m_doc; }
             }
 
             public override int NextDoc()
             {
-                _doc = (_doc < _maxID) ? _orderArray.FindValues(_bitset, _doc + 1, _maxID) : NO_MORE_DOCS;
-                return _doc;
+                m_doc = (m_doc < m_maxID) ? m_orderArray.FindValues(m_bitset, m_doc + 1, m_maxID) : NO_MORE_DOCS;
+                return m_doc;
             }
 
             public override int Advance(int id)
             {
-                if (_doc < id)
+                if (m_doc < id)
                 {
-                    _doc = (id <= _maxID) ? _orderArray.FindValues(_bitset, id, _maxID) : NO_MORE_DOCS;
-                    return _doc;
+                    m_doc = (id <= m_maxID) ? m_orderArray.FindValues(m_bitset, id, m_maxID) : NO_MORE_DOCS;
+                    return m_doc;
                 }
                 return NextDoc();
             }

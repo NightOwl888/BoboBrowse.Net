@@ -31,11 +31,11 @@ namespace BoboBrowse.Net.Facets.Data
     {
         //private static long serialVersionUID = 1L; // NOT USED
 
-        protected readonly BigNestedIntArray _weightArray;
+        protected readonly BigNestedIntArray m_weightArray;
 
         public MultiValueWithWeightFacetDataCache()
         {
-            _weightArray = new BigNestedIntArray();
+            m_weightArray = new BigNestedIntArray();
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace BoboBrowse.Net.Facets.Data
         /// <returns></returns>
         public virtual BigNestedIntArray WeightArray
         {
-            get { return _weightArray; }
+            get { return m_weightArray; }
         }
 
         public override void Load(string fieldName, AtomicReader reader, TermListFactory listFactory, BoboSegmentReader.WorkArea workArea)
@@ -66,7 +66,7 @@ namespace BoboBrowse.Net.Facets.Data
             maxIDList.Add(-1);
             freqList.Add(0);
 
-            _overflow = false;
+            m_overflow = false;
 
             string pre = null;
 
@@ -163,35 +163,35 @@ namespace BoboBrowse.Net.Facets.Data
 
             try
             {
-                _nestedArray.Load(maxdoc + 1, loader);
-                _weightArray.Load(maxdoc + 1, weightLoader);
+                m_nestedArray.Load(maxdoc + 1, loader);
+                m_weightArray.Load(maxdoc + 1, weightLoader);
             }
             catch (Exception e)
             {
                 throw new RuntimeException("failed to load due to " + e.ToString(), e);
             }
 
-            this.valArray = list;
-            this.freqs = freqList.ToArray();
-            this.minIDs = minIDList.ToArray();
-            this.maxIDs = maxIDList.ToArray();
+            this.m_valArray = list;
+            this.m_freqs = freqList.ToArray();
+            this.m_minIDs = minIDList.ToArray();
+            this.m_maxIDs = maxIDList.ToArray();
 
             int doc = 0;
-            while (doc < maxdoc && !_nestedArray.Contains(doc, 0, true))
+            while (doc < maxdoc && !m_nestedArray.Contains(doc, 0, true))
             {
                 ++doc;
             }
             if (doc < maxdoc)
             {
-                this.minIDs[0] = doc;
+                this.m_minIDs[0] = doc;
                 doc = maxdoc - 1;
-                while (doc >= 0 && !_nestedArray.Contains(doc, 0, true))
+                while (doc >= 0 && !m_nestedArray.Contains(doc, 0, true))
                 {
                     --doc;
                 }
-                this.maxIDs[0] = doc;
+                this.m_maxIDs[0] = doc;
             }
-            this.freqs[0] = maxdoc - (int)bitset.Cardinality();   
+            this.m_freqs[0] = maxdoc - (int)bitset.Cardinality();   
         }
     }
 }

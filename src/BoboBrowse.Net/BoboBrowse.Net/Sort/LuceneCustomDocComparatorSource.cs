@@ -26,43 +26,43 @@ namespace BoboBrowse.Net.Sort
 
     public class LuceneCustomDocComparerSource : DocComparerSource
     {
-        private readonly FieldComparer _luceneComparer;
-        private readonly string _fieldname;
+        private readonly FieldComparer m_luceneComparer;
+        private readonly string m_fieldname;
         
         public LuceneCustomDocComparerSource(string fieldname, FieldComparer luceneComparer)
         {
-            _fieldname = fieldname;
-            _luceneComparer = luceneComparer;
+            m_fieldname = fieldname;
+            m_luceneComparer = luceneComparer;
         }
 
         public override DocComparer GetComparer(AtomicReader reader, int docbase)
         {
-            _luceneComparer.SetNextReader(reader.AtomicContext);
-            return new LuceneCustomDocComparer(_luceneComparer);
+            m_luceneComparer.SetNextReader(reader.AtomicContext);
+            return new LuceneCustomDocComparer(m_luceneComparer);
         }
 
         private class LuceneCustomDocComparer : DocComparer
         {
-            private readonly FieldComparer _luceneComparer;
+            private readonly FieldComparer m_luceneComparer;
 
             public LuceneCustomDocComparer(FieldComparer luceneComparer)
             {
-                this._luceneComparer = luceneComparer;
+                this.m_luceneComparer = luceneComparer;
             }
 
             public override IComparable Value(ScoreDoc doc)
             {
-                return _luceneComparer[doc.Doc];
+                return m_luceneComparer[doc.Doc];
             }
 
             public override int Compare(ScoreDoc doc1, ScoreDoc doc2)
             {
-                return _luceneComparer.Compare(doc1.Doc, doc2.Doc);
+                return m_luceneComparer.Compare(doc1.Doc, doc2.Doc);
             }
 
             public override void SetScorer(Scorer scorer)
             {
-                _luceneComparer.SetScorer(scorer);
+                m_luceneComparer.SetScorer(scorer);
             }
         }
     }

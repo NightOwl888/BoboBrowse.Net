@@ -25,23 +25,23 @@ namespace BoboBrowse.Net.Facets.Impl
 
     public class MultiValuedPathFacetCountCollector : PathFacetCountCollector
     {
-        private readonly BigNestedIntArray _array;
+        private readonly BigNestedIntArray m_array;
 
         public MultiValuedPathFacetCountCollector(string name, string sep, BrowseSelection sel, 
             FacetSpec ospec, FacetDataCache dataCache)
             : base(name, sep, sel, ospec, dataCache)
         {
-            _array = ((MultiValueFacetDataCache)(dataCache)).NestedArray;
+            m_array = ((MultiValueFacetDataCache)(dataCache)).NestedArray;
         }
 
         public override sealed void Collect(int docid) 
         {
-            _array.CountNoReturn(docid, _count);
+            m_array.CountNoReturn(docid, m_count);
         }
 
         public override sealed void CollectAll()
         {
-            _count = BigIntArray.FromArray(_dataCache.Freqs);
+            m_count = BigIntArray.FromArray(m_dataCache.Freqs);
         }
     }
 }

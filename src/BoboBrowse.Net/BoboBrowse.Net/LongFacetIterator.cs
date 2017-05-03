@@ -25,11 +25,11 @@ namespace BoboBrowse.Net
     /// </summary>
     public abstract class LongFacetIterator : FacetIterator
     {
-        protected long _facet;
+        new protected long m_facet;
 
         new public virtual long Facet
         {
-            get { return _facet; }
+            get { return m_facet; }
         }
 
         public abstract long NextLong();

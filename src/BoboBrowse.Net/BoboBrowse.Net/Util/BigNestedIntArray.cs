@@ -50,23 +50,23 @@ namespace BoboBrowse.Net.Util
             Arrays.Fill(MISSING_PAGE, MISSING);
         }
 
-        private int _maxItems = MAX_ITEMS;
-        private int[][] _list;
-        private int _size;
+        private int m_maxItems = MAX_ITEMS;
+        private int[][] m_list;
+        private int m_size;
 
         private static readonly string[] EMPTY = new string[0];
 
         public abstract class Loader
         {
-            private int[][] _list;
-            private int _curPageNo;
-            private int[] _curPage;
-            private int _curSlot;
-            private int _curData;
+            private int[][] m_list;
+            private int m_curPageNo;
+            private int[] m_curPage;
+            private int m_curSlot;
+            private int m_curData;
 
-            private int[][] _reuse;
-            private int[] _reuseIdx;
-            public int reuseUsage;
+            private int[][] m_reuse;
+            private int[] m_reuseIdx;
+            public int ReuseUsage { get; set; }
 
             private static readonly Comparison<int[]> COMPARE_ARRAYSIZE =
                 delegate(int[] o1, int[] o2)
@@ -82,9 +82,9 @@ namespace BoboBrowse.Net.Util
 
             private void Reclaim(int[][] list)
             {
-                _reuse = null;
-                _reuseIdx = null;
-                reuseUsage = 0;
+                m_reuse = null;
+                m_reuseIdx = null;
+                ReuseUsage = 0;
 
                 if (list != null && list.Length > 0)
                 {
@@ -93,20 +93,20 @@ namespace BoboBrowse.Net.Util
                     {
                         if (list[i] != null)
                         {
-                            _reuse = list;
-                            _reuseIdx = list[i]; // use the largest page for tracking
+                            m_reuse = list;
+                            m_reuseIdx = list[i]; // use the largest page for tracking
                             break;
                         }
                     }
-                    if (_reuseIdx == null) return;
+                    if (m_reuseIdx == null) return;
 
-                    Arrays.Fill(_reuseIdx, -1);
+                    Arrays.Fill(m_reuseIdx, -1);
                     for (int i = 0; i < list.Length; i++)
                     {
                         if (list[i] == null) break;
 
                         int idx = (list[i]).Length - 1;
-                        if (idx >= 0 && _reuseIdx[idx] == -1) _reuseIdx[idx] = i;
+                        if (idx >= 0 && m_reuseIdx[idx] == -1) m_reuseIdx[idx] = i;
                     }
                 }
             }
@@ -116,37 +116,37 @@ namespace BoboBrowse.Net.Util
                 size += (ROUNDING - 1);
                 size -= (size % ROUNDING);
 
-                if (_reuseIdx != null && _reuseIdx.Length >= size)
+                if (m_reuseIdx != null && m_reuseIdx.Length >= size)
                 {
-                    int location = _reuseIdx[size - 1];
-                    if (location >= 0 && location < _reuse.Length)
+                    int location = m_reuseIdx[size - 1];
+                    if (location >= 0 && location < m_reuse.Length)
                     {
-                        int[] page = _reuse[location];
+                        int[] page = m_reuse[location];
                         if (page != null && page.Length == size)
                         {
                             // found a reusable page
-                            _reuseIdx[size - 1]++;
-                            _reuse[location] = null;
+                            m_reuseIdx[size - 1]++;
+                            m_reuse[location] = null;
 
-                            if (page == _reuseIdx)
+                            if (page == m_reuseIdx)
                             {
                                 // find a replacement page for reuseIdx
                                 for (int i = location; i >= 0; i--)
                                 {
-                                    if (_reuse[i] != null)
+                                    if (m_reuse[i] != null)
                                     {
-                                        _reuseIdx = _reuse[i];
-                                        System.Array.Copy(page, 0, _reuseIdx, 0, _reuseIdx.Length);
+                                        m_reuseIdx = m_reuse[i];
+                                        System.Array.Copy(page, 0, m_reuseIdx, 0, m_reuseIdx.Length);
                                     }
                                 }
                             }
-                            reuseUsage += size;
+                            ReuseUsage += size;
                             return page;
                         }
                         else
                         {
                             // no more page with this size
-                            _reuseIdx[size - 1] = -1;
+                            m_reuseIdx[size - 1] = -1;
                         }
                     }
                 }
@@ -162,11 +162,11 @@ namespace BoboBrowse.Net.Util
             {
                 Reclaim(oldList);
 
-                _list = new int[(size + MAX_SLOTS - 1) / MAX_SLOTS][];
-                _curPageNo = 0;
-                _curSlot = 0;
-                _curData = MAX_SLOTS;
-                _curPage = new int[MAX_SLOTS * 2];
+                m_list = new int[(size + MAX_SLOTS - 1) / MAX_SLOTS][];
+                m_curPageNo = 0;
+                m_curSlot = 0;
+                m_curData = MAX_SLOTS;
+                m_curPage = new int[MAX_SLOTS * 2];
             }
 
             /// <summary>
@@ -175,19 +175,19 @@ namespace BoboBrowse.Net.Util
             /// <returns></returns>
             public int[][] Finish()
             {
-                if (_list.Length > _curPageNo)
+                if (m_list.Length > m_curPageNo)
                 {
                     // save the last page
-                    while (_curSlot < MAX_SLOTS)
+                    while (m_curSlot < MAX_SLOTS)
                     {
-                        _curPage[_curSlot++] = MISSING;
+                        m_curPage[m_curSlot++] = MISSING;
                     }
-                    _list[_curPageNo] = CopyPageTo(Alloc(_curData));
+                    m_list[m_curPageNo] = CopyPageTo(Alloc(m_curData));
                 }
-                _reuse = null;
-                _reuseIdx = null;
+                m_reuse = null;
+                m_reuseIdx = null;
 
-                return _list;
+                return m_list;
             }
 
             /// <summary>
@@ -205,42 +205,42 @@ namespace BoboBrowse.Net.Util
                 int pageNo = (id >> PAGEID_SHIFT);
                 int slotId = (id & SLOTID_MASK);
 
-                if (pageNo != _curPageNo)
+                if (pageNo != m_curPageNo)
                 {
-                    if (pageNo < _curPageNo)
+                    if (pageNo < m_curPageNo)
                         throw new System.ArgumentException("id is out of order");
 
                     // save the current page
 
-                    while (_curSlot < MAX_SLOTS)
+                    while (m_curSlot < MAX_SLOTS)
                     {
-                        _curPage[_curSlot++] = MISSING;
+                        m_curPage[m_curSlot++] = MISSING;
                     }
-                    _list[_curPageNo++] = CopyPageTo(Alloc(_curData));
+                    m_list[m_curPageNo++] = CopyPageTo(Alloc(m_curData));
 
-                    _curSlot = 0;
-                    _curData = MAX_SLOTS;
+                    m_curSlot = 0;
+                    m_curData = MAX_SLOTS;
 
-                    while (_curPageNo < pageNo)
+                    while (m_curPageNo < pageNo)
                     {
-                        _list[_curPageNo++] = null;
+                        m_list[m_curPageNo++] = null;
                     }
                 }
                 else
                 {
-                    if (_curPageNo == pageNo && _curSlot > slotId)
+                    if (m_curPageNo == pageNo && m_curSlot > slotId)
                         throw new System.ArgumentException("id is out of order");
                 }
 
-                while (_curSlot < slotId)
+                while (m_curSlot < slotId)
                 {
-                    _curPage[_curSlot++] = MISSING;
+                    m_curPage[m_curSlot++] = MISSING;
                 }
 
-                if (_curPage.Length <= _curData + size)
+                if (m_curPage.Length <= m_curData + size)
                 {
                     // double the size of the variable part at least
-                    _curPage = CopyPageTo(new int[_curPage.Length + Math.Max((_curPage.Length - MAX_SLOTS), size)]);
+                    m_curPage = CopyPageTo(new int[m_curPage.Length + Math.Max((m_curPage.Length - MAX_SLOTS), size)]);
                 }
             }
 
@@ -254,19 +254,19 @@ namespace BoboBrowse.Net.Util
             {
                 if (len == 0)
                 {
-                    _curPage[_curSlot] = MISSING;
+                    m_curPage[m_curSlot] = MISSING;
                 }
                 else if (len == 1 && data[off] >= 0)
                 {
-                    _curPage[_curSlot] = data[off];
+                    m_curPage[m_curSlot] = data[off];
                 }
                 else
                 {
-                    _curPage[_curSlot] = ((-_curData) << VALIDX_SHIFT | len);
-                    System.Array.Copy(data, off, _curPage, _curData, len);
-                    _curData += len;
+                    m_curPage[m_curSlot] = ((-m_curData) << VALIDX_SHIFT | len);
+                    System.Array.Copy(data, off, m_curPage, m_curData, len);
+                    m_curData += len;
                 }
-                _curSlot++;
+                m_curSlot++;
             }
 
             protected void Add(int id, int[] data, int off, int len)
@@ -286,23 +286,23 @@ namespace BoboBrowse.Net.Util
                 Reserve(id, len);
                 if (len == 0)
                 {
-                    _curPage[_curSlot] = MISSING;
+                    m_curPage[m_curSlot] = MISSING;
                 }
                 else if (len == 1 && nonNegativeIntOnly)
                 {
-                    _curPage[_curSlot] = 0;
+                    m_curPage[m_curSlot] = 0;
                 }
                 else
                 {
-                    _curPage[_curSlot] = ((-_curData) << VALIDX_SHIFT);
-                    _curData += len;
+                    m_curPage[m_curSlot] = ((-m_curData) << VALIDX_SHIFT);
+                    m_curData += len;
                 }
-                _curSlot++;
+                m_curSlot++;
             }
 
             protected int[] CopyPageTo(int[] dst)
             {
-                System.Array.Copy(_curPage, 0, dst, 0, _curData);
+                System.Array.Copy(m_curPage, 0, dst, 0, m_curData);
                 return dst;
             }
         }
@@ -320,8 +320,8 @@ namespace BoboBrowse.Net.Util
         /// </summary>
         public int MaxItems 
         {
-            get { return _maxItems; }
-            set { _maxItems = value; }
+            get { return m_maxItems; }
+            set { m_maxItems = value; }
         }
 
         /// <summary>
@@ -331,19 +331,19 @@ namespace BoboBrowse.Net.Util
         /// <param name="loader"></param>
         public void Load(int size, Loader loader)
         {
-            _size = size;
-            loader.Initialize(size, _list);
+            m_size = size;
+            loader.Initialize(size, m_list);
             if (size > 0)
             {
                 loader.Load();
             }
-            _list = loader.Finish();
+            m_list = loader.Finish();
         }
 
         // BoboBrowse.Net: we use Length instead of Size() for arrays in .NET
         public int Length
         {
-            get { return _size; }
+            get { return m_size; }
         }
 
         /// <summary>
@@ -358,7 +358,7 @@ namespace BoboBrowse.Net.Util
             // NOTE: Added Get() extension method call because 
             // the default .NET behavior throws an exception if the
             // index is out of bounds, rather than returning null.
-            int[] page = _list.Get(id >> PAGEID_SHIFT);
+            int[] page = m_list.Get(id >> PAGEID_SHIFT);
             if (page == null) return defaultValue;
 
             int val = page[id & SLOTID_MASK];
@@ -388,7 +388,7 @@ namespace BoboBrowse.Net.Util
             // NOTE: Added Get() extension method call because 
             // the default .NET behavior throws an exception if the
             // index is out of bounds, rather than returning null.
-            int[] page = _list.Get(id >> PAGEID_SHIFT);
+            int[] page = m_list.Get(id >> PAGEID_SHIFT);
             if (page == null) return 0;
 
             int val = page[id & SLOTID_MASK];
@@ -421,7 +421,7 @@ namespace BoboBrowse.Net.Util
             // NOTE: Added Get() extension method call because 
             // the default .NET behavior throws an exception if the
             // index is out of bounds, rather than returning null.
-            int[] page = _list.Get(id >> PAGEID_SHIFT);
+            int[] page = m_list.Get(id >> PAGEID_SHIFT);
 
             if (page == null)
             {
@@ -465,7 +465,7 @@ namespace BoboBrowse.Net.Util
             // NOTE: Added Get() extension method call because 
             // the default .NET behavior throws an exception if the
             // index is out of bounds, rather than returning null.
-            int[] page = _list.Get(id >> PAGEID_SHIFT);
+            int[] page = m_list.Get(id >> PAGEID_SHIFT);
 
             if (page == null)
             {
@@ -504,7 +504,7 @@ namespace BoboBrowse.Net.Util
             // NOTE: Added Get() extension method call because 
             // the default .NET behavior throws an exception if the
             // index is out of bounds, rather than returning null.
-            int[] page = _list.Get(id >> PAGEID_SHIFT);
+            int[] page = m_list.Get(id >> PAGEID_SHIFT);
             int val = page[id & SLOTID_MASK];
 
             if (val >= 0)
@@ -530,8 +530,8 @@ namespace BoboBrowse.Net.Util
             // NOTE: Added Get() extension method call because 
             // the default .NET behavior throws an exception if the
             // index is out of bounds, rather than returning null.
-            int[] page1 = _list.Get(i >> PAGEID_SHIFT);
-            int[] page2 = _list.Get(j >> PAGEID_SHIFT);
+            int[] page1 = m_list.Get(i >> PAGEID_SHIFT);
+            int[] page2 = m_list.Get(j >> PAGEID_SHIFT);
 
             if (page1 == null)
             {
@@ -623,7 +623,7 @@ namespace BoboBrowse.Net.Util
             // NOTE: Added Get() extension method call because 
             // the default .NET behavior throws an exception if the
             // index is out of bounds, rather than returning null.
-            int[] page = _list.Get(id >> PAGEID_SHIFT);
+            int[] page = m_list.Get(id >> PAGEID_SHIFT);
             if (page == null)
             {
                 if (withMissing && value == 0)
@@ -662,7 +662,7 @@ namespace BoboBrowse.Net.Util
             // NOTE: Added Get() extension method call because 
             // the default .NET behavior throws an exception if the
             // index is out of bounds, rather than returning null.
-            int[] page = _list.Get(id >> PAGEID_SHIFT);
+            int[] page = m_list.Get(id >> PAGEID_SHIFT);
             if (page == null) return false;
 
             int val = page[id & SLOTID_MASK];
@@ -688,7 +688,7 @@ namespace BoboBrowse.Net.Util
             // NOTE: Added Get() extension method call because 
             // the default .NET behavior throws an exception if the
             // index is out of bounds, rather than returning null.
-            int[] page = _list.Get(id >> PAGEID_SHIFT);
+            int[] page = m_list.Get(id >> PAGEID_SHIFT);
             if (page == null) return false;
 
             int val = page[id & SLOTID_MASK];
@@ -718,7 +718,7 @@ namespace BoboBrowse.Net.Util
             // NOTE: Added Get() extension method call because 
             // the default .NET behavior throws an exception if the
             // index is out of bounds, rather than returning null.
-            int[] page = _list.Get(id >> PAGEID_SHIFT);
+            int[] page = m_list.Get(id >> PAGEID_SHIFT);
             if (page == null) page = MISSING_PAGE;
 
             while (true)
@@ -748,7 +748,7 @@ namespace BoboBrowse.Net.Util
                     // NOTE: Added Get() extension method call because 
                     // the default .NET behavior throws an exception if the
                     // index is out of bounds, rather than returning null.
-                    page = _list.Get(id >> PAGEID_SHIFT);
+                    page = m_list.Get(id >> PAGEID_SHIFT);
                     if (page == null) page = MISSING_PAGE;
                 }
             }
@@ -766,7 +766,7 @@ namespace BoboBrowse.Net.Util
             // NOTE: Added Get() extension method call because 
             // the default .NET behavior throws an exception if the
             // index is out of bounds, rather than returning null.
-            int[] page = _list.Get(id >> PAGEID_SHIFT);
+            int[] page = m_list.Get(id >> PAGEID_SHIFT);
             if (page == null) page = MISSING_PAGE;
 
             while (true)
@@ -796,7 +796,7 @@ namespace BoboBrowse.Net.Util
                     // NOTE: Added Get() extension method call because 
                     // the default .NET behavior throws an exception if the
                     // index is out of bounds, rather than returning null.
-                    page = _list.Get(id >> PAGEID_SHIFT);
+                    page = m_list.Get(id >> PAGEID_SHIFT);
                     if (page == null) page = MISSING_PAGE;
                 }
             }
@@ -809,7 +809,7 @@ namespace BoboBrowse.Net.Util
             // NOTE: Added Get() extension method call because 
             // the default .NET behavior throws an exception if the
             // index is out of bounds, rather than returning null.
-            int[] page = _list.Get(id >> PAGEID_SHIFT);
+            int[] page = m_list.Get(id >> PAGEID_SHIFT);
             if (page == null) page = MISSING_PAGE;
 
             while (true)
@@ -836,7 +836,7 @@ namespace BoboBrowse.Net.Util
                     // NOTE: Added Get() extension method call because 
                     // the default .NET behavior throws an exception if the
                     // index is out of bounds, rather than returning null.
-                    page = _list.Get(id >> PAGEID_SHIFT);
+                    page = m_list.Get(id >> PAGEID_SHIFT);
                     if (page == null) page = MISSING_PAGE;
                 }
             }
@@ -849,7 +849,7 @@ namespace BoboBrowse.Net.Util
             // NOTE: Added Get() extension method call because 
             // the default .NET behavior throws an exception if the
             // index is out of bounds, rather than returning null.
-            int[] page = _list.Get(id >> PAGEID_SHIFT);
+            int[] page = m_list.Get(id >> PAGEID_SHIFT);
             if (page == null)
             {
                 count[0]++;
@@ -882,7 +882,7 @@ namespace BoboBrowse.Net.Util
             // NOTE: Added Get() extension method call because 
             // the default .NET behavior throws an exception if the
             // index is out of bounds, rather than returning null.
-            int[] page = _list.Get(id >> PAGEID_SHIFT);
+            int[] page = m_list.Get(id >> PAGEID_SHIFT);
             if (page == null)
             {
                 count[0]++;
@@ -912,7 +912,7 @@ namespace BoboBrowse.Net.Util
 
         public void CountNoReturn(int id, BigSegmentedArray count)
         {
-            int[] page = _list[id >> PAGEID_SHIFT];
+            int[] page = m_list[id >> PAGEID_SHIFT];
             if (page == null)
             {
                 count.Add(0, count.Get(0) + 1);
@@ -946,7 +946,7 @@ namespace BoboBrowse.Net.Util
             // NOTE: Added Get() extension method call because 
             // the default .NET behavior throws an exception if the
             // index is out of bounds, rather than returning null.
-            int[] page = _list.Get(id >> PAGEID_SHIFT);
+            int[] page = m_list.Get(id >> PAGEID_SHIFT);
             if (page == null)
             {
                 count[0]++;
@@ -983,7 +983,7 @@ namespace BoboBrowse.Net.Util
 
         public void CountNoReturnWithFilter(int id, BigSegmentedArray count, OpenBitSet filter)
         {
-            int[] page = _list[id >> PAGEID_SHIFT];
+            int[] page = m_list[id >> PAGEID_SHIFT];
             if (page == null)
             {
                 count.Add(0, count.Get(0) + 1);
@@ -1028,7 +1028,7 @@ namespace BoboBrowse.Net.Util
             // NOTE: Added Get() extension method call because 
             // the default .NET behavior throws an exception if the
             // index is out of bounds, rather than returning null.
-            int[] page = _list.Get(id >> PAGEID_SHIFT);
+            int[] page = m_list.Get(id >> PAGEID_SHIFT);
             if (page == null) return 0;
 
             int val = page[id & SLOTID_MASK];
@@ -1051,7 +1051,7 @@ namespace BoboBrowse.Net.Util
             // NOTE: Added Get() extension method call because 
             // the default .NET behavior throws an exception if the
             // index is out of bounds, rather than returning null.
-            int[] page = _list.Get(id >> PAGEID_SHIFT);
+            int[] page = m_list.Get(id >> PAGEID_SHIFT);
             if (page == null) return true;
 
             int slotId = (id & SLOTID_MASK);
@@ -1069,7 +1069,7 @@ namespace BoboBrowse.Net.Util
             else
             {
                 int num = (val & COUNT_MASK);
-                if (num >= _maxItems) return false;
+                if (num >= m_maxItems) return false;
 
                 val >>= VALIDX_SHIFT; // signed shift, remember this is a negative number
                 page[num - val] = data;
@@ -1089,18 +1089,18 @@ namespace BoboBrowse.Net.Util
             private static int EOD = int.MinValue;
             private static int SEGSIZE = 8;
 
-            private int _size;
-            private readonly BigIntArray _info;
-            private BigIntBuffer _buffer;
-            private int _maxItems;
+            private int m_size;
+            private readonly BigIntArray m_info;
+            private BigIntBuffer m_buffer;
+            private int m_maxItems;
 
             public BufferedLoader(int size, int maxItems, BigIntBuffer buffer)
             {
-                _size = size;
-                _maxItems = Math.Min(maxItems, BigNestedIntArray.MAX_ITEMS);
-                _info = new BigIntArray(size << 1); // pointer and count
-                _info.Fill(EOD);
-                _buffer = buffer;
+                m_size = size;
+                m_maxItems = Math.Min(maxItems, BigNestedIntArray.MAX_ITEMS);
+                m_info = new BigIntArray(size << 1); // pointer and count
+                m_info.Fill(EOD);
+                m_buffer = buffer;
             }
 
             public BufferedLoader(int size)
@@ -1118,10 +1118,10 @@ namespace BoboBrowse.Net.Util
             {
                 if (size >= Capacity)
                     throw new System.ArgumentException("unable to change size");
-                _size = size;
-                _maxItems = maxItems;
-                _info.Fill(EOD);
-                _buffer = buffer;
+                m_size = size;
+                m_maxItems = maxItems;
+                m_info.Fill(EOD);
+                m_buffer = buffer;
             }
 
             /// <summary>
@@ -1132,19 +1132,19 @@ namespace BoboBrowse.Net.Util
             /// <returns></returns>
             public bool Add(int id, int val)
             {
-                int ptr = _info.Get(id << 1);
+                int ptr = m_info.Get(id << 1);
                 if (ptr == EOD)
                 {
                     // 1st insert
-                    _info.Add(id << 1, val);
+                    m_info.Add(id << 1, val);
                     return true;
                 }
 
-                int cnt = _info.Get((id << 1) + 1);
+                int cnt = m_info.Get((id << 1) + 1);
                 if (cnt == EOD)
                 {
                     // 2nd insert
-                    _info.Add((id << 1) + 1, val);
+                    m_info.Add((id << 1) + 1, val);
                     return true;
                 }
 
@@ -1154,39 +1154,39 @@ namespace BoboBrowse.Net.Util
                     int firstVal = ptr;
                     int secondVal = cnt;
 
-                    ptr = _buffer.Alloc(SEGSIZE);
-                    _buffer.Set(ptr++, EOD);
-                    _buffer.Set(ptr++, firstVal);
-                    _buffer.Set(ptr++, secondVal);
-                    _buffer.Set(ptr++, val);
+                    ptr = m_buffer.Alloc(SEGSIZE);
+                    m_buffer.Set(ptr++, EOD);
+                    m_buffer.Set(ptr++, firstVal);
+                    m_buffer.Set(ptr++, secondVal);
+                    m_buffer.Set(ptr++, val);
                     cnt = 3;
                 }
                 else
                 {
                     ptr = (-ptr);
-                    if (cnt >= _maxItems) // exceeded the limit
+                    if (cnt >= m_maxItems) // exceeded the limit
                         return false;
 
                     if ((ptr % SEGSIZE) == 0)
                     {
                         int oldPtr = ptr;
-                        ptr = _buffer.Alloc(SEGSIZE);
-                        _buffer.Set(ptr++, (-oldPtr));
+                        ptr = m_buffer.Alloc(SEGSIZE);
+                        m_buffer.Set(ptr++, (-oldPtr));
                     }
-                    _buffer.Set(ptr++, val);
+                    m_buffer.Set(ptr++, val);
                     cnt++;
                 }
 
-                _info.Add(id << 1, (-ptr));
-                _info.Add((id << 1) + 1, cnt);
+                m_info.Add(id << 1, (-ptr));
+                m_info.Add((id << 1) + 1, cnt);
 
                 return true;
             }
 
             private int ReadToBuf(int id, int[] buf)
             {
-                int ptr = _info.Get(id << 1);
-                int cnt = _info.Get((id << 1) + 1);
+                int ptr = m_info.Get(id << 1);
+                int cnt = m_info.Get((id << 1) + 1);
                 int i;
 
                 if (ptr >= 0)
@@ -1204,7 +1204,7 @@ namespace BoboBrowse.Net.Util
                 {
                     ptr = (-ptr) - 1;
                     int val;
-                    while ((val = _buffer.Get(ptr--)) >= 0)
+                    while ((val = m_buffer.Get(ptr--)) >= 0)
                     {
                         buf[--i] = val;
                     }
@@ -1221,7 +1221,7 @@ namespace BoboBrowse.Net.Util
             public override void Load()
             {
                 int[] buf = new int[MAX_ITEMS];
-                int size = _size;
+                int size = m_size;
                 for (int i = 0; i < size; i++)
                 {
                     int count = ReadToBuf(i, buf);
@@ -1234,7 +1234,7 @@ namespace BoboBrowse.Net.Util
 
             public int Capacity
             {
-                get { return _info.Capacity() >> 1; }
+                get { return m_info.Capacity() >> 1; }
             }
         }
     }

@@ -25,11 +25,11 @@ namespace BoboBrowse.Net
     /// </summary>
     public abstract class IntFacetIterator : FacetIterator
     {
-        protected int _facet;
+        new protected int m_facet;
 
         new public virtual int Facet
         {
-            get { return _facet; }
+            get { return m_facet; }
         }
 
         public abstract int NextInt();

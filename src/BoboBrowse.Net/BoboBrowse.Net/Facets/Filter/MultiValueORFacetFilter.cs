@@ -28,10 +28,10 @@ namespace BoboBrowse.Net.Facets.Filter
 
     public class MultiValueORFacetFilter : RandomAccessFilter
     {
-        private readonly IFacetHandler _facetHandler;
-        private readonly string[] _vals;
-        private readonly bool _takeCompliment;
-        private readonly IFacetValueConverter _valueConverter;
+        private readonly IFacetHandler m_facetHandler;
+        private readonly string[] m_vals;
+        private readonly bool m_takeCompliment;
+        private readonly IFacetValueConverter m_valueConverter;
 
         public MultiValueORFacetFilter(IFacetHandler facetHandler, string[] vals, bool takeCompliment)
             : this(facetHandler, vals, FacetValueConverter_Fields.DEFAULT, takeCompliment)
@@ -39,17 +39,17 @@ namespace BoboBrowse.Net.Facets.Filter
   
         public MultiValueORFacetFilter(IFacetHandler facetHandler, string[] vals, IFacetValueConverter valueConverter, bool takeCompliment)
         {
-            _facetHandler = facetHandler;
-            _vals = vals;
-            _valueConverter = valueConverter;
-            _takeCompliment = takeCompliment;
+            m_facetHandler = facetHandler;
+            m_vals = vals;
+            m_valueConverter = valueConverter;
+            m_takeCompliment = takeCompliment;
         }
 
         public override double GetFacetSelectivity(BoboSegmentReader reader)
         {
             double selectivity = 0;
-            MultiValueFacetDataCache dataCache = _facetHandler.GetFacetData<MultiValueFacetDataCache>(reader);
-            int[] idxes = _valueConverter.Convert(dataCache, _vals);
+            MultiValueFacetDataCache dataCache = m_facetHandler.GetFacetData<MultiValueFacetDataCache>(reader);
+            int[] idxes = m_valueConverter.Convert(dataCache, m_vals);
             if (idxes == null)
             {
                 return 0.0;
@@ -71,25 +71,25 @@ namespace BoboBrowse.Net.Facets.Filter
 
         public sealed class MultiValueOrFacetDocIdSetIterator : FacetOrFilter.FacetOrDocIdSetIterator
         {
-            private readonly BigNestedIntArray _nestedArray;
+            private readonly BigNestedIntArray m_nestedArray;
             public MultiValueOrFacetDocIdSetIterator(MultiValueFacetDataCache dataCache, OpenBitSet bs)
                 : base(dataCache, bs)
             {
-                _nestedArray = dataCache.NestedArray;
+                m_nestedArray = dataCache.NestedArray;
             }           
 
             public override int NextDoc()
             {
-                _doc = (_doc < _maxID) ? _nestedArray.FindValues(_bitset, (_doc + 1), _maxID) : NO_MORE_DOCS;
-                return _doc;
+                m_doc = (m_doc < m_maxID) ? m_nestedArray.FindValues(m_bitset, (m_doc + 1), m_maxID) : NO_MORE_DOCS;
+                return m_doc;
             }
 
             public override int Advance(int id)
             {
-                if (_doc < id)
+                if (m_doc < id)
                 {
-                    _doc = (id <= _maxID) ? _nestedArray.FindValues(_bitset, id, _maxID) : NO_MORE_DOCS;
-                    return _doc;
+                    m_doc = (id <= m_maxID) ? m_nestedArray.FindValues(m_bitset, id, m_maxID) : NO_MORE_DOCS;
+                    return m_doc;
                 }
                 return NextDoc();
             }            
@@ -97,8 +97,8 @@ namespace BoboBrowse.Net.Facets.Filter
 
         public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboSegmentReader reader)
         {
-            MultiValueFacetDataCache dataCache = _facetHandler.GetFacetData<MultiValueFacetDataCache>(reader);
-            int[] index = _valueConverter.Convert(dataCache, _vals);
+            MultiValueFacetDataCache dataCache = m_facetHandler.GetFacetData<MultiValueFacetDataCache>(reader);
+            int[] index = m_valueConverter.Convert(dataCache, m_vals);
             //BigNestedIntArray nestedArray = dataCache.NestedArray;
             OpenBitSet bitset = new OpenBitSet(dataCache.ValArray.Count);
 
@@ -107,7 +107,7 @@ namespace BoboBrowse.Net.Facets.Filter
                 bitset.FastSet(i);
             }
 
-            if (_takeCompliment)
+            if (m_takeCompliment)
             {
                 // flip the bits
                 int size = dataCache.ValArray.Count;
@@ -131,7 +131,7 @@ namespace BoboBrowse.Net.Facets.Filter
 
         private class EmptyRandomAccessDocIdSet : RandomAccessDocIdSet
         {
-            private DocIdSet empty = EmptyDocIdSet.Instance;
+            private DocIdSet m_empty = EmptyDocIdSet.Instance;
 
             public override bool Get(int docId)
             {
@@ -140,31 +140,31 @@ namespace BoboBrowse.Net.Facets.Filter
 
             public override DocIdSetIterator GetIterator()
             {
-                return empty.GetIterator();
+                return m_empty.GetIterator();
             }
         }
 
         private class MultiRandomAccessDocIdSet : RandomAccessDocIdSet
         {
-            private readonly MultiValueFacetDataCache dataCache;
-            private readonly OpenBitSet bitset;
-            private readonly BigNestedIntArray nestedArray;
+            private readonly MultiValueFacetDataCache m_dataCache;
+            private readonly OpenBitSet m_bitset;
+            private readonly BigNestedIntArray m_nestedArray;
 
             public MultiRandomAccessDocIdSet(MultiValueFacetDataCache dataCache, OpenBitSet bitset)
             {
-                this.dataCache = dataCache;
-                this.bitset = bitset;
-                this.nestedArray = dataCache.NestedArray;
+                this.m_dataCache = dataCache;
+                this.m_bitset = bitset;
+                this.m_nestedArray = dataCache.NestedArray;
             }
 
             public override DocIdSetIterator GetIterator()
             {
-                return new MultiValueOrFacetDocIdSetIterator(this.dataCache, this.bitset);
+                return new MultiValueOrFacetDocIdSetIterator(this.m_dataCache, this.m_bitset);
             }
 
             public override bool Get(int docId)
             {
-                return this.nestedArray.Contains(docId, this.bitset);
+                return this.m_nestedArray.Contains(docId, this.m_bitset);
             }
         }
     }

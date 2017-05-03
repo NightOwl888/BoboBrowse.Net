@@ -26,35 +26,35 @@ namespace BoboBrowse.Net.Sort
 
     public class ReverseDocComparerSource : DocComparerSource
     {
-        private readonly DocComparerSource _inner;
+        private readonly DocComparerSource m_inner;
 
         public ReverseDocComparerSource(DocComparerSource inner)
         {
-            _inner = inner;
+            m_inner = inner;
         }
 
         public override DocComparer GetComparer(AtomicReader reader, int docbase)
         {
-            return new ReverseDocComparer(_inner.GetComparer(reader, docbase));
+            return new ReverseDocComparer(m_inner.GetComparer(reader, docbase));
         }
 
         public class ReverseDocComparer : DocComparer
         {
-            private readonly DocComparer _comparer;
+            private readonly DocComparer m_comparer;
 
             public ReverseDocComparer(DocComparer comparer)
             {
-                _comparer = comparer;
+                m_comparer = comparer;
             }
 
             public override int Compare(ScoreDoc doc1, ScoreDoc doc2)
             {
-                return -_comparer.Compare(doc1, doc2);
+                return -m_comparer.Compare(doc1, doc2);
             }
 
             public override IComparable Value(ScoreDoc doc)
             {
-                return new ReverseComparable(_comparer.Value(doc));
+                return new ReverseComparable(m_comparer.Value(doc));
             }
 
             [Serializable]
@@ -62,19 +62,19 @@ namespace BoboBrowse.Net.Sort
             {
                 //private static long serialVersionUID = 1L; // NOT USED
 
-                private readonly IComparable _inner;
+                private readonly IComparable m_inner;
 
                 public ReverseComparable(IComparable inner)
                 {
-                    _inner = inner;
+                    m_inner = inner;
                 }
 
                 public virtual int CompareTo(object obj)
                 {
                     if (obj is ReverseComparable)
                     {
-                        IComparable inner = ((ReverseComparable)obj)._inner;
-                        return -_inner.CompareTo(inner);
+                        IComparable inner = ((ReverseComparable)obj).m_inner;
+                        return -m_inner.CompareTo(inner);
                     }
                     else
                     {
@@ -84,7 +84,7 @@ namespace BoboBrowse.Net.Sort
 
                 public override string ToString()
                 {
-                    return string.Concat("!", _inner);
+                    return string.Concat("!", m_inner);
                 }
             }
         }

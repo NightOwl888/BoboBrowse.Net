@@ -34,63 +34,60 @@ namespace BoboBrowse.Net.Search
 
     public class BoboSearcher : IndexSearcher
     {
-        protected IEnumerable<FacetHitCollector> _facetCollectors;
-        protected BoboSegmentReader[] _subReaders;
+        protected ICollection<FacetHitCollector> m_facetCollectors;
+        protected BoboSegmentReader[] m_subReaders;
 
         public BoboSearcher(BoboSegmentReader reader)
             : base(reader)
         {
-            _facetCollectors = new List<FacetHitCollector>();
+            m_facetCollectors = new List<FacetHitCollector>();
             var readerList = new List<BoboSegmentReader>();
             readerList.Add(reader);
-            _subReaders = readerList.ToArray();
+            m_subReaders = readerList.ToArray();
         }
 
         public BoboSearcher(BoboMultiReader reader)
             : base(reader)
         {
-            _facetCollectors = new List<FacetHitCollector>();
+            m_facetCollectors = new List<FacetHitCollector>();
             IEnumerable<BoboSegmentReader> subReaders = reader.GetSubReaders();
-            _subReaders = subReaders.ToArray();
+            m_subReaders = subReaders.ToArray();
         }
 
-        public virtual IEnumerable<FacetHitCollector> FacetHitCollectorList
+        public virtual void SetFacetHitCollectorList(ICollection<FacetHitCollector> facetHitCollectors)
         {
-            set
+            if (facetHitCollectors != null)
             {
-                if (value != null)
-                {
-                    _facetCollectors = value;
-                }
+                m_facetCollectors = facetHitCollectors;
             }
         }
 
         public abstract class FacetValidator
         {
-            protected readonly FacetHitCollector[] _collectors;
-            protected readonly int _numPostFilters;
-            protected IFacetCountCollector[] _countCollectors;
-            public int _nextTarget;
+            protected readonly FacetHitCollector[] m_collectors;
+            protected readonly int m_numPostFilters;
+            protected IFacetCountCollector[] m_countCollectors;
+            public int m_nextTarget;
 
             private void SortPostCollectors(BoboSegmentReader reader)
             {
                 var comparer = new SortPostCollectorsComparer(reader);
-                System.Array.Sort(_collectors, 0, _numPostFilters, comparer);
+                System.Array.Sort(m_collectors, 0, m_numPostFilters, comparer);
             }
 
             private class SortPostCollectorsComparer : IComparer<FacetHitCollector>
             {
-                private readonly BoboSegmentReader reader;
+                private readonly BoboSegmentReader m_reader;
 
                 public SortPostCollectorsComparer(BoboSegmentReader reader)
                 {
-                    this.reader = reader;
+                    this.m_reader = reader;
                 }
 
                 public virtual int Compare(FacetHitCollector fhc1, FacetHitCollector fhc2)
                 {
-                    double selectivity1 = fhc1._filter.GetFacetSelectivity(reader);
-                    double selectivity2 = fhc2._filter.GetFacetSelectivity(reader);
+                    double selectivity1 = fhc1.Filter.GetFacetSelectivity(m_reader);
+                    double selectivity2 = fhc2.Filter.GetFacetSelectivity(m_reader);
 
                     if (selectivity1 < selectivity2)
                     {
@@ -106,9 +103,9 @@ namespace BoboBrowse.Net.Search
     
             public FacetValidator(FacetHitCollector[] collectors, int numPostFilters)
             {
-                _collectors = collectors;
-                _numPostFilters = numPostFilters;
-                _countCollectors = new IFacetCountCollector[collectors.Length];
+                m_collectors = collectors;
+                m_numPostFilters = numPostFilters;
+                m_countCollectors = new IFacetCountCollector[collectors.Length];
             }
 
             ///<summary>This method validates the doc against any multi-select enabled fields. </summary>
@@ -120,26 +117,26 @@ namespace BoboBrowse.Net.Search
             {
                 List<IFacetCountCollector> collectorList = new List<IFacetCountCollector>();
                 SortPostCollectors(reader);
-                for (int i = 0; i < _collectors.Length; ++i)
+                for (int i = 0; i < m_collectors.Length; ++i)
                 {
-                    _collectors[i].SetNextReader(reader, docBase);
-                    IFacetCountCollector collector = _collectors[i]._currentPointers.FacetCountCollector;
+                    m_collectors[i].SetNextReader(reader, docBase);
+                    IFacetCountCollector collector = m_collectors[i].CurrentPointers.FacetCountCollector;
                     if (collector != null)
                     {
                         collectorList.Add(collector);
                     }
                 }
-                _countCollectors = collectorList.ToArray();
+                m_countCollectors = collectorList.ToArray();
             }
 
             public virtual IFacetCountCollector[] GetCountCollectors()
             {
                 List<IFacetCountCollector> collectors = new List<IFacetCountCollector>();
-                collectors.AddRange(_countCollectors);
-                foreach (FacetHitCollector facetHitCollector in _collectors)
+                collectors.AddRange(m_countCollectors);
+                foreach (FacetHitCollector facetHitCollector in m_collectors)
                 {
-                    collectors.AddRange(facetHitCollector._collectAllCollectorList);
-                    collectors.AddRange(facetHitCollector._countCollectorList);
+                    collectors.AddRange(facetHitCollector.CollectAllCollectorList);
+                    collectors.AddRange(facetHitCollector.CountCollectorList);
                 }
                 return collectors.ToArray();
             }
@@ -157,11 +154,11 @@ namespace BoboBrowse.Net.Search
             ///<returns>true if all fields matched </returns>
             public override sealed bool Validate(int docid)
             {
-                FacetHitCollector.CurrentPointers miss = null;
+                CurrentPointers miss = null;
 
-                for (int i = 0; i < _numPostFilters; i++)
+                for (int i = 0; i < m_numPostFilters; i++)
                 {
-                    FacetHitCollector.CurrentPointers cur = _collectors[i]._currentPointers;
+                    CurrentPointers cur = m_collectors[i].CurrentPointers;
                     int sid = cur.Doc;
 
                     if (sid < docid)
@@ -171,9 +168,9 @@ namespace BoboBrowse.Net.Search
                         if (sid == DocIdSetIterator.NO_MORE_DOCS)
                         {
                             // move this to front so that the call can find the failure faster
-                            FacetHitCollector tmp = _collectors[0];
-                            _collectors[0] = _collectors[i];
-                            _collectors[i] = tmp;
+                            FacetHitCollector tmp = m_collectors[0];
+                            m_collectors[0] = m_collectors[i];
+                            m_collectors[i] = tmp;
                         }
                     }
 
@@ -182,14 +179,14 @@ namespace BoboBrowse.Net.Search
                         if (miss != null)
                         {
                             // failed because we already have a mismatch
-                            _nextTarget = (miss.Doc < cur.Doc ? miss.Doc : cur.Doc);
+                            m_nextTarget = (miss.Doc < cur.Doc ? miss.Doc : cur.Doc);
                             return false;
                         }
                         miss = cur;
                     }
                 }
 
-                _nextTarget = docid + 1;
+                m_nextTarget = docid + 1;
 
                 if (miss != null)
                 {
@@ -198,7 +195,7 @@ namespace BoboBrowse.Net.Search
                 }
                 else
                 {
-                    foreach (IFacetCountCollector collector in _countCollectors)
+                    foreach (IFacetCountCollector collector in m_countCollectors)
                     {
                       collector.Collect(docid);
                     }
@@ -209,24 +206,24 @@ namespace BoboBrowse.Net.Search
 
         private sealed class OnePostFilterFacetValidator : FacetValidator
         {
-            private readonly FacetHitCollector _firsttime;
+            private readonly FacetHitCollector m_firsttime;
 
             public OnePostFilterFacetValidator(FacetHitCollector[] collectors)
                 : base(collectors, 1)
             {
-                _firsttime = _collectors[0];
+                m_firsttime = m_collectors[0];
             }
 
             public override sealed bool Validate(int docid)
             {
-                FacetHitCollector.CurrentPointers miss = null;
+                CurrentPointers miss = null;
 
-                RandomAccessDocIdSet @set = _firsttime._currentPointers.DocIdSet;
+                RandomAccessDocIdSet @set = m_firsttime.CurrentPointers.DocIdSet;
                 if (@set != null && !@set.Get(docid))
                 {
-                    miss = _firsttime._currentPointers;
+                    miss = m_firsttime.CurrentPointers;
                 }
-                _nextTarget = docid + 1;
+                m_nextTarget = docid + 1;
 
                 if (miss != null)
                 {
@@ -235,7 +232,7 @@ namespace BoboBrowse.Net.Search
                 }
                 else
                 {
-                    foreach (IFacetCountCollector collector in _countCollectors)
+                    foreach (IFacetCountCollector collector in m_countCollectors)
                     {
                         collector.Collect(docid);
                     }
@@ -253,7 +250,7 @@ namespace BoboBrowse.Net.Search
 
             public override sealed bool Validate(int docid)
             {
-                foreach (IFacetCountCollector collector in _countCollectors)
+                foreach (IFacetCountCollector collector in m_countCollectors)
                 {
                     collector.Collect(docid);
                 }
@@ -263,25 +260,25 @@ namespace BoboBrowse.Net.Search
 
         protected virtual FacetValidator CreateFacetValidator()
         {
-            FacetHitCollector[] collectors = new FacetHitCollector[_facetCollectors.Count()];
+            FacetHitCollector[] collectors = new FacetHitCollector[m_facetCollectors.Count];
             FacetCountCollectorSource[] countCollectors = new FacetCountCollectorSource[collectors.Length];
             int numPostFilters;
             int i = 0;
             int j = collectors.Length;
 
-            foreach (FacetHitCollector facetCollector in _facetCollectors)
+            foreach (FacetHitCollector facetCollector in m_facetCollectors)
             {
-                if (facetCollector._filter != null)
+                if (facetCollector.Filter != null)
                 {
                     collectors[i] = facetCollector;
-                    countCollectors[i] = facetCollector._facetCountCollectorSource;
+                    countCollectors[i] = facetCollector.FacetCountCollectorSource;
                     i++;
                 }
                 else
                 {
                     j--;
                     collectors[j] = facetCollector;
-                    countCollectors[j] = facetCollector._facetCountCollectorSource;
+                    countCollectors[j] = facetCollector.FacetCountCollectorSource;
                 }
             }
             numPostFilters = i;
@@ -315,7 +312,7 @@ namespace BoboBrowse.Net.Search
             IndexReaderContext indexReaderContext = reader.Context;
             if (filter == null)
             {
-                for (int i = 0; i < _subReaders.Length; i++)
+                for (int i = 0; i < m_subReaders.Length; i++)
                 {
                     AtomicReaderContext atomicContext = indexReaderContext.Children == null 
                         ? (AtomicReaderContext)indexReaderContext
@@ -338,14 +335,14 @@ namespace BoboBrowse.Net.Search
                         docStart = start + ((BoboMultiReader) reader).SubReaderBase(i);
                     }
                     collector.SetNextReader(atomicContext);
-                    validator.SetNextReader(_subReaders[i], docStart);
+                    validator.SetNextReader(m_subReaders[i], docStart);
 
                     // NOTE: The Weight.Scorer method lost the scoreDocsInOrder and topScorer parameters between
                     // Lucene 4.3.0 and 4.8.0. They are not used by BoboBrowse anyway, so the code here diverges 
                     // from the original Java source to remove these two parameters.
 
                     // Scorer scorer = weight.Scorer(atomicContext, true, true, _subReaders[i].LiveDocs);
-                    Scorer scorer = weight.GetScorer(atomicContext, _subReaders[i].LiveDocs);
+                    Scorer scorer = weight.GetScorer(atomicContext, m_subReaders[i].LiveDocs);
                     if (scorer != null)
                     {
 
@@ -360,26 +357,26 @@ namespace BoboBrowse.Net.Search
                             }
                             else
                             {
-                                target = validator._nextTarget;
+                                target = validator.m_nextTarget;
                                 target = scorer.Advance(target);
                             }
                         }
                     }
                     if (mapReduceWrapper != null)
                     {
-                        mapReduceWrapper.MapFullIndexReader(_subReaders[i], validator.GetCountCollectors());
+                        mapReduceWrapper.MapFullIndexReader(m_subReaders[i], validator.GetCountCollectors());
                     }
                 }
                 return;
             }
 
-            for (int i = 0; i < _subReaders.Length; i++)
+            for (int i = 0; i < m_subReaders.Length; i++)
             {
                 AtomicReaderContext atomicContext = indexReaderContext.Children == null
                         ? (AtomicReaderContext)indexReaderContext
                         : (AtomicReaderContext)(indexReaderContext.Children.Get(i));
 
-                DocIdSet filterDocIdSet = filter.GetDocIdSet(atomicContext, _subReaders[i].LiveDocs);
+                DocIdSet filterDocIdSet = filter.GetDocIdSet(atomicContext, m_subReaders[i].LiveDocs);
                 if (filterDocIdSet == null) return;  //shall we use return or continue here ??
                 int docStart = start;
                 if (reader is BoboMultiReader)
@@ -387,14 +384,14 @@ namespace BoboBrowse.Net.Search
                     docStart = start + ((BoboMultiReader)reader).SubReaderBase(i);
                 }
                 collector.SetNextReader(atomicContext);
-                validator.SetNextReader(_subReaders[i], docStart);
+                validator.SetNextReader(m_subReaders[i], docStart);
 
                 // NOTE: The Weight.Scorer method lost the scoreDocsInOrder and topScorer parameters between
                 // Lucene 4.3.0 and 4.8.0. They are not used by BoboBrowse anyway, so the code here diverges 
                 // from the original Java source to remove these two parameters.
 
                 // Scorer scorer = weight.Scorer(atomicContext, true, false, _subReaders[i].LiveDocs);
-                Scorer scorer = weight.GetScorer(atomicContext, _subReaders[i].LiveDocs);
+                Scorer scorer = weight.GetScorer(atomicContext, m_subReaders[i].LiveDocs);
                 if (scorer != null)
                 {
                     collector.SetScorer(scorer);
@@ -425,7 +422,7 @@ namespace BoboBrowse.Net.Search
                                 else
                                 {
                                     // skip to the next possible docid
-                                    target = filterDocIdIterator.Advance(validator._nextTarget);
+                                    target = filterDocIdIterator.Advance(validator.m_nextTarget);
                                 }
                             }
                             else // doc > target
@@ -450,7 +447,7 @@ namespace BoboBrowse.Net.Search
                             {
                                 if (validator.Validate(doc))
                                 {
-                                    mapReduceWrapper.MapSingleDocument(doc, _subReaders[i]);
+                                    mapReduceWrapper.MapSingleDocument(doc, m_subReaders[i]);
                                     collector.Collect(doc);
 
                                     target = filterDocIdIterator.NextDoc();
@@ -458,7 +455,7 @@ namespace BoboBrowse.Net.Search
                                 else
                                 {
                                     // skip to the next possible docid
-                                    target = filterDocIdIterator.Advance(validator._nextTarget);
+                                    target = filterDocIdIterator.Advance(validator.m_nextTarget);
                                 }
                             }
                             else // doc > target
@@ -468,7 +465,7 @@ namespace BoboBrowse.Net.Search
                                 target = filterDocIdIterator.Advance(doc);
                             }
                         }
-                        mapReduceWrapper.FinalizeSegment(_subReaders[i], validator.GetCountCollectors());
+                        mapReduceWrapper.FinalizeSegment(m_subReaders[i], validator.GetCountCollectors());
                     }
                 }
             }     

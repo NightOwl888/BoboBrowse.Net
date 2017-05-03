@@ -30,39 +30,39 @@ namespace BoboBrowse.Net.Facets.Impl
 
     public class BucketFacetHandler : FacetHandler<FacetDataNone>
     {
-        private readonly IDictionary<string, string[]> _predefinedBuckets;
-        private readonly string _dependsOnFacetName;
+        private readonly IDictionary<string, string[]> m_predefinedBuckets;
+        private readonly string m_dependsOnFacetName;
 
         public BucketFacetHandler(string name, IDictionary<string, string[]> predefinedBuckets, string dependsOnFacetName)
             : base(name, new string[] { dependsOnFacetName })
         {
-            _predefinedBuckets = predefinedBuckets;
-            _dependsOnFacetName = dependsOnFacetName;
+            m_predefinedBuckets = predefinedBuckets;
+            m_dependsOnFacetName = dependsOnFacetName;
         }
 
         public override DocComparerSource GetDocComparerSource()
         {
-            var dependOnFacetHandler = GetDependedFacetHandler(_dependsOnFacetName);
+            var dependOnFacetHandler = GetDependedFacetHandler(m_dependsOnFacetName);
             return dependOnFacetHandler.GetDocComparerSource();
         }
 
         public override string[] GetFieldValues(BoboSegmentReader reader, int id)
         {
-            var dependOnFacetHandler = GetDependedFacetHandler(_dependsOnFacetName);
+            var dependOnFacetHandler = GetDependedFacetHandler(m_dependsOnFacetName);
 	        return dependOnFacetHandler.GetFieldValues(reader, id);
         }
 
         public override object[] GetRawFieldValues(BoboSegmentReader reader, int id)
         {
-            var dependOnFacetHandler = GetDependedFacetHandler(_dependsOnFacetName);
+            var dependOnFacetHandler = GetDependedFacetHandler(m_dependsOnFacetName);
             return dependOnFacetHandler.GetRawFieldValues(reader, id);
         }
 
         public override RandomAccessFilter BuildRandomAccessFilter(string bucketString, IDictionary<string, string> prop)
         {
-            var dependOnFacetHandler = GetDependedFacetHandler(_dependsOnFacetName);
+            var dependOnFacetHandler = GetDependedFacetHandler(m_dependsOnFacetName);
 
-            string[] elems = _predefinedBuckets.Get(bucketString);
+            string[] elems = m_predefinedBuckets.Get(bucketString);
 
             if (elems == null || elems.Length == 0) return EmptyFilter.Instance;
             if (elems.Length == 1) return dependOnFacetHandler.BuildRandomAccessFilter(elems[0], prop);
@@ -72,11 +72,11 @@ namespace BoboBrowse.Net.Facets.Impl
         public override RandomAccessFilter BuildRandomAccessAndFilter(string[] bucketStrings, IDictionary<string, string> prop)
         {
             List<RandomAccessFilter> filterList = new List<RandomAccessFilter>();
-            var dependOnFacetHandler = GetDependedFacetHandler(_dependsOnFacetName);
+            var dependOnFacetHandler = GetDependedFacetHandler(m_dependsOnFacetName);
 
             foreach (string bucketString in bucketStrings)
             {
-                string[] vals = _predefinedBuckets.Get(bucketString);
+                string[] vals = m_predefinedBuckets.Get(bucketString);
                 RandomAccessFilter filter = dependOnFacetHandler.BuildRandomAccessOrFilter(vals, prop, false);
                 if (filter == EmptyFilter.Instance) return EmptyFilter.Instance;
                 filterList.Add(filter);
@@ -95,12 +95,12 @@ namespace BoboBrowse.Net.Facets.Impl
             }
             else
             {
-                var dependOnFacetHandler = GetDependedFacetHandler(_dependsOnFacetName);
+                var dependOnFacetHandler = GetDependedFacetHandler(m_dependsOnFacetName);
 
                 HashSet<string> selections = new HashSet<string>();
                 foreach (string bucket in bucketStrings)
                 {
-                    string[] vals = _predefinedBuckets.Get(bucket);
+                    string[] vals = m_predefinedBuckets.Get(bucket);
                     if (vals != null)
                     {
                         foreach (string val in vals)
@@ -130,40 +130,40 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override int GetNumItems(BoboSegmentReader reader, int id)
         {
-            var dependOnFacetHandler = GetDependedFacetHandler(_dependsOnFacetName);
+            var dependOnFacetHandler = GetDependedFacetHandler(m_dependsOnFacetName);
             FacetDataCache data = dependOnFacetHandler.GetFacetData<FacetDataCache>(reader);
             return data.GetNumItems(id);
         }
 
         public override FacetCountCollectorSource GetFacetCountCollectorSource(BrowseSelection sel, FacetSpec fspec)
         {
-            var dependOnFacetHandler = GetDependedFacetHandler(_dependsOnFacetName);
-            return new BucketFacetCountCollectorSource(_name, sel, fspec, _predefinedBuckets, dependOnFacetHandler);
+            var dependOnFacetHandler = GetDependedFacetHandler(m_dependsOnFacetName);
+            return new BucketFacetCountCollectorSource(m_name, sel, fspec, m_predefinedBuckets, dependOnFacetHandler);
         }
 
         private class BucketFacetCountCollectorSource : FacetCountCollectorSource
         {
-            private readonly string _name;
-            private readonly BrowseSelection _sel;
-            private readonly FacetSpec _ospec;
-            private readonly IDictionary<string, string[]> _predefinedBuckets;
-            private readonly IFacetHandler _dependOnFacetHandler;
+            private readonly string m_name;
+            private readonly BrowseSelection m_sel;
+            private readonly FacetSpec m_ospec;
+            private readonly IDictionary<string, string[]> m_predefinedBuckets;
+            private readonly IFacetHandler m_dependOnFacetHandler;
 
             public BucketFacetCountCollectorSource(string name, BrowseSelection sel, FacetSpec ospec, IDictionary<string, string[]> predefinedBuckets, IFacetHandler dependOnFacetHandler)
             {
-                _name = name;
-                _sel = sel;
-                _ospec = ospec;
-                _predefinedBuckets = predefinedBuckets;
-                _dependOnFacetHandler = dependOnFacetHandler;
+                m_name = name;
+                m_sel = sel;
+                m_ospec = ospec;
+                m_predefinedBuckets = predefinedBuckets;
+                m_dependOnFacetHandler = dependOnFacetHandler;
             }
 
             public override IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase)
             {
-                IFacetCountCollector defaultCollector = _dependOnFacetHandler.GetFacetCountCollectorSource(_sel, _ospec).GetFacetCountCollector(reader, docBase);
+                IFacetCountCollector defaultCollector = m_dependOnFacetHandler.GetFacetCountCollectorSource(m_sel, m_ospec).GetFacetCountCollector(reader, docBase);
                 if (defaultCollector is DefaultFacetCountCollector)
                 {
-                    return new BucketFacetCountCollector(_name, (DefaultFacetCountCollector)defaultCollector, _ospec, _predefinedBuckets, reader.NumDocs);
+                    return new BucketFacetCountCollector(m_name, (DefaultFacetCountCollector)defaultCollector, m_ospec, m_predefinedBuckets, reader.NumDocs);
                 }
                 else
                 {

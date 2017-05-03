@@ -24,16 +24,16 @@ namespace BoboBrowse.Net.Index.Digest
 
     public abstract class FileDigester : DataDigester
     {
-        private readonly string _file;
+        private readonly string m_file;
 
         public FileDigester(string file)
         {
-            _file = file;
+            m_file = file;
             this.Encoding = Encoding.UTF8;
         }
 
         public virtual int MaxDocs { get; set; }
         public virtual Encoding Encoding { get; set; }
-        public virtual string File { get { return _file; } }
+        public virtual string File { get { return m_file; } }
     }
 }

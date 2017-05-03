@@ -35,126 +35,126 @@ namespace BoboBrowse.Net.Facets
     public class DefaultFacetHandlerInitializerParam : FacetHandlerInitializerParam
     {
         //private static long serialVersionUID = 1L; // NOT USED
-        private readonly IDictionary<string, bool[]> _boolMap;
-        private readonly IDictionary<string, int[]> _intMap;
-        private readonly IDictionary<string, long[]> _longMap;
-        private readonly IDictionary<string, IEnumerable<string>> _stringMap;
-        private readonly IDictionary<string, sbyte[]> _byteMap;
-        private readonly IDictionary<string, double[]> _doubleMap;
+        private readonly IDictionary<string, bool[]> m_boolMap;
+        private readonly IDictionary<string, int[]> m_intMap;
+        private readonly IDictionary<string, long[]> m_longMap;
+        private readonly IDictionary<string, IList<string>> m_stringMap;
+        private readonly IDictionary<string, sbyte[]> m_byteMap;
+        private readonly IDictionary<string, double[]> m_doubleMap;
 
         public DefaultFacetHandlerInitializerParam()
         {
-            _boolMap = new Dictionary<string, bool[]>();
-            _intMap = new Dictionary<string, int[]>();
-            _longMap = new Dictionary<string, long[]>();
-            _stringMap = new Dictionary<string, IEnumerable<string>>();
-            _byteMap = new Dictionary<string, sbyte[]>();
-            _doubleMap = new Dictionary<string, double[]>();
+            m_boolMap = new Dictionary<string, bool[]>();
+            m_intMap = new Dictionary<string, int[]>();
+            m_longMap = new Dictionary<string, long[]>();
+            m_stringMap = new Dictionary<string, IList<string>>();
+            m_byteMap = new Dictionary<string, sbyte[]>();
+            m_doubleMap = new Dictionary<string, double[]>();
         }
 
-        public override IEnumerable<string> BooleanParamNames
+        public override ICollection<string> BooleanParamNames
         {
-            get { return _boolMap.Keys; }
+            get { return m_boolMap.Keys; }
         }
 
-        public override IEnumerable<string> StringParamNames
+        public override ICollection<string> StringParamNames
         {
-            get { return _stringMap.Keys; }
+            get { return m_stringMap.Keys; }
         }
 
-        public override IEnumerable<string> IntParamNames
+        public override ICollection<string> IntParamNames
         {
-            get { return _intMap.Keys; }
+            get { return m_intMap.Keys; }
         }
 
-        public override IEnumerable<string> ByteArrayParamNames
+        public override ICollection<string> ByteArrayParamNames
         {
-            get { return _byteMap.Keys; }
+            get { return m_byteMap.Keys; }
         }
 
-        public override IEnumerable<string> LongParamNames
+        public override ICollection<string> LongParamNames
         {
-            get { return _longMap.Keys; }
+            get { return m_longMap.Keys; }
         }
 
-        public override IEnumerable<string> DoubleParamNames
+        public override ICollection<string> DoubleParamNames
         {
-            get { return _doubleMap.Keys; }
+            get { return m_doubleMap.Keys; }
         }
 
         public virtual DefaultFacetHandlerInitializerParam PutBooleanParam(string key, bool[] value)
         {
-            _boolMap.Put(key, value);
+            m_boolMap.Put(key, value);
             return this;
         }
 
         public override bool[] GetBooleanParam(string name)
         {
-            return _boolMap.Get(name);
+            return m_boolMap.Get(name);
         }
 
         public virtual DefaultFacetHandlerInitializerParam PutByteArrayParam(string key, sbyte[] value)
         {
-            _byteMap.Put(key, value);
+            m_byteMap.Put(key, value);
             return this;
         }
 
         public override sbyte[] GetByteArrayParam(string name)
         {
-            return _byteMap.Get(name);
+            return m_byteMap.Get(name);
         }
 
         public virtual DefaultFacetHandlerInitializerParam PutIntParam(string key, int[] value)
         {
-            _intMap.Put(key, value);
+            m_intMap.Put(key, value);
             return this;
         }
 
         public override int[] GetIntParam(string name)
         {
-            return _intMap.Get(name);
+            return m_intMap.Get(name);
         }
 
         public virtual DefaultFacetHandlerInitializerParam PutLongParam(string key, long[] value)
         {
-            _longMap.Put(key, value);
+            m_longMap.Put(key, value);
             return this;
         }
 
         public override long[] GetLongParam(string name)
         {
-            return _longMap.Get(name);
+            return m_longMap.Get(name);
         }
 
-        public virtual DefaultFacetHandlerInitializerParam PutStringParam(string key, IEnumerable<string> value)
+        public virtual DefaultFacetHandlerInitializerParam PutStringParam(string key, IList<string> value)
         {
-            _stringMap.Put(key, value);
+            m_stringMap.Put(key, value);
             return this;
         }
 
         public override IEnumerable<string> GetStringParam(string name)
         {
-            return _stringMap.Get(name);
+            return m_stringMap.Get(name);
         }
 
         public virtual DefaultFacetHandlerInitializerParam PutDoubleParam(string key, double[] value)
         {
-            _doubleMap.Put(key, value);
+            m_doubleMap.Put(key, value);
             return this;
         }
 
         public override double[] GetDoubleParam(string name)
         {
-            return _doubleMap.Get(name);
+            return m_doubleMap.Get(name);
         }
 
         public virtual void Clear()
         {
-            _boolMap.Clear();
-            _intMap.Clear();
-            _longMap.Clear();
-            _stringMap.Clear();
-            _byteMap.Clear();
+            m_boolMap.Clear();
+            m_intMap.Clear();
+            m_longMap.Clear();
+            m_stringMap.Clear();
+            m_byteMap.Clear();
         }
     }
 }

@@ -84,11 +84,11 @@ namespace BoboBrowse.Net.Facets.Data
     /// </summary>
     public class PredefinedTermListFactory: TermListFactory
     {
-        private readonly Type type;
-        private readonly Type listType;
-        private readonly string formatString;
-        private readonly IFormatProvider formatProvider;
-        protected IDictionary<Type, Type> supportedTypes = new Dictionary<Type, Type>()
+        private readonly Type m_type;
+        private readonly Type m_listType;
+        private readonly string m_formatString;
+        private readonly IFormatProvider m_formatProvider;
+        protected IDictionary<Type, Type> m_supportedTypes = new Dictionary<Type, Type>()
         {
             { typeof(int), typeof(TermIntList) },
             { typeof(float), typeof(TermFloatList) },
@@ -109,14 +109,14 @@ namespace BoboBrowse.Net.Facets.Data
         /// <param name="formatProvider">An object that provides culture-specific formatting information.</param>
         public PredefinedTermListFactory(Type type, string formatString, IFormatProvider formatProvider)
         {
-            if (!supportedTypes.ContainsKey(type))
+            if (!m_supportedTypes.ContainsKey(type))
                 throw new ArgumentException(string.Format("Type '{0}' is not supported. The only supported types are:{2}{1}",
-                    type.FullName, string.Join(Environment.NewLine, supportedTypes.Keys.Select(key => key.FullName).ToArray()), Environment.NewLine));
+                    type.FullName, string.Join(Environment.NewLine, m_supportedTypes.Keys.Select(key => key.FullName).ToArray()), Environment.NewLine));
 
-            this.type = type;
-            this.listType = supportedTypes[type];
-            this.formatString = formatString;
-            this.formatProvider = formatProvider;
+            this.m_type = type;
+            this.m_listType = m_supportedTypes[type];
+            this.m_formatString = formatString;
+            this.m_formatProvider = formatProvider;
         }
 
         /// <summary>
@@ -143,13 +143,13 @@ namespace BoboBrowse.Net.Facets.Data
         public override ITermValueList CreateTermList(int capacity)
         {
             // we treat char type separate as it does not have a format string
-            if (typeof(TermCharList).Equals(this.listType))
+            if (typeof(TermCharList).Equals(this.m_listType))
             {
                 return new TermCharList();
             }
             else
             {
-                return (ITermValueList)Activator.CreateInstance(this.listType, capacity, this.formatString, this.formatProvider);
+                return (ITermValueList)Activator.CreateInstance(this.m_listType, capacity, this.m_formatString, this.m_formatProvider);
             }
         }
 
@@ -161,7 +161,7 @@ namespace BoboBrowse.Net.Facets.Data
 
         public override Type Type
         {
-            get { return this.type; }
+            get { return this.m_type; }
         }
     }
 }

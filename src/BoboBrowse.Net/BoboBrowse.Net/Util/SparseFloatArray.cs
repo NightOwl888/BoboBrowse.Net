@@ -26,12 +26,12 @@ namespace BoboBrowse.Net.Util
 
     public class SparseFloatArray
     {
-        protected float[] _floats;
-        protected OpenBitSet _bits;
+        protected float[] m_floats;
+        protected OpenBitSet m_bits;
 
         // the number of bits set BEFORE the given reference point index*REFERENCE_POINT_EVERY.
-        protected int[] _referencePoints;
-        private int _capacity;
+        protected int[] m_referencePoints;
+        private int m_capacity;
         protected const float ON_RATIO_CUTOFF = 0.75f;
 
         // 32 is 32 bits per 256 floats, which is the same as the 32 bits per 32 floats that are needed
@@ -48,7 +48,7 @@ namespace BoboBrowse.Net.Util
         /// <param name="floats">The float array.</param>
         public SparseFloatArray(float[] floats)
         {
-            _capacity = floats.Length;
+            m_capacity = floats.Length;
             Condense(floats);
         }
 
@@ -62,17 +62,17 @@ namespace BoboBrowse.Net.Util
         /// <param name="capacity">The capacity of the array.</param>
         public SparseFloatArray(int capacity)
         {
-            _capacity = capacity;
-            _floats = null;
-            _bits = null;
-            _referencePoints = null;
+            m_capacity = capacity;
+            m_floats = null;
+            m_bits = null;
+            m_referencePoints = null;
         }
 
         protected virtual void Condense(float[] floats)
         {
-            if (floats.Length != _capacity)
+            if (floats.Length != m_capacity)
             {
-                throw new ArgumentException("bad input float array of length " + floats.Length + " for capacity: " + _capacity);
+                throw new ArgumentException("bad input float array of length " + floats.Length + " for capacity: " + m_capacity);
             }
             var bits = new OpenBitSet(floats.Length);
             int on = 0;
@@ -90,40 +90,40 @@ namespace BoboBrowse.Net.Util
                 if (0 == on)
                 {
                     // it's worth super-compressing
-                    _floats = null;
-                    _bits = null;
-                    _referencePoints = null;
+                    m_floats = null;
+                    m_bits = null;
+                    m_referencePoints = null;
                     // capacity is good.
                 }
                 else
                 {
-                    _bits = bits;
-                    _floats = new float[_bits.Cardinality()];
-                    _referencePoints = new int[floats.Length / REFERENCE_POINT_EVERY];
+                    m_bits = bits;
+                    m_floats = new float[m_bits.Cardinality()];
+                    m_referencePoints = new int[floats.Length / REFERENCE_POINT_EVERY];
                     int i = 0;
                     int floatsIdx = 0;
                     int refIdx = 0;
-                    while (i < floats.Length && (i = _bits.NextSetBit(i)) >= 0)
+                    while (i < floats.Length && (i = m_bits.NextSetBit(i)) >= 0)
                     {
-                        _floats[floatsIdx] = floats[i];
+                        m_floats[floatsIdx] = floats[i];
                         while (refIdx < i / REFERENCE_POINT_EVERY)
                         {
-                            _referencePoints[refIdx++] = floatsIdx;
+                            m_referencePoints[refIdx++] = floatsIdx;
                         }
                         floatsIdx++;
                         i++;
                     }
-                    while (refIdx < _referencePoints.Length)
+                    while (refIdx < m_referencePoints.Length)
                     {
-                        _referencePoints[refIdx++] = floatsIdx;
+                        m_referencePoints[refIdx++] = floatsIdx;
                     }
                 }
             }
             else
             {
                 // it's not worth compressing
-                _floats = floats;
-                _bits = null;
+                m_floats = floats;
+                m_bits = null;
             }
         }
 
@@ -137,67 +137,67 @@ namespace BoboBrowse.Net.Util
         /// <returns></returns>
         public virtual float[] Expand()
         {
-            if (null == _bits)
+            if (null == m_bits)
             {
-                if (null == _floats)
+                if (null == m_floats)
                 {
                     // super-compressed, all zeros
-                    return new float[_capacity];
+                    return new float[m_capacity];
                 }
                 else
                 {
-                    return _floats;
+                    return m_floats;
                 }
             }
-            float[] all = new float[_capacity];
+            float[] all = new float[m_capacity];
             int floatsidx = 0;
-            for (int idx = _bits.NextSetBit(0); idx >= 0 && idx < _capacity; idx = _bits.NextSetBit(idx + 1))
+            for (int idx = m_bits.NextSetBit(0); idx >= 0 && idx < m_capacity; idx = m_bits.NextSetBit(idx + 1))
             {
-                all[idx] = _floats[floatsidx++];
+                all[idx] = m_floats[floatsidx++];
             }
             return all;
         }
 
         public virtual float Get(int index)
         {
-            if (null == _bits)
+            if (null == m_bits)
             {
-                if (null == _floats)
+                if (null == m_floats)
                 {
                     // super-compressed, all zeros
-                    if (index < 0 || index >= _capacity)
+                    if (index < 0 || index >= m_capacity)
                     {
-                        throw new IndexOutOfRangeException("bad index: " + index + " for SparseFloatArray representing array of length " + _capacity);
+                        throw new IndexOutOfRangeException("bad index: " + index + " for SparseFloatArray representing array of length " + m_capacity);
                     }
                     return 0f;
                 }
                 else
                 {
-                    return _floats[index];
+                    return m_floats[index];
                 }
             }
             else
             {
-                if (_bits.Get(index))
+                if (m_bits.Get(index))
                 {
                     // count the number of bits that are on BEFORE this index
                     int count;
                     int @ref = index / REFERENCE_POINT_EVERY - 1;
                     if (@ref >= 0)
                     {
-                        count = _referencePoints[@ref];
+                        count = m_referencePoints[@ref];
                     }
                     else
                     {
                         count = 0;
                     }
                     int i = index - index % REFERENCE_POINT_EVERY;
-                    while ((i = _bits.NextSetBit(i)) >= 0 && i < index)
+                    while ((i = m_bits.NextSetBit(i)) >= 0 && i < index)
                     {
                         count++;
                         i++;
                     }
-                    return _floats[count];
+                    return m_floats[count];
                 }
                 else
                 {

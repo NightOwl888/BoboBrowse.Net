@@ -28,8 +28,8 @@ namespace BoboBrowse.Net.Search.Section
         public const int NO_MORE_POSITIONS = int.MaxValue;
         public const int NO_MORE_SECTIONS = int.MaxValue;
 
-        protected int _curDoc;
-        protected int _curSec;
+        protected int m_curDoc;
+        protected int m_curSec;
 
         /// <summary>
         /// Priority queue of Nodes.
@@ -43,37 +43,37 @@ namespace BoboBrowse.Net.Search.Section
 
             protected override bool LessThan(SectionSearchQueryPlan nodeA, SectionSearchQueryPlan nodeB)
             {
-                if (nodeA._curDoc == nodeB._curDoc)
+                if (nodeA.m_curDoc == nodeB.m_curDoc)
                 {
-                    return (nodeA._curSec < nodeB._curSec);
+                    return (nodeA.m_curSec < nodeB.m_curSec);
                 }
-                return (nodeA._curDoc < nodeB._curDoc);
+                return (nodeA.m_curDoc < nodeB.m_curDoc);
             }
         }
 
         public SectionSearchQueryPlan()
         {
-            _curDoc = -1;
-            _curSec = -1;
+            m_curDoc = -1;
+            m_curSec = -1;
         }
 
         public virtual int DocId
         {
-            get { return _curDoc; }
+            get { return m_curDoc; }
         }
 
         public virtual int SecId
         {
-            get { return _curSec; }
+            get { return m_curSec; }
         }
 
         public virtual int Fetch(int targetDoc)
         {
             while (FetchDoc(targetDoc) < DocIdSetIterator.NO_MORE_DOCS)
             {
-                if (FetchSec(0) < SectionSearchQueryPlan.NO_MORE_SECTIONS) return _curDoc;
+                if (FetchSec(0) < SectionSearchQueryPlan.NO_MORE_SECTIONS) return m_curDoc;
             }
-            return _curDoc;
+            return m_curDoc;
         }
 
         public abstract int FetchDoc(int targetDoc);

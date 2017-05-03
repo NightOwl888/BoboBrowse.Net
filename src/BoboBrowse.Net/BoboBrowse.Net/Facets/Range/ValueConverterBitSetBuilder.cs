@@ -27,27 +27,27 @@ namespace BoboBrowse.Net.Facets.Range
 
     public class ValueConverterBitSetBuilder : IBitSetBuilder
     {
-        private readonly IFacetValueConverter facetValueConverter;
-        private readonly string[] vals;
-        private readonly bool takeCompliment;
+        private readonly IFacetValueConverter m_facetValueConverter;
+        private readonly string[] m_vals;
+        private readonly bool m_takeCompliment;
 
         public ValueConverterBitSetBuilder(IFacetValueConverter facetValueConverter, string[] vals, bool takeCompliment) 
         {
-            this.facetValueConverter = facetValueConverter;
-            this.vals = vals;
-            this.takeCompliment = takeCompliment;    
+            this.m_facetValueConverter = facetValueConverter;
+            this.m_vals = vals;
+            this.m_takeCompliment = takeCompliment;    
         }
 
         public virtual OpenBitSet BitSet(FacetDataCache dataCache)
         {
-            int[] index = facetValueConverter.Convert(dataCache, vals);
+            int[] index = m_facetValueConverter.Convert(dataCache, m_vals);
 
             OpenBitSet bitset = new OpenBitSet(dataCache.ValArray.Count);
             foreach (int i in index)
             {
                 bitset.FastSet(i);
             }
-            if (takeCompliment)
+            if (m_takeCompliment)
             {
                 // flip the bits
                 for (int i = 0; i < index.Length; ++i)

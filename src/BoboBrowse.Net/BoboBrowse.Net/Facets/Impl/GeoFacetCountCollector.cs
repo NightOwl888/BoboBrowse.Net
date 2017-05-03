@@ -23,34 +23,35 @@ namespace BoboBrowse.Net.Facets.Impl
     using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Facets.Filter;
     using BoboBrowse.Net.Util;
+    using Lucene.Net.Support;
     using System;
     using System.Collections.Generic;
 
     public class GeoFacetCountCollector : IFacetCountCollector
     {
-        private readonly string _name;
-	    private readonly FacetSpec _spec;
-	    private readonly BigSegmentedArray _count;
-	    private readonly int _countlength;
-        private readonly TermStringList _predefinedRanges;
-	    private readonly GeoRange[] _ranges;
-	    private readonly BigFloatArray _xvals;
-	    private readonly BigFloatArray _yvals;
-	    private readonly BigFloatArray _zvals;
+        private readonly string m_name;
+	    private readonly FacetSpec m_spec;
+	    private readonly BigSegmentedArray m_count;
+	    private readonly int m_countlength;
+        private readonly TermStringList m_predefinedRanges;
+	    private readonly GeoRange[] m_ranges;
+	    private readonly BigFloatArray m_xvals;
+	    private readonly BigFloatArray m_yvals;
+	    private readonly BigFloatArray m_zvals;
         // variable to specify if the geo distance calculations are in miles. Default is miles
-        private readonly bool _miles;
+        private readonly bool m_miles;
 
         public class GeoRange
         {
-            private readonly float _lat;
-		    private readonly float _lon;
-            private readonly float _rad;
+            private readonly float m_lat;
+		    private readonly float m_lon;
+            private readonly float m_rad;
 
             public GeoRange(float lat, float lon, float radius)
             {
-                _lat = lat;
-                _lon = lon;
-                _rad = radius;
+                m_lat = lat;
+                m_lon = lon;
+                m_rad = radius;
             }
 
             /// <summary>
@@ -58,7 +59,7 @@ namespace BoboBrowse.Net.Facets.Impl
             /// </summary>
             public virtual float Lat
             {
-                get { return _lat; }
+                get { return m_lat; }
             }
 
             /// <summary>
@@ -66,7 +67,7 @@ namespace BoboBrowse.Net.Facets.Impl
             /// </summary>
             public virtual float Lon
             {
-                get { return _lon; }
+                get { return m_lon; }
             }
 
             /// <summary>
@@ -74,7 +75,7 @@ namespace BoboBrowse.Net.Facets.Impl
             /// </summary>
             public virtual float Rad
             {
-                get { return _rad; }
+                get { return m_rad; }
             }
         }
 
@@ -88,26 +89,25 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <param name="predefinedRanges">List of ranges, where each range looks like &lt;lat, lon: rad&gt;</param>
         /// <param name="miles">variable to specify if the geo distance calculations are in miles. False indicates distance calculation is in kilometers</param>
         public GeoFacetCountCollector(string name, GeoFacetHandler.GeoFacetData dataCache, int docBase, 
-            FacetSpec fspec, IEnumerable<string> predefinedRanges, bool miles)
+            FacetSpec fspec, IList<string> predefinedRanges, bool miles)
         {
-            _name = name;
-            _xvals = dataCache.xValArray;
-            _yvals = dataCache.yValArray;
-            _zvals = dataCache.zValArray;
-            _spec = fspec;
-            _predefinedRanges = new TermStringList();
-            var predefinedTemp = new List<string>(predefinedRanges);
-            predefinedTemp.Sort();
-            _predefinedRanges.AddAll(predefinedTemp);
-            _countlength = predefinedTemp.Count;
-            _count = new LazyBigIntArray(_countlength);
-            _ranges = new GeoRange[predefinedTemp.Count];
+            m_name = name;
+            m_xvals = dataCache.xValArray;
+            m_yvals = dataCache.yValArray;
+            m_zvals = dataCache.zValArray;
+            m_spec = fspec;
+            m_predefinedRanges = new TermStringList();
+            predefinedRanges.Sort();
+            m_predefinedRanges.AddAll(predefinedRanges);
+            m_countlength = predefinedRanges.Count;
+            m_count = new LazyBigIntArray(m_countlength);
+            m_ranges = new GeoRange[predefinedRanges.Count];
             int index = 0;
-            foreach (string range in predefinedTemp)
+            foreach (string range in predefinedRanges)
             {
-                _ranges[index++] = Parse(range);
+                m_ranges[index++] = Parse(range);
             }
-            _miles = miles;
+            m_miles = miles;
         }
 
         /// <summary>
@@ -116,18 +116,18 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <param name="docid">The docid for which the facet counts are to be calculated</param>
         public virtual void Collect(int docid)
         {
-            float docX = _xvals.Get(docid);
-            float docY = _yvals.Get(docid);
-            float docZ = _zvals.Get(docid);
+            float docX = m_xvals.Get(docid);
+            float docY = m_yvals.Get(docid);
+            float docZ = m_zvals.Get(docid);
 
             float radius, targetX, targetY, targetZ, delta;
             float xu, xl, yu, yl, zu, zl;
             int countIndex = -1;
-            foreach (GeoRange range in _ranges)
+            foreach (GeoRange range in m_ranges)
             {
                 // the countIndex for the count array should increment with the range index of the _ranges array
                 countIndex++;
-                if (_miles)
+                if (m_miles)
                     radius = GeoMatchUtil.GetMilesRadiusCosine(range.Rad);
                 else
                     radius = GeoMatchUtil.GetKMRadiusCosine(range.Rad);
@@ -137,7 +137,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 targetY = coords[1];
                 targetZ = coords[2];
 
-                if (_miles)
+                if (m_miles)
                     delta = (float)(range.Rad / GeoMatchUtil.EARTH_RADIUS_MILES);
                 else
                     delta = (float)(range.Rad / GeoMatchUtil.EARTH_RADIUS_KM);
@@ -162,7 +162,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 {
                     // if the lat, lon values of this docid match the current user-specified range, then increment the 
                     // appropriate count[] value
-                    _count.Add(countIndex, _count.Get(countIndex) + 1);
+                    m_count.Add(countIndex, m_count.Get(countIndex) + 1);
                     // do not break here, since one document could lie in multiple user-specified ranges
                 }
             }
@@ -176,13 +176,13 @@ namespace BoboBrowse.Net.Facets.Impl
         public virtual BigSegmentedArray GetCountDistribution()
         {
             BigSegmentedArray dist = null;
-            if (_predefinedRanges != null)
+            if (m_predefinedRanges != null)
             {
-                dist = new LazyBigIntArray(_predefinedRanges.Count);
+                dist = new LazyBigIntArray(m_predefinedRanges.Count);
                 int distIdx = 0;
-                for (int i = 0; i < _count.Length; i++)
+                for (int i = 0; i < m_count.Length; i++)
                 {
-                    int count = _count.Get(i);
+                    int count = m_count.Get(i);
                     dist.Add(distIdx++, count);
                 }
             }
@@ -191,7 +191,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public virtual string Name
         {
-            get { return _name; }
+            get { return m_name; }
         }
 
         /// <summary>
@@ -202,13 +202,13 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <returns>The BrowseFacet corresponding to the range value</returns>
         public virtual BrowseFacet GetFacet(string value)
         {
-            if (_predefinedRanges != null)
+            if (m_predefinedRanges != null)
             {
                 int index = 0;
-                if ((index = _predefinedRanges.IndexOf(value)) != -1)
+                if ((index = m_predefinedRanges.IndexOf(value)) != -1)
                 {
                     BrowseFacet choice = new BrowseFacet();
-                    choice.FacetValueHitCount = _count.Get(index);
+                    choice.FacetValueHitCount = m_count.Get(index);
                     choice.Value = value;
                     return choice;
                 }
@@ -228,12 +228,12 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public virtual int GetFacetHitsCount(object value)
         {
-            if (_predefinedRanges != null)
+            if (m_predefinedRanges != null)
             {
                 int index = 0;
-                if ((index = _predefinedRanges.IndexOf(value)) != -1)
+                if ((index = m_predefinedRanges.IndexOf(value)) != -1)
                 {
-                    return _count.Get(index);
+                    return m_count.Get(index);
                 }
                 else
                 {
@@ -250,22 +250,22 @@ namespace BoboBrowse.Net.Facets.Impl
         /// 
         /// </summary>
         /// <returns>A list containing BrowseFacet objects for each of the user-specified ranges</returns>
-        public virtual IEnumerable<BrowseFacet> GetFacets()
+        public virtual ICollection<BrowseFacet> GetFacets()
         {
-            if (_spec != null)
+            if (m_spec != null)
             {
-                int minHitCount = _spec.MinHitCount;
-                if (_ranges != null)
+                int minHitCount = m_spec.MinHitCount;
+                if (m_ranges != null)
                 {
                     List<BrowseFacet> facets = new List<BrowseFacet>();
                     int countIndex = -1;
-                    foreach (string value in _predefinedRanges)
+                    foreach (string value in m_predefinedRanges)
                     {
                         countIndex++;
-                        if (_count.Get(countIndex) >= minHitCount)
+                        if (m_count.Get(countIndex) >= minHitCount)
                         {
                             BrowseFacet choice = new BrowseFacet();
-                            choice.FacetValueHitCount = _count.Get(countIndex);
+                            choice.FacetValueHitCount = m_count.Get(countIndex);
                             choice.Value = value;
                             facets.Add(choice);
                         }
@@ -274,12 +274,12 @@ namespace BoboBrowse.Net.Facets.Impl
                 }
                 else
                 {
-                    return FacetCountCollector_Fields.EMPTY_FACET_LIST;
+                    return FacetCountCollector.EMPTY_FACET_LIST;
                 }
             }
             else
             {
-                return FacetCountCollector_Fields.EMPTY_FACET_LIST;
+                return FacetCountCollector.EMPTY_FACET_LIST;
             }
         }
 
@@ -310,7 +310,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public virtual FacetIterator GetIterator()
         {
-            return new DefaultFacetIterator(_predefinedRanges, _count, _countlength, true);
+            return new DefaultFacetIterator(m_predefinedRanges, m_count, m_countlength, true);
         }
     }
 }

@@ -21,7 +21,7 @@ namespace BoboBrowse.Net.Support
 {
     using System.Collections.Generic;
 
-    public static class IListExtensions
+    public static class ListExtensions
     {
         public static T Poll<T>(this IList<T> list) where T : class
         {

@@ -24,7 +24,7 @@ namespace BoboBrowse.Net.Support
     using System.Linq;
     using System.Text;
 
-    public static class IDictionaryExtensions
+    public static class DictionaryExtensions
     {
         public static TValue Get<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
         {

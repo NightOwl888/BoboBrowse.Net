@@ -32,15 +32,15 @@ namespace BoboBrowse.Net.Impl
     public class BrowseServiceImpl : IBrowseService
     {
         private static readonly ILog logger = LogProvider.For<BrowseServiceImpl>();
-        private readonly DirectoryInfo _idxDir;
-        private readonly BoboMultiReader _reader;
+        private readonly DirectoryInfo m_idxDir;
+        private readonly BoboMultiReader m_reader;
 
         public BrowseServiceImpl(DirectoryInfo idxDir)
         {
-            this._idxDir = idxDir;
+            this.m_idxDir = idxDir;
             try
             {
-                _reader = NewIndexReader();
+                m_reader = NewIndexReader();
             }
             catch (IOException e)
             {
@@ -55,7 +55,7 @@ namespace BoboBrowse.Net.Impl
 
         private BoboMultiReader NewIndexReader()
         {
-            Directory idxDir = FSDirectory.Open(_idxDir);
+            Directory idxDir = FSDirectory.Open(m_idxDir);
             return NewIndexReader(idxDir);
         }
 
@@ -104,16 +104,16 @@ namespace BoboBrowse.Net.Impl
         {
             if (disposing)
             {
-                if (_reader != null)
+                if (m_reader != null)
                 {
-                    _reader.Dispose();
+                    m_reader.Dispose();
                 }
             }
         }
 
         public virtual BrowseResult Browse(BrowseRequest req) // throws BrowseException
         {
-            return BrowseServiceFactory.CreateBrowseService(_reader).Browse(req);
+            return BrowseServiceFactory.CreateBrowseService(m_reader).Browse(req);
         }
     }
 }

@@ -36,10 +36,10 @@ namespace BoboBrowse.Net.DocIdSet
 
         public virtual void Add(int val)
         {
-            EnsureCapacity(count + 1);
+            EnsureCapacity(m_count + 1);
             int[] array = (int[])base.Array;
-            array[count] = val;
-            count++;
+            array[m_count] = val;
+            m_count++;
         }
 
 
@@ -48,7 +48,7 @@ namespace BoboBrowse.Net.DocIdSet
             EnsureCapacity(index);
             int[] array = (int[])base.Array;
             array[index] = val;
-            count = Math.Max(count, index + 1);
+            m_count = Math.Max(m_count, index + 1);
         }
 
         public virtual int Get(int index)
@@ -59,7 +59,7 @@ namespace BoboBrowse.Net.DocIdSet
 
         public virtual bool Contains(int elem)
         {
-            int size = count;
+            int size = m_count;
             for (int i = 0; i < size; ++i)
             {
                 if (Get(i) == elem)
@@ -77,7 +77,7 @@ namespace BoboBrowse.Net.DocIdSet
 
         public static int GetSerialIntNum(IntArray instance)
         {
-            int num = 3 + instance.count; // _len, _count, _growth
+            int num = 3 + instance.m_count; // _len, _count, _growth
             return num;
         }
 
@@ -88,7 +88,7 @@ namespace BoboBrowse.Net.DocIdSet
             offset += Conversion.BYTES_PER_INT;
             numInt++;
 
-            Conversion.IntToByteArray(instance.count, @out, offset);
+            Conversion.IntToByteArray(instance.m_count, @out, offset);
             offset += Conversion.BYTES_PER_INT;
             numInt++;
 
@@ -96,13 +96,13 @@ namespace BoboBrowse.Net.DocIdSet
             offset += Conversion.BYTES_PER_INT;
             numInt++;
 
-            for (int i = 0; i < instance.count; i++)
+            for (int i = 0; i < instance.m_count; i++)
             {
                 int data = instance.Get(i);
                 Conversion.IntToByteArray(data, @out, offset);
                 offset += Conversion.BYTES_PER_INT;
             }
-            numInt += instance.count;
+            numInt += instance.m_count;
             return numInt;
         }
 
@@ -127,7 +127,7 @@ namespace BoboBrowse.Net.DocIdSet
             }
 
             instance.Growth = growth;
-            if (instance.count != count) throw new Exception("cannot build IntArray from byte[]");
+            if (instance.m_count != count) throw new Exception("cannot build IntArray from byte[]");
 
             return instance;
         }

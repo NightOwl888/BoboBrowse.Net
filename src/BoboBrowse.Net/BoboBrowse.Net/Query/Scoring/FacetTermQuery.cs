@@ -38,10 +38,10 @@ namespace BoboBrowse.Net.Query.Scoring
     {
         private static readonly ILog logger = LogProvider.For<FacetTermQuery>();
 
-        private readonly string _name;
-        private readonly BrowseSelection _sel;
-        private readonly IFacetTermScoringFunctionFactory _scoringFactory;
-        private readonly IDictionary<string, float> _boostMap;
+        private readonly string m_name;
+        private readonly BrowseSelection m_sel;
+        private readonly IFacetTermScoringFunctionFactory m_scoringFactory;
+        private readonly IDictionary<string, float> m_boostMap;
 
         public FacetTermQuery(BrowseSelection sel, IDictionary<string, float> boostMap)
             : this(sel, boostMap, new DefaultFacetTermScoringFunctionFactory())
@@ -50,25 +50,25 @@ namespace BoboBrowse.Net.Query.Scoring
 
         public FacetTermQuery(BrowseSelection sel, IDictionary<string, float> boostMap, IFacetTermScoringFunctionFactory scoringFactory)
         {
-            _name = sel.FieldName;
-            _sel = sel;
-            _scoringFactory = scoringFactory;
-            _boostMap = boostMap;
+            m_name = sel.FieldName;
+            m_sel = sel;
+            m_scoringFactory = scoringFactory;
+            m_boostMap = boostMap;
         }
 
         public virtual string Name
         {
-            get { return _name; }
+            get { return m_name; }
         }
 
         public virtual IDictionary<string, float> BoostMap
         {
-            get { return _boostMap; }
+            get { return m_boostMap; }
         }
 
         public override string ToString(string fieldname)
         {
-            return _sel.ToString();
+            return m_sel.ToString();
         }
 
         public override Weight CreateWeight(IndexSearcher searcher)
@@ -78,9 +78,9 @@ namespace BoboBrowse.Net.Query.Scoring
 
         public override void ExtractTerms(ISet<Term> terms)
         {
-            foreach (string val in _sel.Values)
+            foreach (string val in m_sel.Values)
             {
-                terms.Add(new Term(_name, val));
+                terms.Add(new Term(m_name, val));
             }
         }
 
@@ -98,10 +98,10 @@ namespace BoboBrowse.Net.Query.Scoring
             FacetTermQuery other = (FacetTermQuery)obj;
             if (!this.ToString().Equals(other.ToString()))
                 return false;
-            if (!_name.Equals(other.Name))
+            if (!m_name.Equals(other.Name))
                 return false;
 
-            IDictionary<string, float> _boostMap_1 = this._boostMap;
+            IDictionary<string, float> _boostMap_1 = this.m_boostMap;
             IDictionary<string, float> _boostMap_2 = other.BoostMap;
 
             if (_boostMap_1.Count != _boostMap_2.Count)
@@ -134,7 +134,7 @@ namespace BoboBrowse.Net.Query.Scoring
                 int hashCode = 0;
 
                 // String properties
-                hashCode = (hashCode * 397) ^ (_name != null ? _name.GetHashCode() : string.Empty.GetHashCode());
+                hashCode = (hashCode * 397) ^ (m_name != null ? m_name.GetHashCode() : string.Empty.GetHashCode());
 
                 // Since any of the dictionary values could change at any time, we need to
                 // rely on the default implementation of GetHashCode for Contains.
@@ -169,27 +169,27 @@ namespace BoboBrowse.Net.Query.Scoring
 
         private class FacetTermWeight : Weight
         {
-            internal Similarity _similarity;
-            private FacetTermQuery parent;
+            internal Similarity m_similarity;
+            private FacetTermQuery m_parent;
 
             public FacetTermWeight(FacetTermQuery parent, Similarity sim)
             {
-                this.parent = parent;
-                _similarity = sim;
+                this.m_parent = parent;
+                m_similarity = sim;
             }
 
             public override Explanation Explain(AtomicReaderContext context, int docid)
             {
                 BoboSegmentReader boboReader = (BoboSegmentReader)context.Reader;
-                IFacetHandler fhandler = boboReader.GetFacetHandler(parent._name);
+                IFacetHandler fhandler = boboReader.GetFacetHandler(m_parent.m_name);
                 if (fhandler != null)
                 {
                     BoboDocScorer scorer = null;
                     if (fhandler is IFacetScoreable)
                     {
-                        scorer = ((IFacetScoreable)fhandler).GetDocScorer(boboReader, parent._scoringFactory, parent._boostMap);
+                        scorer = ((IFacetScoreable)fhandler).GetDocScorer(boboReader, m_parent.m_scoringFactory, m_parent.m_boostMap);
                         Explanation exp1 = scorer.Explain(docid);
-                        Explanation exp2 = new Explanation(parent.Boost, "boost");
+                        Explanation exp2 = new Explanation(m_parent.Boost, "boost");
 					    Explanation expl = new Explanation();
 					    expl.Description = "product of:";
 					    expl.Value = (exp1.Value * exp2.Value);
@@ -207,7 +207,7 @@ namespace BoboBrowse.Net.Query.Scoring
 
             public override Query Query
             {
-                get { return parent; }
+                get { return m_parent; }
             }
 
             private DocIdSetIterator BuildIterator(RandomAccessDocIdSet docset, BoboSegmentReader reader, IBits acceptDocs)
@@ -217,69 +217,69 @@ namespace BoboBrowse.Net.Query.Scoring
 
             private class FacetTermQueryDocIdSetIterator : DocIdSetIterator
             {
-                private int doc = -1;
-                private readonly RandomAccessDocIdSet _docset;
-                private readonly int _maxDoc;
-                private readonly IBits _acceptDocs;
+                private int m_doc = -1;
+                private readonly RandomAccessDocIdSet m_docset;
+                private readonly int m_maxDoc;
+                private readonly IBits m_acceptDocs;
 
                 public FacetTermQueryDocIdSetIterator(RandomAccessDocIdSet docset, BoboSegmentReader reader, IBits acceptDocs)
                 {
-                    _docset = docset;
-                    _maxDoc = reader.MaxDoc;
-                    _acceptDocs = acceptDocs;
+                    m_docset = docset;
+                    m_maxDoc = reader.MaxDoc;
+                    m_acceptDocs = acceptDocs;
                 }
 
                 public override int Advance(int target)
                 {
-                    doc = target;
-                    while (doc < _maxDoc)
+                    m_doc = target;
+                    while (m_doc < m_maxDoc)
                     {
-                        if (_acceptDocs != null && !_acceptDocs.Get(doc))
+                        if (m_acceptDocs != null && !m_acceptDocs.Get(m_doc))
                         {
-                            ++doc;
+                            ++m_doc;
                             continue;
                         }
-                        if (!_docset.Get(doc))
+                        if (!m_docset.Get(m_doc))
                         {
-                            ++doc;
+                            ++m_doc;
                             continue;
                         }
                         break;
                     }
-                    if (doc >= _maxDoc)
+                    if (m_doc >= m_maxDoc)
                     {
-                        doc = DocIdSetIterator.NO_MORE_DOCS;
+                        m_doc = DocIdSetIterator.NO_MORE_DOCS;
                     }
-                    return doc;
+                    return m_doc;
                 }
 
                 public override int DocID
                 {
-                    get { return doc; }
+                    get { return m_doc; }
                 }
 
                 public override int NextDoc()
                 {
-                    ++doc;
-                    while (doc < _maxDoc)
+                    ++m_doc;
+                    while (m_doc < m_maxDoc)
                     {
-                        if (_acceptDocs != null && !_acceptDocs.Get(doc))
+                        if (m_acceptDocs != null && !m_acceptDocs.Get(m_doc))
                         {
-                            ++doc;
+                            ++m_doc;
                             continue;
                         }
-                        if (!_docset.Get(doc))
+                        if (!m_docset.Get(m_doc))
                         {
-                            ++doc;
+                            ++m_doc;
                             continue;
                         }
                         break;
                     }
-                    if (doc >= _maxDoc)
+                    if (m_doc >= m_maxDoc)
                     {
-                        doc = DocIdSetIterator.NO_MORE_DOCS;
+                        m_doc = DocIdSetIterator.NO_MORE_DOCS;
                     }
-                    return doc;
+                    return m_doc;
                 }
 
                 public override long GetCost()
@@ -299,11 +299,11 @@ namespace BoboBrowse.Net.Query.Scoring
                 if (reader is BoboSegmentReader)
                 {
                     BoboSegmentReader boboReader = (BoboSegmentReader)reader;
-                    IFacetHandler fhandler = boboReader.GetFacetHandler(parent._name);
+                    IFacetHandler fhandler = boboReader.GetFacetHandler(m_parent.m_name);
                     if (fhandler != null)
                     {
                         DocIdSetIterator dociter = null;
-                        RandomAccessFilter filter = fhandler.BuildFilter(parent._sel);
+                        RandomAccessFilter filter = fhandler.BuildFilter(m_parent.m_sel);
                         if (filter != null)
                         {
                             RandomAccessDocIdSet docset = filter.GetRandomAccessDocIdSet(boboReader);
@@ -319,13 +319,13 @@ namespace BoboBrowse.Net.Query.Scoring
                         BoboDocScorer scorer = null;
                         if (fhandler is IFacetScoreable)
                         {
-                            scorer = ((IFacetScoreable)fhandler).GetDocScorer(boboReader, parent._scoringFactory, parent._boostMap);
+                            scorer = ((IFacetScoreable)fhandler).GetDocScorer(boboReader, m_parent.m_scoringFactory, m_parent.m_boostMap);
                         }
-                        return new FacetTermScorer(parent, _similarity, dociter, scorer);
+                        return new FacetTermScorer(m_parent, m_similarity, dociter, scorer);
                     }
                     else
                     {
-                        logger.Error("FacetHandler is not defined for the field: " + parent._name);
+                        logger.Error("FacetHandler is not defined for the field: " + m_parent.m_name);
                     }
                     return null;
                 }
@@ -348,36 +348,36 @@ namespace BoboBrowse.Net.Query.Scoring
 
         private class FacetTermScorer : Scorer
         {
-            private readonly DocIdSetIterator _docSetIter;
-            private readonly BoboDocScorer _scorer;
-            private readonly FacetTermQuery _parent;
+            private readonly DocIdSetIterator m_docSetIter;
+            private readonly BoboDocScorer m_scorer;
+            private readonly FacetTermQuery m_parent;
 
             public FacetTermScorer(FacetTermQuery parent, Similarity similarity, DocIdSetIterator docidsetIter, BoboDocScorer scorer)
                 : base(new FacetTermWeight(parent, similarity))
             {
-                _parent = parent;
-                _docSetIter = docidsetIter;
-                _scorer = scorer;
+                m_parent = parent;
+                m_docSetIter = docidsetIter;
+                m_scorer = scorer;
             }
 
             public override float GetScore()
             {
-                return _scorer == null ? 1.0f : _scorer.Score(_docSetIter.DocID) * _parent.Boost;
+                return m_scorer == null ? 1.0f : m_scorer.Score(m_docSetIter.DocID) * m_parent.Boost;
             }
 
             public override int DocID
             {
-                get { return _docSetIter.DocID; }
+                get { return m_docSetIter.DocID; }
             }
 
             public override int NextDoc()
             {
-                return _docSetIter.NextDoc();
+                return m_docSetIter.NextDoc();
             }
 
             public override int Advance(int target)
             {
-                return _docSetIter.Advance(target);
+                return m_docSetIter.Advance(target);
             }
 
             public override int Freq

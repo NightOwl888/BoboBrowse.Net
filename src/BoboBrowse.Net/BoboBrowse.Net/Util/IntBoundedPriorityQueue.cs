@@ -28,11 +28,11 @@ namespace BoboBrowse.Net.Util
     public class IntBoundedPriorityQueue //: IntervalHeap<int>
     {
         //private static long serialVersionUID = 1L; // NOT USED
-        private readonly int _capacity;
-        private readonly int[] _items;
-        private int _size = 0;
-        private readonly IComparer<int> _comp;
-        private readonly int _forbiddenValue;
+        private readonly int m_capacity;
+        private readonly int[] m_items;
+        private int m_size = 0;
+        private readonly IComparer<int> m_comp;
+        private readonly int m_forbiddenValue;
 
         /// <summary>
         /// Constructor
@@ -42,10 +42,10 @@ namespace BoboBrowse.Net.Util
         /// <param name="forbiddenValue"></param>
         public IntBoundedPriorityQueue(IComparer<int> comparer, int capacity, int forbiddenValue)
         {
-            _capacity = capacity;
-            _comp = comparer;
-            _items = new int[capacity];// java.lang.reflect.Array.newInstance(, capacity);
-            _forbiddenValue = forbiddenValue;
+            m_capacity = capacity;
+            m_comp = comparer;
+            m_items = new int[capacity];// java.lang.reflect.Array.newInstance(, capacity);
+            m_forbiddenValue = forbiddenValue;
         }
 
         /// <summary>
@@ -55,16 +55,16 @@ namespace BoboBrowse.Net.Util
         /// <returns></returns>
         public virtual int Element()
         {
-            if (_size == 0)
+            if (m_size == 0)
                 throw new IndexOutOfRangeException("empty queue");
-            return _items[0];
+            return m_items[0];
         }
 
         public int IntElement()
         {
-            if (_size == 0)
+            if (m_size == 0)
                 throw new IndexOutOfRangeException("empty queue");
-            return _items[0];
+            return m_items[0];
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace BoboBrowse.Net.Util
 
             public int Current
             {
-                get { return parent._items[i]; }
+                get { return parent.m_items[i]; }
             }
 
             public void Dispose()
@@ -100,13 +100,13 @@ namespace BoboBrowse.Net.Util
 
             object IEnumerator.Current
             {
-                get { return parent._items[i]; }
+                get { return parent.m_items[i]; }
             }
 
             public bool MoveNext()
             {
                 i++;
-                return  (i < parent._size);
+                return  (i < parent.m_size);
             }
 
             public void Reset()
@@ -127,19 +127,19 @@ namespace BoboBrowse.Net.Util
         /// <returns></returns>
         public bool Offer(int item)
         {
-            if (_size < _capacity)
+            if (m_size < m_capacity)
             {
-                _items[_size] = item;
-                PercolateUp(_size);
-                _size++;
+                m_items[m_size] = item;
+                PercolateUp(m_size);
+                m_size++;
                 //    System.out.println("adding  to queue " + item + "  \t  " +Thread.currentThread().getClass()+Thread.currentThread().getId() );
                 return true;
             }
             else
             {
-                if (_items[0] < item)
+                if (m_items[0] < item)
                 {
-                    _items[0] = item;
+                    m_items[0] = item;
                     PercolateDown();
                     return true;
                 }
@@ -155,9 +155,9 @@ namespace BoboBrowse.Net.Util
         /// <returns></returns>
         public int Peek()
         {
-            if (_size == 0)
-                return _forbiddenValue;
-            return _items[0];
+            if (m_size == 0)
+                return m_forbiddenValue;
+            return m_items[0];
         }
 
         /// <summary>
@@ -166,13 +166,13 @@ namespace BoboBrowse.Net.Util
         /// <returns></returns>
         public int Poll()
         {
-            if (_size == 0)
-                return _forbiddenValue;
-            int ret = _items[0];
-            _size--;
-            _items[0] = _items[_size];
-            _items[_size] = 0;
-            if (_size > 1)
+            if (m_size == 0)
+                return m_forbiddenValue;
+            int ret = m_items[0];
+            m_size--;
+            m_items[0] = m_items[m_size];
+            m_items[m_size] = 0;
+            if (m_size > 1)
                 PercolateDown();
             return ret;
         }
@@ -182,35 +182,35 @@ namespace BoboBrowse.Net.Util
         /// </summary>
         public int Count
         {
-            get{ return _size; }
+            get{ return m_size; }
         }
 
         private void PercolateDown()
         {
-            int temp = _items[0];
+            int temp = m_items[0];
             int index = 0;
             while (true)
             {
                 int left = (index << 1) + 1;
 
                 int right = left + 1;
-                if (right < _size)
+                if (right < m_size)
                 {
-                    left = _comp.Compare(_items[left], _items[right]) < 0 ? left : right;
+                    left = m_comp.Compare(m_items[left], m_items[right]) < 0 ? left : right;
                 }
-                else if (left >= _size)
+                else if (left >= m_size)
                 {
-                    _items[index] = temp;
+                    m_items[index] = temp;
                     break;
                 }
-                if (_comp.Compare(_items[left], temp) < 0)
+                if (m_comp.Compare(m_items[left], temp) < 0)
                 {
-                    _items[index] = _items[left];
+                    m_items[index] = m_items[left];
                     index = left;
                 }
                 else
                 {
-                    _items[index] = temp;
+                    m_items[index] = temp;
                     break;
                 }
             }
@@ -219,13 +219,13 @@ namespace BoboBrowse.Net.Util
         private void PercolateUp(int index)
         {
             int i;
-            int temp = _items[index];
-            while ((i = ((index - 1) >> 1)) >= 0 && _comp.Compare(temp, _items[i]) < 0)
+            int temp = m_items[index];
+            while ((i = ((index - 1) >> 1)) >= 0 && m_comp.Compare(temp, m_items[i]) < 0)
             {
-                _items[index] = _items[i];
+                m_items[index] = m_items[i];
                 index = i;
             }
-            _items[index] = temp;
+            m_items[index] = temp;
         }
 
         public abstract class IntComparer : Comparer<int>

@@ -24,11 +24,11 @@ namespace BoboBrowse.Net.Facets.Data
 
     public class PrimitiveLongArrayWrapper
     {
-        private long[] data;
+        private long[] m_data;
 
         public PrimitiveLongArrayWrapper(long[] data)
         {
-            this.data = data;
+            this.m_data = data;
         }
 
         /// <summary>
@@ -37,22 +37,22 @@ namespace BoboBrowse.Net.Facets.Data
         /// <returns></returns>
         public virtual long[] Data
         {
-            get { return data; }
-            set { data = value; }
+            get { return m_data; }
+            set { m_data = value; }
         }
 
         public override bool Equals(object other)
         {
             if (other is PrimitiveLongArrayWrapper)
             {
-                return Arrays.Equals(data, ((PrimitiveLongArrayWrapper)other).data);
+                return Arrays.Equals(m_data, ((PrimitiveLongArrayWrapper)other).m_data);
             }
             return false;
         }
 
         public override int GetHashCode()
         {
-            return Arrays.GetHashCode(data);
+            return Arrays.GetHashCode(m_data);
         }
     }
 }

@@ -25,18 +25,18 @@ namespace BoboBrowse.Net.Sort
 
     public class MultiDocIdComparer : DocComparer
     {
-        private readonly DocComparer[] _comparers;
+        private readonly DocComparer[] m_comparers;
 
         public MultiDocIdComparer(DocComparer[] comparers)
         {
-            _comparers = comparers;
+            m_comparers = comparers;
         }
 
         public override int Compare(ScoreDoc doc1, ScoreDoc doc2)
         {
-            for (int i = 0; i < _comparers.Length; ++i)
+            for (int i = 0; i < m_comparers.Length; ++i)
             {
-                int v = _comparers[i].Compare(doc1, doc2);
+                int v = m_comparers[i].Compare(doc1, doc2);
                 if (v != 0) return v;
             }
             return 0;
@@ -44,7 +44,7 @@ namespace BoboBrowse.Net.Sort
 
         public override void SetScorer(Scorer scorer)
         {
-            foreach (DocComparer comparer in _comparers)
+            foreach (DocComparer comparer in m_comparers)
             {
                 comparer.SetScorer(scorer);
             }
@@ -52,28 +52,28 @@ namespace BoboBrowse.Net.Sort
 
         public override IComparable Value(ScoreDoc doc)
         {
-            return new MultiDocIdComparable(doc, _comparers);
+            return new MultiDocIdComparable(doc, m_comparers);
         }
 
         public class MultiDocIdComparable : IComparable
         {
-            private readonly ScoreDoc _doc;
-            private readonly DocComparer[] _comparers;
+            private readonly ScoreDoc m_doc;
+            private readonly DocComparer[] m_comparers;
 
             public MultiDocIdComparable(ScoreDoc doc, DocComparer[] comparers)
             {
-                _doc = doc;
-                _comparers = comparers;
+                m_doc = doc;
+                m_comparers = comparers;
             }
 
             public virtual int CompareTo(object o)
             {
                 MultiDocIdComparable other = (MultiDocIdComparable)o;
                 IComparable c1, c2;
-                for (int i = 0; i < _comparers.Length; ++i)
+                for (int i = 0; i < m_comparers.Length; ++i)
                 {
-                    c1 = _comparers[i].Value(_doc);
-                    c2 = other._comparers[i].Value(other._doc);
+                    c1 = m_comparers[i].Value(m_doc);
+                    c2 = other.m_comparers[i].Value(other.m_doc);
                     int v = c1.CompareTo(c2);
                     if (v != 0)
                     {

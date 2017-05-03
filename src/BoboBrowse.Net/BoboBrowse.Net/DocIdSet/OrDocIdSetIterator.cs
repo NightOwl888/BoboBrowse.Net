@@ -28,8 +28,8 @@ namespace BoboBrowse.Net.DocIdSet
     {
         private sealed class Item
         {
-            public readonly DocIdSetIterator Iter;
-            public int Doc;
+            public DocIdSetIterator Iter { get; private set; }
+            public int Doc { get; set; }
 
             public Item(DocIdSetIterator iter)
             {
@@ -38,37 +38,37 @@ namespace BoboBrowse.Net.DocIdSet
             }
         }
 
-        private int _curDoc;
-        private readonly Item[] _heap;
-        private int _size;
+        private int m_curDoc;
+        private readonly Item[] m_heap;
+        private int m_size;
 
         internal OrDocIdSetIterator(List<DocIdSet> sets)
         {
-            _curDoc = -1;
-            _heap = new Item[sets.Count];
-            _size = 0;
+            m_curDoc = -1;
+            m_heap = new Item[sets.Count];
+            m_size = 0;
             foreach (DocIdSet set in sets)
             {
                 // Note: EMPTY_DOCIDSET has been removed in Lucene 4.8, so using
                 // the built-in EmptyDocIdSet class.
 
                 //_heap[_size++] = new Item(set.GetIterator() == null ? DocIdSet.EMPTY_DOCIDSET.GetIterator() : set.GetIterator());
-                _heap[_size++] = new Item(set.GetIterator() == null ? EmptyDocIdSet.Instance.GetIterator() : set.GetIterator());
+                m_heap[m_size++] = new Item(set.GetIterator() == null ? EmptyDocIdSet.Instance.GetIterator() : set.GetIterator());
                 
             }
-            if (_size == 0) _curDoc = DocIdSetIterator.NO_MORE_DOCS;
+            if (m_size == 0) m_curDoc = DocIdSetIterator.NO_MORE_DOCS;
         }
 
         public override int DocID
         {
-            get { return _curDoc; }
+            get { return m_curDoc; }
         }
 
         public override int NextDoc()
         {
-            if (_curDoc == DocIdSetIterator.NO_MORE_DOCS) return DocIdSetIterator.NO_MORE_DOCS;
+            if (m_curDoc == DocIdSetIterator.NO_MORE_DOCS) return DocIdSetIterator.NO_MORE_DOCS;
 
-            Item top = _heap[0];
+            Item top = m_heap[0];
             while (true)
             {
                 DocIdSetIterator topIter = top.Iter;
@@ -81,24 +81,24 @@ namespace BoboBrowse.Net.DocIdSet
                 else
                 {
                     HeapRemoveRoot();
-                    if (_size == 0) return (_curDoc = DocIdSetIterator.NO_MORE_DOCS);
+                    if (m_size == 0) return (m_curDoc = DocIdSetIterator.NO_MORE_DOCS);
                 }
-                top = _heap[0];
+                top = m_heap[0];
                 int topDoc = top.Doc;
-                if (topDoc > _curDoc)
+                if (topDoc > m_curDoc)
                 {
-                    return (_curDoc = topDoc);
+                    return (m_curDoc = topDoc);
                 }
             }
         }
 
         public override int Advance(int target)
         {
-            if (_curDoc == DocIdSetIterator.NO_MORE_DOCS) return DocIdSetIterator.NO_MORE_DOCS;
+            if (m_curDoc == DocIdSetIterator.NO_MORE_DOCS) return DocIdSetIterator.NO_MORE_DOCS;
 
-            if (target <= _curDoc) target = _curDoc + 1;
+            if (target <= m_curDoc) target = m_curDoc + 1;
 
-            Item top = _heap[0];
+            Item top = m_heap[0];
             while (true)
             {
                 DocIdSetIterator topIter = top.Iter;
@@ -111,13 +111,13 @@ namespace BoboBrowse.Net.DocIdSet
                 else
                 {
                     HeapRemoveRoot();
-                    if (_size == 0) return (_curDoc = DocIdSetIterator.NO_MORE_DOCS);
+                    if (m_size == 0) return (m_curDoc = DocIdSetIterator.NO_MORE_DOCS);
                 }
-                top = _heap[0];
+                top = m_heap[0];
                 int topDoc = top.Doc;
                 if (topDoc >= target)
                 {
-                    return (_curDoc = topDoc);
+                    return (m_curDoc = topDoc);
                 }
             }
         }
@@ -137,10 +137,10 @@ namespace BoboBrowse.Net.DocIdSet
         /// </summary>
         private void HeapAdjust()
         {
-            Item[] heap = this._heap;
+            Item[] heap = this.m_heap;
             Item top = heap[0];
             int doc = top.Doc;
-            int size = this._size;
+            int size = this.m_size;
             int i = 0;
 
             while (true)
@@ -178,12 +178,12 @@ namespace BoboBrowse.Net.DocIdSet
         // Remove the root Scorer from subScorers and re-establish it as a heap
         private void HeapRemoveRoot()
         {
-            _size--;
-            if (_size > 0)
+            m_size--;
+            if (m_size > 0)
             {
-                Item tmp = _heap[0];
-                _heap[0] = _heap[_size];
-                _heap[_size] = tmp; // keep the finished iterator at the end for debugging
+                Item tmp = m_heap[0];
+                m_heap[0] = m_heap[m_size];
+                m_heap[m_size] = tmp; // keep the finished iterator at the end for debugging
                 HeapAdjust();
             }
         }

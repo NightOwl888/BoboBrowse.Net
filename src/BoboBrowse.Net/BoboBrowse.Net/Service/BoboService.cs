@@ -31,8 +31,8 @@ namespace BoboBrowse.Net.Service
     {
         private static readonly ILog logger = LogProvider.For<BoboService>();
 
-        private readonly DirectoryInfo _idxDir;
-        private BoboMultiReader _boboReader;
+        private readonly DirectoryInfo m_idxDir;
+        private BoboMultiReader m_boboReader;
 
         public BoboService(string path)
             : this(new DirectoryInfo(path))
@@ -41,8 +41,8 @@ namespace BoboBrowse.Net.Service
 
         public BoboService(DirectoryInfo idxDir)
         {
-            this._idxDir = idxDir;
-            _boboReader = null;
+            this.m_idxDir = idxDir;
+            m_boboReader = null;
         }
 
         public virtual BrowseResult Browse(BrowseRequest req)
@@ -50,7 +50,7 @@ namespace BoboBrowse.Net.Service
             BoboBrowser browser = null;
             try
             {
-                browser = new BoboBrowser(_boboReader);
+                browser = new BoboBrowser(m_boboReader);
                 return browser.Browse(req);
             }
             catch (Exception e)
@@ -76,10 +76,10 @@ namespace BoboBrowse.Net.Service
 
         public virtual void Start()
         {
-            DirectoryReader reader = DirectoryReader.Open(FSDirectory.Open(_idxDir));
+            DirectoryReader reader = DirectoryReader.Open(FSDirectory.Open(m_idxDir));
             try
             {
-                _boboReader = BoboMultiReader.GetInstance(reader);
+                m_boboReader = BoboMultiReader.GetInstance(reader);
             }
             catch
             {
@@ -92,11 +92,11 @@ namespace BoboBrowse.Net.Service
 
         public virtual void Shutdown()
         {
-            if (_boboReader != null)
+            if (m_boboReader != null)
             {
                 try
                 {
-                    _boboReader.Dispose();
+                    m_boboReader.Dispose();
                 }
                 catch (Exception e)
                 {

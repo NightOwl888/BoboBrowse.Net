@@ -34,36 +34,36 @@ namespace BoboBrowse.Net.Sort
 
         public class IntDocComparerSource : DocComparerSource
         {
-            private readonly string field;
+            private readonly string m_field;
 
             public IntDocComparerSource(string field)
             {
-                this.field = field;
+                this.m_field = field;
             }
 
             public override DocComparer GetComparer(AtomicReader reader, int docbase)
             {
-                FieldCache.Int32s values = FieldCache.DEFAULT.GetInt32s(reader, field, true);
+                FieldCache.Int32s values = FieldCache.DEFAULT.GetInt32s(reader, m_field, true);
                 return new IntDocComparer(values);
             }
 
             private class IntDocComparer : DocComparer
             {
-                private readonly FieldCache.Int32s values;
+                private readonly FieldCache.Int32s m_values;
 
                 public IntDocComparer(FieldCache.Int32s values)
                 {
-                    this.values = values;
+                    this.m_values = values;
                 }
 
                 public override int Compare(ScoreDoc doc1, ScoreDoc doc2)
                 {
                     // cannot return v1-v2 because it could overflow
-                    if (values.Get(doc1.Doc) < values.Get(doc2.Doc))
+                    if (m_values.Get(doc1.Doc) < m_values.Get(doc2.Doc))
                     {
                         return -1;
                     }
-                    else if (values.Get(doc1.Doc) > values.Get(doc2.Doc))
+                    else if (m_values.Get(doc1.Doc) > m_values.Get(doc2.Doc))
                     {
                         return 1;
                     }
@@ -75,44 +75,44 @@ namespace BoboBrowse.Net.Sort
 
                 public override IComparable Value(ScoreDoc doc)
                 {
-                    return (IComparable)values.Get(doc.Doc);
+                    return (IComparable)m_values.Get(doc.Doc);
                 }
             }
         }
 
         public class StringValComparerSource : DocComparerSource
         {
-            private readonly string field;
+            private readonly string m_field;
 
             public StringValComparerSource(string field)
             {
-                this.field = field;
+                this.m_field = field;
             }
 
             public override DocComparer GetComparer(AtomicReader reader, int docbase)
             {
                 // NOTE: Original Java source called an overload of Lucene 4.3.0 that had only 2 parameters.
                 // The setDocsWithField parameter was not available in that version, but since in other methods
-                // of this class the parameter is set to true, we am setting it to true here as well.
-                BinaryDocValues values = FieldCache.DEFAULT.GetTerms(reader, this.field, true);
+                // of this class the parameter is set to true, we are setting it to true here as well.
+                BinaryDocValues values = FieldCache.DEFAULT.GetTerms(reader, this.m_field, true);
                 return new StringValDocComparer(values);
             }
 
             private class StringValDocComparer : DocComparer
             {
-                private readonly BinaryDocValues values;
+                private readonly BinaryDocValues m_values;
 
                 public StringValDocComparer(BinaryDocValues values)
                 {
-                    this.values = values;
+                    this.m_values = values;
                 }
 
                 public override int Compare(ScoreDoc doc1, ScoreDoc doc2)
                 {
                     BytesRef result1 = new BytesRef();
                     BytesRef result2 = new BytesRef();
-                    values.Get(doc1.Doc, result1);
-                    values.Get(doc2.Doc, result2);
+                    m_values.Get(doc1.Doc, result1);
+                    m_values.Get(doc2.Doc, result2);
 
                     if (result1.Length == 0)
                     {
@@ -132,7 +132,7 @@ namespace BoboBrowse.Net.Sort
                 public override IComparable Value(ScoreDoc doc)
                 {
                     BytesRef result = new BytesRef();
-                    values.Get(doc.Doc, result);
+                    m_values.Get(doc.Doc, result);
                     return (IComparable)result.Utf8ToString();
                 }
             }
@@ -140,38 +140,38 @@ namespace BoboBrowse.Net.Sort
 
         public class StringOrdComparerSource : DocComparerSource
         {
-            private readonly string field;
+            private readonly string m_field;
 
             public StringOrdComparerSource(string field)
             {
-                this.field = field;
+                this.m_field = field;
             }
 
             public override DocComparer GetComparer(AtomicReader reader, int docbase)
             {
-                SortedDocValues values = FieldCache.DEFAULT.GetTermsIndex(reader, this.field);
+                SortedDocValues values = FieldCache.DEFAULT.GetTermsIndex(reader, this.m_field);
                 return new StringOrdDocComparer(values);
             }
 
             private class StringOrdDocComparer : DocComparer
             {
-                private readonly SortedDocValues values;
+                private readonly SortedDocValues m_values;
 
                 public StringOrdDocComparer(SortedDocValues values)
                 {
-                    this.values = values;
+                    this.m_values = values;
                 }
 
                 public override int Compare(ScoreDoc doc1, ScoreDoc doc2)
                 {
-                    return values.GetOrd(doc1.Doc) - values.GetOrd(doc2.Doc);
+                    return m_values.GetOrd(doc1.Doc) - m_values.GetOrd(doc2.Doc);
                 }
 
                 public override IComparable Value(ScoreDoc doc)
                 {
-                    int ord = values.GetOrd(doc.Doc);
+                    int ord = m_values.GetOrd(doc.Doc);
                     BytesRef term = new BytesRef();
-                    values.LookupOrd(ord, term);
+                    m_values.LookupOrd(ord, term);
                     return term.Utf8ToString();
                 }
             }
@@ -179,72 +179,72 @@ namespace BoboBrowse.Net.Sort
 
         public class ShortDocComparerSource : DocComparerSource
         {
-            private readonly string field;
+            private readonly string m_field;
 
             public ShortDocComparerSource(string field)
             {
-                this.field = field;
+                this.m_field = field;
             }
 
             public override DocComparer GetComparer(AtomicReader reader, int docbase)
             {
-                FieldCache.Int16s values = FieldCache.DEFAULT.GetInt16s(reader, this.field, true);
+                FieldCache.Int16s values = FieldCache.DEFAULT.GetInt16s(reader, this.m_field, true);
                 return new ShortDocComparer(values);
             }
 
             private class ShortDocComparer : DocComparer
             {
-                private readonly FieldCache.Int16s values;
+                private readonly FieldCache.Int16s m_values;
 
                 public ShortDocComparer(FieldCache.Int16s values)
                 {
-                    this.values = values;
+                    this.m_values = values;
                 }
 
                 public override int Compare(ScoreDoc doc1, ScoreDoc doc2)
                 {
-                    return values.Get(doc1.Doc) - values.Get(doc2.Doc);
+                    return m_values.Get(doc1.Doc) - m_values.Get(doc2.Doc);
                 }
 
                 public override IComparable Value(ScoreDoc doc)
                 {
-                    return (IComparable)values.Get(doc.Doc);
+                    return (IComparable)m_values.Get(doc.Doc);
                 }
             }
         }
 
         public class LongDocComparerSource : DocComparerSource
         {
-            private readonly string field;
+            private readonly string m_field;
 
             public LongDocComparerSource(string field)
             {
-                this.field = field;
+                this.m_field = field;
             }
 
             public override DocComparer GetComparer(AtomicReader reader, int docbase)
             {
-                FieldCache.Int64s values = FieldCache.DEFAULT.GetInt64s(reader, this.field, true);
+                FieldCache.Int64s values = FieldCache.DEFAULT.GetInt64s(reader, this.m_field, true);
                 return new LongDocComparer(values);
             }
 
             private class LongDocComparer : DocComparer
             {
-                private readonly FieldCache.Int64s values;
+                private readonly FieldCache.Int64s m_values;
 
                 public LongDocComparer(FieldCache.Int64s values)
                 {
-                    this.values = values;
+                    this.m_values = values;
                 }
 
                 public override int Compare(ScoreDoc doc1, ScoreDoc doc2)
                 {
                     // cannot return v1-v2 because it could overflow
-                    if (values.Get(doc1.Doc) < values.Get(doc2.Doc))
+                    if (m_values.Get(doc1.Doc) < m_values.Get(doc2.Doc))
                     {
                         return -1;
                     }
-                    else if (values.Get(doc1.Doc) > values.Get(doc2.Doc))
+                    else if (m_values.Get(doc1.Doc) > m_values.Get(doc2.Doc))
                     {
                         return 1;
                     }
@@ -256,43 +256,43 @@ namespace BoboBrowse.Net.Sort
 
                 public override IComparable Value(ScoreDoc doc)
                 {
-                    return (IComparable)values.Get(doc.Doc);
+                    return (IComparable)m_values.Get(doc.Doc);
                 }
             }
         }
 
         public class FloatDocComparerSource : DocComparerSource
         {
-            private readonly string field;
+            private readonly string m_field;
 
             public FloatDocComparerSource(string field)
             {
-                this.field = field;
+                this.m_field = field;
             }
 
             public override DocComparer GetComparer(AtomicReader reader, int docbase)
             {
-                FieldCache.Singles values = FieldCache.DEFAULT.GetSingles(reader, this.field, true);
+                FieldCache.Singles values = FieldCache.DEFAULT.GetSingles(reader, this.m_field, true);
                 return new FloatDocComparer(values);
             }
 
             private class FloatDocComparer : DocComparer
             {
-                private readonly FieldCache.Singles values;
+                private readonly FieldCache.Singles m_values;
 
                 public FloatDocComparer(FieldCache.Singles values)
                 {
-                    this.values = values;
+                    this.m_values = values;
                 }
 
                 public override int Compare(ScoreDoc doc1, ScoreDoc doc2)
                 {
                     // cannot return v1-v2 because it could overflow
-                    if (values.Get(doc1.Doc) < values.Get(doc2.Doc))
+                    if (m_values.Get(doc1.Doc) < m_values.Get(doc2.Doc))
                     {
                         return -1;
                     }
-                    else if (values.Get(doc1.Doc) > values.Get(doc2.Doc))
+                    else if (m_values.Get(doc1.Doc) > m_values.Get(doc2.Doc))
                     {
                         return 1;
                     }
@@ -304,43 +304,43 @@ namespace BoboBrowse.Net.Sort
 
                 public override IComparable Value(ScoreDoc doc)
                 {
-                    return (IComparable)values.Get(doc.Doc);
+                    return (IComparable)m_values.Get(doc.Doc);
                 }
             }
         }
 
         public class DoubleDocComparerSource : DocComparerSource
         {
-            private readonly string field;
+            private readonly string m_field;
 
             public DoubleDocComparerSource(string field)
             {
-                this.field = field;
+                this.m_field = field;
             }
 
             public override DocComparer GetComparer(AtomicReader reader, int docbase)
             {
-                FieldCache.Doubles values = FieldCache.DEFAULT.GetDoubles(reader, this.field, true);
+                FieldCache.Doubles values = FieldCache.DEFAULT.GetDoubles(reader, this.m_field, true);
                 return new DoubleDocComparer(values);
             }
 
             private class DoubleDocComparer : DocComparer
             {
-                private readonly FieldCache.Doubles values;
+                private readonly FieldCache.Doubles m_values;
 
                 public DoubleDocComparer(FieldCache.Doubles values)
                 {
-                    this.values = values;
+                    this.m_values = values;
                 }
 
                 public override int Compare(ScoreDoc doc1, ScoreDoc doc2)
                 {
                     // cannot return v1-v2 because it could overflow
-                    if (values.Get(doc1.Doc) < values.Get(doc2.Doc))
+                    if (m_values.Get(doc1.Doc) < m_values.Get(doc2.Doc))
                     {
                         return -1;
                     }
-                    else if (values.Get(doc1.Doc) > values.Get(doc2.Doc))
+                    else if (m_values.Get(doc1.Doc) > m_values.Get(doc2.Doc))
                     {
                         return 1;
                     }
@@ -352,7 +352,7 @@ namespace BoboBrowse.Net.Sort
 
                 public override IComparable Value(ScoreDoc doc)
                 {
-                    return (IComparable)values.Get(doc.Doc);
+                    return (IComparable)m_values.Get(doc.Doc);
                 }
             }
         }
@@ -411,11 +411,11 @@ namespace BoboBrowse.Net.Sort
 
             private class DocIdDocComparer : DocComparer
             {
-                private readonly int docbase;
+                private readonly int m_docbase;
 
                 public DocIdDocComparer(int docbase)
                 {
-                    this.docbase = docbase;
+                    this.m_docbase = docbase;
                 }
 
                 public override int Compare(ScoreDoc doc1, ScoreDoc doc2)
@@ -425,43 +425,43 @@ namespace BoboBrowse.Net.Sort
 
                 public override IComparable Value(ScoreDoc doc)
                 {
-                    return (IComparable)(doc.Doc + this.docbase);
+                    return (IComparable)(doc.Doc + this.m_docbase);
                 }
             }
         }
 
         public class ByteDocComparerSource : DocComparerSource
         {
-            private readonly string field;
+            private readonly string m_field;
 
             public ByteDocComparerSource(string field)
             {
-                this.field = field;
+                this.m_field = field;
             }
 
             public override DocComparer GetComparer(AtomicReader reader, int docbase)
             {
-                FieldCache.Bytes values = FieldCache.DEFAULT.GetBytes(reader, this.field, true);
+                FieldCache.Bytes values = FieldCache.DEFAULT.GetBytes(reader, this.m_field, true);
                 return new ByteDocComparer(values);
             }
 
             private class ByteDocComparer : DocComparer
             {
-                private readonly FieldCache.Bytes values;
+                private readonly FieldCache.Bytes m_values;
 
                 public ByteDocComparer(FieldCache.Bytes values)
                 {
-                    this.values = values;
+                    this.m_values = values;
                 }
 
                 public override int Compare(ScoreDoc doc1, ScoreDoc doc2)
                 {
-                    return values.Get(doc1.Doc) - values.Get(doc2.Doc);
+                    return m_values.Get(doc1.Doc) - m_values.Get(doc2.Doc);
                 }
 
                 public override IComparable Value(ScoreDoc doc)
                 {
-                    return (IComparable)values.Get(doc.Doc);
+                    return (IComparable)m_values.Get(doc.Doc);
                 }
             }
         }

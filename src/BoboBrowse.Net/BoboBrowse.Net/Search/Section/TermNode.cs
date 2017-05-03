@@ -25,7 +25,7 @@ namespace BoboBrowse.Net.Search.Section
 
     public class TermNode : AbstractTerminalNode
     {
-        protected int _positionInPhrase;
+        protected int m_positionInPhrase;
 
         public TermNode(Term term, AtomicReader reader)
             : this(term, 0, reader)
@@ -35,7 +35,7 @@ namespace BoboBrowse.Net.Search.Section
         public TermNode(Term term, int positionInPhrase, AtomicReader reader)
             : base(term, reader)
         {
-            _positionInPhrase = positionInPhrase; // relative position in a phrase
+            m_positionInPhrase = positionInPhrase; // relative position in a phrase
         }
 
         /// <summary>
@@ -43,25 +43,25 @@ namespace BoboBrowse.Net.Search.Section
         /// </summary>
         internal virtual int PositionInPhrase
         {
-            get { return _positionInPhrase; }
+            get { return m_positionInPhrase; }
         }
 
         public override int FetchSec(int targetSec)
         {
-            if (_posLeft > 0)
+            if (m_posLeft > 0)
             {
                 while (true)
                 {
-                    _curPos = _dp.NextPosition();
-                    _posLeft--;
+                    m_curPos = m_dp.NextPosition();
+                    m_posLeft--;
 
-                    if (ReadSecId() >= targetSec) return _curSec;
+                    if (ReadSecId() >= targetSec) return m_curSec;
 
-                    if (_posLeft <= 0) break;
+                    if (m_posLeft <= 0) break;
                 }
             }
-            _curSec = SectionSearchQueryPlan.NO_MORE_SECTIONS;
-            return _curSec;
+            m_curSec = SectionSearchQueryPlan.NO_MORE_SECTIONS;
+            return m_curSec;
         }
 
         // NOTE: Added this method so FetchPos() can be utilized internally
@@ -73,28 +73,28 @@ namespace BoboBrowse.Net.Search.Section
 
         protected override int FetchPos()
         {
-            if (_posLeft > 0)
+            if (m_posLeft > 0)
             {
-                _curPos = _dp.NextPosition();
-                _posLeft--;
-                return _curPos;
+                m_curPos = m_dp.NextPosition();
+                m_posLeft--;
+                return m_curPos;
             }
-            _curPos = SectionSearchQueryPlan.NO_MORE_POSITIONS;
-            return _curPos;
+            m_curPos = SectionSearchQueryPlan.NO_MORE_POSITIONS;
+            return m_curPos;
         }
 
         public virtual int ReadSecId()
         {
-            BytesRef payload = _dp.GetPayload();
+            BytesRef payload = m_dp.GetPayload();
             if (payload != null)
             {
-                _curSec = intDecoders[payload.Length].Decode(payload.Bytes);
+                m_curSec = m_intDecoders[payload.Length].Decode(payload.Bytes);
             }
             else
             {
-                _curSec = -1;
+                m_curSec = -1;
             }
-            return _curSec;
+            return m_curSec;
         }
 
         private abstract class IntDecoder
@@ -142,7 +142,7 @@ namespace BoboBrowse.Net.Search.Section
             }
         }
 
-        private readonly static IntDecoder[] intDecoders = new IntDecoder[]
+        private readonly static IntDecoder[] m_intDecoders = new IntDecoder[]
         {
             new IntDecoder1(),
             new IntDecoder2(),

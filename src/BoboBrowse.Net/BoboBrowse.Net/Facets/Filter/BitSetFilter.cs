@@ -27,31 +27,31 @@ namespace BoboBrowse.Net.Facets.Filter
 
     public class BitSetFilter : RandomAccessFilter
     {
-        protected readonly IFacetDataCacheBuilder facetDataCacheBuilder;
-        protected readonly IBitSetBuilder bitSetBuilder;
-        private volatile OpenBitSet bitSet;
-        private volatile FacetDataCache lastCache;
+        protected readonly IFacetDataCacheBuilder m_facetDataCacheBuilder;
+        protected readonly IBitSetBuilder m_bitSetBuilder;
+        private volatile OpenBitSet m_bitSet;
+        private volatile FacetDataCache m_lastCache;
 
         public BitSetFilter(IBitSetBuilder bitSetBuilder, IFacetDataCacheBuilder facetDataCacheBuilder)
         {
-            this.bitSetBuilder = bitSetBuilder;
-            this.facetDataCacheBuilder = facetDataCacheBuilder;
+            this.m_bitSetBuilder = bitSetBuilder;
+            this.m_facetDataCacheBuilder = facetDataCacheBuilder;
         }
 
         public virtual OpenBitSet GetBitSet(FacetDataCache dataCache)
         {
-            if (lastCache == dataCache)
+            if (m_lastCache == dataCache)
             {
-                return bitSet;
+                return m_bitSet;
             }
-            bitSet = bitSetBuilder.BitSet(dataCache);
-            lastCache = dataCache;
-            return bitSet;
+            m_bitSet = m_bitSetBuilder.BitSet(dataCache);
+            m_lastCache = dataCache;
+            return m_bitSet;
         }
 
         public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboSegmentReader reader)
         {
-            FacetDataCache dataCache = facetDataCacheBuilder.Build(reader);
+            FacetDataCache dataCache = m_facetDataCacheBuilder.Build(reader);
             OpenBitSet openBitSet = GetBitSet(dataCache);
             long count = openBitSet.Cardinality();
             if (count == 0)
@@ -68,47 +68,47 @@ namespace BoboBrowse.Net.Facets.Filter
 
         private class BitSetRandomAccessDocIdSet : RandomAccessDocIdSet
         {
-            private readonly bool _multi;
-            private readonly MultiValueFacetDataCache _multiCache;
-            private readonly OpenBitSet _openBitSet;
-            private readonly FacetDataCache _dataCache;
+            private readonly bool m_multi;
+            private readonly MultiValueFacetDataCache m_multiCache;
+            private readonly OpenBitSet m_openBitSet;
+            private readonly FacetDataCache m_dataCache;
 
             public BitSetRandomAccessDocIdSet(bool multi, MultiValueFacetDataCache multiCache, OpenBitSet openBitSet, FacetDataCache dataCache)
             {
-                _multi = multi;
-                _multiCache = multiCache;
-                _openBitSet = openBitSet;
-                _dataCache = dataCache;
+                m_multi = multi;
+                m_multiCache = multiCache;
+                m_openBitSet = openBitSet;
+                m_dataCache = dataCache;
             }
 
             public override DocIdSetIterator GetIterator()
             {
-                if (_multi)
+                if (m_multi)
                 {
-                    return new MultiValueORFacetFilter.MultiValueOrFacetDocIdSetIterator(_multiCache, _openBitSet);
+                    return new MultiValueORFacetFilter.MultiValueOrFacetDocIdSetIterator(m_multiCache, m_openBitSet);
                 }
                 else
                 {
-                    return new FacetOrFilter.FacetOrDocIdSetIterator(_dataCache, _openBitSet);
+                    return new FacetOrFilter.FacetOrDocIdSetIterator(m_dataCache, m_openBitSet);
                 }
             }
 
             public override bool Get(int docId)
             {
-                if (_multi)
+                if (m_multi)
                 {
-                    return _multiCache.NestedArray.Contains(docId, _openBitSet);
+                    return m_multiCache.NestedArray.Contains(docId, m_openBitSet);
                 }
                 else
                 {
-                    return _openBitSet.FastGet(_dataCache.OrderArray.Get(docId));
+                    return m_openBitSet.FastGet(m_dataCache.OrderArray.Get(docId));
                 }
             }
         }
 
         public override double GetFacetSelectivity(BoboSegmentReader reader)
         {
-            FacetDataCache dataCache = facetDataCacheBuilder.Build(reader);
+            FacetDataCache dataCache = m_facetDataCacheBuilder.Build(reader);
             OpenBitSet openBitSet = GetBitSet(dataCache);
             int[] frequencies = dataCache.Freqs;
             double selectivity = 0;

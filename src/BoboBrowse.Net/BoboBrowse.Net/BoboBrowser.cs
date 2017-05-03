@@ -41,7 +41,7 @@ namespace BoboBrowse.Net
             : base(CreateBrowsables(reader.GetSubReaders()))
         {}
 
-        public static IEnumerable<BoboSegmentReader> GatherSubReaders(IEnumerable<BoboMultiReader> readerList)
+        public static IEnumerable<BoboSegmentReader> GatherSubReaders(IList<BoboMultiReader> readerList)
         {
             IList<BoboSegmentReader> subReaderList = new List<BoboSegmentReader>();
             foreach (BoboMultiReader reader in readerList)
@@ -54,10 +54,10 @@ namespace BoboBrowse.Net
             return subReaderList;
         }
 
-        public static IBrowsable[] CreateBrowsables(IEnumerable<BoboSegmentReader> readerList)
+        public static IBrowsable[] CreateBrowsables(IList<BoboSegmentReader> readerList)
         {
-            BoboSubBrowser[] browsables = new BoboSubBrowser[readerList.Count()];
-            for (int i = 0; i < readerList.Count(); ++i)
+            BoboSubBrowser[] browsables = new BoboSubBrowser[readerList.Count];
+            for (int i = 0; i < readerList.Count; ++i)
             {
                 browsables[i] = new BoboSubBrowser(readerList.Get(i));
             }
@@ -72,11 +72,11 @@ namespace BoboBrowse.Net
         {
             get 
             {
-                if (_subBrowsers.Length == 0)
+                if (m_subBrowsers.Length == 0)
                 {
                     return null;
                 }
-                return _subBrowsers[0].FacetNames; 
+                return m_subBrowsers[0].FacetNames; 
             }
         }
 
@@ -87,11 +87,11 @@ namespace BoboBrowse.Net
         /// <returns>The facet handler instance.</returns>
         public override IFacetHandler GetFacetHandler(string name)
         {
-            if (_subBrowsers.Length == 0)
+            if (m_subBrowsers.Length == 0)
             {
                 return null;
             }
-            return _subBrowsers[0].GetFacetHandler(name);
+            return m_subBrowsers[0].GetFacetHandler(name);
         }
     }
 }

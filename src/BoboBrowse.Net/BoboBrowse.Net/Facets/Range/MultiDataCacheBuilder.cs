@@ -26,28 +26,28 @@ namespace BoboBrowse.Net.Facets.Range
 
     public class MultiDataCacheBuilder : IFacetDataCacheBuilder
     {
-        private readonly string name;
-        private readonly string indexFieldName;
+        private readonly string m_name;
+        private readonly string m_indexFieldName;
 
         public MultiDataCacheBuilder(string name, string indexFieldName)
         {
-            this.name = name;
-            this.indexFieldName = indexFieldName;
+            this.m_name = name;
+            this.m_indexFieldName = indexFieldName;
         }
 
         public virtual FacetDataCache Build(BoboSegmentReader reader)
         {
-            return (FacetDataCache)reader.GetFacetData(name);
+            return (FacetDataCache)reader.GetFacetData(m_name);
         }
 
         public virtual string Name
         {
-            get { return name; }
+            get { return m_name; }
         }
 
         public virtual string IndexFieldName
         {
-            get { return indexFieldName; }
+            get { return m_indexFieldName; }
         }
     }
 }

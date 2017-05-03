@@ -36,10 +36,10 @@ namespace BoboBrowse.Net.Facets.Filter
 
     public class AdaptiveFacetFilter : RandomAccessFilter
     {
-        private readonly RandomAccessFilter _facetFilter;
-	    private readonly IFacetDataCacheBuilder _facetDataCacheBuilder;
-        private readonly IEnumerable<string> _valSet;
-	    private bool  _takeComplement = false;
+        private readonly RandomAccessFilter m_facetFilter;
+	    private readonly IFacetDataCacheBuilder m_facetDataCacheBuilder;
+        private readonly IList<string> m_valSet;
+	    private bool m_takeComplement = false;
 
         /// <summary>
         /// If takeComplement is true, we still return the filter for NotValues.
@@ -52,35 +52,35 @@ namespace BoboBrowse.Net.Facets.Filter
         /// <param name="takeComplement"></param>
         public AdaptiveFacetFilter(IFacetDataCacheBuilder facetDataCacheBuilder, RandomAccessFilter facetFilter, string[] val, bool takeComplement)
         {
-            _facetFilter = facetFilter;
-            _facetDataCacheBuilder = facetDataCacheBuilder;
-            _valSet = val;
-            _takeComplement = takeComplement;
+            m_facetFilter = facetFilter;
+            m_facetDataCacheBuilder = facetDataCacheBuilder;
+            m_valSet = val;
+            m_takeComplement = takeComplement;
         }
 
         public override double GetFacetSelectivity(BoboSegmentReader reader)
         {
-            double selectivity = _facetFilter.GetFacetSelectivity(reader);
-            if (_takeComplement)
+            double selectivity = m_facetFilter.GetFacetSelectivity(reader);
+            if (m_takeComplement)
                 return 1.0 - selectivity;
             return selectivity;
         }
 
         public override RandomAccessDocIdSet GetRandomAccessDocIdSet(BoboSegmentReader reader)
         {
-            RandomAccessDocIdSet innerDocSet = _facetFilter.GetRandomAccessDocIdSet(reader);
+            RandomAccessDocIdSet innerDocSet = m_facetFilter.GetRandomAccessDocIdSet(reader);
             if (innerDocSet == EmptyDocIdSet.Instance)
             {
                 return innerDocSet;
             }
 
-            FacetDataCache dataCache = _facetDataCacheBuilder.Build(reader);
+            FacetDataCache dataCache = m_facetDataCacheBuilder.Build(reader);
             int totalCount = reader.MaxDoc;
             ITermValueList valArray = dataCache.ValArray;
             int freqCount = 0;
 
-            var validVals = new List<string>(_valSet.Count());
-            foreach (string val in _valSet)
+            var validVals = new List<string>(m_valSet.Count);
+            foreach (string val in m_valSet)
             {
                 int idx = valArray.IndexOf(val);
                 if (idx >= 0)
@@ -96,11 +96,11 @@ namespace BoboBrowse.Net.Facets.Filter
             }
 
             // takeComplement is only used to choose between TermListRandomAccessDocIdSet and innerDocSet
-            int validFreqCount = _takeComplement ? (totalCount - freqCount) : freqCount;
+            int validFreqCount = m_takeComplement ? (totalCount - freqCount) : freqCount;
 
-            if (_facetDataCacheBuilder.IndexFieldName != null && ((validFreqCount << 1) < totalCount))
+            if (m_facetDataCacheBuilder.IndexFieldName != null && ((validFreqCount << 1) < totalCount))
             {
-                return new TermListRandomAccessDocIdSet(_facetDataCacheBuilder.IndexFieldName, innerDocSet, validVals, reader);
+                return new TermListRandomAccessDocIdSet(m_facetDataCacheBuilder.IndexFieldName, innerDocSet, validVals, reader);
             }
             else
             {
@@ -110,34 +110,34 @@ namespace BoboBrowse.Net.Facets.Filter
 
         public class TermListRandomAccessDocIdSet : RandomAccessDocIdSet
         {
-            private readonly RandomAccessDocIdSet _innerSet;
-		    private readonly IEnumerable<string> _vals;
-		    private readonly AtomicReader _reader;
-		    private readonly string _name;
+            private readonly RandomAccessDocIdSet m_innerSet;
+		    private readonly IList<string> m_vals;
+		    private readonly AtomicReader m_reader;
+		    private readonly string m_name;
             private const int OR_THRESHOLD = 5;
 
-            internal TermListRandomAccessDocIdSet(string name, RandomAccessDocIdSet innerSet, IEnumerable<string> vals, AtomicReader reader)
+            internal TermListRandomAccessDocIdSet(string name, RandomAccessDocIdSet innerSet, IList<string> vals, AtomicReader reader)
             {
-                _name = name;
-                _innerSet = innerSet;
-                _vals = vals;
-                _reader = reader;
+                m_name = name;
+                m_innerSet = innerSet;
+                m_vals = vals;
+                m_reader = reader;
             }
 
             public class TermDocIdSet : DocIdSet
             {
-                private readonly Term term;
-                private readonly AtomicReader reader;
+                private readonly Term m_term;
+                private readonly AtomicReader m_reader;
 
                 public TermDocIdSet(AtomicReader reader, string name, string val)
                 {
-                    this.reader = reader;
-                    term = new Term(name, val);
+                    this.m_reader = reader;
+                    m_term = new Term(name, val);
                 }
 
                 public override DocIdSetIterator GetIterator()
                 {
-                    DocsEnum docsEnum = reader.GetTermDocsEnum(term);
+                    DocsEnum docsEnum = m_reader.GetTermDocsEnum(m_term);
                     if (docsEnum == null)
                     {
                         return EmptyDocIdSet.Instance.GetIterator();
@@ -148,33 +148,33 @@ namespace BoboBrowse.Net.Facets.Filter
 
             public override bool Get(int docId)
             {
-                return _innerSet.Get(docId);
+                return m_innerSet.Get(docId);
             }
 
             public override DocIdSetIterator GetIterator()
             {
-                if (_vals.Count() == 0)
+                if (m_vals.Count == 0)
                 {
                     return EmptyDocIdSet.Instance.GetIterator();
                 }
-                if (_vals.Count() == 1)
+                if (m_vals.Count == 1)
                 {
-                    return new TermDocIdSet(_reader, _name, _vals.ElementAt(0)).GetIterator();
+                    return new TermDocIdSet(m_reader, m_name, m_vals[0]).GetIterator();
                 }
                 else
                 {
-                    if (_vals.Count() < OR_THRESHOLD)
+                    if (m_vals.Count < OR_THRESHOLD)
                     {
-                        List<DocIdSet> docSetList = new List<DocIdSet>(_vals.Count());
-                        foreach (string val in _vals)
+                        List<DocIdSet> docSetList = new List<DocIdSet>(m_vals.Count);
+                        foreach (string val in m_vals)
                         {
-                            docSetList.Add(new TermDocIdSet(_reader, _name, val));
+                            docSetList.Add(new TermDocIdSet(m_reader, m_name, val));
                         }
                         return new OrDocIdSet(docSetList).GetIterator();
                     }
                     else
                     {
-                        return _innerSet.GetIterator();
+                        return m_innerSet.GetIterator();
                     }
                 }
             }

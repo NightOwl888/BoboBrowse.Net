@@ -40,17 +40,17 @@ namespace BoboBrowse.Net
     {
         private static readonly ILog logger = LogProvider.For<BoboSegmentReader>();
 
-        protected IDictionary<string, IFacetHandler> _facetHandlerMap;
+        protected IDictionary<string, IFacetHandler> m_facetHandlerMap;
 
-        protected IEnumerable<IFacetHandler> _facetHandlers;
-        protected IEnumerable<IRuntimeFacetHandlerFactory> _runtimeFacetHandlerFactories;
-        protected IDictionary<string, IRuntimeFacetHandlerFactory> _runtimeFacetHandlerFactoryMap;
+        protected IEnumerable<IFacetHandler> m_facetHandlers;
+        protected IEnumerable<IRuntimeFacetHandlerFactory> m_runtimeFacetHandlerFactories;
+        protected IDictionary<string, IRuntimeFacetHandlerFactory> m_runtimeFacetHandlerFactoryMap;
 
-        protected WorkArea _workArea;
+        protected WorkArea m_workArea;
 
-        private readonly IDictionary<string, object> _facetDataMap = new Dictionary<string, object>();
-        private readonly DisposableThreadLocal<IDictionary<string, object>> _runtimeFacetDataMap = new RuntimeFacetDataMapWrapper();
-        private readonly DisposableThreadLocal<IDictionary<string, IRuntimeFacetHandler>> _runtimeFacetHandlerMap = new RuntimeFacetHandlerMapWrapper();
+        private readonly IDictionary<string, object> m_facetDataMap = new Dictionary<string, object>();
+        private readonly DisposableThreadLocal<IDictionary<string, object>> m_runtimeFacetDataMap = new RuntimeFacetDataMapWrapper();
+        private readonly DisposableThreadLocal<IDictionary<string, IRuntimeFacetHandler>> m_runtimeFacetHandlerMap = new RuntimeFacetHandlerMapWrapper();
 
         // TODO: Fix this IDisposableThreadLocal (it is a class, so should be named DisposableThreadLocal) and push to Lucene.Net
         private class RuntimeFacetDataMapWrapper : DisposableThreadLocal<IDictionary<string, object>>
@@ -98,17 +98,17 @@ namespace BoboBrowse.Net
 
         public virtual object GetFacetData(string name)
         {
-            return _facetDataMap.Get(name);
+            return m_facetDataMap.Get(name);
         }
 
         public virtual void PutFacetData(string name, object data)
         {
-            _facetDataMap.Put(name, data);
+            m_facetDataMap.Put(name, data);
         }
 
         public virtual object GetRuntimeFacetData(string name)
         {
-            var map = _runtimeFacetDataMap.Get();
+            var map = m_runtimeFacetDataMap.Get();
             if (map == null) return null;
 
             return map.Get(name);
@@ -116,23 +116,23 @@ namespace BoboBrowse.Net
 
         public virtual void PutRuntimeFacetData(string name, object data)
         {
-            var map = _runtimeFacetDataMap.Get();
+            var map = m_runtimeFacetDataMap.Get();
             if (map == null)
             {
                 map = new Dictionary<string, object>();
-                _runtimeFacetDataMap.Set(map);
+                m_runtimeFacetDataMap.Set(map);
             }
             map.Put(name, data);
         }
 
         public virtual void ClearRuntimeFacetData()
         {
-            _runtimeFacetDataMap.Set(null);
+            m_runtimeFacetDataMap.Set(null);
         }
 
         public virtual IRuntimeFacetHandler GetRuntimeFacetHandler(string name)
         {
-            var map = _runtimeFacetHandlerMap.Get();
+            var map = m_runtimeFacetHandlerMap.Get();
             if (map == null) return null;
 
             return map.Get(name);
@@ -140,18 +140,18 @@ namespace BoboBrowse.Net
 
         public virtual void PutRuntimeFacetHandler(string name, IRuntimeFacetHandler data)
         {
-            var map = _runtimeFacetHandlerMap.Get();
+            var map = m_runtimeFacetHandlerMap.Get();
             if (map == null)
             {
                 map = new Dictionary<string, IRuntimeFacetHandler>();
-                _runtimeFacetHandlerMap.Set(map);
+                m_runtimeFacetHandlerMap.Set(map);
             }
             map.Put(name, data);
         }
 
         public virtual void ClearRuntimeFacetHandler()
         {
-            _runtimeFacetHandlerMap.Set(null);
+            m_runtimeFacetHandlerMap.Set(null);
         }
 
         protected override void DoClose()
@@ -161,12 +161,12 @@ namespace BoboBrowse.Net
 
         private void LoadFacetHandler(string name, IList<string> loaded, IList<string> visited, WorkArea workArea)
         {
-            IFacetHandler facetHandler = _facetHandlerMap.Get(name);
+            IFacetHandler facetHandler = m_facetHandlerMap.Get(name);
             if (facetHandler != null && !loaded.Contains(name))
             {
                 visited.Add(name);
                 var dependsOn = facetHandler.DependsOn;
-                if (dependsOn.Count() > 0)
+                if (dependsOn.Count > 0)
                 {
                     foreach (var f in dependsOn)
                     {
@@ -184,7 +184,7 @@ namespace BoboBrowse.Net
                         {
                             throw new IOException("unable to load facet handler: " + f);
                         }
-                        facetHandler.PutDependedFacetHandler(_facetHandlerMap[f]);
+                        facetHandler.PutDependedFacetHandler(m_facetHandlerMap[f]);
                     }
                 }
 
@@ -206,7 +206,7 @@ namespace BoboBrowse.Net
             var loaded = new List<string>();
             var visited = new List<string>();
 
-            foreach (string name in _facetHandlerMap.Keys)
+            foreach (string name in m_facetHandlerMap.Keys)
             {
                 this.LoadFacetHandler(name, loaded, visited, workArea);
             }
@@ -214,11 +214,11 @@ namespace BoboBrowse.Net
 
         private void Initialize(ref IEnumerable<IFacetHandler> facetHandlers)
         {
-            _facetHandlers = facetHandlers;
-            _facetHandlerMap = new Dictionary<string, IFacetHandler>();
+            m_facetHandlers = facetHandlers;
+            m_facetHandlerMap = new Dictionary<string, IFacetHandler>();
             foreach (var facetHandler in facetHandlers)
             {
-                _facetHandlerMap.Put(facetHandler.Name, facetHandler);
+                m_facetHandlerMap.Put(facetHandler.Name, facetHandler);
             }
         }
 
@@ -232,30 +232,30 @@ namespace BoboBrowse.Net
         protected internal BoboSegmentReader(AtomicReader reader, IEnumerable<IFacetHandler> facetHandlers, IEnumerable<IRuntimeFacetHandlerFactory> facetHandlerFactories, WorkArea workArea)
             : base(reader)
         {
-            _runtimeFacetHandlerFactories = facetHandlerFactories;
-            _runtimeFacetHandlerFactoryMap = new Dictionary<string, IRuntimeFacetHandlerFactory>();
-            if (_runtimeFacetHandlerFactories != null)
+            m_runtimeFacetHandlerFactories = facetHandlerFactories;
+            m_runtimeFacetHandlerFactoryMap = new Dictionary<string, IRuntimeFacetHandlerFactory>();
+            if (m_runtimeFacetHandlerFactories != null)
             {
-                foreach (IRuntimeFacetHandlerFactory factory in _runtimeFacetHandlerFactories)
+                foreach (IRuntimeFacetHandlerFactory factory in m_runtimeFacetHandlerFactories)
                 {
-                    _runtimeFacetHandlerFactoryMap.Put(factory.Name, factory);
+                    m_runtimeFacetHandlerFactoryMap.Put(factory.Name, factory);
                 }
             }
-            _facetHandlers = facetHandlers;
-            _workArea = workArea;
+            m_facetHandlers = facetHandlers;
+            m_workArea = workArea;
         }
 
         protected internal virtual void FacetInit()
         {
-            Initialize(ref _facetHandlers);
-            LoadFacetHandlers(_workArea);
+            Initialize(ref m_facetHandlers);
+            LoadFacetHandlers(m_workArea);
         }
 
         ///<summary>Gets all the facet field names</summary>
         ///<returns> Set of facet field names </returns>
         public virtual IEnumerable<string> FacetNames
         {
-            get { return _facetHandlerMap.Keys; }
+            get { return m_facetHandlerMap.Keys; }
         }
 
         /// <summary>Gets a facet handler</summary>
@@ -263,7 +263,7 @@ namespace BoboBrowse.Net
         /// <returns>facet handler</returns>
         public virtual IFacetHandler GetFacetHandler(string fieldName)
         {
-            IFacetHandler f = _facetHandlerMap.Get(fieldName);
+            IFacetHandler f = m_facetHandlerMap.Get(fieldName);
             if (f == null)
                 f = (IFacetHandler)this.GetRuntimeFacetHandler(fieldName);
             return f;
@@ -273,7 +273,7 @@ namespace BoboBrowse.Net
         ///<returns>facet handler map </returns>
         public virtual IDictionary<string, IFacetHandler> FacetHandlerMap
         {
-            get { return _facetHandlerMap; }
+            get { return m_facetHandlerMap; }
         }
 
         /// <summary>
@@ -281,7 +281,7 @@ namespace BoboBrowse.Net
         /// </summary>
         public virtual IDictionary<string, IRuntimeFacetHandlerFactory> RuntimeFacetHandlerFactoryMap
         {
-            get { return _runtimeFacetHandlerFactoryMap; }
+            get { return m_runtimeFacetHandlerFactoryMap; }
         }
 
         /// <summary>
@@ -289,8 +289,8 @@ namespace BoboBrowse.Net
         /// </summary>
         public virtual IDictionary<string, IRuntimeFacetHandler> RuntimeFacetHandlerMap
         {
-            get { return _runtimeFacetHandlerMap.Get(); }
-            set { _runtimeFacetHandlerMap.Set(value); }
+            get { return m_runtimeFacetHandlerMap.Get(); }
+            set { m_runtimeFacetHandlerMap.Set(value); }
         }
 
         /// <summary>
@@ -298,8 +298,8 @@ namespace BoboBrowse.Net
         /// </summary>
         public virtual IDictionary<string, object> RuntimeFacetDataMap
         {
-            get { return _runtimeFacetDataMap.Get(); }
-            set { _runtimeFacetDataMap.Set(value); }
+            get { return m_runtimeFacetDataMap.Get(); }
+            set { m_runtimeFacetDataMap.Set(value); }
         }
 
         public override void Document(int docID, StoredFieldVisitor visitor)
@@ -312,7 +312,7 @@ namespace BoboBrowse.Net
 
             Document doc = ((DocumentStoredFieldVisitor)visitor).Document;
 
-            IEnumerable<IFacetHandler> facetHandlers = _facetHandlerMap.Values;
+            IEnumerable<IFacetHandler> facetHandlers = m_facetHandlerMap.Values;
             foreach (IFacetHandler facetHandler in facetHandlers)
             {
                 string[] vals = facetHandler.GetFieldValues(this, docID);
@@ -348,22 +348,22 @@ namespace BoboBrowse.Net
         /// </summary>
         public class WorkArea
         {
-            internal Dictionary<Type, object> map = new Dictionary<Type, object>();
+            internal Dictionary<Type, object> m_map = new Dictionary<Type, object>();
 
             public virtual T Get<T>()
             {
-                T obj = (T)map.Get(typeof(T));
+                T obj = (T)m_map.Get(typeof(T));
                 return obj;
             }
 
             public virtual void Put(object obj)
             {
-                map.Put(obj.GetType(), obj);
+                m_map.Put(obj.GetType(), obj);
             }
 
             public virtual void Clear()
             {
-                map.Clear();
+                m_map.Clear();
             }
         }
 
@@ -374,12 +374,12 @@ namespace BoboBrowse.Net
         public virtual BoboSegmentReader Copy(AtomicReader index)
         {
             BoboSegmentReader copy = new BoboSegmentReader(index);
-            copy._facetHandlerMap = this._facetHandlerMap;
-            copy._facetHandlers = this._facetHandlers;
-            copy._runtimeFacetHandlerFactories = this._runtimeFacetHandlerFactories;
-            copy._runtimeFacetHandlerFactoryMap = this._runtimeFacetHandlerFactoryMap;
-            copy._workArea = this._workArea;
-            copy._facetDataMap.PutAll(this._facetDataMap);
+            copy.m_facetHandlerMap = this.m_facetHandlerMap;
+            copy.m_facetHandlers = this.m_facetHandlers;
+            copy.m_runtimeFacetHandlerFactories = this.m_runtimeFacetHandlerFactories;
+            copy.m_runtimeFacetHandlerFactoryMap = this.m_runtimeFacetHandlerFactoryMap;
+            copy.m_workArea = this.m_workArea;
+            copy.m_facetDataMap.PutAll(this.m_facetDataMap);
             return copy;
         }
 

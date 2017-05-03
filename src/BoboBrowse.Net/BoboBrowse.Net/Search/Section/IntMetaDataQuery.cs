@@ -27,7 +27,7 @@ namespace BoboBrowse.Net.Search.Section
 
     public class IntMetaDataQuery : MetaDataQuery
     { 
-        private Validator _validator;
+        private Validator m_validator;
 
         public abstract class Validator
         {
@@ -36,43 +36,43 @@ namespace BoboBrowse.Net.Search.Section
 
         public class SimpleValueValidator : Validator
         {
-            private readonly int _val;
+            private readonly int m_val;
 
             public SimpleValueValidator(int val)
             {
-                _val = val;
+                m_val = val;
             }
 
             public override bool Validate(int datum)
             {
-                return (datum == _val);
+                return (datum == m_val);
             }
 
             public override string ToString()
             {
-                return "SingleValueValidator[" + _val + "]";
+                return "SingleValueValidator[" + m_val + "]";
             }
         }
 
         public class SimpleRangeValidator : Validator
         {
-            private readonly int _lower;
-            private readonly int _upper;
+            private readonly int m_lower;
+            private readonly int m_upper;
 
             public SimpleRangeValidator(int lower, int upper)
             {
-                _lower = lower;
-                _upper = upper;
+                m_lower = lower;
+                m_upper = upper;
             }
 
             public override bool Validate(int datum)
             {
-                return (datum >= _lower && datum <= _upper);
+                return (datum >= m_lower && datum <= m_upper);
             }
 
             public override string ToString()
             {
-                return "RangeValidator[" + _lower + "," + _upper + "]";
+                return "RangeValidator[" + m_lower + "," + m_upper + "]";
             }
         }
 
@@ -84,12 +84,12 @@ namespace BoboBrowse.Net.Search.Section
         public IntMetaDataQuery(Term term, Validator validator)
             : base(term)
         {
-            _validator = validator;
+            m_validator = validator;
         }
 
         public override string ToString(string field)
         {
-            return "IntMetaDataQuery(" + _validator.ToString() + ")";
+            return "IntMetaDataQuery(" + m_validator.ToString() + ")";
         }
 
         public override Weight CreateWeight(IndexSearcher searcher)
@@ -104,127 +104,127 @@ namespace BoboBrowse.Net.Search.Section
 
         public override SectionSearchQueryPlan GetPlan(AtomicReader reader)
         {
-            return new IntMetaDataNodeNoCache(_term, reader, _validator);
+            return new IntMetaDataNodeNoCache(m_term, reader, m_validator);
         }
 
         public override SectionSearchQueryPlan GetPlan(IMetaDataCache cache)
         {
-            return new IntMetaDataNode((IntMetaDataCache)cache, _validator);
+            return new IntMetaDataNode((IntMetaDataCache)cache, m_validator);
         }
 
         public class IntMetaDataNodeNoCache : AbstractTerminalNode
         {
-            private readonly Validator _validator;
-            private byte[] _data;
-            private int _dataLen;
+            private readonly Validator m_validator;
+            private byte[] m_data;
+            private int m_dataLen;
 
             public IntMetaDataNodeNoCache(Term term, AtomicReader reader, Validator validator)
                 : base(term, reader)
             {
-                _validator = validator;
+                m_validator = validator;
             }
 
             public override int FetchDoc(int targetDoc)
             {
-                _dataLen = -1;
+                m_dataLen = -1;
                 return base.FetchDoc(targetDoc);
             }
 
             public override int FetchSec(int targetSec)
             {
-                if (_curSec == SectionSearchQueryPlan.NO_MORE_SECTIONS) return _curSec;
+                if (m_curSec == SectionSearchQueryPlan.NO_MORE_SECTIONS) return m_curSec;
 
-                if (targetSec <= _curSec) targetSec = _curSec + 1;
+                if (targetSec <= m_curSec) targetSec = m_curSec + 1;
 
-                if (_dataLen == -1 && _posLeft > 0)
+                if (m_dataLen == -1 && m_posLeft > 0)
                 {
-                    _dp.NextPosition();
-                    BytesRef payload = _dp.GetPayload();
+                    m_dp.NextPosition();
+                    BytesRef payload = m_dp.GetPayload();
                     if (payload != null)
                     {
-                        _dataLen = payload.Length;
-                        _data = payload.Bytes;
+                        m_dataLen = payload.Length;
+                        m_data = payload.Bytes;
                     }
                 }
                 int offset = targetSec * 4;
-                while (offset + 4 <= _dataLen)
+                while (offset + 4 <= m_dataLen)
                 {
-                    int datum = ((_data[offset] & 0xff) | 
-                                ((_data[offset + 1] & 0xff) << 8) | 
-                                ((_data[offset + 2] & 0xff) << 16) | 
-                                ((_data[offset + 3] & 0xff) << 24));
+                    int datum = ((m_data[offset] & 0xff) | 
+                                ((m_data[offset + 1] & 0xff) << 8) | 
+                                ((m_data[offset + 2] & 0xff) << 16) | 
+                                ((m_data[offset + 3] & 0xff) << 24));
 
-                    if (_validator.Validate(datum))
+                    if (m_validator.Validate(datum))
                     {
-                        _curSec = targetSec;
-                        return _curSec;
+                        m_curSec = targetSec;
+                        return m_curSec;
                     }
                     targetSec++;
                     offset = targetSec * 4;
                 }
-                _curSec = SectionSearchQueryPlan.NO_MORE_SECTIONS;
-                return _curSec;
+                m_curSec = SectionSearchQueryPlan.NO_MORE_SECTIONS;
+                return m_curSec;
             }
         }
 
         public class IntMetaDataNode : SectionSearchQueryPlan
         {
-            private readonly IntMetaDataCache _cache;
-            private readonly Validator _validator;
-            private readonly int _maxDoc;
+            private readonly IntMetaDataCache m_cache;
+            private readonly Validator m_validator;
+            private readonly int m_maxDoc;
 
-            private int _maxSec;
+            private int m_maxSec;
 
             public IntMetaDataNode(IntMetaDataCache cache, Validator validator)
             {
-                _cache = cache;
-                _maxDoc = cache.MaxDoc;
-                _validator = validator;
+                m_cache = cache;
+                m_maxDoc = cache.MaxDoc;
+                m_validator = validator;
             }
 
             public override int FetchDoc(int targetDoc)
             {
-                if (_curDoc == DocIdSetIterator.NO_MORE_DOCS) return _curDoc;
+                if (m_curDoc == DocIdSetIterator.NO_MORE_DOCS) return m_curDoc;
 
-                if (targetDoc <= _curDoc) targetDoc = _curDoc + 1;
+                if (targetDoc <= m_curDoc) targetDoc = m_curDoc + 1;
 
-                _curSec = -1;
+                m_curSec = -1;
 
-                while (targetDoc < _maxDoc)
+                while (targetDoc < m_maxDoc)
                 {
-                    _maxSec = _cache.GetNumItems(targetDoc);
+                    m_maxSec = m_cache.GetNumItems(targetDoc);
 
-                    if (_maxSec <= 0)
+                    if (m_maxSec <= 0)
                     {
                         targetDoc++;
                         continue;
                     }
-                    _curDoc = targetDoc;
-                    return _curDoc;
+                    m_curDoc = targetDoc;
+                    return m_curDoc;
                 }
-                _curDoc = DocIdSetIterator.NO_MORE_DOCS;
-                return _curDoc;
+                m_curDoc = DocIdSetIterator.NO_MORE_DOCS;
+                return m_curDoc;
             }
 
             public override int FetchSec(int targetSec)
             {
-                if (_curSec == SectionSearchQueryPlan.NO_MORE_SECTIONS) return _curSec;
+                if (m_curSec == SectionSearchQueryPlan.NO_MORE_SECTIONS) return m_curSec;
 
-                if (targetSec <= _curSec) targetSec = _curSec + 1;
+                if (targetSec <= m_curSec) targetSec = m_curSec + 1;
 
-                while (targetSec < _maxSec)
+                while (targetSec < m_maxSec)
                 {
-                    int datum = _cache.GetValue(_curDoc, targetSec, 0);
+                    int datum = m_cache.GetValue(m_curDoc, targetSec, 0);
 
-                    if (_validator.Validate(datum))
+                    if (m_validator.Validate(datum))
                     {
-                        _curSec = targetSec;
-                        return _curSec;
+                        m_curSec = targetSec;
+                        return m_curSec;
                     }
                     targetSec++;
                 }
-                _curSec = SectionSearchQueryPlan.NO_MORE_SECTIONS;
-                return _curSec;
+                m_curSec = SectionSearchQueryPlan.NO_MORE_SECTIONS;
+                return m_curSec;
             }
         }
     }

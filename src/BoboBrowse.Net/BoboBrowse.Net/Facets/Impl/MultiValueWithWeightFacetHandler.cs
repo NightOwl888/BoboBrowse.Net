@@ -45,7 +45,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override RandomAccessFilter BuildRandomAccessFilter(string value, IDictionary<string, string> prop)
         {
-            MultiValueFacetFilter f = new MultiValueFacetFilter(new MultiDataCacheBuilder(Name, _indexFieldName), value);
+            MultiValueFacetFilter f = new MultiValueFacetFilter(new MultiDataCacheBuilder(Name, m_indexFieldName), value);
             return f;
         }
 
@@ -53,15 +53,15 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             MultiValueWithWeightFacetDataCache dataCache = new MultiValueWithWeightFacetDataCache();
 
-            dataCache.MaxItems = _maxItems;
+            dataCache.MaxItems = m_maxItems;
 
-            if (_sizePayloadTerm == null)
+            if (m_sizePayloadTerm == null)
             {
-                dataCache.Load(_indexFieldName, reader, _termListFactory, workArea);
+                dataCache.Load(m_indexFieldName, reader, m_termListFactory, workArea);
             }
             else
             {
-                dataCache.Load(_indexFieldName, reader, _termListFactory, _sizePayloadTerm);
+                dataCache.Load(m_indexFieldName, reader, m_termListFactory, m_sizePayloadTerm);
             }
             return dataCache;
         }

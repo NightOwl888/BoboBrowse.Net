@@ -28,25 +28,25 @@ namespace BoboBrowse.Net.Query.Scoring
 
     public abstract class BoboDocScorer
     {
-        protected readonly IFacetTermScoringFunction _function;
-        protected readonly float[] _boostList;
+        protected readonly IFacetTermScoringFunction m_function;
+        protected readonly float[] m_boostList;
 
         protected BoboDocScorer(IFacetTermScoringFunction scoreFunction, float[] boostList)
         {
-            _function = scoreFunction;
-            _boostList = boostList;
+            m_function = scoreFunction;
+            m_boostList = boostList;
         }
 
         public abstract float Score(int docid);
 
         public abstract Explanation Explain(int docid);
 
-        public static float[] BuildBoostList(IEnumerable<string> valArray, IDictionary<string, float> boostMap)
+        public static float[] BuildBoostList(IList<string> valArray, IDictionary<string, float> boostMap)
         {
             var valArray2 = new List<string>(valArray.Count());
             // NOTE: we must loop through the list in order to make it format
             // the values so it can match the formatted values in the boostMap.
-            foreach (var item in valArray)
+            foreach (var item in valArray) // TODO: Try to remove O(n) operation
             {
                 valArray2.Add(item);
             }
