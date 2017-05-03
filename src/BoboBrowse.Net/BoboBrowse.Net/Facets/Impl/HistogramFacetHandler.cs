@@ -219,7 +219,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 if (!_isAggregated) Aggregate();
 
                 int idx = int.Parse(value);
-                if (idx >= 0 && idx < _count.Size())
+                if (idx >= 0 && idx < _count.Length)
                 {
                     return new BrowseFacet(value, _count.Get(idx));
                 }
@@ -235,7 +235,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     idx = int.Parse((string)value);
                 else
                     idx = Convert.ToInt32(value);
-                if (idx >= 0 && idx < _count.Size())
+                if (idx >= 0 && idx < _count.Length)
                 {
                     return _count.Get(idx);
                 }
@@ -274,7 +274,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     {
                         long val = valArray.GetPrimitiveValue(i);
                         int idx = (int)((val - start) / unit);
-                        if (idx >= 0 && idx < _count.Size())
+                        if (idx >= 0 && idx < _count.Length)
                         {
                             _count.Add(idx, _count.Get(idx) + baseCounts.Get(i));
                         }
@@ -289,7 +289,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     {
                         int val = valArray.GetPrimitiveValue(i);
                         int idx = ((val - start) / unit);
-                        if (idx >= 0 && idx < _count.Size())
+                        if (idx >= 0 && idx < _count.Length)
                         {
                             _count.Add(idx, _count.Get(idx) + baseCounts.Get(i));
                         }
@@ -303,7 +303,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     {
                         double val = (double)_valArray.GetRawValue(i);
                         int idx = (int)((val - start) / unit);
-                        if (idx >= 0 && idx < _count.Size())
+                        if (idx >= 0 && idx < _count.Length)
                         {
                             _count.Add(idx, _count.Get(idx) + baseCounts.Get(i));
                         }
@@ -317,14 +317,14 @@ namespace BoboBrowse.Net.Facets.Impl
                 {
                     int minCount = _ospec.MinHitCount;
                     int max = _ospec.MaxCount;
-                    if (max <= 0) max = _count.Size();
+                    if (max <= 0) max = _count.Length;
 
                     List<BrowseFacet> facetColl;
                     FacetSpec.FacetSortSpec sortspec = _ospec.OrderBy;
                     if (sortspec == FacetSpec.FacetSortSpec.OrderValueAsc)
                     {
                         facetColl = new List<BrowseFacet>(max);
-                        for (int i = 0; i < _count.Size(); ++i)
+                        for (int i = 0; i < _count.Length; ++i)
                         {
                             int hits = _count.Get(i);
                             if (hits >= minCount)
@@ -373,7 +373,7 @@ namespace BoboBrowse.Net.Facets.Impl
             {
                 _idx = -1;
                 _count = count;
-                _maxMinusOne = count.Size() - 1;
+                _maxMinusOne = count.Length - 1;
                 _format = format;
             }
 

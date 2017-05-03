@@ -212,7 +212,7 @@ namespace BoboBrowse.Net.Facets.Impl
             private readonly FacetDataCache _dataCache;
 
             public RangeBoboDocScorer(FacetDataCache dataCache, IFacetTermScoringFunctionFactory scoreFunctionFactory, float[] boostList)
-                : base(scoreFunctionFactory.GetFacetTermScoringFunction(dataCache.ValArray.Count, dataCache.OrderArray.Size()), boostList)
+                : base(scoreFunctionFactory.GetFacetTermScoringFunction(dataCache.ValArray.Count, dataCache.OrderArray.Length), boostList)
             {
                 _dataCache = dataCache;
             }

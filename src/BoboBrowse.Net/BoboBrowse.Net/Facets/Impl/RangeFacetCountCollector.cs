@@ -371,7 +371,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     }
                     rangeCounts.Add(k, rangeCounts.Get(k) + count);
                 }
-                return new DefaultFacetIterator(_predefinedRanges, rangeCounts, rangeCounts.Size(), true);
+                return new DefaultFacetIterator(_predefinedRanges, rangeCounts, rangeCounts.Length, true);
             }
             return null;
         }

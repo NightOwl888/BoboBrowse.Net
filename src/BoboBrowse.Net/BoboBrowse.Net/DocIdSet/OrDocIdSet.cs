@@ -84,7 +84,7 @@ namespace BoboBrowse.Net.DocIdSet
             return -1;
         }
 
-        public override int Size
+        public override int Count
         {
             get 
             {

@@ -34,7 +34,7 @@ namespace BoboBrowse.Net.DocIdSet
             throw new NotSupportedException("Attempt to add document to an immutable data structure");
         }
 
-        public override int Size
+        public override int Count
         {
             get { 
                 // Do the size if we haven't done it so far.

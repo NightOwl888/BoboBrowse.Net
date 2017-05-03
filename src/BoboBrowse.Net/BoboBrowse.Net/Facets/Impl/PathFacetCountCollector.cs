@@ -55,13 +55,13 @@ namespace BoboBrowse.Net.Facets.Impl
             _sep = sep;
             _sepArray = sep.ToCharArray();
             _count = new LazyBigIntArray(_dataCache.Freqs.Length);
-            log.Info(name + ": " + _count.Size());
+            log.Info(name + ": " + _count.Length);
             _orderArray = _dataCache.OrderArray;
             _minHitCount = ospec.MinHitCount;
             _maxCount = ospec.MaxCount;
             if (_maxCount < 1)
             {
-                _maxCount = _count.Size();
+                _maxCount = _count.Length;
             }
             FacetSpec.FacetSortSpec sortOption = ospec.OrderBy;
             switch (sortOption)
@@ -238,7 +238,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
 
             StringBuilder buf = new StringBuilder();
-            for (int i = index; i < _count.Size(); ++i)
+            for (int i = index; i < _count.Length; ++i)
             {
                 if (_count.Get(i) >= minCount)
                 {
@@ -448,13 +448,13 @@ namespace BoboBrowse.Net.Facets.Impl
             string[] paths = _sel == null ? null : _sel.Values;
             if (paths == null || paths.Length == 0)
             {
-                finalList = new List<BrowseFacet>(GetFacetsForPath(null, depth, strict, int.MinValue, _count.Size()));
+                finalList = new List<BrowseFacet>(GetFacetsForPath(null, depth, strict, int.MinValue, _count.Length));
                 return new PathFacetIterator(finalList);
             }
 
             if (paths.Length == 1)
             {
-                finalList = new List<BrowseFacet>(GetFacetsForPath(paths[0], depth, strict, int.MinValue, _count.Size()));
+                finalList = new List<BrowseFacet>(GetFacetsForPath(paths[0], depth, strict, int.MinValue, _count.Length));
                 return new PathFacetIterator(finalList);
             }
 
@@ -462,7 +462,7 @@ namespace BoboBrowse.Net.Facets.Impl
             var iterList = new List<IEnumerator<BrowseFacet>>(paths.Length);
             foreach (string path in paths)
             {
-                var subList = GetFacetsForPath(path, depth, strict, int.MinValue, _count.Size());
+                var subList = GetFacetsForPath(path, depth, strict, int.MinValue, _count.Length);
                 if (subList.Count() > 0)
                 {
                     iterList.Add(subList.GetEnumerator());

@@ -42,7 +42,7 @@ namespace BoboBrowse.Net.Util
         }
 
 
-        public bool Offer(E o)
+        public override bool Offer(E o)
         {
             int size = Count;
             if (size < _maxSize)

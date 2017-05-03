@@ -356,7 +356,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
                 // If the user calls collectAll instead of collect, we have to collect all the groups here:
                 _totalGroups = 0;
-                for (int i = 0; i < _count.Size(); i++)
+                for (int i = 0; i < _count.Length; i++)
                 {
                     int c = _count.Get(i);
                     if (c > 0)
@@ -371,7 +371,7 @@ namespace BoboBrowse.Net.Facets.Impl
             private readonly FacetDataCache _dataCache;
 
             public SimpleBoboDocScorer(FacetDataCache dataCache, IFacetTermScoringFunctionFactory scoreFunctionFactory, float[] boostList)
-                : base(scoreFunctionFactory.GetFacetTermScoringFunction(dataCache.ValArray.Count, dataCache.OrderArray.Size()), boostList)
+                : base(scoreFunctionFactory.GetFacetTermScoringFunction(dataCache.ValArray.Count, dataCache.OrderArray.Length), boostList)
             {
                 _dataCache = dataCache;
             }

@@ -155,14 +155,14 @@ namespace BoboBrowse.Net.Facets.Impl
             if (!HasNext())
                 throw new IndexOutOfRangeException("No more facets in this iteration");
 
-            LongIteratorNode node = _queue.Top();
+            LongIteratorNode node = _queue.Top;
 
             _facet = node.CurFacet;
             long next = TermLongList.VALUE_MISSING;
             count = 0;
             while (HasNext())
             {
-                node = _queue.Top();
+                node = _queue.Top;
                 next = node.CurFacet;
                 if ((next != TermLongList.VALUE_MISSING) && (next != _facet))
                 {
@@ -184,7 +184,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <returns>The next _facet that obeys the minHits </returns>
         public override string Next(int minHits)
         {
-            int qsize = _queue.Size();
+            int qsize = _queue.Count;
             if (qsize == 0)
             {
                 _facet = TermLongList.VALUE_MISSING;
@@ -192,7 +192,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 return null;
             }
 
-            LongIteratorNode node = _queue.Top();
+            LongIteratorNode node = _queue.Top;
             _facet = node.CurFacet;
             count = node.CurFacetCount;
             while (true)
@@ -206,7 +206,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     _queue.Pop();
                     if (--qsize > 0)
                     {
-                        node = _queue.Top();
+                        node = _queue.Top;
                     }
                     else
                     {
@@ -245,7 +245,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// <returns></returns>
         public override bool HasNext()
         {
-            return (_queue.Size() > 0);
+            return (_queue.Count > 0);
         }
 
         /// <summary>
@@ -327,12 +327,15 @@ namespace BoboBrowse.Net.Facets.Impl
             /// Returns the least element of the PriorityQueue in constant time.
             /// </summary>
             /// <returns></returns>
-            public LongIteratorNode Top()
+            public LongIteratorNode Top
             {
-                // We don't need to check size here: if maxSize is 0,
-                // then heap is length 2 array with both entries null.
-                // If size is 0 then heap[1] is already null.
-                return heap[1];
+                get
+                {
+                    // We don't need to check size here: if maxSize is 0,
+                    // then heap is length 2 array with both entries null.
+                    // If size is 0 then heap[1] is already null.
+                    return heap[1];
+                }
             }
 
             /// <summary>
@@ -370,9 +373,10 @@ namespace BoboBrowse.Net.Facets.Impl
             /// Returns the number of elements currently stored in the PriorityQueue.
             /// </summary>
             /// <returns></returns>
-            public int Size()
+            // BoboBrowse.Net: we use Count instead of Size() in .NET
+            public int Count
             {
-                return size;
+                get { return size; }
             }
 
             /// <summary>
@@ -431,14 +435,14 @@ namespace BoboBrowse.Net.Facets.Impl
             if (!HasNext())
                 throw new IndexOutOfRangeException("No more facets in this iteration");
 
-            LongIteratorNode node = _queue.Top();
+            LongIteratorNode node = _queue.Top;
 
             _facet = node.CurFacet;
             long next = TermLongList.VALUE_MISSING;
             count = 0;
             while (HasNext())
             {
-                node = _queue.Top();
+                node = _queue.Top;
                 next = node.CurFacet;
                 if ((next != TermLongList.VALUE_MISSING) && (next != _facet))
                 {
@@ -455,7 +459,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override long NextLong(int minHits)
         {
-            int qsize = _queue.Size();
+            int qsize = _queue.Count;
             if (qsize == 0)
             {
                 _facet = TermLongList.VALUE_MISSING;
@@ -463,7 +467,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 return TermLongList.VALUE_MISSING;
             }
 
-            LongIteratorNode node = _queue.Top();
+            LongIteratorNode node = _queue.Top;
             _facet = node.CurFacet;
             count = node.CurFacetCount;
             while (true)
@@ -477,7 +481,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     _queue.Pop();
                     if (--qsize > 0)
                     {
-                        node = _queue.Top();
+                        node = _queue.Top;
                     }
                     else
                     {

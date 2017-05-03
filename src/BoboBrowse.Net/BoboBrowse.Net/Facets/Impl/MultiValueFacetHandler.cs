@@ -311,7 +311,7 @@ namespace BoboBrowse.Net.Facets.Impl
             private readonly BigNestedIntArray _array;
 
             public MultiValueDocScorer(MultiValueFacetDataCache dataCache, IFacetTermScoringFunctionFactory scoreFunctionFactory, float[] boostList)
-                : base(scoreFunctionFactory.GetFacetTermScoringFunction(dataCache.ValArray.Count, dataCache.NestedArray.Size), boostList)
+                : base(scoreFunctionFactory.GetFacetTermScoringFunction(dataCache.ValArray.Count, dataCache.NestedArray.Length), boostList)
             {
                 _dataCache = dataCache;
                 _array = _dataCache.NestedArray;

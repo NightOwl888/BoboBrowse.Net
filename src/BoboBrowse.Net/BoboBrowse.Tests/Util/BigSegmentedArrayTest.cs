@@ -42,7 +42,7 @@ namespace BoboBrowse.Net.Util
         private static void EmptyArrayTestHelper(BigSegmentedArray array)
         {
             Assert.AreEqual(0, array.Get(0));
-            Assert.AreEqual(0, array.Size());
+            Assert.AreEqual(0, array.Length);
         }
 
         [Test]
@@ -57,8 +57,8 @@ namespace BoboBrowse.Net.Util
         private static void CountUpTestHelper(BigSegmentedArray array)
         {
             Initialize(array);
-            Assert.AreEqual(short.MaxValue * 2, array.Size());
-            for (int i = 0; i < array.Size(); i++)
+            Assert.AreEqual(short.MaxValue * 2, array.Length);
+            for (int i = 0; i < array.Length; i++)
             {
                 Assert.AreEqual(i % array.MaxValue, array.Get(i));
             }
@@ -107,9 +107,9 @@ namespace BoboBrowse.Net.Util
             int e = a * 5;
 
             array.Add(10000, b);
-            Assert.AreEqual(DocIdSetIterator.NO_MORE_DOCS, array.FindValueRange(d, e, 0, array.Size()));
-            Assert.AreEqual(10000, array.FindValueRange(a, e, 0, array.Size()));
-            Assert.AreEqual(10000, array.FindValueRange(a, e, 10000, array.Size()));
+            Assert.AreEqual(DocIdSetIterator.NO_MORE_DOCS, array.FindValueRange(d, e, 0, array.Length));
+            Assert.AreEqual(10000, array.FindValueRange(a, e, 0, array.Length));
+            Assert.AreEqual(10000, array.FindValueRange(a, e, 10000, array.Length));
             Assert.AreEqual(10000, array.FindValueRange(a, e, 0, 10000));
 
             Assert.AreEqual(10000, array.FindValueRange(a, b, 9000, 10100));
@@ -151,7 +151,7 @@ namespace BoboBrowse.Net.Util
 
         public static BigSegmentedArray Initialize(BigSegmentedArray array)
         {
-            for (int i = 0; i < array.Size(); i++)
+            for (int i = 0; i < array.Length; i++)
             {
                 array.Add(i, i % array.MaxValue);
             }

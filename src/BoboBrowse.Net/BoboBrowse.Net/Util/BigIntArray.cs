@@ -156,8 +156,8 @@ namespace BoboBrowse.Net.Util
 
         public static int[] ToArray(BigSegmentedArray original)
         {
-            int[] result = new int[original.Size()];
-            for (int i = 0; i < original.Size(); i++)
+            int[] result = new int[original.Length];
+            for (int i = 0; i < original.Length; i++)
             {
                 result[i] = original.Get(i);
             }

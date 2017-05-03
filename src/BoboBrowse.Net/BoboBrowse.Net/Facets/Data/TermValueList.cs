@@ -202,10 +202,11 @@ namespace BoboBrowse.Net.Facets.Data
         //    throw new NotSupportedException("not supported");
         //}
 
-        public virtual int Size
-        {
-            get { return this.Count; }
-        }
+        // BoboBrowse.Net: We use Count in .NET only
+        //public virtual int Size
+        //{
+        //    get { return this.Count; }
+        //}
 
         //public virtual List<string> SubList(int fromIndex, int toIndex)
         //{

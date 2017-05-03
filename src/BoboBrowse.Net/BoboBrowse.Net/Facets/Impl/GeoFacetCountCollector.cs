@@ -180,7 +180,7 @@ namespace BoboBrowse.Net.Facets.Impl
             {
                 dist = new LazyBigIntArray(_predefinedRanges.Count);
                 int distIdx = 0;
-                for (int i = 0; i < _count.Size(); i++)
+                for (int i = 0; i < _count.Length; i++)
                 {
                     int count = _count.Get(i);
                     dist.Add(distIdx++, count);

@@ -42,9 +42,10 @@ namespace BoboBrowse.Net.Util
             _numrows = (size >> _shiftSize) + 1;
         }
 
-        public virtual int Size()
+        // BoboBrowse.Net: This was Size() in Java
+        public virtual int Length
         {
-            return _size;
+            get { return _size; }
         }
 
         protected abstract int GetBlockSize();

@@ -340,7 +340,8 @@ namespace BoboBrowse.Net.Util
             _list = loader.Finish();
         }
 
-        public int Size
+        // BoboBrowse.Net: we use Length instead of Size() for arrays in .NET
+        public int Length
         {
             get { return _size; }
         }

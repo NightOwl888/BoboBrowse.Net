@@ -67,7 +67,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 FacetDataCache dataCache = _subCollector.DataCache;
                 ITermValueList subList = dataCache.ValArray;
                 BigSegmentedArray subcounts = _subCollector.Count;
-                FixedBitSet indexSet = new FixedBitSet(subcounts.Size());
+                FixedBitSet indexSet = new FixedBitSet(subcounts.Length);
                 int c = 0;
                 int i = 0;
                 foreach (string val in _bucketValues)
@@ -157,7 +157,7 @@ namespace BoboBrowse.Net.Facets.Impl
         public virtual IEnumerable<BrowseFacet> GetFacets()
         {
             BigSegmentedArray counts = GetCollapsedCounts();
-            return DefaultFacetCountCollector.GetFacets(_ospec, counts, counts.Size(), _bucketValues);
+            return DefaultFacetCountCollector.GetFacets(_ospec, counts, counts.Length, _bucketValues);
         }
 
         public virtual void Dispose()
@@ -176,7 +176,7 @@ namespace BoboBrowse.Net.Facets.Impl
         public virtual FacetIterator GetIterator()
         {
             BigSegmentedArray counts = GetCollapsedCounts();
-            return new DefaultFacetIterator(_bucketValues, counts, counts.Size(), true);
+            return new DefaultFacetIterator(_bucketValues, counts, counts.Length, true);
         }
     }
 }

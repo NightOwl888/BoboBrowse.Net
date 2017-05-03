@@ -110,12 +110,15 @@ namespace BoboBrowse.Net.Sort
         /// Gets the least element of the PriorityQueue in constant time. 
         /// </summary>
         /// <returns></returns>
-        public ScoreDoc Top()
+        public ScoreDoc Top
         {
-            // We don't need to check size here: if maxSize is 0,
-            // then heap is length 2 array with both entries null.
-            // If size is 0 then heap[1] is already null.
-            return heap[1];
+            get
+            {
+                // We don't need to check size here: if maxSize is 0,
+                // then heap is length 2 array with both entries null.
+                // If size is 0 then heap[1] is already null.
+                return heap[1];
+            }
         }
 
         /// <summary>
@@ -143,7 +146,7 @@ namespace BoboBrowse.Net.Sort
         /// case, but it's at least twice as fast to
         /// 
         /// <pre>
-        /// pq.Top().Change();
+        /// pq.Top.Change();
         /// pq.UpdateTop();
         /// </pre>
         /// 
@@ -165,9 +168,10 @@ namespace BoboBrowse.Net.Sort
         /// <summary>
         /// Gets the number of elements currently stored in the PriorityQueue.
         /// </summary>
-        public int Size()
+        // BoboBrowse.Net: we use Count instead of Size() in .NET
+        public int Count
         {
-            return size;
+            get { return size; }
         }
 
         /// <summary>

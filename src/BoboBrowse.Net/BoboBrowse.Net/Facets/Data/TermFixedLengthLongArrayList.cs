@@ -240,7 +240,7 @@ namespace BoboBrowse.Net.Facets.Data
 
         public object[] ToArray()
         {
-            object[] retArray = new object[this.Size];
+            object[] retArray = new object[this.Count];
             for (int i = 0; i < retArray.Length; ++i)
             {
                 retArray[i] = Get(i);
@@ -250,7 +250,7 @@ namespace BoboBrowse.Net.Facets.Data
 
         public long[][] ToArray(long[][] a)
         {
-            long[][] retArray = new long[this.Size][];
+            long[][] retArray = new long[this.Count][];
             for (int i = 0; i < retArray.Length; ++i)
             {
                 retArray[i] = (long[])GetRawValue(i);

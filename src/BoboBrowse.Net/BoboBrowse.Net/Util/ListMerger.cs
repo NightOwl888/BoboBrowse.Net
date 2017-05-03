@@ -105,7 +105,7 @@ namespace BoboBrowse.Net.Util
 
             //public virtual T Next()
             //{
-            //    IteratorNode ctx = (IteratorNode)_queue.Top();
+            //    IteratorNode ctx = (IteratorNode)_queue.Top;
             //    T val = ctx._curVal;
             //    if (ctx.Fetch())
             //    {
