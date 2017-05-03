@@ -26,10 +26,10 @@ namespace BoboBrowse.Net.Sort
 
     public class LuceneCustomDocComparatorSource : DocComparatorSource
     {
-        private readonly FieldComparator _luceneComparator;
+        private readonly FieldComparer _luceneComparator;
         private readonly string _fieldname;
         
-        public LuceneCustomDocComparatorSource(string fieldname, FieldComparator luceneComparator)
+        public LuceneCustomDocComparatorSource(string fieldname, FieldComparer luceneComparator)
         {
             _fieldname = fieldname;
             _luceneComparator = luceneComparator;
@@ -43,16 +43,16 @@ namespace BoboBrowse.Net.Sort
 
         private class LuceneCustomDocComparator : DocComparator
         {
-            private readonly FieldComparator _luceneComparator;
+            private readonly FieldComparer _luceneComparator;
 
-            public LuceneCustomDocComparator(FieldComparator luceneComparator)
+            public LuceneCustomDocComparator(FieldComparer luceneComparator)
             {
                 this._luceneComparator = luceneComparator;
             }
 
             public override IComparable Value(ScoreDoc doc)
             {
-                return _luceneComparator.Value(doc.Doc);
+                return _luceneComparator[doc.Doc];
             }
 
             public override int Compare(ScoreDoc doc1, ScoreDoc doc2)
@@ -62,7 +62,7 @@ namespace BoboBrowse.Net.Sort
 
             public override void SetScorer(Scorer scorer)
             {
-                _luceneComparator.Scorer = scorer;
+                _luceneComparator.SetScorer(scorer);
             }
         }
     }

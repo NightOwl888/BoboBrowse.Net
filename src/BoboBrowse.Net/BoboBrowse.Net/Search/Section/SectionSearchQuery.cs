@@ -23,6 +23,7 @@ namespace BoboBrowse.Net.Search.Section
     using Lucene.Net.Index;
     using Lucene.Net.Search;
     using Lucene.Net.Search.Similarities;
+    using Lucene.Net.Util;
     using System.Text;
 
     public class SectionSearchQuery : Query
@@ -67,15 +68,15 @@ namespace BoboBrowse.Net.Search.Section
             // Lucene 4.3.0 and 4.8.0. They are not used by BoboBrowse anyway, so the code here diverges 
             // from the original Java source to remove these two parameters.
 
-            public override Scorer Scorer(AtomicReaderContext context, Lucene.Net.Util.Bits acceptDocs)
+            public override Scorer GetScorer(AtomicReaderContext context, IBits acceptDocs)
             {
                 SectionSearchScorer scorer = new SectionSearchScorer(this.Query, _weight, this.Value, context.AtomicReader);
                 return scorer;
             }
 
-            public override float ValueForNormalization
+            public override float GetValueForNormalization()
             {
-                get { return _weight.ValueForNormalization; }
+                return _weight.GetValueForNormalization();
             }
 
 
@@ -109,9 +110,9 @@ namespace BoboBrowse.Net.Search.Section
                 }
             }
 
-            public override int DocID()
+            public override int DocID
             {
-                return _curDoc;
+                get { return _curDoc; }
             }
 
             public override int NextDoc()
@@ -119,7 +120,7 @@ namespace BoboBrowse.Net.Search.Section
                 return Advance(0);
             }
 
-            public override float Score()
+            public override float GetScore()
             {
                 return _curScr;
             }
@@ -135,12 +136,12 @@ namespace BoboBrowse.Net.Search.Section
                 return _curDoc;
             }
 
-            public override int Freq()
+            public override int Freq
             {
-                return 0;
+                get { return 0; }
             }
 
-            public override long Cost()
+            public override long GetCost()
             {
                 return 0;
             }

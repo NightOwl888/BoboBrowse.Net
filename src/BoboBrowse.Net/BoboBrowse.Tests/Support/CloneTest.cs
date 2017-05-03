@@ -21,71 +21,20 @@ namespace BoboBrowse.Net.Support
 {
     using BoboBrowse.Net;
     using BoboBrowse.Net.DocIdSet;
-    using BoboBrowse.Net.Facets.Impl;
+    using Lucene.Net.Util;
     using NUnit.Framework;
-    using System;
     using System.Collections.Generic;
-    using System.Globalization;
-    using System.Threading;
 
     [TestFixture]
-    public class ObjectCopierTest
+    public class CloneTest
     {
-        [Serializable]
-        private class Clonable1 : ICloneable
-        {
-            [NonSerialized]
-            protected int growth;
-
-            public Clonable1(object array, int count, int growth, int len)
-            {
-                this.Array = array;
-                this.Count = count;
-                this.Growth = growth;
-                this.Len = len;
-            }
-
-            protected internal object Array { get; set; }
-
-            protected internal int Count { get; set; }
-
-            protected internal int Growth 
-            {
-                get { return this.growth; }
-                set { this.growth = value; }
-            }
-
-            protected internal int Len { get; set; }
-
-            public object Clone()
-            {
-                return ObjectCopier.Clone(this);
-            }
-        }
-
-        [Test]
-        public void TestCloneWithNonSerialized()
-        {
-            // Arrange
-            var array = new Clonable1(new int[] { 5, 4, 3, 2, 1, 1, 2 }, 4, 6, 7);
-
-            // Act
-            var clone = (Clonable1)array.Clone();
-
-            // Assert
-            Assert.AreEqual(new int[] { 5, 4, 3, 2, 1, 1, 2 }, clone.Array);
-            Assert.AreEqual(4, clone.Count);
-            Assert.AreEqual(0, clone.Growth);
-            Assert.AreEqual(7, clone.Len);
-        }
-
         [Test]
         public void TestCloneIntArray()
         {
             // Arrange
             var orig = new IntArray(7);
             orig.Array = new int[] { 5, 4, 3, 2, 1, 1, 2 };
-            orig.Count = 4;
+            orig.count = 4;
             orig.Growth = 6;
             orig.Len = 7;
 
@@ -94,7 +43,7 @@ namespace BoboBrowse.Net.Support
 
             // Assert
             Assert.AreEqual(new int[] { 5, 4, 3, 2, 1, 1, 2 }, clone.Array);
-            Assert.AreEqual(4, clone.Count);
+            Assert.AreEqual(4, clone.count);
             Assert.AreEqual(6, clone.Growth);
             Assert.AreEqual(7, clone.Len);
         }
@@ -103,14 +52,14 @@ namespace BoboBrowse.Net.Support
         public void TestCloneBitSet()
         {
             // Arrange
-            var orig = new BitSet(8);
+            var orig = new OpenBitSet(8);
             orig.Set(2);
             orig.Set(4);
             orig.Set(6);
             orig.Set(8);
 
             // Act
-            var clone = (BitSet)orig.Clone();
+            var clone = (OpenBitSet)orig.Clone();
             clone.Set(3);
 
             // Assert

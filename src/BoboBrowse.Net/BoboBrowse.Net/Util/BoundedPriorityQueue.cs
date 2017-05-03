@@ -20,11 +20,11 @@
 // Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Util
 {
-    using BoboBrowse.Net.Support;
+    using Lucene.Net.Support;
     using System;
     using System.Collections.Generic;
     
-    public class BoundedPriorityQueue<E> : IntervalHeap<E>
+    public class BoundedPriorityQueue<E> : PriorityQueue<E> where E: class
     {
         //private static long serialVersionUID = 1L; // NOT USED
 
@@ -47,11 +47,11 @@ namespace BoboBrowse.Net.Util
             int size = Count;
             if (size < _maxSize)
             {
-                return base.Add(o);
+                return base.Offer(o);
             }
             else
             {
-                E smallest = base.FindMax();
+                E smallest = base.Peek();
                 IComparer<E> comparator = base.Comparer;
                 bool madeIt = false;
                 if (comparator == null)
@@ -72,20 +72,13 @@ namespace BoboBrowse.Net.Util
                 if (madeIt)
                 {
                     this.Poll();
-                    return base.Add(o);
+                    return base.Offer(o);
                 }
                 else
                 {
                     return false;
                 }
             }
-        }
-
-        public E Poll()
-        {
-            if (this.Count == 0)
-                return default(E);
-            return base.DeleteMax();
         }
     }
 }

@@ -21,12 +21,13 @@
 namespace BoboBrowse.Net.Util
 {
     using BoboBrowse.Net.Support;
+    using Lucene.Net.Util;
     using System;
 
     public class SparseFloatArray
     {
         protected float[] _floats;
-        protected BitSet _bits;
+        protected OpenBitSet _bits;
 
         // the number of bits set BEFORE the given reference point index*REFERENCE_POINT_EVERY.
         protected int[] _referencePoints;
@@ -73,7 +74,7 @@ namespace BoboBrowse.Net.Util
             {
                 throw new ArgumentException("bad input float array of length " + floats.Length + " for capacity: " + _capacity);
             }
-            var bits = new BitSet(floats.Length);
+            var bits = new OpenBitSet(floats.Length);
             int on = 0;
             for (int i = 0; i < floats.Length; i++)
             {

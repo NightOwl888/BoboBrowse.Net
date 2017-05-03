@@ -300,13 +300,13 @@ namespace BoboBrowse.Net.Search
             }
         }
 
-        public override void Search(Query query, Filter filter, Collector collector)
+        public override void Search(Query query, Filter filter, ICollector collector)
         {
             Weight weight = CreateNormalizedWeight(query);
             this.Search(weight, filter, collector, 0, null);
         }
 
-        public virtual void Search(Weight weight, Filter filter, Collector collector, int start, IBoboMapFunctionWrapper mapReduceWrapper)
+        public virtual void Search(Weight weight, Filter filter, ICollector collector, int start, IBoboMapFunctionWrapper mapReduceWrapper)
         {
             FacetValidator validator = CreateFacetValidator();
             int target = 0;
@@ -337,7 +337,7 @@ namespace BoboBrowse.Net.Search
                     {
                         docStart = start + ((BoboMultiReader) reader).SubReaderBase(i);
                     }
-                    collector.NextReader = atomicContext;
+                    collector.SetNextReader(atomicContext);
                     validator.SetNextReader(_subReaders[i], docStart);
 
                     // NOTE: The Weight.Scorer method lost the scoreDocsInOrder and topScorer parameters between
@@ -345,11 +345,11 @@ namespace BoboBrowse.Net.Search
                     // from the original Java source to remove these two parameters.
 
                     // Scorer scorer = weight.Scorer(atomicContext, true, true, _subReaders[i].LiveDocs);
-                    Scorer scorer = weight.Scorer(atomicContext, _subReaders[i].LiveDocs);
+                    Scorer scorer = weight.GetScorer(atomicContext, _subReaders[i].LiveDocs);
                     if (scorer != null)
                     {
 
-                        collector.Scorer = scorer;
+                        collector.SetScorer(scorer);
                         target = scorer.NextDoc();
                         while (target != DocIdSetIterator.NO_MORE_DOCS)
                         {
@@ -386,7 +386,7 @@ namespace BoboBrowse.Net.Search
                 {
                     docStart = start + ((BoboMultiReader)reader).SubReaderBase(i);
                 }
-                collector.NextReader = atomicContext;
+                collector.SetNextReader(atomicContext);
                 validator.SetNextReader(_subReaders[i], docStart);
 
                 // NOTE: The Weight.Scorer method lost the scoreDocsInOrder and topScorer parameters between
@@ -394,10 +394,10 @@ namespace BoboBrowse.Net.Search
                 // from the original Java source to remove these two parameters.
 
                 // Scorer scorer = weight.Scorer(atomicContext, true, false, _subReaders[i].LiveDocs);
-                Scorer scorer = weight.Scorer(atomicContext, _subReaders[i].LiveDocs);
+                Scorer scorer = weight.GetScorer(atomicContext, _subReaders[i].LiveDocs);
                 if (scorer != null)
                 {
-                    collector.Scorer = scorer;
+                    collector.SetScorer(scorer);
                     DocIdSetIterator filterDocIdIterator = filterDocIdSet.GetIterator(); // CHECKME: use ConjunctionScorer here?
 
                     if (filterDocIdIterator == null)

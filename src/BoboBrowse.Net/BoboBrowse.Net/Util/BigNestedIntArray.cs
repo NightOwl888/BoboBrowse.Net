@@ -24,6 +24,7 @@ namespace BoboBrowse.Net.Util
     using BoboBrowse.Net.Query.Scoring;
     using BoboBrowse.Net.Support;
     using Lucene.Net.Search;
+    using Lucene.Net.Support;
     using Lucene.Net.Util;
     using System;
 

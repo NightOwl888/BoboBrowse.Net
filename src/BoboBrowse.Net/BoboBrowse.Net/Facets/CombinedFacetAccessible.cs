@@ -150,7 +150,7 @@ namespace BoboBrowse.Net.Facets
                     }
                     if (!string.IsNullOrEmpty(facet))
                     {
-                        BrowseFacet rootFacet = (BrowseFacet)queue.Top();
+                        BrowseFacet rootFacet = (BrowseFacet)queue.Top;
                         minHits = rootFacet.FacetValueHitCount + 1;
                         // facet count less than top of min heap, it will never be added 
                         while (!string.IsNullOrEmpty((facet = iter.Next(minHits))))
@@ -248,7 +248,7 @@ namespace BoboBrowse.Net.Facets
                 this.comparator = comparator;
             }
 
-            public override bool LessThan(BrowseFacet a, BrowseFacet b)
+            protected override bool LessThan(BrowseFacet a, BrowseFacet b)
             {
                 BrowseFacet o1 = a;
                 BrowseFacet o2 = b;

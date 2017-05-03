@@ -38,7 +38,7 @@ namespace BoboBrowse.Net.DocIdSet
 
             public int Compare(StatefulDSIterator o1, StatefulDSIterator o2)
             {
-                return o2.DocID() - o1.DocID();
+                return o2.DocID - o1.DocID;
             }
         }
 
@@ -92,9 +92,9 @@ namespace BoboBrowse.Net.DocIdSet
             }
 
             
-            public override int DocID()
+            public override int DocID
             {
-                return lastReturn;
+                get { return lastReturn; }
             }
 
             public override int NextDoc()
@@ -168,7 +168,7 @@ namespace BoboBrowse.Net.DocIdSet
                 return (lastReturn = target);
             }
 
-            public override long Cost()
+            public override long GetCost()
             {
                 return 0;
             }

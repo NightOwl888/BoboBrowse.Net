@@ -59,9 +59,9 @@ namespace BoboBrowse.Net.DocIdSet
             if (_size == 0) _curDoc = DocIdSetIterator.NO_MORE_DOCS;
         }
 
-        public override int DocID()
+        public override int DocID
         {
-            return _curDoc;
+            get { return _curDoc; }
         }
 
         public override int NextDoc()
@@ -188,7 +188,7 @@ namespace BoboBrowse.Net.DocIdSet
             }
         }
 
-        public override long Cost()
+        public override long GetCost()
         {
             return 0;
         }

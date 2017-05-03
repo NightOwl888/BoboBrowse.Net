@@ -137,7 +137,7 @@ namespace BoboBrowse.Net.Facets.Filter
 
                 public override DocIdSetIterator GetIterator()
                 {
-                    DocsEnum docsEnum = reader.TermDocsEnum(term);
+                    DocsEnum docsEnum = reader.GetTermDocsEnum(term);
                     if (docsEnum == null)
                     {
                         return EmptyDocIdSet.Instance.GetIterator();

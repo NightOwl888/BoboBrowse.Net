@@ -24,11 +24,12 @@ namespace BoboBrowse.Net.Facets.Impl
     using BoboBrowse.Net.Support;
     using BoboBrowse.Net.Support.Logging;
     using BoboBrowse.Net.Util;
-    using C5 = BoboBrowse.Net.Support.C5;
+    using C5 = Lucene.Net.Support.C5;
     using Lucene.Net.Index;
     using Lucene.Net.Util;
     using System;
     using System.Collections.Generic;
+    using Lucene.Net.Support;
 
     public class VirtualSimpleFacetHandler : SimpleFacetHandler
     {
@@ -77,7 +78,7 @@ namespace BoboBrowse.Net.Facets.Impl
             int nullFreq = 0;
             int doc = -1;
 
-            Bits liveDocs = reader.LiveDocs;
+            IBits liveDocs = reader.LiveDocs;
             for (int i = 0; i < reader.MaxDoc; ++i)
             {
                 if (liveDocs != null && !liveDocs.Get(i))

@@ -27,6 +27,7 @@ namespace BoboBrowse.Net
     using Lucene.Net.Index;
     using Lucene.Net.Search;
     using Lucene.Net.Search.Similarities;
+    using Lucene.Net.Support;
     using System;
     using System.Collections;
     using System.Collections.Generic;
@@ -72,7 +73,7 @@ namespace BoboBrowse.Net
         /// <param name="start">The offset value for the document number.</param>
         public virtual void Browse(
             BrowseRequest req, 
-            Collector hitCollector, 
+            ICollector hitCollector, 
             IDictionary<string, IFacetAccessible> facetMap,
             int start)
         {

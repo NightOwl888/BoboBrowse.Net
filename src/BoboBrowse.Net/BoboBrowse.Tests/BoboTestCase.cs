@@ -32,11 +32,12 @@ namespace BoboBrowse.Net
     using BoboBrowse.Net.Util;
     using Lucene.Net.Analysis;
     using Lucene.Net.Analysis.Standard;
-    using Lucene.Net.Analysis.Tokenattributes;
+    using Lucene.Net.Analysis.TokenAttributes;
     using Lucene.Net.Documents;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
     using Lucene.Net.Store;
+    using Lucene.Net.Support;
     using Lucene.Net.Util;
     using NUnit.Framework;
     using System;
@@ -188,9 +189,9 @@ namespace BoboBrowse.Net
             d1.Add(sf);
 
             FieldType ft = new FieldType();
-            ft.Stored = (false);
-            ft.Indexed = (true);
-            ft.Tokenized = (true);
+            ft.IsStored = (false);
+            ft.IsIndexed = (true);
+            ft.IsTokenized = (true);
             ft.StoreTermVectors = (true);
             ft.StoreTermVectorPositions = (false);
             ft.StoreTermVectorOffsets = (false);
@@ -198,9 +199,9 @@ namespace BoboBrowse.Net
             d1.Add(tvf);
 
             FieldType ftPositions = new FieldType();
-            ftPositions.Stored = (false);
-            ftPositions.Indexed = (true);
-            ftPositions.Tokenized = (true);
+            ftPositions.IsStored = (false);
+            ftPositions.IsIndexed = (true);
+            ftPositions.IsTokenized = (true);
             ftPositions.StoreTermVectors = (true);
             ftPositions.StoreTermVectorPositions = (true);
             ftPositions.StoreTermVectorOffsets = (false);
@@ -208,9 +209,9 @@ namespace BoboBrowse.Net
             d1.Add(tvf);
 
             FieldType ftOffsets = new FieldType();
-            ftOffsets.Stored = (false);
-            ftOffsets.Indexed = (true);
-            ftOffsets.Tokenized = (true);
+            ftOffsets.IsStored = (false);
+            ftOffsets.IsIndexed = (true);
+            ftOffsets.IsTokenized = (true);
             ftOffsets.StoreTermVectors = (true);
             ftOffsets.StoreTermVectorPositions = (false);
             ftOffsets.StoreTermVectorOffsets = (true);
@@ -218,9 +219,9 @@ namespace BoboBrowse.Net
             d1.Add(tvf);
 
             FieldType ftPositionsAndOffsets = new FieldType();
-            ftPositionsAndOffsets.Stored = (false);
-            ftPositionsAndOffsets.Indexed = (true);
-            ftPositionsAndOffsets.Tokenized = (true);
+            ftPositionsAndOffsets.IsStored = (false);
+            ftPositionsAndOffsets.IsIndexed = (true);
+            ftPositionsAndOffsets.IsTokenized = (true);
             ftPositionsAndOffsets.StoreTermVectors = (true);
             ftPositionsAndOffsets.StoreTermVectorPositions = (true);
             ftPositionsAndOffsets.StoreTermVectorOffsets = (true);
@@ -956,7 +957,7 @@ namespace BoboBrowse.Net
             BrowseRequest br = new BrowseRequest();
             br.Count = 10;
             br.Offset = 0;
-            br.Sort = new SortField[] { new SortField("date", SortField.Type_e.CUSTOM, false) };
+            br.Sort = new SortField[] { new SortField("date", SortFieldType.CUSTOM, false) };
 
             using (BoboBrowser boboBrowser = NewBrowser())
             {
@@ -1430,7 +1431,7 @@ namespace BoboBrowse.Net
 
 
             br.SetFacetSpec("char", charOutput);
-            br.AddSortField(new SortField("date", SortField.Type_e.CUSTOM, true));
+            br.AddSortField(new SortField("date", SortFieldType.CUSTOM, true));
 
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
@@ -1456,7 +1457,7 @@ namespace BoboBrowse.Net
             ospec.ExpandSelection = false;
             br.SetFacetSpec("color", ospec);
 
-            br.AddSortField(new SortField("date", SortField.Type_e.CUSTOM, true));
+            br.AddSortField(new SortField("date", SortFieldType.CUSTOM, true));
 
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
@@ -1481,7 +1482,7 @@ namespace BoboBrowse.Net
             ospec.ExpandSelection = false;
             br.SetFacetSpec("color", ospec);
 
-            br.AddSortField(new SortField("date", SortField.Type_e.CUSTOM, true));
+            br.AddSortField(new SortField("date", SortFieldType.CUSTOM, true));
 
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
@@ -1505,7 +1506,7 @@ namespace BoboBrowse.Net
             ospec.ExpandSelection = false;
             br.SetFacetSpec("color", ospec);
 
-            br.AddSortField(new SortField("date", SortField.Type_e.CUSTOM, true));
+            br.AddSortField(new SortField("date", SortFieldType.CUSTOM, true));
 
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
@@ -1563,7 +1564,7 @@ namespace BoboBrowse.Net
                 BrowseRequest browseRequest = new BrowseRequest();
                 browseRequest.Count = 10;
                 browseRequest.Offset = 0;
-                browseRequest.AddSortField(new SortField("date", SortField.Type_e.STRING));
+                browseRequest.AddSortField(new SortField("date", SortFieldType.STRING));
 
                 DoTest(browser, browseRequest, 7, null, new string[] { "1", "3", "5", "2", "4", "7", "6" });
             }
@@ -1650,7 +1651,7 @@ namespace BoboBrowse.Net
             sel.AddValue("[2003/01/01 TO 2005/01/01]");
             br.AddSelection(sel);
 
-            br.AddSortField(new SortField("date", SortField.Type_e.CUSTOM, false));
+            br.AddSortField(new SortField("date", SortFieldType.CUSTOM, false));
 
             DoTest(br, 5, null, new string[] { "1", "3", "5", "2", "4" });
         }
@@ -1692,7 +1693,7 @@ namespace BoboBrowse.Net
             ospec.ExpandSelection = false;
             br.SetFacetSpec("color", ospec);
 
-            br.AddSortField(new SortField("date", SortField.Type_e.CUSTOM, false));
+            br.AddSortField(new SortField("date", SortFieldType.CUSTOM, false));
 
             DoTest(br, 7, null, new string[] { "1", "3", "5", "2", "4", "7", "6" });
         }
@@ -1705,8 +1706,8 @@ namespace BoboBrowse.Net
             br.Count=(10);
             br.Offset=(0);
 
-            br.Sort = new SortField[] { new SortField("color", SortField.Type_e.CUSTOM, false), 
-                new SortField("number", SortField.Type_e.CUSTOM, true) };
+            br.Sort = new SortField[] { new SortField("color", SortFieldType.CUSTOM, false), 
+                new SortField("number", SortFieldType.CUSTOM, true) };
 
             DoTest(br, 7, null, new String[] { "5", "4", "6", "3", "2", "1", "7" });
 
@@ -1746,24 +1747,24 @@ namespace BoboBrowse.Net
             br.Count = 10;
             br.Offset = 0;
 
-            br.Sort = new SortField[] { new SortField("number", SortField.Type_e.CUSTOM, true) };
+            br.Sort = new SortField[] { new SortField("number", SortFieldType.CUSTOM, true) };
             DoTest(br, 7, null, new string[] { "6", "5", "4", "3", "2", "1", "7" });
-            br.Sort = new SortField[] { new SortField("name", SortField.Type_e.STRING, false) };
+            br.Sort = new SortField[] { new SortField("name", SortFieldType.STRING, false) };
             DoTest(br, 7, null, new string[] { "7", "4", "6", "2", "3", "1", "5" });
 
             BrowseSelection sel = new BrowseSelection("color");
             sel.AddValue("red");
             br.AddSelection(sel);
-            br.Sort = new SortField[] { new SortField("number", SortField.Type_e.CUSTOM, true) };
+            br.Sort = new SortField[] { new SortField("number", SortFieldType.CUSTOM, true) };
             DoTest(br, 3, null, new string[] { "2", "1", "7" });
-            br.Sort = new SortField[] { new SortField("name", SortField.Type_e.STRING, false) };
+            br.Sort = new SortField[] { new SortField("name", SortFieldType.STRING, false) };
             DoTest(br, 3, null, new string[] { "7", "2", "1" });
 
             sel.AddValue("blue");
             br.Query = new TermQuery(new Term("shape", "square"));
-            br.Sort = new SortField[] { new SortField("number", SortField.Type_e.CUSTOM, true) };
+            br.Sort = new SortField[] { new SortField("number", SortFieldType.CUSTOM, true) };
             DoTest(br, 3, null, new string[] { "5", "1", "7" });
-            br.Sort = new SortField[] { new SortField("name", SortField.Type_e.STRING, false) };
+            br.Sort = new SortField[] { new SortField("name", SortFieldType.STRING, false) };
             DoTest(br, 3, null, new string[] { "7", "1", "5" });
         }
 
@@ -1821,7 +1822,7 @@ namespace BoboBrowse.Net
             spec.OrderBy = FacetSpec.FacetSortSpec.OrderHitsDesc;
             br.SetFacetSpec("color", spec);
 
-            br.Sort = new SortField[] { new SortField("number", SortField.Type_e.CUSTOM, false) };
+            br.Sort = new SortField[] { new SortField("number", SortFieldType.CUSTOM, false) };
 
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
@@ -1983,7 +1984,7 @@ namespace BoboBrowse.Net
             FacetSpec ospec = new FacetSpec();
             br.SetFacetSpec("compactnum", ospec);
 
-            br.Sort = new SortField[] { new SortField("compactnum", SortField.Type_e.CUSTOM, true) };
+            br.Sort = new SortField[] { new SortField("compactnum", SortFieldType.CUSTOM, true) };
 
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
@@ -2050,7 +2051,7 @@ namespace BoboBrowse.Net
 
             FacetSpec ospec = new FacetSpec();
             br.SetFacetSpec("multiwithweight", ospec);
-            br.Sort = new SortField[] { new SortField("multiwithweight", SortField.Type_e.CUSTOM, true) };
+            br.Sort = new SortField[] { new SortField("multiwithweight", SortFieldType.CUSTOM, true) };
 
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
@@ -2089,7 +2090,7 @@ namespace BoboBrowse.Net
 
             FacetSpec ospec = new FacetSpec();
             br.SetFacetSpec("multinum", ospec);
-            br.Sort = new SortField[] { new SortField("multinum", SortField.Type_e.CUSTOM, true) };
+            br.Sort = new SortField[] { new SortField("multinum", SortFieldType.CUSTOM, true) };
             var answer = new Dictionary<string, IEnumerable<BrowseFacet>>()
             {
                 { "multinum", new BrowseFacet[] { new BrowseFacet("001", 3), new BrowseFacet("002", 1), 
@@ -2409,7 +2410,7 @@ namespace BoboBrowse.Net
             BrowseRequest browseRequest = new BrowseRequest();
             browseRequest.Count = 10;
             browseRequest.Offset = 0;
-            browseRequest.AddSortField(new SortField("date", SortField.Type_e.CUSTOM));
+            browseRequest.AddSortField(new SortField("date", SortFieldType.CUSTOM));
 
             BrowseSelection colorSel = new BrowseSelection("color");
             colorSel.AddValue("red");
@@ -2438,7 +2439,7 @@ namespace BoboBrowse.Net
 
             BoboBrowser boboBrowser = NewBrowser();
 
-            browseRequest.Sort = new SortField[] { new SortField("compactnum", SortField.Type_e.CUSTOM, true) };
+            browseRequest.Sort = new SortField[] { new SortField("compactnum", SortFieldType.CUSTOM, true) };
 
             using (MultiBoboBrowser multiBoboBrowser = new MultiBoboBrowser(new IBrowsable[] { boboBrowser, 
                 boboBrowser }))
@@ -2457,7 +2458,7 @@ namespace BoboBrowse.Net
                     DoTest(mergedResult, browseRequest, 4, answer, new string[] { "7", "7", "1", "1" });
                 }
 
-                browseRequest.Sort = new SortField[] { new SortField("multinum", SortField.Type_e.CUSTOM, true) };
+                browseRequest.Sort = new SortField[] { new SortField("multinum", SortFieldType.CUSTOM, true) };
                 using (BrowseResult mergedResult = multiBoboBrowser.Browse(browseRequest))
                 {
                     DoTest(mergedResult, browseRequest, 4, answer, new string[] { "7", "7", "1", "1" });
@@ -2491,8 +2492,8 @@ namespace BoboBrowse.Net
             shapeQ.Boost = 3.0f;
 
             BooleanQuery bq = new BooleanQuery();
-            bq.Add(shapeQ, BooleanClause.Occur.SHOULD);
-            bq.Add(colorQ, BooleanClause.Occur.SHOULD);
+            bq.Add(shapeQ, Occur.SHOULD);
+            bq.Add(colorQ, Occur.SHOULD);
 
             BrowseRequest br = new BrowseRequest();
             br.Sort = new SortField[] { SortField.FIELD_SCORE };
@@ -2568,8 +2569,8 @@ namespace BoboBrowse.Net
             br.Count = 10;
 
             BooleanQuery bq = new BooleanQuery(true);
-            bq.Add(colorQ, BooleanClause.Occur.SHOULD);
-            bq.Add(tagQ, BooleanClause.Occur.SHOULD);
+            bq.Add(colorQ, Occur.SHOULD);
+            bq.Add(tagQ, Occur.SHOULD);
 
             br.Query = bq;
             DoTest(br, 6, null, new String[] { "7", "1", "3", "2", "4", "5" });

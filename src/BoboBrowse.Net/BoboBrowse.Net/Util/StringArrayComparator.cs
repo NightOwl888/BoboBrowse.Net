@@ -21,6 +21,7 @@
 namespace BoboBrowse.Net.Util
 {
     using BoboBrowse.Net.Support;
+    using Lucene.Net.Support;
     using System;
 
     public class StringArrayComparator : IComparable<StringArrayComparator>, IComparable

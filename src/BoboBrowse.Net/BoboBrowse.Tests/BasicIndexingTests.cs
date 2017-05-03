@@ -24,7 +24,7 @@ namespace BoboBrowse.Net
     using Lucene.Net.Analysis.Standard;
     using Lucene.Net.Documents;
     using Lucene.Net.Index;
-    using Lucene.Net.QueryParser.Classic;
+    using Lucene.Net.QueryParsers.Classic;
     using Lucene.Net.Search;
     using Lucene.Net.Store;
     using Lucene.Net.Util;
@@ -41,7 +41,7 @@ namespace BoboBrowse.Net
         {
             IndexWriterConfig config = new IndexWriterConfig(LuceneVersion.LUCENE_48,
                 new StandardAnalyzer(LuceneVersion.LUCENE_48));
-            config.SetMaxBufferedDocs(1000);
+            config.MaxBufferedDocs = (1000);
             m_indexWriter = new IndexWriter(new RAMDirectory(), config);
         }
 
@@ -186,7 +186,7 @@ namespace BoboBrowse.Net
                 new StandardAnalyzer(LuceneVersion.LUCENE_48));
             Lucene.Net.Search.Query query = queryParser.Parse("Foo*");
             searcher.Search(query, docCollector);
-            TopDocs docs = docCollector.TopDocs();
+            TopDocs docs = docCollector.GetTopDocs();
             ScoreDoc[] scoreDocs = docs.ScoreDocs;
 
             Assert.AreEqual(0, scoreDocs[0].Doc, "should be doc 0");

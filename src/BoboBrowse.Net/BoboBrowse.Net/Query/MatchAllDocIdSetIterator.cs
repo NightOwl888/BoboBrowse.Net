@@ -26,10 +26,10 @@ namespace BoboBrowse.Net.Query
 
     public class MatchAllDocIdSetIterator : DocIdSetIterator
     {
-        private readonly Bits _acceptDocs;
+        private readonly IBits _acceptDocs;
         private readonly int _maxDoc;
         private int _docID;
-        public MatchAllDocIdSetIterator(AtomicReader reader, Bits acceptDocs)
+        public MatchAllDocIdSetIterator(AtomicReader reader, IBits acceptDocs)
         {
             _acceptDocs = acceptDocs;
             _maxDoc = reader.MaxDoc;
@@ -50,9 +50,9 @@ namespace BoboBrowse.Net.Query
             return NO_MORE_DOCS;
         }
 
-        public override int DocID()
+        public override int DocID
         {
-            return _docID;
+            get { return _docID; }
         }
 
         public override int NextDoc()
@@ -60,7 +60,7 @@ namespace BoboBrowse.Net.Query
             return Advance(_docID + 1);
         }
 
-        public override long Cost()
+        public override long GetCost()
         {
             return 0;
         }

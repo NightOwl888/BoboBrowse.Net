@@ -139,7 +139,7 @@ namespace BoboBrowse.Net.Search.Section
                 if (_dataLen == -1 && _posLeft > 0)
                 {
                     _dp.NextPosition();
-                    BytesRef payload = _dp.Payload;
+                    BytesRef payload = _dp.GetPayload();
                     if (payload != null)
                     {
                         _dataLen = payload.Length;

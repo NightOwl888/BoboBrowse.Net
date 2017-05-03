@@ -114,9 +114,9 @@ namespace BoboBrowse.Net.Search.Section
 
         private SectionSearchQueryPlan TranslatePhraseQuery(PhraseQuery query)
         {
-            Term[] terms = query.Terms;
+            Term[] terms = query.GetTerms();
             TermNode[] nodes = new TermNode[terms.Length];
-            int[] positions = query.Positions;
+            int[] positions = query.GetPositions();
             for (int i = 0; i < terms.Length; i++)
             {
                 nodes[i] = new TermNode(terms[i], positions[i], _reader);
@@ -129,14 +129,14 @@ namespace BoboBrowse.Net.Search.Section
             List<Query> requiredClauses = new List<Query>();
             List<Query> prohibitedClauses = new List<Query>();
             List<Query> optionalClauses = new List<Query>();
-            BooleanClause[] clauses = query.Clauses;
+            BooleanClause[] clauses = query.GetClauses();
             foreach (BooleanClause clause in clauses)
             {
-                if (clause.Required)
+                if (clause.IsRequired)
                 {
                     requiredClauses.Add(clause.Query);
                 }
-                else if (clause.Prohibited)
+                else if (clause.IsProhibited)
                 {
                     prohibitedClauses.Add(clause.Query);
                 }

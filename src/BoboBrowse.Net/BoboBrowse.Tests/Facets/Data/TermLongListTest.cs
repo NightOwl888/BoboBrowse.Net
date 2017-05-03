@@ -21,6 +21,7 @@
 namespace BoboBrowse.Net.Facets.Data
 {
     using BoboBrowse.Net.Support;
+    using Lucene.Net.Support;
     using NUnit.Framework;
 
     [TestFixture]

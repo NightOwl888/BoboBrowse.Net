@@ -22,6 +22,7 @@ namespace BoboBrowse.Net.Query.Scoring
 {
     using BoboBrowse.Net.Support;
     using Lucene.Net.Search;
+    using Lucene.Net.Support;
 
     public class DefaultFacetTermScoringFunction : IFacetTermScoringFunction
     {

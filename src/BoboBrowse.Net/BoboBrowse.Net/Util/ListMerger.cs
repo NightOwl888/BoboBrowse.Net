@@ -72,7 +72,7 @@ namespace BoboBrowse.Net.Util
                     this.comparator = comparator;
                 }
 
-                public override bool LessThan(IteratorNode a, IteratorNode b)
+                protected override bool LessThan(IteratorNode a, IteratorNode b)
                 {
                     return (comparator.Compare(a._curVal, b._curVal) < 0);
                 }
@@ -139,9 +139,9 @@ namespace BoboBrowse.Net.Util
 
             public bool MoveNext()
             {
-                if (_queue.Size() > 0)
+                if (_queue.Count > 0)
                 {
-                    IteratorNode ctx = (IteratorNode)_queue.Top();
+                    IteratorNode ctx = (IteratorNode)_queue.Top;
                     T val = ctx._curVal;
                     if (ctx.Fetch())
                     {

@@ -107,7 +107,7 @@ namespace BoboBrowse.Net
         /// <returns>The cloned instance.</returns>
         public virtual object Clone()
         {
-            var facetSpec = ObjectCopier.Clone(this);
+            var facetSpec = (FacetSpec)base.MemberwiseClone();
             // Create a new dictionary object so the existing is not referenced.
             facetSpec.Properties = new Dictionary<string, string>(facetSpec.Properties);
             return facetSpec;

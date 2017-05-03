@@ -154,9 +154,9 @@ namespace BoboBrowse.Net.Facets.Filter
                 _doc = -1;
             }
 
-            public sealed override int DocID()
+            public sealed override int DocID
             {
-                return _doc;
+                get { return _doc; }
             }
 
             public sealed override int NextDoc()
@@ -232,7 +232,7 @@ namespace BoboBrowse.Net.Facets.Filter
                 return _doc;
             }
 
-            public override long Cost()
+            public override long GetCost()
             {
                 return 0;
             }

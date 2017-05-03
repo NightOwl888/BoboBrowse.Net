@@ -23,10 +23,11 @@ namespace BoboBrowse.Net
     using BoboBrowse.Net.MapRed;
     using BoboBrowse.Net.Sort;
     using BoboBrowse.Net.Support;
+    using Lucene.Net.Support;
     using System;
     using System.Collections.Generic;
     using System.Text;
-    
+
     /// <summary>
     /// Result of a browse operation.
     /// </summary>

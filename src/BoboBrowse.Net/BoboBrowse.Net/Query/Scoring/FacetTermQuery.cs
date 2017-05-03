@@ -117,7 +117,7 @@ namespace BoboBrowse.Net.Query.Scoring
                     float boost_1 = _boostMap_1.Get(key_1);
                     float boost_2 = _boostMap_2.Get(key_1);
 
-                    if (Number.FloatToIntBits(boost_1) != Number.FloatToIntBits(boost_2))
+                    if (Number.SingleToInt32Bits(boost_1) != Number.SingleToInt32Bits(boost_2))
                         return false;
                 }
             }
@@ -210,7 +210,7 @@ namespace BoboBrowse.Net.Query.Scoring
                 get { return parent; }
             }
 
-            private DocIdSetIterator BuildIterator(RandomAccessDocIdSet docset, BoboSegmentReader reader, Bits acceptDocs)
+            private DocIdSetIterator BuildIterator(RandomAccessDocIdSet docset, BoboSegmentReader reader, IBits acceptDocs)
             {
                 return new FacetTermQueryDocIdSetIterator(docset, reader, acceptDocs);
             }
@@ -220,9 +220,9 @@ namespace BoboBrowse.Net.Query.Scoring
                 private int doc = -1;
                 private readonly RandomAccessDocIdSet _docset;
                 private readonly int _maxDoc;
-                private readonly Bits _acceptDocs;
+                private readonly IBits _acceptDocs;
 
-                public FacetTermQueryDocIdSetIterator(RandomAccessDocIdSet docset, BoboSegmentReader reader, Bits acceptDocs)
+                public FacetTermQueryDocIdSetIterator(RandomAccessDocIdSet docset, BoboSegmentReader reader, IBits acceptDocs)
                 {
                     _docset = docset;
                     _maxDoc = reader.MaxDoc;
@@ -253,9 +253,9 @@ namespace BoboBrowse.Net.Query.Scoring
                     return doc;
                 }
 
-                public override int DocID()
+                public override int DocID
                 {
-                    return doc;
+                    get { return doc; }
                 }
 
                 public override int NextDoc()
@@ -282,7 +282,7 @@ namespace BoboBrowse.Net.Query.Scoring
                     return doc;
                 }
 
-                public override long Cost()
+                public override long GetCost()
                 {
                     return 0;
                 }
@@ -293,7 +293,7 @@ namespace BoboBrowse.Net.Query.Scoring
             // from the original Java source to remove these two parameters.
 
             // public override Scorer Scorer(AtomicReaderContext context, bool scoreDocsInOrder, bool topScorer, Bits acceptDocs)
-            public override Scorer Scorer(AtomicReaderContext context, Bits acceptDocs)
+            public override Scorer GetScorer(AtomicReaderContext context, IBits acceptDocs)
             {
                 AtomicReader reader = context.AtomicReader;
                 if (reader is BoboSegmentReader)
@@ -335,9 +335,9 @@ namespace BoboBrowse.Net.Query.Scoring
                 }
             }
 
-            public override float ValueForNormalization
+            public override float GetValueForNormalization()
             {
-                get { return 0; }
+                return 0;
             }
 
             public override void Normalize(float norm, float topLevelBoost)
@@ -360,14 +360,14 @@ namespace BoboBrowse.Net.Query.Scoring
                 _scorer = scorer;
             }
 
-            public override float Score()
+            public override float GetScore()
             {
-                return _scorer == null ? 1.0f : _scorer.Score(_docSetIter.DocID()) * _parent.Boost;
+                return _scorer == null ? 1.0f : _scorer.Score(_docSetIter.DocID) * _parent.Boost;
             }
 
-            public override int DocID()
+            public override int DocID
             {
-                return _docSetIter.DocID();
+                get { return _docSetIter.DocID; }
             }
 
             public override int NextDoc()
@@ -380,12 +380,12 @@ namespace BoboBrowse.Net.Query.Scoring
                 return _docSetIter.Advance(target);
             }
 
-            public override int Freq()
+            public override int Freq
             {
-                return 0;
+                get { return 0; }
             }
 
-            public override long Cost()
+            public override long GetCost()
             {
                 return 0;
             }

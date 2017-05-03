@@ -24,6 +24,7 @@ namespace BoboBrowse.Net
     using Lucene.Net.Documents;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
+    using Lucene.Net.Support;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -64,22 +65,22 @@ namespace BoboBrowse.Net
             /** Field's value */
             private object fieldsData;
 
-            public SerializableField(IndexableField field)
+            public SerializableField(IIndexableField field)
             {
                 // TODO: Fix this property and push to Lucene.Net
-                name = field.Name();
-                if (field.NumericValue != null)
+                name = field.Name;
+                if (field.GetNumericValue() != null)
                 {
-                    fieldsData = field.NumericValue;
+                    fieldsData = field.GetNumericValue();
                 }
-                else if (field.StringValue != null)
+                else if (field.GetStringValue() != null)
                 {
-                    fieldsData = field.StringValue;
+                    fieldsData = field.GetStringValue();
                 }
-                else if (field.BinaryValue() != null)
+                else if (field.GetBinaryValue() != null)
                 {
                     // TODO: Fix this property and push to Lucene.Net
-                    fieldsData = field.BinaryValue().Bytes;
+                    fieldsData = field.GetBinaryValue().Bytes;
                 }
                 else
                 {
@@ -201,7 +202,7 @@ namespace BoboBrowse.Net
             {
                 Value = explanation.Value;
                 Description = explanation.Description;
-                Explanation[] details = explanation.Details;
+                Explanation[] details = explanation.GetDetails();
                 if (details == null)
                 {
                     return;

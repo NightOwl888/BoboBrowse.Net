@@ -28,7 +28,7 @@ namespace BoboBrowse.Net
 	    private readonly DocComparatorSource _factory;
 
         public BoboCustomSortField(string field, bool reverse, DocComparatorSource factory)
-            : base(field, SortField.Type_e.CUSTOM, reverse)
+            : base(field, SortFieldType.CUSTOM, reverse)
         {
             _factory = factory;
         }

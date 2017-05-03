@@ -25,6 +25,7 @@ namespace BoboBrowse.Net
     using BoboBrowse.Net.Support.Logging;
     using Lucene.Net.Documents;
     using Lucene.Net.Index;
+    using Lucene.Net.Support;
     using Lucene.Net.Util;
     using System;
     using System.Collections.Generic;
@@ -48,11 +49,11 @@ namespace BoboBrowse.Net
         protected WorkArea _workArea;
 
         private readonly IDictionary<string, object> _facetDataMap = new Dictionary<string, object>();
-        private readonly IDisposableThreadLocal<IDictionary<string, object>> _runtimeFacetDataMap = new RuntimeFacetDataMapWrapper();
-        private readonly IDisposableThreadLocal<IDictionary<string, IRuntimeFacetHandler>> _runtimeFacetHandlerMap = new RuntimeFacetHandlerMapWrapper();
+        private readonly DisposableThreadLocal<IDictionary<string, object>> _runtimeFacetDataMap = new RuntimeFacetDataMapWrapper();
+        private readonly DisposableThreadLocal<IDictionary<string, IRuntimeFacetHandler>> _runtimeFacetHandlerMap = new RuntimeFacetHandlerMapWrapper();
 
         // TODO: Fix this IDisposableThreadLocal (it is a class, so should be named DisposableThreadLocal) and push to Lucene.Net
-        private class RuntimeFacetDataMapWrapper : IDisposableThreadLocal<IDictionary<string, object>>
+        private class RuntimeFacetDataMapWrapper : DisposableThreadLocal<IDictionary<string, object>>
         {
             protected override IDictionary<string, object> InitialValue()
             {
@@ -60,7 +61,7 @@ namespace BoboBrowse.Net
             }
         }
 
-        private class RuntimeFacetHandlerMapWrapper : IDisposableThreadLocal<IDictionary<string, IRuntimeFacetHandler>>
+        private class RuntimeFacetHandlerMapWrapper : DisposableThreadLocal<IDictionary<string, IRuntimeFacetHandler>>
         {
             protected override IDictionary<string, IRuntimeFacetHandler> InitialValue()
             {
@@ -366,8 +367,8 @@ namespace BoboBrowse.Net
             }
         }
 
-        private BoboSegmentReader(AtomicReader @in)
-            : base(@in)
+        private BoboSegmentReader(AtomicReader input)
+            : base(input)
         { }
 
         public virtual BoboSegmentReader Copy(AtomicReader index)
@@ -384,7 +385,7 @@ namespace BoboBrowse.Net
 
         public virtual AtomicReader InnerReader
         {
-            get { return @in; }
+            get { return m_input; }
         }
     }
 }

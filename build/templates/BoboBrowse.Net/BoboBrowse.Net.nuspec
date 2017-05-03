@@ -18,6 +18,7 @@
 			<group targetFramework="net451">
 				<dependency id="Lucene.Net" version="[4.5,5.0)" />
         <dependency id="Lucene.Net.Analysis.Common" version="[4.5,5.0)" />
+        <dependency id="Lucene.Net.QueryParser" version="[4.5,5.0)" />
 			</group>
 		</dependencies>
 	</metadata>

@@ -22,9 +22,10 @@ namespace BoboBrowse.Net.Query.Scoring
 {
     using BoboBrowse.Net.Support;
     using Lucene.Net.Search;
+    using Lucene.Net.Support;
     using System.Collections.Generic;
     using System.Linq;
-    
+
     public abstract class BoboDocScorer
     {
         protected readonly IFacetTermScoringFunction _function;

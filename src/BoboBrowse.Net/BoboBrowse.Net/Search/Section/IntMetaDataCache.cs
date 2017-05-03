@@ -153,14 +153,14 @@ namespace BoboBrowse.Net.Search.Section
 
         protected virtual void LoadPayload(Term term)
         {
-            DocsAndPositionsEnum dp = _reader.TermPositionsEnum(term);
+            DocsAndPositionsEnum dp = _reader.GetTermPositionsEnum(term);
             int docID = -1;
             while ((docID = dp.NextDoc()) != DocsEnum.NO_MORE_DOCS)
             {
-                if (dp.Freq() > 0)
+                if (dp.Freq > 0)
                 {
                     dp.NextPosition();
-                    BytesRef payload = dp.Payload;
+                    BytesRef payload = dp.GetPayload();
                     if (payload != null)
                     {
                         Add(docID, payload.Bytes, payload.Length);

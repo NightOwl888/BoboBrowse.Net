@@ -41,7 +41,7 @@ namespace BoboBrowse.Net.Search.Section
             {
             }
 
-            public override bool LessThan(SectionSearchQueryPlan nodeA, SectionSearchQueryPlan nodeB)
+            protected override bool LessThan(SectionSearchQueryPlan nodeA, SectionSearchQueryPlan nodeB)
             {
                 if (nodeA._curDoc == nodeB._curDoc)
                 {

@@ -65,9 +65,9 @@ namespace BoboBrowse.Net.DocIdSet
                 }
             }
 
-            public override int DocID()
+            public override int DocID
             {
-                return lastReturn;
+                get { return lastReturn; }
             }
 
             public override int NextDoc()
@@ -113,7 +113,7 @@ namespace BoboBrowse.Net.DocIdSet
                 return (lastReturn = target);
             }
 
-            public override long Cost()
+            public override long GetCost()
             {
                 return 0;
             }

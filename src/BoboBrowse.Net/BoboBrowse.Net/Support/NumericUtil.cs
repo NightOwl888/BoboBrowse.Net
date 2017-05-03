@@ -49,7 +49,7 @@ namespace BoboBrowse.Net.Support
         {
             try
             {
-                int shift = prefixCoded[0] - NumericUtils.SHIFT_START_INT;
+                int shift = prefixCoded[0] - NumericUtils.SHIFT_START_INT32;
                 if (shift > 31 || shift < 0)
                     return false;
                 int sortableBits = 0;
@@ -77,7 +77,7 @@ namespace BoboBrowse.Net.Support
         {
             try
             {
-                int shift = prefixCoded[0] - NumericUtils.SHIFT_START_LONG;
+                int shift = prefixCoded[0] - NumericUtils.SHIFT_START_INT64;
                 if (shift > 63 || shift < 0)
                     return false;
                 ulong sortableBits = 0UL;
@@ -107,7 +107,7 @@ namespace BoboBrowse.Net.Support
             {
                 try
                 {
-                    int val = NumericUtils.PrefixCodedToInt(new BytesRef(prefixCoded));
+                    int val = NumericUtils.PrefixCodedToInt32(new BytesRef(prefixCoded));
                     if (val < 0)
                         val ^= 0x7fffffff;
                     float result = BitConverter.ToSingle(BitConverter.GetBytes(val), 0);
@@ -128,7 +128,7 @@ namespace BoboBrowse.Net.Support
             {
                 try
                 {
-                    long val = NumericUtils.PrefixCodedToLong(new BytesRef(prefixCoded));
+                    long val = NumericUtils.PrefixCodedToInt64(new BytesRef(prefixCoded));
                     if (val < 0)
                         val ^= 0x7fffffffffffffffL;
                     double result = BitConverter.Int64BitsToDouble(val);

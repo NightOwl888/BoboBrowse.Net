@@ -34,7 +34,7 @@ namespace BoboBrowse.Net.Facets.Filter
             _innerFilter = innerFilter;
         }
 
-        public override DocIdSet GetDocIdSet(AtomicReaderContext context, Bits acceptDocs)
+        public override DocIdSet GetDocIdSet(AtomicReaderContext context, IBits acceptDocs)
         {
             return new NotDocIdSet(_innerFilter.GetDocIdSet(context, acceptDocs), context.Reader.MaxDoc);
         }

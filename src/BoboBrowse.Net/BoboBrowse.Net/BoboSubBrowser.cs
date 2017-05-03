@@ -29,6 +29,7 @@ namespace BoboBrowse.Net
     using Lucene.Net.Documents;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
+    using Lucene.Net.Support;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -155,7 +156,7 @@ namespace BoboBrowse.Net
         /// <param name="start"></param>
         public virtual void Browse(
             BrowseRequest req,
-            Collector collector,
+            ICollector collector,
             IDictionary<string, IFacetAccessible> facetMap,
             int start)
         {

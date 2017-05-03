@@ -24,6 +24,7 @@ namespace BoboBrowse.Net.Facets.Attribute
     using BoboBrowse.Net.Facets.Impl;
     using BoboBrowse.Net.Support;
     using BoboBrowse.Net.Util;
+    using Lucene.Net.Support;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -76,7 +77,7 @@ namespace BoboBrowse.Net.Facets.Attribute
         }
 
         private IEnumerable<BrowseFacet> FilterByKeys(IEnumerable<BrowseFacet> facets, char separator, int numFacetsPerKey, string[] values) {
-            var keyOccurences = new Dictionary<string, AtomicInteger>();
+            var keyOccurences = new Dictionary<string, AtomicInt32>();
             var editable = facets.ToList();
             string separatorString = Convert.ToString(separator);
             for (int i = 0; i < facets.Count(); i++)
@@ -106,10 +107,10 @@ namespace BoboBrowse.Net.Facets.Attribute
                     }
                 }
                 string key = value.Substring(0, value.IndexOf(separatorString));
-                AtomicInteger numOfKeys = keyOccurences.Get(key);
+                AtomicInt32 numOfKeys = keyOccurences.Get(key);
                 if (numOfKeys == null)
                 {
-                    numOfKeys = new AtomicInteger(0);
+                    numOfKeys = new AtomicInt32(0);
                     keyOccurences.Put(key, numOfKeys);
                 }
                 int count = numOfKeys.IncrementAndGet();

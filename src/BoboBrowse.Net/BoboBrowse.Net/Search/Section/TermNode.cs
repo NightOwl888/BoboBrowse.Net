@@ -85,7 +85,7 @@ namespace BoboBrowse.Net.Search.Section
 
         public virtual int ReadSecId()
         {
-            BytesRef payload = _dp.Payload;
+            BytesRef payload = _dp.GetPayload();
             if (payload != null)
             {
                 _curSec = intDecoders[payload.Length].Decode(payload.Bytes);

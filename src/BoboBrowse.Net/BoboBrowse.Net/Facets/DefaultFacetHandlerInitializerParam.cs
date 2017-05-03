@@ -21,6 +21,7 @@
 namespace BoboBrowse.Net.Facets
 {
     using BoboBrowse.Net.Support;
+    using Lucene.Net.Support;
     using System;
     using System.Collections.Generic;
 

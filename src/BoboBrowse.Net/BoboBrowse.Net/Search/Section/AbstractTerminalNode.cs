@@ -34,7 +34,7 @@ namespace BoboBrowse.Net.Search.Section
 
         public AbstractTerminalNode(Term term, AtomicReader reader)
         {
-            _dp = reader.TermPositionsEnum(term);
+            _dp = reader.GetTermPositionsEnum(term);
             _posLeft = 0;
         }
 
@@ -49,7 +49,7 @@ namespace BoboBrowse.Net.Search.Section
 
             if ((_curDoc = _dp.Advance(targetDoc)) != DocsEnum.NO_MORE_DOCS)
             {
-                _posLeft = _dp.Freq();
+                _posLeft = _dp.Freq;
                 _curSec = -1;
                 _curPos = -1;
                 return _curDoc;

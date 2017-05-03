@@ -260,10 +260,10 @@ namespace BoboBrowse.Net.Facets.Impl
             maxIDList.Add(-1);
             freqList.Add(0);
             t++;
-            Terms terms = reader.Terms(_indexFieldName);
+            Terms terms = reader.GetTerms(_indexFieldName);
             if (terms != null)
             {
-                TermsEnum termsEnum = terms.Iterator(null);
+                TermsEnum termsEnum = terms.GetIterator(null);
                 BytesRef text;
                 while ((text = termsEnum.Next()) != null)
                 {
@@ -277,7 +277,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     mterms.Add(val);
                     int bit = (0x00000001 << (t - 1));
                     Term term = new Term(_indexFieldName, val);
-                    DocsEnum docsEnum = reader.TermDocsEnum(term);
+                    DocsEnum docsEnum = reader.GetTermDocsEnum(term);
                     //freqList.add(termEnum.docFreq());  // removed because the df doesn't take into account the 
                     // num of deletedDocs
                     int df = 0;
@@ -291,7 +291,7 @@ namespace BoboBrowse.Net.Facets.Impl
                         minID = docID;
                         while (docsEnum.NextDoc() != DocsEnum.NO_MORE_DOCS)
                         {
-                            docID = docsEnum.DocID();
+                            docID = docsEnum.DocID;
                             df++;
                             order.Add(docID, order.Get(docID) | bit);
                         }

@@ -117,9 +117,9 @@ namespace BoboBrowse.Net.Query
                 _docid = -1;
             }
 
-            public override float Score()
+            public override float GetScore()
             {
-                float score = _innerScorer.Score();
+                float score = _innerScorer.GetScore();
                 foreach (BoboDocScorer facetScorer in _facetScorers)
                 {
                     float fscore = facetScorer.Score(_docid);
@@ -131,9 +131,9 @@ namespace BoboBrowse.Net.Query
                 return score;
             }
 
-            public override int DocID()
+            public override int DocID
             {
-                return _docid;
+                get { return _docid; }
             }
 
             public override int NextDoc()
@@ -146,12 +146,12 @@ namespace BoboBrowse.Net.Query
                 return (_docid = _innerScorer.Advance(target));
             }
 
-            public override int Freq()
+            public override int Freq
             {
-                return 0;
+                get { return 0; }
             }
 
-            public override long Cost()
+            public override long GetCost()
             {
                 return 0;
             }

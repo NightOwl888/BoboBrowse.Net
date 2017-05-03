@@ -48,7 +48,7 @@ namespace BoboBrowse.Net.DocIdSet
             array.Add(docid);
         }
 
-        public override bool Cacheable
+        public override bool IsCacheable
         {
             get { return true; }
         }
@@ -95,9 +95,9 @@ namespace BoboBrowse.Net.DocIdSet
                 if (pos == -1) lastReturn = DocIdSetIterator.NO_MORE_DOCS;
             }
 
-            public override int DocID()
+            public override int DocID
             {
-                return lastReturn;
+                get { return lastReturn; }
             }
 
             public override int NextDoc()
@@ -138,7 +138,7 @@ namespace BoboBrowse.Net.DocIdSet
                 return cursor;
             }
 
-            public override long Cost()
+            public override long GetCost()
             {
                 return 0;
             }
@@ -172,7 +172,7 @@ namespace BoboBrowse.Net.DocIdSet
         public override long SizeInBytes
         {
             // Object Overhead
-            get { return array.Length() * 4 + 64; }
+            get { return array.Length * 4 + 64; }
         }
 
         public override void Optimize()

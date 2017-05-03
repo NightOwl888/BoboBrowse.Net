@@ -28,6 +28,7 @@ namespace BoboBrowse.Net.Facets.Attribute
     using Lucene.Net.Index;
     using Lucene.Net.Search;
     using Lucene.Net.Store;
+    using Lucene.Net.Support;
     using Lucene.Net.Util;
     using NUnit.Framework;
     using System;
@@ -64,7 +65,7 @@ namespace BoboBrowse.Net.Facets.Attribute
             analyzer = new WhitespaceAnalyzer(LuceneVersion.LUCENE_48);
             selectionProperties = new Dictionary<string, string>();
             IndexWriterConfig conf = new IndexWriterConfig(LuceneVersion.LUCENE_48, analyzer);
-            conf.SetOpenMode(IndexWriterConfig.OpenMode_e.CREATE);
+            conf.SetOpenMode(OpenMode.CREATE);
             IndexWriter writer = new IndexWriter(directory, conf);
 
             writer.AddDocument(Doc("prop1=val1", "prop2=val1", "prop5=val1"));
@@ -310,7 +311,7 @@ namespace BoboBrowse.Net.Facets.Attribute
             directory = new RAMDirectory();
             analyzer = new WhitespaceAnalyzer(LuceneVersion.LUCENE_48);
             IndexWriterConfig conf = new IndexWriterConfig(LuceneVersion.LUCENE_48, analyzer);
-            conf.SetOpenMode(IndexWriterConfig.OpenMode_e.CREATE);
+            conf.SetOpenMode(OpenMode.CREATE);
             IndexWriter writer = new IndexWriter(directory, conf);
 
             writer.AddDocument(Doc("prop1=val1", "prop2=val1", "prop5=val1"));

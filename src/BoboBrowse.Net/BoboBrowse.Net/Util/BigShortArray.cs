@@ -22,6 +22,7 @@ namespace BoboBrowse.Net.Util
 {
     using BoboBrowse.Net.Support;
     using Lucene.Net.Search;
+    using Lucene.Net.Support;
     using Lucene.Net.Util;
 
     public class BigShortArray : BigSegmentedArray

@@ -116,23 +116,23 @@ namespace BoboBrowse.Net.Facets.Data
         protected int GetDictValueCount(AtomicReader reader, string field)
         {
             int ret = 0;
-            Terms terms = reader.Terms(field);
+            Terms terms = reader.GetTerms(field);
             if (terms == null)
             {
                 return ret;
             }
-            return (int)terms.Size();
+            return (int)terms.Count;
         }
 
         protected int GetNegativeValueCount(AtomicReader reader, string field)
         {
             int ret = 0;
-            Terms terms = reader.Terms(field);
+            Terms terms = reader.GetTerms(field);
             if (terms == null)
             {
                 return ret;
             }
-            TermsEnum termsEnum = terms.Iterator(null);
+            TermsEnum termsEnum = terms.GetIterator(null);
             BytesRef text;
             while ((text = termsEnum.Next()) != null)
             {
@@ -170,10 +170,10 @@ namespace BoboBrowse.Net.Facets.Data
             maxIDList.Add(-1);
             freqList.Add(0);
             int totalFreq = 0;
-            Terms terms = reader.Terms(field);
+            Terms terms = reader.GetTerms(field);
             if (terms != null) 
             { 
-                TermsEnum termsEnum = terms.Iterator(null);
+                TermsEnum termsEnum = terms.GetIterator(null);
                   BytesRef text;
                   while ((text = termsEnum.Next()) != null)
                   {
@@ -185,7 +185,7 @@ namespace BoboBrowse.Net.Facets.Data
                       string strText = text.Utf8ToString();
                       list.Add(strText);
                       Term term = new Term(field, strText);
-                      DocsEnum docsEnum = reader.TermDocsEnum(term);
+                      DocsEnum docsEnum = reader.GetTermDocsEnum(term);
                       // freqList.add(termEnum.docFreq()); // doesn't take into account
                       // deldocs
                       int minID = -1;
@@ -200,7 +200,7 @@ namespace BoboBrowse.Net.Facets.Data
                           minID = docID;
                           while (docsEnum.NextDoc() != DocsEnum.NO_MORE_DOCS)
                           {
-                              docID = docsEnum.DocID();
+                              docID = docsEnum.DocID;
                               df++;
                               order.Add(docID, valId);
                           }

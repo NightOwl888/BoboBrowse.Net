@@ -28,7 +28,7 @@ namespace BoboBrowse.Net.Facets.Filter
     
     public abstract class RandomAccessFilter : Filter
     {
-        public override DocIdSet GetDocIdSet(AtomicReaderContext context, Bits acceptDocs)
+        public override DocIdSet GetDocIdSet(AtomicReaderContext context, IBits acceptDocs)
         {
             AtomicReader reader = context.AtomicReader;
             if (reader is BoboSegmentReader)

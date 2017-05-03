@@ -36,7 +36,7 @@ namespace BoboBrowse.Net.Facets.Filter
             _filters = filters;
         }
 
-        public override DocIdSet GetDocIdSet(AtomicReaderContext context, Bits acceptDocs)
+        public override DocIdSet GetDocIdSet(AtomicReaderContext context, IBits acceptDocs)
         {
             var count = _filters.Count();
             if (count == 1)

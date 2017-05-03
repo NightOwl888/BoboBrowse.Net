@@ -28,6 +28,7 @@ namespace BoboBrowse.Net.Sort
     using BoboBrowse.Net.Util;
     using Lucene.Net.Index;
     using Lucene.Net.Search;
+    using Lucene.Net.Support;
     using Lucene.Net.Util;
     using System;
     using System.Collections.Generic;
@@ -233,9 +234,9 @@ namespace BoboBrowse.Net.Sort
             }
         }
 
-        public override bool AcceptsDocsOutOfOrder()
+        public override bool AcceptsDocsOutOfOrder
         {
-            return this.Collector == null ? true : this.Collector.AcceptsDocsOutOfOrder();
+            get { return this.Collector == null ? true : this.Collector.AcceptsDocsOutOfOrder; }
         }
 
         public override void Collect(int doc)
@@ -254,7 +255,7 @@ namespace BoboBrowse.Net.Sort
 
                     if (_count > 0)
                     {
-                        float score = (_doScoring ? _scorer.Score() : 0.0f);
+                        float score = (_doScoring ? _scorer.GetScore() : 0.0f);
 
                         // NightOwl888: The _collectDocIdCache setting seems to put arrays into
                         // memory, but then do nothing with the arrays. Seems wasteful and unnecessary.
@@ -285,7 +286,7 @@ namespace BoboBrowse.Net.Sort
                 {
                     if (_count > 0)
                     {
-                        float score = (_doScoring ? _scorer.Score() : 0.0f);
+                        float score = (_doScoring ? _scorer.GetScore() : 0.0f);
 
                         // NightOwl888: The _collectDocIdCache setting seems to put arrays into
                         // memory, but then do nothing with the arrays. Seems wasteful and unnecessary.
@@ -352,7 +353,7 @@ namespace BoboBrowse.Net.Sort
             {
                 if (_count > 0)
                 {
-                    float score = (_doScoring ? _scorer.Score() : 0.0f);
+                    float score = (_doScoring ? _scorer.GetScore() : 0.0f);
 
                     if (_queueFull)
                     {
@@ -377,67 +378,57 @@ namespace BoboBrowse.Net.Sort
             if (this.Collector != null) this.Collector.Collect(doc);
         }
 
-        public override AtomicReaderContext NextReader
+        public override void SetNextReader(AtomicReaderContext context)
         {
-            set 
+            AtomicReader reader = context.AtomicReader;
+            if (!(reader is BoboSegmentReader))
+                throw new ArgumentException("reader must be a BoboIndexReader");
+            _currentReader = (BoboSegmentReader)reader;
+            int docBase = context.DocBase;
+            _currentComparator = _compSource.GetComparator(_currentReader, docBase);
+            _currentQueue = new DocIDPriorityQueue(_currentComparator, _numHits, docBase);
+            if (groupBy != null)
             {
-                // NOTE: Since this is a prperty instead of a method in Lucene.Net,
-                // we set a variable to the value of the property so the rest of the code
-                // from Java doesn't need to change.
-                AtomicReaderContext context = value;
-                AtomicReader reader = context.AtomicReader;
-                if (!(reader is BoboSegmentReader))
-                    throw new ArgumentException("reader must be a BoboIndexReader");
-                _currentReader = (BoboSegmentReader)reader;
-                int docBase = context.DocBase;
-                _currentComparator = _compSource.GetComparator(_currentReader, docBase);
-                _currentQueue = new DocIDPriorityQueue(_currentComparator, _numHits, docBase);
-                if (groupBy != null)
+                if (_facetCountCollectorMulti != null)  // _facetCountCollectorMulti.Length >= 1
                 {
-                    if (_facetCountCollectorMulti != null)  // _facetCountCollectorMulti.Length >= 1
+                    for (int i = 0; i < _facetCountCollectorMulti.Length; ++i)
+                    {
+                        _facetCountCollectorMulti[i] = groupByMulti[i].GetFacetCountCollectorSource(null, null, true).GetFacetCountCollector(_currentReader, docBase);
+                    }
+                    //if (_facetCountCollector != null)
+                    //    collectTotalGroups();
+                    _facetCountCollector = _facetCountCollectorMulti[0];
+                    if (_facetAccessibleLists != null)
                     {
                         for (int i = 0; i < _facetCountCollectorMulti.Length; ++i)
                         {
-                            _facetCountCollectorMulti[i] = groupByMulti[i].GetFacetCountCollectorSource(null, null, true).GetFacetCountCollector(_currentReader, docBase);
-                        }
-                        //if (_facetCountCollector != null)
-                        //    collectTotalGroups();
-                        _facetCountCollector = _facetCountCollectorMulti[0];
-                        if (_facetAccessibleLists != null)
-                        {
-                            for (int i = 0; i < _facetCountCollectorMulti.Length; ++i)
-                            {
-                                _facetAccessibleLists[i].Add(_facetCountCollectorMulti[i]);
-                            }
+                            _facetAccessibleLists[i].Add(_facetCountCollectorMulti[i]);
                         }
                     }
-                    if (_currentValueDocMaps != null)
-                        _currentValueDocMaps.Clear();
-
-                    // NightOwl888: The _collectDocIdCache setting seems to put arrays into
-                    // memory, but then do nothing with the arrays. Seems wasteful and unnecessary.
-                    //if (contextList != null)
-                    //{
-                    //    _currentContext = new CollectorContext(_currentReader, docBase, _currentComparator);
-                    //    contextList.Add(_currentContext);
-                    //}
                 }
-                MyScoreDoc myScoreDoc = (MyScoreDoc)_tmpScoreDoc;
-                myScoreDoc.queue = _currentQueue;
-                myScoreDoc.reader = _currentReader;
-                myScoreDoc.sortValue = null;
-                _pqList.Add(_currentQueue);
-                _queueFull = false;
+                if (_currentValueDocMaps != null)
+                    _currentValueDocMaps.Clear();
+
+                // NightOwl888: The _collectDocIdCache setting seems to put arrays into
+                // memory, but then do nothing with the arrays. Seems wasteful and unnecessary.
+                //if (contextList != null)
+                //{
+                //    _currentContext = new CollectorContext(_currentReader, docBase, _currentComparator);
+                //    contextList.Add(_currentContext);
+                //}
             }
+            MyScoreDoc myScoreDoc = (MyScoreDoc)_tmpScoreDoc;
+            myScoreDoc.queue = _currentQueue;
+            myScoreDoc.reader = _currentReader;
+            myScoreDoc.sortValue = null;
+            _pqList.Add(_currentQueue);
+            _queueFull = false;
         }
 
-        public override Scorer Scorer
+        public override void SetScorer(Scorer scorer)
         {
-            set 
-            {
-                _scorer = value;
-                _currentComparator.SetScorer(value);
-            }
+            _scorer = scorer;
+            _currentComparator.SetScorer(scorer);
         }
 
         public override int TotalHits
@@ -572,13 +563,13 @@ namespace BoboBrowse.Net.Sort
                     Fields fds = reader.GetTermVectors(fdoc.Doc);
                     foreach (string field in termVectorsToFetch)
                     {
-                        Terms terms = fds.Terms(field);
+                        Terms terms = fds.GetTerms(field);
                         if (terms == null)
                         {
                             continue;
                         }
 
-                        TermsEnum termsEnum = terms.Iterator(null);
+                        TermsEnum termsEnum = terms.GetIterator(null);
                         BytesRef text;
                         DocsAndPositionsEnum docsAndPositions = null;
                         List<BrowseHit.BoboTerm> boboTermList = new List<BrowseHit.BoboTerm>();
@@ -587,7 +578,7 @@ namespace BoboBrowse.Net.Sort
                         {
                             BrowseHit.BoboTerm boboTerm = new BrowseHit.BoboTerm();
                             boboTerm.Term = text.Utf8ToString();
-                            boboTerm.Freq = (int)termsEnum.TotalTermFreq();
+                            boboTerm.Freq = (int)termsEnum.TotalTermFreq;
                             docsAndPositions = termsEnum.DocsAndPositions(null, docsAndPositions);
                             if (docsAndPositions != null)
                             {
@@ -598,8 +589,8 @@ namespace BoboBrowse.Net.Sort
                                 for (int t = 0; t < boboTerm.Freq; ++t)
                                 {
                                     boboTerm.Positions.Add(docsAndPositions.NextPosition());
-                                    boboTerm.StartOffsets.Add(docsAndPositions.StartOffset());
-                                    boboTerm.EndOffsets.Add(docsAndPositions.EndOffset());
+                                    boboTerm.StartOffsets.Add(docsAndPositions.StartOffset);
+                                    boboTerm.EndOffsets.Add(docsAndPositions.EndOffset);
                                 }
                             }
                             boboTermList.Add(boboTerm);

@@ -132,10 +132,10 @@ namespace BoboBrowse.Net.Query
                 _termList = termList;
             }
 
-            public override float Score()
+            public override float GetScore()
             {
-                float rawScore = _innerScorer.Score();
-                long timeVal = (long)_termList.GetRawValue(_orderArray.Get(_innerScorer.DocID()));
+                float rawScore = _innerScorer.GetScore();
+                long timeVal = (long)_termList.GetRawValue(_orderArray.Get(_innerScorer.DocID));
                 float timeScore = _parent.ComputeTimeFactor(timeVal);
                 return RecencyBoostScorerBuilder.CombineScores(timeScore, rawScore);
             }
@@ -145,9 +145,9 @@ namespace BoboBrowse.Net.Query
                 return _innerScorer.Advance(target);
             }
 
-            public override int DocID()
+            public override int DocID
             {
-                return _innerScorer.DocID();
+                get { return _innerScorer.DocID; }
             }
 
             public override int NextDoc()
@@ -155,12 +155,12 @@ namespace BoboBrowse.Net.Query
                 return _innerScorer.NextDoc();
             }
 
-            public override int Freq()
+            public override int Freq
             {
-                return 0;
+                get { return 0; }
             }
 
-            public override long Cost()
+            public override long GetCost()
             {
                 return 0;
             }

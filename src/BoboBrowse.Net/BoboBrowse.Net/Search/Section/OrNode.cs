@@ -56,7 +56,7 @@ namespace BoboBrowse.Net.Search.Section
 
             _curSec = -1;
 
-            SectionSearchQueryPlan node = (SectionSearchQueryPlan)_pq.Top();
+            SectionSearchQueryPlan node = (SectionSearchQueryPlan)_pq.Top;
             while (true)
             {
                 if (node.DocId < targetDoc)
@@ -68,12 +68,12 @@ namespace BoboBrowse.Net.Search.Section
                     else
                     {
                         _pq.Pop();
-                        if (_pq.Size() <= 0)
+                        if (_pq.Count <= 0)
                         {
                             _curDoc = DocIdSetIterator.NO_MORE_DOCS;
                             return _curDoc;
                         }
-                        node = (SectionSearchQueryPlan)_pq.Top();
+                        node = (SectionSearchQueryPlan)_pq.Top;
                     }
                 }
                 else
@@ -90,7 +90,7 @@ namespace BoboBrowse.Net.Search.Section
 
             if (targetSec <= _curSec) targetSec = _curSec + 1;
 
-            SectionSearchQueryPlan node = (SectionSearchQueryPlan)_pq.Top();
+            SectionSearchQueryPlan node = (SectionSearchQueryPlan)_pq.Top;
             while (true)
             {
                 if (node.DocId == _curDoc && _curSec < SectionSearchQueryPlan.NO_MORE_SECTIONS)

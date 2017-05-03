@@ -76,9 +76,9 @@ namespace BoboBrowse.Net.Facets.Filter
                 _latOrderArray = latDataCache.OrderArray;
             }
 
-            public override int DocID()
+            public override int DocID
             {
-                return _doc;
+                get { return _doc; }
             }
 
             public override int NextDoc()
@@ -113,7 +113,7 @@ namespace BoboBrowse.Net.Facets.Filter
                 return DocIdSetIterator.NO_MORE_DOCS;
             }
 
-            public override long Cost()
+            public override long GetCost()
             {
                 return 0;
             }

@@ -20,7 +20,7 @@
 ﻿// Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Facets.Data
 {
-    using BoboBrowse.Net.Support;
+    using Lucene.Net.Support;
 
     public class PrimitiveLongArrayWrapper
     {
@@ -52,7 +52,7 @@ namespace BoboBrowse.Net.Facets.Data
 
         public override int GetHashCode()
         {
-            return Arrays.HashCode(data);
+            return Arrays.GetHashCode(data);
         }
     }
 }

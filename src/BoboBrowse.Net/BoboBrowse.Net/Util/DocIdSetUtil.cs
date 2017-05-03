@@ -46,7 +46,7 @@ namespace BoboBrowse.Net.Util
                 {
                     buf.Append(",");
                 }
-                buf.Append(iter.DocID());
+                buf.Append(iter.DocID);
             }
             buf.Append("]");
             return buf.ToString();

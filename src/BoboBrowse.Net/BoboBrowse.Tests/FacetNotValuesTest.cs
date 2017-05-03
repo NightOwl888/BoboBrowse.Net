@@ -88,7 +88,7 @@ namespace BoboBrowse.Tests
             Document d = new Document();
             d.Add(new StringField("id", ID, Field.Store.YES));
             d.Add(new StringField("color", color, Field.Store.YES));
-            d.Add(new IntField("NUM", 10, Field.Store.YES));
+            d.Add(new Int32Field("NUM", 10, Field.Store.YES));
             dataList.Add(d);
 
             color = "green";
@@ -96,7 +96,7 @@ namespace BoboBrowse.Tests
             d = new Document();
             d.Add(new StringField("id", ID, Field.Store.YES));
             d.Add(new StringField("color", color, Field.Store.YES));
-            d.Add(new IntField("NUM", 11, Field.Store.YES));
+            d.Add(new Int32Field("NUM", 11, Field.Store.YES));
             dataList.Add(d);
 
 
@@ -237,8 +237,8 @@ namespace BoboBrowse.Tests
                         int expectedHitNum = 1;
                         br.AddSelection(idSel);
                         BooleanQuery q = new BooleanQuery();
-                        q.Add(NumericRangeQuery.NewIntRange("NUM", 10, 10, true, true), BooleanClause.Occur.MUST_NOT);
-                        q.Add(new MatchAllDocsQuery(), BooleanClause.Occur.MUST);
+                        q.Add(NumericRangeQuery.NewInt32Range("NUM", 10, 10, true, true), Occur.MUST_NOT);
+                        q.Add(new MatchAllDocsQuery(), Occur.MUST);
                         br.Query = q;
 
                         result = boboBrowser.Browse(br);

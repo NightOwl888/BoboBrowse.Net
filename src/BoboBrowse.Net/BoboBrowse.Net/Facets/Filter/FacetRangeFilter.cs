@@ -85,9 +85,9 @@ namespace BoboBrowse.Net.Facets.Filter
                 _orderArray = dataCache.OrderArray;
             }
 
-            public override int DocID()
+            public override int DocID
             {
-                return _doc;
+                get { return _doc; }
             }
 
             public override int NextDoc()
@@ -106,7 +106,7 @@ namespace BoboBrowse.Net.Facets.Filter
                 return NextDoc();
             }
 
-            public override long Cost()
+            public override long GetCost()
             {
                 return 0;
             }
@@ -135,9 +135,9 @@ namespace BoboBrowse.Net.Facets.Filter
                 nestedArray = dataCache.NestedArray;
             }
 
-            public sealed override int DocID()
+            public sealed override int DocID
             {
-                return _doc;
+                get { return _doc; }
             }
 
             public override int NextDoc()
@@ -156,7 +156,7 @@ namespace BoboBrowse.Net.Facets.Filter
                 return NextDoc();
             }
 
-            public override long Cost()
+            public override long GetCost()
             {
                 return 0;
             }

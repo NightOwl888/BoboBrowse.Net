@@ -104,7 +104,7 @@ namespace BoboBrowse.Net
                 // the .NET version.
                 if (facetHandlers == null)
                 {
-                    var idxDir = reader.Directory();
+                    var idxDir = reader.Directory;
                     if (idxDir != null && idxDir is FSDirectory)
                     {
                         // Look for the bobo.spring file in the same directory as the Lucene index

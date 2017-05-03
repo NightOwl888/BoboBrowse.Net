@@ -39,7 +39,7 @@ namespace BoboBrowse.Net
         /// <param name="facets">A dictionary of all of the facet collections (output).</param>
         /// <param name="start">The offset value for the document number.</param>
         void Browse(BrowseRequest req, 
-	        Collector hitCollector,
+	        ICollector hitCollector,
 	        IDictionary<string, IFacetAccessible> facets,
 	        int start);
 

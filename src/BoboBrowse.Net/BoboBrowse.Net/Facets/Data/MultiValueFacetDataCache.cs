@@ -95,10 +95,10 @@ namespace BoboBrowse.Net.Facets.Data
             freqList.Add(0);
 
             _overflow = false;
-            Terms terms = reader.Terms(field);
+            Terms terms = reader.GetTerms(field);
             if (terms != null) 
             { 
-                TermsEnum termsEnum = terms.Iterator(null);
+                TermsEnum termsEnum = terms.GetIterator(null);
                 BytesRef text;
                 while ((text = termsEnum.Next()) != null)
                 {
@@ -106,7 +106,7 @@ namespace BoboBrowse.Net.Facets.Data
                     list.Add(strText);
 
                     Term term = new Term(field, strText);
-                    DocsEnum docsEnum = reader.TermDocsEnum(term);
+                    DocsEnum docsEnum = reader.GetTermDocsEnum(term);
                     int df = 0;
                     int minID = -1;
                     int maxID = -1;
@@ -120,7 +120,7 @@ namespace BoboBrowse.Net.Facets.Data
                         bitset.FastSet(docID);
                         while (docsEnum.NextDoc() != DocsEnum.NO_MORE_DOCS)
                         {
-                            docID = docsEnum.DocID();
+                            docID = docsEnum.DocID;
                             df++;
                             if (!loader.Add(docID, valId)) LogOverflow(fieldName);
                             bitset.FastSet(docID);
@@ -204,10 +204,10 @@ namespace BoboBrowse.Net.Facets.Data
 
             _overflow = false;
 
-            Terms terms = reader.Terms(field);
+            Terms terms = reader.GetTerms(field);
             if (terms != null)
             {
-                TermsEnum termsEnum = terms.Iterator(null);
+                TermsEnum termsEnum = terms.GetIterator(null);
                 BytesRef text;
                 while ((text = termsEnum.Next()) != null)
                 {
@@ -215,7 +215,7 @@ namespace BoboBrowse.Net.Facets.Data
                     list.Add(strText);
 
                     Term term = new Term(field, strText);
-                    DocsEnum docsEnum = reader.TermDocsEnum(term);
+                    DocsEnum docsEnum = reader.GetTermDocsEnum(term);
 
                     int df = 0;
                     int minID = -1;
@@ -230,7 +230,7 @@ namespace BoboBrowse.Net.Facets.Data
                         int valId = (t - 1 < negativeValueCount) ? (negativeValueCount - t + 1) : t;
                         while (docsEnum.NextDoc() != DocsEnum.NO_MORE_DOCS)
                         {
-                            docID = docsEnum.DocID();
+                            docID = docsEnum.DocID;
                             df++;
                             if (!_nestedArray.AddData(docID, valId)) LogOverflow(fieldName);
                             bitset.FastSet(docID);
@@ -330,7 +330,7 @@ namespace BoboBrowse.Net.Facets.Data
 
             public override void Load()
             {
-                DocsAndPositionsEnum docPosEnum = _reader.TermPositionsEnum(_sizeTerm);
+                DocsAndPositionsEnum docPosEnum = _reader.GetTermPositionsEnum(_sizeTerm);
                 if (docPosEnum == null)
                 {
                     return;
@@ -338,10 +338,10 @@ namespace BoboBrowse.Net.Facets.Data
                 int docID = -1;
                 while ((docID = docPosEnum.NextDoc()) != DocsEnum.NO_MORE_DOCS)
                 {
-                    if (docPosEnum.Freq() > 0)
+                    if (docPosEnum.Freq > 0)
                     {
                         docPosEnum.NextPosition();
-                        int len = BytesToInt(docPosEnum.Payload.Bytes);
+                        int len = BytesToInt(docPosEnum.GetPayload().Bytes);
                         Allocate(docID, Math.Min(len, _maxItems), true);
                     }
                 }

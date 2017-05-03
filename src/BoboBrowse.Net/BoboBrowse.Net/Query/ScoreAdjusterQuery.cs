@@ -58,9 +58,9 @@ namespace BoboBrowse.Net.Query
             //    return _parent._scorerBuilder.CreateScorer(innerScorer, context.AtomicReader, scoreDocsInOrder, topScorer);
             //}
 
-            public override Scorer Scorer(AtomicReaderContext context, Bits acceptDocs)
+            public override Scorer GetScorer(AtomicReaderContext context, IBits acceptDocs)
             {
-                Scorer innerScorer = _innerWeight.Scorer(context, acceptDocs);
+                Scorer innerScorer = _innerWeight.GetScorer(context, acceptDocs);
                 return _parent._scorerBuilder.CreateScorer(innerScorer, context.AtomicReader);
             }
 
@@ -70,9 +70,9 @@ namespace BoboBrowse.Net.Query
                 return _parent._scorerBuilder.Explain(context.AtomicReader, doc, innerExplain);
             }
 
-            public override float ValueForNormalization
+            public override float GetValueForNormalization()
             {
-                get { return _innerWeight.ValueForNormalization; }
+                return _innerWeight.GetValueForNormalization();
             }
 
 

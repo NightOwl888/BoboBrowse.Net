@@ -43,15 +43,15 @@ namespace BoboBrowse.Net.Sort
 
             public override DocComparator GetComparator(AtomicReader reader, int docbase)
             {
-                FieldCache.Ints values = FieldCache.DEFAULT.GetInts(reader, field, true);
+                FieldCache.Int32s values = FieldCache.DEFAULT.GetInt32s(reader, field, true);
                 return new IntDocComparator(values);
             }
 
             private class IntDocComparator : DocComparator
             {
-                private readonly FieldCache.Ints values;
+                private readonly FieldCache.Int32s values;
 
-                public IntDocComparator(FieldCache.Ints values)
+                public IntDocComparator(FieldCache.Int32s values)
                 {
                     this.values = values;
                 }
@@ -188,15 +188,15 @@ namespace BoboBrowse.Net.Sort
 
             public override DocComparator GetComparator(AtomicReader reader, int docbase)
             {
-                FieldCache.Shorts values = FieldCache.DEFAULT.GetShorts(reader, this.field, true);
+                FieldCache.Int16s values = FieldCache.DEFAULT.GetInt16s(reader, this.field, true);
                 return new ShortDocComparator(values);
             }
 
             private class ShortDocComparator : DocComparator
             {
-                private readonly FieldCache.Shorts values;
+                private readonly FieldCache.Int16s values;
 
-                public ShortDocComparator(FieldCache.Shorts values)
+                public ShortDocComparator(FieldCache.Int16s values)
                 {
                     this.values = values;
                 }
@@ -224,15 +224,15 @@ namespace BoboBrowse.Net.Sort
 
             public override DocComparator GetComparator(AtomicReader reader, int docbase)
             {
-                FieldCache.Longs values = FieldCache.DEFAULT.GetLongs(reader, this.field, true);
+                FieldCache.Int64s values = FieldCache.DEFAULT.GetInt64s(reader, this.field, true);
                 return new LongDocComparator(values);
             }
 
             private class LongDocComparator : DocComparator
             {
-                private readonly FieldCache.Longs values;
+                private readonly FieldCache.Int64s values;
 
-                public LongDocComparator(FieldCache.Longs values)
+                public LongDocComparator(FieldCache.Int64s values)
                 {
                     this.values = values;
                 }
@@ -272,15 +272,15 @@ namespace BoboBrowse.Net.Sort
 
             public override DocComparator GetComparator(AtomicReader reader, int docbase)
             {
-                FieldCache.Floats values = FieldCache.DEFAULT.GetFloats(reader, this.field, true);
+                FieldCache.Singles values = FieldCache.DEFAULT.GetSingles(reader, this.field, true);
                 return new FloatDocComparator(values);
             }
 
             private class FloatDocComparator : DocComparator
             {
-                private readonly FieldCache.Floats values;
+                private readonly FieldCache.Singles values;
 
-                public FloatDocComparator(FieldCache.Floats values)
+                public FloatDocComparator(FieldCache.Singles values)
                 {
                     this.values = values;
                 }

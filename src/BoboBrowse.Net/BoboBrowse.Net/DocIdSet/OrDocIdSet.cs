@@ -34,7 +34,7 @@ namespace BoboBrowse.Net.DocIdSet
         {
             public virtual int Compare(DocIdSetIterator o1, DocIdSetIterator o2)
             {
-                return o1.DocID() - o2.DocID();
+                return o1.DocID - o2.DocID;
             }
         }
 

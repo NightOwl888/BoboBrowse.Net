@@ -22,9 +22,10 @@ namespace BoboBrowse.Net.Util
 {
     using BoboBrowse.Net.Support;
     using Lucene.Net.Search;
+    using Lucene.Net.Support;
     using Lucene.Net.Util;
     using System;
-    
+
     /// <summary> 
     /// This class is written for a special purpose. No check is done in insertion and getting a value
     /// for performance reasons. Be careful if you are going to use this class.

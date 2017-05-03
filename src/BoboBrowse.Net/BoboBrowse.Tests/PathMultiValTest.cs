@@ -28,6 +28,7 @@ namespace BoboBrowse.Net
     using Lucene.Net.Documents;
     using Lucene.Net.Index;
     using Lucene.Net.Store;
+    using Lucene.Net.Support;
     using Lucene.Net.Util;
     using NUnit.Framework;
     using System;
@@ -51,7 +52,7 @@ namespace BoboBrowse.Net
             directory = new RAMDirectory();
             analyzer = new WhitespaceAnalyzer(LuceneVersion.LUCENE_48);
             IndexWriterConfig config = new IndexWriterConfig(LuceneVersion.LUCENE_48, analyzer);
-            config.SetOpenMode(IndexWriterConfig.OpenMode_e.CREATE);
+            config.SetOpenMode(OpenMode.CREATE);
             IndexWriter writer = new IndexWriter(directory, config);
             Document doc = new Document();
             AddMetaDataField(doc, PathHandlerName, new String[] { "/a/b/c", "/a/b/d" });
@@ -66,7 +67,7 @@ namespace BoboBrowse.Net
         public void Dispose()
         {
             facetHandlers = null;
-            if (directory != null && directory.IsOpen) directory.Dispose();
+            if (directory != null /*&& directory.IsOpen*/) directory.Dispose();
             directory = null;
             analyzer = null;
         }

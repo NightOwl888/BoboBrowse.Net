@@ -21,7 +21,7 @@
 namespace BoboBrowse.Net.Impl
 {
     using Lucene.Net.Analysis.Standard;
-    using Lucene.Net.QueryParser.Classic;
+    using Lucene.Net.QueryParsers.Classic;
     using Lucene.Net.Search;
     using Lucene.Net.Util;
 

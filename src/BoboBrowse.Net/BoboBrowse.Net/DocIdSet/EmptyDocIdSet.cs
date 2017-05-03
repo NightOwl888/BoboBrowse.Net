@@ -28,9 +28,9 @@ namespace BoboBrowse.Net.DocIdSet
 
         private class EmptyDocIdSetIterator : DocIdSetIterator
         {
-            public override int DocID()
+            public override int DocID
             {
-                return -1;
+                get { return -1; }
             }
 
             public override int NextDoc()
@@ -43,7 +43,7 @@ namespace BoboBrowse.Net.DocIdSet
                 return DocIdSetIterator.NO_MORE_DOCS;
             }
 
-            public override long Cost()
+            public override long GetCost()
             {
                 return 0;
             }

@@ -22,6 +22,7 @@ namespace BoboBrowse.Net.Facets.Impl
 {
     using BoboBrowse.Net.Support;
     using BoboBrowse.Net.Support.Logging;
+    using Lucene.Net.Support;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -95,7 +96,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         private static long GetTime(long time, string range)
         {
-            if (range.Length != 9) throw new ParseException("invalid range format: " + range);
+            if (range.Length != 9) throw new FormatException("invalid range format: " + range);
             try
             {
                 int val;
@@ -104,22 +105,22 @@ namespace BoboBrowse.Net.Facets.Impl
                 time -= val * MILLIS_IN_DAY;
 
                 val = int.Parse(range.Substring(3, 2));
-                if (val >= 24) throw new ParseException("invalid range format: " + range);
+                if (val >= 24) throw new FormatException("invalid range format: " + range);
                 time -= val * MILLIS_IN_HOUR;
 
                 val = int.Parse(range.Substring(5, 2));
-                if (val >= 60) throw new ParseException("invalid range format: " + range);
+                if (val >= 60) throw new FormatException("invalid range format: " + range);
                 time -= val * MILLIS_IN_MIN;
 
                 val = int.Parse(range.Substring(7, 2));
-                if (val >= 60) throw new ParseException("invalid range format: " + range);
+                if (val >= 60) throw new FormatException("invalid range format: " + range);
                 time -= val * MILLIS_IN_SEC;
 
                 return time;
             }
             catch (Exception e)
             {
-                throw new ParseException("invalid time format:" + range, e);
+                throw new FormatException("invalid time format:" + range, e);
             }
         }
 

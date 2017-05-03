@@ -39,10 +39,10 @@ namespace BoboBrowse.Net
                 {
                     BooleanQuery bq = (BooleanQuery)query;
                     splittable = bq.CoordDisabled;
-                    clauses = bq.Clauses;
+                    clauses = bq.GetClauses();
                     for (int j = 0; splittable && j < clauses.Length; j++)
                     {
-                        splittable = (clauses[j].Occur_ == BooleanClause.Occur.MUST);
+                        splittable = (clauses[j].Occur == Occur.MUST);
                     }
                 }
                 if (splittable)
@@ -64,7 +64,7 @@ namespace BoboBrowse.Net
             }
             BooleanQuery result = new BooleanQuery(true);
             foreach (var query in uniques)
-                result.Add(query, BooleanClause.Occur.MUST);
+                result.Add(query, Occur.MUST);
             return result;
         }
     }

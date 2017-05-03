@@ -76,10 +76,10 @@ namespace BoboBrowse.Net.Facets.Data
             int docID = -1;
             int valId = 0;
 
-            Terms terms = reader.Terms(field);
+            Terms terms = reader.GetTerms(field);
             if (terms != null)
             {
-                TermsEnum termsEnum = terms.Iterator(null);
+                TermsEnum termsEnum = terms.GetIterator(null);
                 BytesRef text;
                 while ((text = termsEnum.Next()) != null)
                 {
@@ -114,7 +114,7 @@ namespace BoboBrowse.Net.Facets.Data
                     }
 
                     Term term = new Term(field, strText);
-                    DocsEnum docsEnum = reader.TermDocsEnum(term);
+                    DocsEnum docsEnum = reader.GetTermDocsEnum(term);
                     if (docsEnum != null)
                     {
                         while ((docID = docsEnum.NextDoc()) != DocsEnum.NO_MORE_DOCS)
@@ -134,7 +134,7 @@ namespace BoboBrowse.Net.Facets.Data
                             bitset.FastSet(docID);
                             while (docsEnum.NextDoc() != DocsEnum.NO_MORE_DOCS)
                             {
-                                docID = docsEnum.DocID();
+                                docID = docsEnum.DocID;
                                 df++;
                                 if (!loader.Add(docID, valId))
                                 {
