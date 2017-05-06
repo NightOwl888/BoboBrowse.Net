@@ -30,7 +30,7 @@ namespace BoboBrowse.Net.Facets.Data
         [Test]
         public void Test1TwoNegativeValues()
         {
-            TermLongList list = new TermLongList();
+            TermInt64List list = new TermInt64List();
             list.Add(null);
             list.Add("-1");
             list.Add("-2");
@@ -44,7 +44,7 @@ namespace BoboBrowse.Net.Facets.Data
         [Test]
         public void Test2ThreeNegativeValues()
         {
-            TermLongList list = new TermLongList();
+            TermInt64List list = new TermInt64List();
             list.Add(null);
             list.Add("-1");
             list.Add("-2");
@@ -59,7 +59,7 @@ namespace BoboBrowse.Net.Facets.Data
         [Test]
         public void Test2aThreeNegativeValuesInt()
         {
-            TermIntList list = new TermIntList();
+            TermInt32List list = new TermInt32List();
             list.Add(null);
             list.Add("-1");
             list.Add("-2");
@@ -74,7 +74,7 @@ namespace BoboBrowse.Net.Facets.Data
         [Test]
         public void Test2bThreeNegativeValuesShort()
         {
-            TermShortList list = new TermShortList();
+            TermInt16List list = new TermInt16List();
             list.Add(null);
             list.Add("-1");
             list.Add("-2");
@@ -88,7 +88,7 @@ namespace BoboBrowse.Net.Facets.Data
 
         public void Test3ThreeNegativeValuesWithoutDummy()
         {
-            TermLongList list = new TermLongList();
+            TermInt64List list = new TermInt64List();
 
             list.Add("-1");
             list.Add("-2");

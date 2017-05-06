@@ -22,15 +22,18 @@ namespace BoboBrowse.Net.DocIdSet
 {
     using System;
 
+    /// <summary>
+    /// NOTE: This was IntArray in bobo-browse
+    /// </summary>
     [Serializable]
-    public class IntArray : PrimitiveArray<int>
+    public class Int32Array : PrimitiveArray<int>
     {
-        public IntArray(int len)
+        public Int32Array(int len)
             : base(len)
         {
         }
 
-        public IntArray()
+        public Int32Array()
         {
         }
 
@@ -75,13 +78,13 @@ namespace BoboBrowse.Net.DocIdSet
             return new int[len];
         }
 
-        public static int GetSerialIntNum(IntArray instance)
+        public static int GetSerialIntNum(Int32Array instance)
         {
             int num = 3 + instance.m_count; // _len, _count, _growth
             return num;
         }
 
-        public static int ConvertToBytes(IntArray instance, byte[] @out, int offset)
+        public static int ConvertToBytes(Int32Array instance, byte[] @out, int offset)
         {
             int numInt = 0;
             Conversion.IntToByteArray(instance.Len, @out, offset);
@@ -106,12 +109,12 @@ namespace BoboBrowse.Net.DocIdSet
             return numInt;
         }
 
-        public static IntArray NewInstanceFromBytes(byte[] inData, int offset)
+        public static Int32Array NewInstanceFromBytes(byte[] inData, int offset)
         {
             int len = Conversion.ByteArrayToInt(inData, offset);
             offset += Conversion.BYTES_PER_INT;
 
-            IntArray instance = new IntArray(len);
+            Int32Array instance = new Int32Array(len);
 
             int count = Conversion.ByteArrayToInt(inData, offset);
             offset += Conversion.BYTES_PER_INT;

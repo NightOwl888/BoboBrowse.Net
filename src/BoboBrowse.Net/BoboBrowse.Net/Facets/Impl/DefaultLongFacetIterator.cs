@@ -26,16 +26,18 @@ namespace BoboBrowse.Net.Facets.Impl
 
     /// <summary>
     /// author "Xiaoyang Gu &lt;xgu@linkedin.com&gt;"
+    /// <para/>
+    /// NOTE: This was DefaultLongFacetIterator in bobo-browse
     /// </summary>
-    public class DefaultLongFacetIterator : LongFacetIterator
+    public class DefaultInt64FacetIterator : Int64FacetIterator
     {
-        private readonly TermLongList m_valList;
+        private readonly TermInt64List m_valList;
         private readonly BigSegmentedArray _count;
         private readonly int m_countlength;
         private readonly int m_countLengthMinusOne;
         private int m_index;
 
-        public DefaultLongFacetIterator(TermLongList valList, BigSegmentedArray countarray, int countlength, bool zeroBased)
+        public DefaultInt64FacetIterator(TermInt64List valList, BigSegmentedArray countarray, int countlength, bool zeroBased)
         {
             m_valList = valList;
             m_countlength = countlength;
@@ -44,14 +46,14 @@ namespace BoboBrowse.Net.Facets.Impl
             m_index = -1;
             if (!zeroBased)
                 m_index++;
-            m_facet = TermLongList.VALUE_MISSING;
+            m_facet = TermInt64List.VALUE_MISSING;
             base.m_count = 0;
         }
 
         /// <summary>
         /// Added in .NET version as as an accessor to the _valList field.
         /// </summary>
-        public virtual TermLongList ValList
+        public virtual TermInt64List ValList
         {
             get { return m_valList; }
         }
@@ -64,7 +66,7 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             get
             {
-                if (m_facet == TermLongList.VALUE_MISSING) return null;
+                if (m_facet == TermInt64List.VALUE_MISSING) return null;
                 return m_valList.Format(m_facet);
             }
         }
@@ -154,7 +156,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     return m_valList.Format(m_facet);
                 }
             }
-            m_facet = TermLongList.VALUE_MISSING;
+            m_facet = TermInt64List.VALUE_MISSING;
             base.m_count = 0;
             return null;
         }
@@ -176,7 +178,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     return m_facet;
                 }
             }
-            m_facet = TermLongList.VALUE_MISSING;
+            m_facet = TermInt64List.VALUE_MISSING;
             base.m_count = 0;
             return m_facet;
         }

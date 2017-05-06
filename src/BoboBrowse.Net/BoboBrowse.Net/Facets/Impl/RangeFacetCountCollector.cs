@@ -45,7 +45,7 @@ namespace BoboBrowse.Net.Facets.Impl
             m_name = name;
             m_dataCache = dataCache;
             m_countLength = m_dataCache.Freqs.Length;
-            m_count = new LazyBigIntArray(m_countLength);
+            m_count = new LazyBigInt32Array(m_countLength);
             m_array = m_dataCache.OrderArray;
             m_ospec = ospec;
             if (predefinedRanges != null)
@@ -79,7 +79,7 @@ namespace BoboBrowse.Net.Facets.Impl
             BigSegmentedArray dist = null;
             if (m_predefinedRangeIndexes != null)
             {
-                dist = new LazyBigIntArray(m_predefinedRangeIndexes.Length);
+                dist = new LazyBigInt32Array(m_predefinedRangeIndexes.Length);
                 int n = 0;
                 foreach (int[] range in m_predefinedRangeIndexes)
                 {
@@ -145,7 +145,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public void CollectAll()
         {
-            m_count = BigIntArray.FromArray(m_dataCache.Freqs);
+            m_count = BigInt32Array.FromArray(m_dataCache.Freqs);
             m_countLength = m_dataCache.Freqs.Length;
         }
 
@@ -228,7 +228,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     int maxNumOfFacets = m_ospec.MaxCount;
                     if (maxNumOfFacets <= 0 || maxNumOfFacets > m_predefinedRangeIndexes.Length) maxNumOfFacets = m_predefinedRangeIndexes.Length;
 
-                    BigSegmentedArray rangeCount = new LazyBigIntArray(m_predefinedRangeIndexes.Length);
+                    BigSegmentedArray rangeCount = new LazyBigInt32Array(m_predefinedRangeIndexes.Length);
 
                     for (int k = 0; k < m_predefinedRangeIndexes.Length; ++k)
                     {
@@ -277,7 +277,7 @@ namespace BoboBrowse.Net.Facets.Impl
                         IComparer<int> comparer = comparerFactory.NewComparer(new RangeFacetCountCollectorFieldAccessor(m_predefinedRanges), rangeCount);
 
                         int forbidden = -1;
-                        IntBoundedPriorityQueue pq = new IntBoundedPriorityQueue(comparer, maxNumOfFacets, forbidden);
+                        Int32BoundedPriorityQueue pq = new Int32BoundedPriorityQueue(comparer, maxNumOfFacets, forbidden);
                         for (int i = 0; i < m_predefinedRangeIndexes.Length; ++i)
                         {
                             if (rangeCount.Get(i) >= minCount) pq.Offer(i);
@@ -359,7 +359,7 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             if (m_predefinedRanges != null)
             {
-                BigSegmentedArray rangeCounts = new LazyBigIntArray(m_predefinedRangeIndexes.Length);
+                BigSegmentedArray rangeCounts = new LazyBigInt32Array(m_predefinedRangeIndexes.Length);
                 for (int k = 0; k < m_predefinedRangeIndexes.Length; ++k)
                 {
                     int count = 0;

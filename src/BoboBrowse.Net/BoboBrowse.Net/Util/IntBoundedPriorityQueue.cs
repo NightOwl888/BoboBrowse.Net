@@ -25,7 +25,10 @@ namespace BoboBrowse.Net.Util
     using System.Collections;
     using System.Collections.Generic;
 
-    public class IntBoundedPriorityQueue //: IntervalHeap<int>
+    /// <summary>
+    /// NOTE: This was IntBoundedPriorityQueue in bobo-browse
+    /// </summary>
+    public class Int32BoundedPriorityQueue //: IntervalHeap<int>
     {
         //private static long serialVersionUID = 1L; // NOT USED
         private readonly int m_capacity;
@@ -40,7 +43,7 @@ namespace BoboBrowse.Net.Util
         /// <param name="comparer">a comparer that is used to order the items.</param>
         /// <param name="capacity">the maximum number of items the queue accepts</param>
         /// <param name="forbiddenValue"></param>
-        public IntBoundedPriorityQueue(IComparer<int> comparer, int capacity, int forbiddenValue)
+        public Int32BoundedPriorityQueue(IComparer<int> comparer, int capacity, int forbiddenValue)
         {
             m_capacity = capacity;
             m_comp = comparer;
@@ -73,17 +76,20 @@ namespace BoboBrowse.Net.Util
         /// instance of some class that provides a guarantee).
         /// </summary>
         /// <returns></returns>
-        public IntIterator GetIterator()
+        public Int32Iterator GetIterator() // TODO: Implement IEnumerable<T> and change this to GetEnumerator()
         {
-            return new IntIterator(this);
+            return new Int32Iterator(this);
         }
 
-        public class IntIterator : IEnumerator<int>
+        /// <summary>
+        /// NOTE: This was IntIterator in bobo-browse
+        /// </summary>
+        public class Int32Iterator : IEnumerator<int>
         {
             private int i = 0;
-            private IntBoundedPriorityQueue parent;
+            private Int32BoundedPriorityQueue parent;
 
-            public IntIterator(IntBoundedPriorityQueue parent)
+            public Int32Iterator(Int32BoundedPriorityQueue parent)
             {
                 this.parent = parent;
             }
@@ -228,7 +234,10 @@ namespace BoboBrowse.Net.Util
             m_items[index] = temp;
         }
 
-        public abstract class IntComparer : Comparer<int>
+        /// <summary>
+        /// NOTE: This was IntComparator in bobo-browse
+        /// </summary>
+        public abstract class Int32Comparer : Comparer<int>
         {
             public override int Compare(int x, int y)
             {

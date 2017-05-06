@@ -21,9 +21,11 @@
 namespace BoboBrowse.Net
 {
     /// <summary>
+    /// NOTE: This was ShortFacetIterator in bobo-browse
+    /// <para/>
     /// author "Xiaoyang Gu &lt;xgu@linkedin.com&gt;"
     /// </summary>
-    public abstract class ShortFacetIterator : FacetIterator
+    public abstract class Int16FacetIterator : FacetIterator
     {
         new public short m_facet;
 

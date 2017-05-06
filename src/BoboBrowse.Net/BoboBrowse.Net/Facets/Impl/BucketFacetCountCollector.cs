@@ -63,7 +63,7 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             if (m_collapsedCounts == null)
             {
-                m_collapsedCounts = new LazyBigIntArray(m_bucketValues.Count);
+                m_collapsedCounts = new LazyBigInt32Array(m_bucketValues.Count);
                 FacetDataCache dataCache = m_subCollector.DataCache;
                 ITermValueList subList = dataCache.ValArray;
                 BigSegmentedArray subcounts = m_subCollector.Count;

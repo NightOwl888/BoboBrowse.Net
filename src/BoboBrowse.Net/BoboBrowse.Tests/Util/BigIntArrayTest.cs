@@ -30,7 +30,7 @@ namespace BoboBrowse.Net.Util
         public void TestBigIntArray()
         {
             int count = 5000000;
-            var test = new BigIntArray(count);
+            var test = new BigInt32Array(count);
             var test2 = new int[count];
             for (int i = 0; i < count; i++)
             {

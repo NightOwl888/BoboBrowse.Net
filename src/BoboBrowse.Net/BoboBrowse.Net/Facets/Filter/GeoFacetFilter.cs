@@ -65,9 +65,9 @@ namespace BoboBrowse.Net.Facets.Filter
 
         private sealed class GeoDocIdSet : RandomAccessDocIdSet
         {
-            private readonly BigFloatArray m_xvals;
-		    private readonly BigFloatArray m_yvals;
-		    private readonly BigFloatArray m_zvals;
+            private readonly BigSingleArray m_xvals;
+		    private readonly BigSingleArray m_yvals;
+		    private readonly BigSingleArray m_zvals;
 		    private readonly float m_radius;
 		    private readonly float m_targetX;
 		    private readonly float m_targetY;
@@ -89,7 +89,7 @@ namespace BoboBrowse.Net.Facets.Filter
             /// <param name="maxdoc">max doc in the docid set</param>
             /// <param name="miles">variable to specify if the geo distance calculations are in miles. 
             /// False indicates distance calculation is in kilometers</param>
-            internal GeoDocIdSet(BigFloatArray xvals, BigFloatArray yvals, BigFloatArray zvals, float lat, float lon,
+            internal GeoDocIdSet(BigSingleArray xvals, BigSingleArray yvals, BigSingleArray zvals, float lat, float lon,
                 float radius, int maxdoc, bool miles)
             {
                 m_xvals = xvals;
@@ -128,9 +128,9 @@ namespace BoboBrowse.Net.Facets.Filter
 
         private class GeoDocIdSetIterator : DocIdSetIterator
         {
-            private readonly BigFloatArray m_xvals;
-            private readonly BigFloatArray m_yvals;
-            private readonly BigFloatArray m_zvals;
+            private readonly BigSingleArray m_xvals;
+            private readonly BigSingleArray m_yvals;
+            private readonly BigSingleArray m_zvals;
             private readonly float m_radius;
             private readonly float m_targetX;
             private readonly float m_targetY;
@@ -139,7 +139,7 @@ namespace BoboBrowse.Net.Facets.Filter
             private readonly int m_maxDoc;
             private int m_doc;
 
-            internal GeoDocIdSetIterator(BigFloatArray xvals, BigFloatArray yvals, BigFloatArray zvals, float targetX, float targetY, float targetZ,
+            internal GeoDocIdSetIterator(BigSingleArray xvals, BigSingleArray yvals, BigSingleArray zvals, float targetX, float targetY, float targetZ,
                 float delta, float radiusCosine, int maxdoc)
             {
                 m_xvals = xvals;

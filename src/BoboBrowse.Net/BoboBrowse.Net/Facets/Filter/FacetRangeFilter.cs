@@ -120,7 +120,7 @@ namespace BoboBrowse.Net.Facets.Filter
             private int m_maxID = -1;
             private readonly int m_start;
             private readonly int m_end;
-            private readonly BigNestedIntArray m_nestedArray;
+            private readonly BigNestedInt32Array m_nestedArray;
 
             internal MultiFacetRangeDocIdSetIterator(int start, int end, MultiValueFacetDataCache dataCache)
             {
@@ -314,7 +314,7 @@ namespace BoboBrowse.Net.Facets.Filter
             FacetDataCache dataCache = m_facetHandler.GetFacetData<FacetDataCache>(reader);
 
             bool multi = dataCache is MultiValueFacetDataCache;    
-            BigNestedIntArray nestedArray = multi ? ((MultiValueFacetDataCache)dataCache).NestedArray : null;
+            BigNestedInt32Array nestedArray = multi ? ((MultiValueFacetDataCache)dataCache).NestedArray : null;
             int[] range = Parse(dataCache, m_rangeString);
     
             if (range == null) 
@@ -336,10 +336,10 @@ namespace BoboBrowse.Net.Facets.Filter
             private readonly int m_start;
             private readonly int m_end;
             private readonly FacetDataCache m_dataCache;
-            private readonly BigNestedIntArray m_nestedArray;
+            private readonly BigNestedInt32Array m_nestedArray;
             private readonly bool m_multi;
 
-            public RangeRandomAccessDocIdSet(int start, int end, FacetDataCache dataCache, BigNestedIntArray nestedArray, bool multi)
+            public RangeRandomAccessDocIdSet(int start, int end, FacetDataCache dataCache, BigNestedInt32Array nestedArray, bool multi)
             {
                 m_start = start;
                 m_end = end;

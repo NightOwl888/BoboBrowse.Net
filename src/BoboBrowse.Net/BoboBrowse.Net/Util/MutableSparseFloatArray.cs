@@ -25,12 +25,15 @@ namespace BoboBrowse.Net.Util
     using System.Collections.Generic;
     using System.Runtime.CompilerServices;
 
-    public class MutableSparseFloatArray : SparseFloatArray
+    /// <summary>
+    /// NOTE: This was MutableSparseFloatArray in bobo-browse
+    /// </summary>
+    public class MutableSparseSingleArray : SparseSingleArray
     {
         private IDictionary<int, float> m_map;
         private bool m_isDirty;
 
-        public MutableSparseFloatArray(float[] floats)
+        public MutableSparseSingleArray(float[] floats)
             : base(floats)
         {
             m_map = new Dictionary<int, float>();

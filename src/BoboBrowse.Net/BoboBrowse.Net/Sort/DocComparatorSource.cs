@@ -32,11 +32,14 @@ namespace BoboBrowse.Net.Sort
 
         public abstract DocComparer GetComparer(AtomicReader reader, int docbase);
 
-        public class IntDocComparerSource : DocComparerSource
+        /// <summary>
+        /// NOTE: This was IntDocComparatorSource in bobo-browse
+        /// </summary>
+        public class Int32DocComparerSource : DocComparerSource
         {
             private readonly string m_field;
 
-            public IntDocComparerSource(string field)
+            public Int32DocComparerSource(string field)
             {
                 this.m_field = field;
             }
@@ -44,14 +47,17 @@ namespace BoboBrowse.Net.Sort
             public override DocComparer GetComparer(AtomicReader reader, int docbase)
             {
                 FieldCache.Int32s values = FieldCache.DEFAULT.GetInt32s(reader, m_field, true);
-                return new IntDocComparer(values);
+                return new Int32DocComparer(values);
             }
 
-            private class IntDocComparer : DocComparer
+            /// <summary>
+            /// NOTE: This was IntDocComparator in bobo-browse
+            /// </summary>
+            private class Int32DocComparer : DocComparer
             {
                 private readonly FieldCache.Int32s m_values;
 
-                public IntDocComparer(FieldCache.Int32s values)
+                public Int32DocComparer(FieldCache.Int32s values)
                 {
                     this.m_values = values;
                 }
@@ -177,11 +183,14 @@ namespace BoboBrowse.Net.Sort
             }
         }
 
-        public class ShortDocComparerSource : DocComparerSource
+        /// <summary>
+        /// NOTE: This was ShortDocComparatorSource in bobo-browse
+        /// </summary>
+        public class Int16DocComparerSource : DocComparerSource
         {
             private readonly string m_field;
 
-            public ShortDocComparerSource(string field)
+            public Int16DocComparerSource(string field)
             {
                 this.m_field = field;
             }
@@ -191,14 +200,17 @@ namespace BoboBrowse.Net.Sort
 #pragma warning disable 612,618
                 FieldCache.Int16s values = FieldCache.DEFAULT.GetInt16s(reader, this.m_field, true);
 #pragma warning restore 612, 618
-                return new ShortDocComparer(values);
+                return new Int16DocComparer(values);
             }
 
-            private class ShortDocComparer : DocComparer
+            /// <summary>
+            /// NOTE: This was ShortDocComparator in bobo-browse
+            /// </summary>
+            private class Int16DocComparer : DocComparer
             {
                 private readonly FieldCache.Int16s m_values;
 
-                public ShortDocComparer(FieldCache.Int16s values)
+                public Int16DocComparer(FieldCache.Int16s values)
                 {
                     this.m_values = values;
                 }
@@ -215,11 +227,14 @@ namespace BoboBrowse.Net.Sort
             }
         }
 
-        public class LongDocComparerSource : DocComparerSource
+        /// <summary>
+        /// NOTE: This was LongDocComparatorSource in bobo-browse
+        /// </summary>
+        public class Int64DocComparerSource : DocComparerSource
         {
             private readonly string m_field;
 
-            public LongDocComparerSource(string field)
+            public Int64DocComparerSource(string field)
             {
                 this.m_field = field;
             }
@@ -227,14 +242,17 @@ namespace BoboBrowse.Net.Sort
             public override DocComparer GetComparer(AtomicReader reader, int docbase)
             {
                 FieldCache.Int64s values = FieldCache.DEFAULT.GetInt64s(reader, this.m_field, true);
-                return new LongDocComparer(values);
+                return new Int64DocComparer(values);
             }
 
-            private class LongDocComparer : DocComparer
+            /// <summary>
+            /// NOTE: This was LongDocComparator in bobo-browse
+            /// </summary>
+            private class Int64DocComparer : DocComparer
             {
                 private readonly FieldCache.Int64s m_values;
 
-                public LongDocComparer(FieldCache.Int64s values)
+                public Int64DocComparer(FieldCache.Int64s values)
                 {
                     this.m_values = values;
                 }
@@ -263,11 +281,14 @@ namespace BoboBrowse.Net.Sort
             }
         }
 
-        public class FloatDocComparerSource : DocComparerSource
+        /// <summary>
+        /// NOTE: This was FloatDocComparatorSource in bobo-browse
+        /// </summary>
+        public class SingleDocComparerSource : DocComparerSource
         {
             private readonly string m_field;
 
-            public FloatDocComparerSource(string field)
+            public SingleDocComparerSource(string field)
             {
                 this.m_field = field;
             }
@@ -275,14 +296,17 @@ namespace BoboBrowse.Net.Sort
             public override DocComparer GetComparer(AtomicReader reader, int docbase)
             {
                 FieldCache.Singles values = FieldCache.DEFAULT.GetSingles(reader, this.m_field, true);
-                return new FloatDocComparer(values);
+                return new SingleDocComparer(values);
             }
 
-            private class FloatDocComparer : DocComparer
+            /// <summary>
+            /// NOTE: This was FloatDocComparator in bobo-browse
+            /// </summary>
+            private class SingleDocComparer : DocComparer
             {
                 private readonly FieldCache.Singles m_values;
 
-                public FloatDocComparer(FieldCache.Singles values)
+                public SingleDocComparer(FieldCache.Singles values)
                 {
                     this.m_values = values;
                 }

@@ -24,7 +24,10 @@ namespace BoboBrowse.Net.Search.Section
     using Lucene.Net.Util;
     using System;
 
-    public class IntMetaDataCache : IMetaDataCache
+    /// <summary>
+    /// NOTE: This was IntMetaDataCache in bobo-browse
+    /// </summary>
+    public class Int32MetaDataCache : IMetaDataCache
     {
         private static readonly int MAX_SLOTS = 1024;
         private static readonly int MISSING = int.MinValue;
@@ -37,7 +40,7 @@ namespace BoboBrowse.Net.Search.Section
         private int m_curSlot;
         private int m_curData;
 
-        public IntMetaDataCache(Term term, AtomicReader reader)
+        public Int32MetaDataCache(Term term, AtomicReader reader)
         {
             m_reader = reader;
 

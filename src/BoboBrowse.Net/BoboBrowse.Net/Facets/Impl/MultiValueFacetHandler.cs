@@ -42,7 +42,7 @@ namespace BoboBrowse.Net.Facets.Impl
         protected readonly TermListFactory m_termListFactory;
         protected readonly string m_indexFieldName;
 
-        protected int m_maxItems = BigNestedIntArray.MAX_ITEMS;
+        protected int m_maxItems = BigNestedInt32Array.MAX_ITEMS;
         protected Term m_sizePayloadTerm;
         // protected IEnumerable<string> _depends; // NOT USED
 
@@ -165,7 +165,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public virtual int MaxItems
         {
-            set { m_maxItems = Math.Min(value, BigNestedIntArray.MAX_ITEMS); }
+            set { m_maxItems = Math.Min(value, BigNestedInt32Array.MAX_ITEMS); }
         }
 
         public override string[] GetFieldValues(BoboSegmentReader reader, int id)
@@ -308,7 +308,7 @@ namespace BoboBrowse.Net.Facets.Impl
         public sealed class MultiValueDocScorer : BoboDocScorer
         {
             private readonly MultiValueFacetDataCache m_dataCache;
-            private readonly BigNestedIntArray m_array;
+            private readonly BigNestedInt32Array m_array;
 
             public MultiValueDocScorer(MultiValueFacetDataCache dataCache, IFacetTermScoringFunctionFactory scoreFunctionFactory, float[] boostList)
                 : base(scoreFunctionFactory.GetFacetTermScoringFunction(dataCache.ValArray.Count, dataCache.NestedArray.Length), boostList)
@@ -348,7 +348,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public sealed class MultiValueFacetCountCollector : DefaultFacetCountCollector
         {
-            new private readonly BigNestedIntArray m_array;
+            new private readonly BigNestedInt32Array m_array;
 
             public MultiValueFacetCountCollector(string name, 
                 MultiValueFacetDataCache dataCache, 
@@ -367,7 +367,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override sealed void CollectAll()
             {
-                m_count = BigIntArray.FromArray(m_dataCache.Freqs);
+                m_count = BigInt32Array.FromArray(m_dataCache.Freqs);
             }
         }
     }

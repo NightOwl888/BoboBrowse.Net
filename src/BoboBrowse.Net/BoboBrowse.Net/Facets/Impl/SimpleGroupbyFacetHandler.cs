@@ -267,7 +267,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     totalLen *= m_lens[i];
                 }
                 m_countlength = totalLen;
-                m_count = new LazyBigIntArray(m_countlength);
+                m_count = new LazyBigInt32Array(m_countlength);
                 m_maxdoc = maxdoc;
             }
 
@@ -437,7 +437,7 @@ namespace BoboBrowse.Net.Facets.Impl
                         IComparer<int> comparer = comparerFactory.NewComparer(new GroupbyFieldValueAccessor(this.GetFacetString, this.GetRawFaceValue), m_count);
                         facetColl = new List<BrowseFacet>();
                         int forbidden = -1;
-                        IntBoundedPriorityQueue pq = new IntBoundedPriorityQueue(comparer, max, forbidden);
+                        Int32BoundedPriorityQueue pq = new Int32BoundedPriorityQueue(comparer, max, forbidden);
 
                         for (int i = 1; i < m_countlength; ++i) // exclude zero
                         {

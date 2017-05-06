@@ -312,49 +312,49 @@ namespace BoboBrowse.Net.Facets
                 if (iter != null)
                     iterList.Add(iter);
             }
-            if (iterList.Count > 0 && iterList[0] is IntFacetIterator)
+            if (iterList.Count > 0 && iterList[0] is Int32FacetIterator)
             {
-                List<IntFacetIterator> il = new List<IntFacetIterator>();
+                List<Int32FacetIterator> il = new List<Int32FacetIterator>();
                 foreach (IFacetAccessible facetAccessor in m_list)
                 {
                     iter = (FacetIterator)facetAccessor.GetIterator();
                     if (iter != null)
-                        il.Add((IntFacetIterator)iter);
+                        il.Add((Int32FacetIterator)iter);
                 }
-                return new CombinedIntFacetIterator(il, m_fspec.MinHitCount);
+                return new CombinedInt32FacetIterator(il, m_fspec.MinHitCount);
             }
-            if (iterList.Count > 0 && iterList[0] is LongFacetIterator)
+            if (iterList.Count > 0 && iterList[0] is Int64FacetIterator)
             {
-                List<LongFacetIterator> il = new List<LongFacetIterator>();
+                List<Int64FacetIterator> il = new List<Int64FacetIterator>();
                 foreach (IFacetAccessible facetAccessor in m_list)
                 {
                     iter = (FacetIterator)facetAccessor.GetIterator();
                     if (iter != null)
-                        il.Add((LongFacetIterator)iter);
+                        il.Add((Int64FacetIterator)iter);
                 }
-                return new CombinedLongFacetIterator(il, m_fspec.MinHitCount);
+                return new CombinedInt64FacetIterator(il, m_fspec.MinHitCount);
             }
-            if (iterList.Count > 0 && iterList[0] is ShortFacetIterator)
+            if (iterList.Count > 0 && iterList[0] is Int16FacetIterator)
             {
-                List<ShortFacetIterator> il = new List<ShortFacetIterator>();
+                List<Int16FacetIterator> il = new List<Int16FacetIterator>();
                 foreach (IFacetAccessible facetAccessor in m_list)
                 {
                     iter = (FacetIterator)facetAccessor.GetIterator();
                     if (iter != null)
-                        il.Add((ShortFacetIterator)iter);
+                        il.Add((Int16FacetIterator)iter);
                 }
-                return new CombinedShortFacetIterator(il, m_fspec.MinHitCount);
+                return new CombinedInt16FacetIterator(il, m_fspec.MinHitCount);
             }
-            if (iterList.Count > 0 && iterList[0] is FloatFacetIterator)
+            if (iterList.Count > 0 && iterList[0] is SingleFacetIterator)
             {
-                List<FloatFacetIterator> il = new List<FloatFacetIterator>();
+                List<SingleFacetIterator> il = new List<SingleFacetIterator>();
                 foreach (IFacetAccessible facetAccessor in m_list)
                 {
                     iter = (FacetIterator)facetAccessor.GetIterator();
                     if (iter != null)
-                        il.Add((FloatFacetIterator)iter);
+                        il.Add((SingleFacetIterator)iter);
                 }
-                return new CombinedFloatFacetIterator(il, m_fspec.MinHitCount);
+                return new CombinedSingleFacetIterator(il, m_fspec.MinHitCount);
             }
             if (iterList.Count > 0 && iterList[0] is DoubleFacetIterator)
             {

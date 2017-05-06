@@ -182,7 +182,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 m_start = start;
                 m_end = end;
                 m_unit = unit;
-                m_count = new LazyBigIntArray(CountArraySize());
+                m_count = new LazyBigInt32Array(CountArraySize());
             }
 
             private int CountArraySize()
@@ -269,7 +269,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 {
                     long start = Convert.ToInt64(m_start);
                     long unit = Convert.ToInt64(m_unit);
-                    TermLongList valArray = (TermLongList)m_valArray;
+                    TermInt64List valArray = (TermInt64List)m_valArray;
                     for (int i = startIdx; i < endIdx; i++)
                     {
                         long val = valArray.GetPrimitiveValue(i);
@@ -284,7 +284,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 {
                     int start = Convert.ToInt32(m_start);
                     int unit = Convert.ToInt32(m_unit);
-                    TermIntList valArray = (TermIntList)m_valArray;
+                    TermInt32List valArray = (TermInt32List)m_valArray;
                     for (int i = startIdx; i < endIdx; i++)
                     {
                         int val = valArray.GetPrimitiveValue(i);
@@ -362,7 +362,7 @@ namespace BoboBrowse.Net.Facets.Impl
             { }
         }
 
-        public class HistogramFacetIterator : IntFacetIterator
+        public class HistogramFacetIterator : Int32FacetIterator
         {
             private readonly string m_format;
             new private readonly BigSegmentedArray m_count;
@@ -407,7 +407,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     base.m_count = m_count.Get(++m_idx);
                     return (m_facet = m_idx);
                 }
-                return TermIntList.VALUE_MISSING;
+                return TermInt32List.VALUE_MISSING;
             }
 
             public override int NextInt(int minHits)
@@ -420,7 +420,7 @@ namespace BoboBrowse.Net.Facets.Impl
                         return (m_facet = m_idx);
                     }
                 }
-                return TermIntList.VALUE_MISSING; 
+                return TermInt32List.VALUE_MISSING; 
             }
 
             public override bool HasNext()

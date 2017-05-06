@@ -21,9 +21,11 @@
 namespace BoboBrowse.Net
 {
     /// <summary>
+    /// NOTE: This was FloatFacetIterator in bobo-browse
+    /// <para/>
     /// author "Xiaoyang Gu &lt;xgu@linkedin.com&gt;"
     /// </summary>
-    public abstract class FloatFacetIterator : FacetIterator
+    public abstract class SingleFacetIterator : FacetIterator
     {
         new protected float m_facet;
 
@@ -32,6 +34,10 @@ namespace BoboBrowse.Net
             get { return m_facet; }
         }
 
+        /// <summary>
+        /// NOTE: This was NextFloat() in 
+        /// </summary>
+        /// <returns></returns>
         public abstract float NextFloat();
         public abstract float NextFloat(int minHits);
         public abstract string Format(float val);

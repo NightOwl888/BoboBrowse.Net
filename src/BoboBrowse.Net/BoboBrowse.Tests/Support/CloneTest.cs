@@ -32,14 +32,14 @@ namespace BoboBrowse.Net.Support
         public void TestCloneIntArray()
         {
             // Arrange
-            var orig = new IntArray(7);
+            var orig = new Int32Array(7);
             orig.Array = new int[] { 5, 4, 3, 2, 1, 1, 2 };
             orig.m_count = 4;
             orig.Growth = 6;
             orig.Len = 7;
 
             // Act
-            var clone = (IntArray)orig.Clone();
+            var clone = (Int32Array)orig.Clone();
 
             // Assert
             Assert.AreEqual(new int[] { 5, 4, 3, 2, 1, 1, 2 }, clone.Array);

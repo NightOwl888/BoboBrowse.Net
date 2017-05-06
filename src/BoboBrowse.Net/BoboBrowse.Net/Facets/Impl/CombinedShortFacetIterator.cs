@@ -26,19 +26,24 @@ namespace BoboBrowse.Net.Facets.Impl
 
     /// <summary>
     /// author "Xiaoyang Gu &lt;xgu@linkedin.com&gt;"
+    /// <para/>
+    /// NOTE: This was CombinedShortFacetIterator in bobo-browse
     /// </summary>
-    public class CombinedShortFacetIterator : ShortFacetIterator
+    public class CombinedInt16FacetIterator : Int16FacetIterator
     {
-        public class ShortIteratorNode
+        /// <summary>
+        /// NOTE: This was ShortIteratorNode in bobo-browse
+        /// </summary>
+        public class Int16IteratorNode
         {
-            private readonly ShortFacetIterator m_iterator;
+            private readonly Int16FacetIterator m_iterator;
             protected short m_curFacet;
             protected int m_curFacetCount;
 
-            public ShortIteratorNode(ShortFacetIterator iterator)
+            public Int16IteratorNode(Int16FacetIterator iterator)
             {
                 m_iterator = iterator;
-                m_curFacet = TermShortList.VALUE_MISSING;
+                m_curFacet = TermInt16List.VALUE_MISSING;
                 m_curFacetCount = 0;
             }
 
@@ -46,7 +51,7 @@ namespace BoboBrowse.Net.Facets.Impl
             /// Added in .NET version as an accessor to the _iterator field.
             /// </summary>
             /// <returns></returns>
-            public virtual ShortFacetIterator GetIterator()
+            public virtual Int16FacetIterator GetIterator()
             {
                 return m_iterator;
             }
@@ -71,52 +76,52 @@ namespace BoboBrowse.Net.Facets.Impl
             {
                 if (minHits > 0)
                     minHits = 1;
-                if ((m_curFacet = m_iterator.NextShort(minHits)) != TermShortList.VALUE_MISSING)
+                if ((m_curFacet = m_iterator.NextShort(minHits)) != TermInt16List.VALUE_MISSING)
                 {
                     m_curFacetCount = m_iterator.Count;
                     return true;
                 }
-                m_curFacet = TermShortList.VALUE_MISSING;
+                m_curFacet = TermInt16List.VALUE_MISSING;
                 m_curFacetCount = 0;
                 return false;
             }
         }
 
-        private readonly ShortFacetPriorityQueue _queue;
+        private readonly Int16FacetPriorityQueue _queue;
 
-        private IList<ShortFacetIterator> _iterators;
+        private IList<Int16FacetIterator> _iterators;
 
-        private CombinedShortFacetIterator(int length)
+        private CombinedInt16FacetIterator(int length)
         {
-            _queue = new ShortFacetPriorityQueue();
+            _queue = new Int16FacetPriorityQueue();
             _queue.Initialize(length);
         }
 
-        public CombinedShortFacetIterator(IList<ShortFacetIterator> iterators)
+        public CombinedInt16FacetIterator(IList<Int16FacetIterator> iterators)
             : this(iterators.Count)
         {
             _iterators = iterators;
-            foreach (ShortFacetIterator iterator in iterators)
+            foreach (Int16FacetIterator iterator in iterators)
             {
-                ShortIteratorNode node = new ShortIteratorNode(iterator);
+                Int16IteratorNode node = new Int16IteratorNode(iterator);
                 if (node.Fetch(1))
                     _queue.Add(node);
             }
-            m_facet = TermShortList.VALUE_MISSING;
+            m_facet = TermInt16List.VALUE_MISSING;
             m_count = 0;
         }
 
-        public CombinedShortFacetIterator(List<ShortFacetIterator> iterators, int minHits)
+        public CombinedInt16FacetIterator(List<Int16FacetIterator> iterators, int minHits)
             : this(iterators.Count)
         {
             _iterators = iterators;
-            foreach (ShortFacetIterator iterator in iterators)
+            foreach (Int16FacetIterator iterator in iterators)
             {
-                ShortIteratorNode node = new ShortIteratorNode(iterator);
+                Int16IteratorNode node = new Int16IteratorNode(iterator);
                 if (node.Fetch(minHits))
                     _queue.Add(node);
             }
-            m_facet = TermShortList.VALUE_MISSING;
+            m_facet = TermInt16List.VALUE_MISSING;
             m_count = 0;
         }
 
@@ -158,16 +163,16 @@ namespace BoboBrowse.Net.Facets.Impl
             if (!HasNext())
                 throw new IndexOutOfRangeException("No more facets in this iteration");
 
-            ShortIteratorNode node = _queue.Top;
+            Int16IteratorNode node = _queue.Top;
 
             m_facet = node.CurFacet;
-            int next = TermShortList.VALUE_MISSING;
+            int next = TermInt16List.VALUE_MISSING;
             m_count = 0;
             while (HasNext())
             {
                 node = _queue.Top;
                 next = node.CurFacet;
-                if ((next != TermShortList.VALUE_MISSING) && (next != m_facet))
+                if ((next != TermInt16List.VALUE_MISSING) && (next != m_facet))
                 {
                     return Format(m_facet);
                 }
@@ -190,12 +195,12 @@ namespace BoboBrowse.Net.Facets.Impl
             int qsize = _queue.Count;
             if (qsize == 0)
             {
-                m_facet = TermShortList.VALUE_MISSING;
+                m_facet = TermInt16List.VALUE_MISSING;
                 m_count = 0;
                 return null;
             }
 
-            ShortIteratorNode node = _queue.Top;
+            Int16IteratorNode node = _queue.Top;
             m_facet = node.CurFacet;
             m_count = node.CurFacetCount;
             while (true)
@@ -216,7 +221,7 @@ namespace BoboBrowse.Net.Facets.Impl
                         // we reached the end. check if this _facet obeys the minHits
                         if (m_count < minHits)
                         {
-                            m_facet = TermShortList.VALUE_MISSING;
+                            m_facet = TermInt16List.VALUE_MISSING;
                             m_count = 0;
                             return null;
                         }
@@ -262,12 +267,14 @@ namespace BoboBrowse.Net.Facets.Impl
 
         /// <summary>
         /// Lucene PriorityQueue
+        /// <para/>
+        /// NOTE: This was ShortFacetPriorityQueue in bobo-browse
         /// </summary>
-        public class ShortFacetPriorityQueue
+        public class Int16FacetPriorityQueue
         {
             private int m_size;
             private int m_maxSize;
-            protected ShortIteratorNode[] m_heap;
+            protected Int16IteratorNode[] m_heap;
 
             /// <summary>
             /// Subclass constructors must call this.
@@ -282,18 +289,18 @@ namespace BoboBrowse.Net.Facets.Impl
                     heapSize = 2;
                 else
                     heapSize = maxSize + 1;
-                m_heap = new ShortIteratorNode[heapSize];
+                m_heap = new Int16IteratorNode[heapSize];
                 this.m_maxSize = maxSize;
             }
 
-            public void Put(ShortIteratorNode element)
+            public void Put(Int16IteratorNode element)
             {
                 m_size++;
                 m_heap[m_size] = element;
                 UpHeap();
             }
 
-            public ShortIteratorNode Add(ShortIteratorNode element)
+            public Int16IteratorNode Add(Int16IteratorNode element)
             {
                 m_size++;
                 m_heap[m_size] = element;
@@ -301,12 +308,12 @@ namespace BoboBrowse.Net.Facets.Impl
                 return m_heap[1];
             }
 
-            public virtual bool Insert(ShortIteratorNode element)
+            public virtual bool Insert(Int16IteratorNode element)
             {
                 return InsertWithOverflow(element) != element;
             }
 
-            public virtual ShortIteratorNode InsertWithOverflow(ShortIteratorNode element)
+            public virtual Int16IteratorNode InsertWithOverflow(Int16IteratorNode element)
             {
                 if (m_size < m_maxSize)
                 {
@@ -315,7 +322,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 }
                 else if (m_size > 0 && !(element.CurFacet < m_heap[1].CurFacet))
                 {
-                    ShortIteratorNode ret = m_heap[1];
+                    Int16IteratorNode ret = m_heap[1];
                     m_heap[1] = element;
                     AdjustTop();
                     return ret;
@@ -330,7 +337,7 @@ namespace BoboBrowse.Net.Facets.Impl
             /// Returns the least element of the PriorityQueue in constant time.
             /// </summary>
             /// <returns></returns>
-            public ShortIteratorNode Top
+            public Int16IteratorNode Top
             {
                 get
                 {
@@ -346,11 +353,11 @@ namespace BoboBrowse.Net.Facets.Impl
             /// time.
             /// </summary>
             /// <returns></returns>
-            public ShortIteratorNode Pop()
+            public Int16IteratorNode Pop()
             {
                 if (m_size > 0)
                 {
-                    ShortIteratorNode result = m_heap[1]; // save first value
+                    Int16IteratorNode result = m_heap[1]; // save first value
                     m_heap[1] = m_heap[m_size]; // move last to first
                     m_heap[m_size] = null; // permit GC of objects
                     m_size--;
@@ -366,7 +373,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 DownHeap();
             }
 
-            public ShortIteratorNode UpdateTop()
+            public Int16IteratorNode UpdateTop()
             {
                 DownHeap();
                 return m_heap[1];
@@ -397,7 +404,7 @@ namespace BoboBrowse.Net.Facets.Impl
             private void UpHeap()
             {
                 int i = m_size;
-                ShortIteratorNode node = m_heap[i]; // save bottom node
+                Int16IteratorNode node = m_heap[i]; // save bottom node
                 int j = (int)(((uint)i) >> 1);
                 while (j > 0 && (node.CurFacet < m_heap[j].CurFacet))
                 {
@@ -411,7 +418,7 @@ namespace BoboBrowse.Net.Facets.Impl
             private void DownHeap()
             {
                 int i = 1;
-                ShortIteratorNode node = m_heap[i]; // save top node
+                Int16IteratorNode node = m_heap[i]; // save top node
                 int j = i << 1; // find smaller child
                 int k = j + 1;
                 if (k <= m_size && (m_heap[k].CurFacet < m_heap[j].CurFacet))
@@ -443,10 +450,10 @@ namespace BoboBrowse.Net.Facets.Impl
             if (!HasNext())
                 throw new IndexOutOfRangeException("No more facets in this iteration");
 
-            ShortIteratorNode node = _queue.Top;
+            Int16IteratorNode node = _queue.Top;
 
             m_facet = node.CurFacet;
-            int next = TermShortList.VALUE_MISSING;
+            int next = TermInt16List.VALUE_MISSING;
             m_count = 0;
             while (HasNext())
             {
@@ -462,7 +469,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 else
                     _queue.Pop();
             }
-            return TermShortList.VALUE_MISSING;
+            return TermInt16List.VALUE_MISSING;
         }
 
         /// <summary>
@@ -476,12 +483,12 @@ namespace BoboBrowse.Net.Facets.Impl
             int qsize = _queue.Count;
             if (qsize == 0)
             {
-                m_facet = TermShortList.VALUE_MISSING;
+                m_facet = TermInt16List.VALUE_MISSING;
                 m_count = 0;
-                return TermShortList.VALUE_MISSING;
+                return TermInt16List.VALUE_MISSING;
             }
 
-            ShortIteratorNode node = _queue.Top;
+            Int16IteratorNode node = _queue.Top;
             m_facet = node.CurFacet;
             m_count = node.CurFacetCount;
             while (true)
@@ -502,7 +509,7 @@ namespace BoboBrowse.Net.Facets.Impl
                         // we reached the end. check if this _facet obeys the minHits
                         if (m_count < minHits)
                         {
-                            m_facet = TermShortList.VALUE_MISSING;
+                            m_facet = TermInt16List.VALUE_MISSING;
                             m_count = 0;
                         }
                         break;

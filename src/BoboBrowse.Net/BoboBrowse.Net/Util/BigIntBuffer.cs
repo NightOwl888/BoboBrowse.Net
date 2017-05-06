@@ -23,8 +23,12 @@ namespace BoboBrowse.Net.Util
     using BoboBrowse.Net.Support;
     using System.Collections.Generic;
 
-    ///<summary>@author ymatsuda</summary>
-    public class BigIntBuffer
+    /// <summary>
+    /// NOTE: This was BigIntBuffer in bobo-browse
+    /// <para/>
+    /// @author ymatsuda
+    /// </summary>
+    public class BigInt32Buffer
     {
         private const int PAGESIZE = 1024;
         private const int MASK = 0x3FF;
@@ -34,7 +38,7 @@ namespace BoboBrowse.Net.Util
         private int m_allocSize;
         private int m_mark;
 
-        public BigIntBuffer()
+        public BigInt32Buffer()
         {
             m_buffer = new List<int[]>();
             m_allocSize = 0;

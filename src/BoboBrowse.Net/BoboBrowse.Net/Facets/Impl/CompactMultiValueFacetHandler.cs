@@ -246,7 +246,7 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             int maxDoc = reader.MaxDoc;
 
-            BigIntArray order = new BigIntArray(maxDoc);
+            BigInt32Array order = new BigInt32Array(maxDoc);
 
             ITermValueList mterms = m_termListFactory == null ? new TermStringList() : m_termListFactory.CreateTermList();
 
@@ -433,7 +433,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override sealed void CollectAll()
             {
-                m_count = BigIntArray.FromArray(m_dataCache.Freqs);
+                m_count = BigInt32Array.FromArray(m_dataCache.Freqs);
                 m_aggregated = true;
             }
 

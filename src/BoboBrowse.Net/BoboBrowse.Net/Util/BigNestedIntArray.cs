@@ -30,9 +30,12 @@ namespace BoboBrowse.Net.Util
 
     /// <summary>
     /// write-once big nested int array
+    /// <para/>
     /// author ymatsuda
+    /// <para/>
+    /// NOTE: This was BigNestedIntArray in bobo-browse
     /// </summary>
-    public sealed class BigNestedIntArray
+    public sealed class BigNestedInt32Array
     {
         public const int MAX_ITEMS = 1024;
         private const int MAX_SLOTS = 1024;
@@ -44,7 +47,7 @@ namespace BoboBrowse.Net.Util
 
         private const int MISSING = int.MinValue;
         private static int[] MISSING_PAGE;
-        static BigNestedIntArray()
+        static BigNestedInt32Array()
         {
             MISSING_PAGE = new int[MAX_SLOTS];
             Arrays.Fill(MISSING_PAGE, MISSING);
@@ -311,7 +314,7 @@ namespace BoboBrowse.Net.Util
         /// <summary>
         /// Constructs BigNEstedIntArray
         /// </summary>
-        public BigNestedIntArray()
+        public BigNestedInt32Array()
         {
         }
 
@@ -1090,21 +1093,21 @@ namespace BoboBrowse.Net.Util
             private static int SEGSIZE = 8;
 
             private int m_size;
-            private readonly BigIntArray m_info;
-            private BigIntBuffer m_buffer;
+            private readonly BigInt32Array m_info;
+            private BigInt32Buffer m_buffer;
             private int m_maxItems;
 
-            public BufferedLoader(int size, int maxItems, BigIntBuffer buffer)
+            public BufferedLoader(int size, int maxItems, BigInt32Buffer buffer)
             {
                 m_size = size;
-                m_maxItems = Math.Min(maxItems, BigNestedIntArray.MAX_ITEMS);
-                m_info = new BigIntArray(size << 1); // pointer and count
+                m_maxItems = Math.Min(maxItems, BigNestedInt32Array.MAX_ITEMS);
+                m_info = new BigInt32Array(size << 1); // pointer and count
                 m_info.Fill(EOD);
                 m_buffer = buffer;
             }
 
             public BufferedLoader(int size)
-                : this(size, MAX_ITEMS, new BigIntBuffer())
+                : this(size, MAX_ITEMS, new BigInt32Buffer())
             {
             }
 
@@ -1114,7 +1117,7 @@ namespace BoboBrowse.Net.Util
             /// <param name="size"></param>
             /// <param name="maxItems"></param>
             /// <param name="buffer"></param>
-            public void Reset(int size, int maxItems, BigIntBuffer buffer)
+            public void Reset(int size, int maxItems, BigInt32Buffer buffer)
             {
                 if (size >= Capacity)
                     throw new System.ArgumentException("unable to change size");

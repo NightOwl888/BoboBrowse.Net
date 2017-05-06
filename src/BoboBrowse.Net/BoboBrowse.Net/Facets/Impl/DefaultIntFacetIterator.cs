@@ -24,15 +24,18 @@ namespace BoboBrowse.Net.Facets.Impl
     using BoboBrowse.Net.Util;
     using System;
 
-    public class DefaultIntFacetIterator : IntFacetIterator
+    /// <summary>
+    /// NOTE: This was DefaultIntFacetIterator in bobo-browse
+    /// </summary>
+    public class DefaultInt32FacetIterator : Int32FacetIterator
     {
-        private readonly TermIntList m_valList;
+        private readonly TermInt32List m_valList;
         private readonly BigSegmentedArray _count;
         private readonly int m_countlength;
         private readonly int m_countLengthMinusOne;
         private int m_index;
 
-        public DefaultIntFacetIterator(TermIntList valList, BigSegmentedArray countarray, int countlength, bool zeroBased)
+        public DefaultInt32FacetIterator(TermInt32List valList, BigSegmentedArray countarray, int countlength, bool zeroBased)
         {
             m_valList = valList;
             _count = countarray;
@@ -41,14 +44,14 @@ namespace BoboBrowse.Net.Facets.Impl
             m_index = -1;
             if (!zeroBased)
                 m_index++;
-            m_facet = TermIntList.VALUE_MISSING;
+            m_facet = TermInt32List.VALUE_MISSING;
             base.m_count = 0;
         }
 
         /// <summary>
         /// Added in .NET version as as an accessor to the _valList field.
         /// </summary>
-        public virtual TermIntList ValList
+        public virtual TermInt32List ValList
         {
             get { return m_valList; }
         }
@@ -143,7 +146,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     return m_valList.Format(m_facet);
                 }
             }
-            m_facet = TermIntList.VALUE_MISSING;
+            m_facet = TermInt32List.VALUE_MISSING;
             base.m_count = 0;
             return null;
         }
@@ -165,7 +168,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     return m_facet;
                 }
             }
-            m_facet = TermIntList.VALUE_MISSING;
+            m_facet = TermInt32List.VALUE_MISSING;
             base.m_count = 0;
             return m_facet;    
         }

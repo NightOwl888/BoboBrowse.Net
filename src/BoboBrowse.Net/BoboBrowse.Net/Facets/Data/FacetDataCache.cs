@@ -107,10 +107,10 @@ namespace BoboBrowse.Net.Facets.Data
             }
             else if (termCount < short.MaxValue)
             {
-                return new BigShortArray(maxDoc);
+                return new BigInt16Array(maxDoc);
             }
             else
-                return new BigIntArray(maxDoc);
+                return new BigInt32Array(maxDoc);
         }
 
         protected int GetDictValueCount(AtomicReader reader, string field)

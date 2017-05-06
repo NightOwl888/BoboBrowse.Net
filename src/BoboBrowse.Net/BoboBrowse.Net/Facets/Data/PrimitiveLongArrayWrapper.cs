@@ -22,11 +22,14 @@ namespace BoboBrowse.Net.Facets.Data
 {
     using Lucene.Net.Support;
 
-    public class PrimitiveLongArrayWrapper
+    /// <summary>
+    /// NOTE: This was PrimitiveLongArrayWrapper in bobo-browse
+    /// </summary>
+    public class PrimitiveInt64ArrayWrapper
     {
         private long[] m_data;
 
-        public PrimitiveLongArrayWrapper(long[] data)
+        public PrimitiveInt64ArrayWrapper(long[] data)
         {
             this.m_data = data;
         }
@@ -43,9 +46,9 @@ namespace BoboBrowse.Net.Facets.Data
 
         public override bool Equals(object other)
         {
-            if (other is PrimitiveLongArrayWrapper)
+            if (other is PrimitiveInt64ArrayWrapper)
             {
-                return Arrays.Equals(m_data, ((PrimitiveLongArrayWrapper)other).m_data);
+                return Arrays.Equals(m_data, ((PrimitiveInt64ArrayWrapper)other).m_data);
             }
             return false;
         }

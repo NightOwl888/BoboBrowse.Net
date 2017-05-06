@@ -54,7 +54,7 @@ namespace BoboBrowse.Net.Facets.Impl
             m_dataCache = dataCache;
             m_sep = sep;
             m_sepArray = sep.ToCharArray();
-            m_count = new LazyBigIntArray(m_dataCache.Freqs.Length);
+            m_count = new LazyBigInt32Array(m_dataCache.Freqs.Length);
             log.Info(name + ": " + m_count.Length);
             m_orderArray = m_dataCache.OrderArray;
             m_minHitCount = ospec.MinHitCount;
@@ -103,7 +103,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public virtual void CollectAll()
         {
-            m_count = BigIntArray.FromArray(m_dataCache.Freqs);
+            m_count = BigInt32Array.FromArray(m_dataCache.Freqs);
         }
 
         public virtual BrowseFacet GetFacet(string @value)

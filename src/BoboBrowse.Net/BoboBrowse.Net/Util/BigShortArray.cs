@@ -25,7 +25,10 @@ namespace BoboBrowse.Net.Util
     using Lucene.Net.Support;
     using Lucene.Net.Util;
 
-    public class BigShortArray : BigSegmentedArray
+    /// <summary>
+    /// NOTE: This was BigShortArray in bobo-browse
+    /// </summary>
+    public class BigInt16Array : BigSegmentedArray
     {
         private short[][] m_array;
 
@@ -34,7 +37,7 @@ namespace BoboBrowse.Net.Util
         private const int SHIFT_SIZE = 11;
         private const int MASK = BLOCK_SIZE - 1;
 
-        public BigShortArray(int size)
+        public BigInt16Array(int size)
             : base(size)
         {
             m_array = new short[m_numrows][];

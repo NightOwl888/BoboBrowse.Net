@@ -135,7 +135,7 @@ namespace BoboBrowse.Net.Facets.Impl
             BigSegmentedArray dist = null;
             if (m_latPredefinedRangeIndexes != null)
             {
-                dist = new LazyBigIntArray(m_latPredefinedRangeIndexes.Length);
+                dist = new LazyBigInt32Array(m_latPredefinedRangeIndexes.Length);
                 int n = 0;
                 int start;
                 int end;
@@ -258,7 +258,7 @@ namespace BoboBrowse.Net.Facets.Impl
         public virtual FacetIterator GetIterator()
         {
             // each range is of the form <lat, lon, radius>
-            LazyBigIntArray rangeCounts = new LazyBigIntArray(m_latPredefinedRangeIndexes.Length);
+            LazyBigInt32Array rangeCounts = new LazyBigInt32Array(m_latPredefinedRangeIndexes.Length);
             for (int i = 0; i < m_latCount.Length; ++i)
             {
                 if (m_latCount[i] > 0)

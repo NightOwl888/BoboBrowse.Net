@@ -24,7 +24,10 @@ namespace BoboBrowse.Net.Facets.Data
     using System;
     using System.Globalization;
 
-    public class TermFloatList : TermNumberList<float>
+    /// <summary>
+    /// NOTE: This was TermFloatList in bobo-browse
+    /// </summary>
+    public class TermSingleList : TermNumberList<float>
     {
         private float[] m_elements;
         private bool m_withDummy = true;
@@ -61,23 +64,23 @@ namespace BoboBrowse.Net.Facets.Data
             }
         }
 
-        public TermFloatList()
+        public TermSingleList()
             : base()
         { }
 
-        public TermFloatList(string formatString)
+        public TermSingleList(string formatString)
             : base(formatString)
         { }
 
-        public TermFloatList(string formatString, IFormatProvider formatProvider)
+        public TermSingleList(string formatString, IFormatProvider formatProvider)
             : base(formatString, formatProvider)
         { }
 
-        public TermFloatList(int capacity, string formatString)
+        public TermSingleList(int capacity, string formatString)
             : base(capacity, formatString)
         { }
 
-        public TermFloatList(int capacity, string formatString, IFormatProvider formatProvider)
+        public TermSingleList(int capacity, string formatString, IFormatProvider formatProvider)
             : base(capacity, formatString, formatProvider)
         { }
 

@@ -97,12 +97,18 @@ namespace BoboBrowse.Net.Search.Section
             return m_curSec;
         }
 
-        private abstract class IntDecoder
+        /// <summary>
+        /// NOTE: This was IntDecoder in bobo-browse
+        /// </summary>
+        private abstract class Int32Decoder
         {
             public abstract int Decode(byte[] d);
         }
 
-        private class IntDecoder1 : IntDecoder
+        /// <summary>
+        /// NOTE: This was IntDecoder1 in bobo-browse
+        /// </summary>
+        private class Int32Decoder1 : Int32Decoder
         {
             public override int Decode(byte[] d)
             {
@@ -110,7 +116,10 @@ namespace BoboBrowse.Net.Search.Section
             }
         }
 
-        private class IntDecoder2 : IntDecoder
+        /// <summary>
+        /// NOTE: This was IntDecoder2 in bobo-browse
+        /// </summary>
+        private class Int32Decoder2 : Int32Decoder
         {
             public override int Decode(byte[] d)
             {
@@ -118,7 +127,10 @@ namespace BoboBrowse.Net.Search.Section
             }
         }
 
-        private class IntDecoder3 : IntDecoder
+        /// <summary>
+        /// NOTE: This was IntDecoder3 in bobo-browse
+        /// </summary>
+        private class Int32Decoder3 : Int32Decoder
         {
             public override int Decode(byte[] d)
             {
@@ -126,7 +138,10 @@ namespace BoboBrowse.Net.Search.Section
             }
         }
 
-        private class IntDecoder4 : IntDecoder
+        /// <summary>
+        /// NOTE: This was IntDecoder4 in bobo-browse
+        /// </summary>
+        private class Int32Decoder4 : Int32Decoder
         {
             public override int Decode(byte[] d)
             {
@@ -134,7 +149,10 @@ namespace BoboBrowse.Net.Search.Section
             }
         }
 
-        private class IntDecoder5 : IntDecoder
+        /// <summary>
+        /// NOTE: This was IntDecoder5 in bobo-browse
+        /// </summary>
+        private class Int32Decoder5 : Int32Decoder
         {
             public override int Decode(byte[] d)
             {
@@ -142,13 +160,13 @@ namespace BoboBrowse.Net.Search.Section
             }
         }
 
-        private readonly static IntDecoder[] m_intDecoders = new IntDecoder[]
+        private readonly static Int32Decoder[] m_intDecoders = new Int32Decoder[]
         {
-            new IntDecoder1(),
-            new IntDecoder2(),
-            new IntDecoder3(),
-            new IntDecoder4(),
-            new IntDecoder5()
+            new Int32Decoder1(),
+            new Int32Decoder2(),
+            new Int32Decoder3(),
+            new Int32Decoder4(),
+            new Int32Decoder5()
         };
     }
 }

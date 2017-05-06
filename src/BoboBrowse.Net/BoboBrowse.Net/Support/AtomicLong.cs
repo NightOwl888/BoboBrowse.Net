@@ -21,15 +21,15 @@ namespace BoboBrowse.Net.Support
 {
     using System.Threading;
 
-    public class AtomicLong
+    public class AtomicInt64
     {
         private long _value = 0;
 
-        public AtomicLong()
+        public AtomicInt64()
         {
         }
 
-        public AtomicLong(long value)
+        public AtomicInt64(long value)
         {
             _value = value;
         }

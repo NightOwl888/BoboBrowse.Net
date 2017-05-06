@@ -38,7 +38,7 @@ namespace BoboBrowse.Net.Util
             var rand = new Random();
 
             float[] orig = new float[1024];
-            MutableSparseFloatArray fromEmpty = new MutableSparseFloatArray(new float[1024]);
+            MutableSparseSingleArray fromEmpty = new MutableSparseSingleArray(new float[1024]);
 			float density = 0.2f;
 			int idx = 0;
 			while (rand.NextDouble() > density) {
@@ -57,7 +57,7 @@ namespace BoboBrowse.Net.Util
 
             float[] copy =new float[orig.Length]; 
             Array.Copy(orig, 0, copy, 0, orig.Length);
-			MutableSparseFloatArray fromPartial = new MutableSparseFloatArray(copy);
+			MutableSparseSingleArray fromPartial = new MutableSparseSingleArray(copy);
 
             // do 128 modifications
 			int mods = 128;
@@ -85,7 +85,7 @@ namespace BoboBrowse.Net.Util
             Random r = new Random();
 
             float[] orig = new float[16 * 1024 * 1024];
-            MutableSparseFloatArray arr = new MutableSparseFloatArray(new float[orig.Length]);
+            MutableSparseSingleArray arr = new MutableSparseSingleArray(new float[orig.Length]);
 
             for (int i = 0; i < 32 * 1024; i++)
             {
@@ -104,7 +104,7 @@ namespace BoboBrowse.Net.Util
 
             // repeat it, but timed
             orig = new float[orig.Length];
-            arr = new MutableSparseFloatArray(new float[orig.Length]);
+            arr = new MutableSparseSingleArray(new float[orig.Length]);
             int[] idxs = new int[1024 * 1024];
             float[] vals = new float[idxs.Length];
             for (int i = 0; i < idxs.Length; i++)

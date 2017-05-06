@@ -32,10 +32,13 @@ namespace BoboBrowse.Net.Util
     /// <summary>
     /// BigSegmentedArray that creates segments only when the corresponding index is
     /// being accessed.
+    /// <para/>
     /// author jko
+    /// <para/>
+    /// NOTE: This was LazyBigIntArray in bobo-browse
     /// </summary>
     [Serializable]
-    public class LazyBigIntArray : BigSegmentedArray
+    public class LazyBigInt32Array : BigSegmentedArray
     {
         //private static long serialVersionUID = 1L; // NOT USED
 
@@ -47,7 +50,7 @@ namespace BoboBrowse.Net.Util
 
         private int m_fillValue = 0;
 
-        public LazyBigIntArray(int size)
+        public LazyBigInt32Array(int size)
             : base(size)
         {
             // initialize empty blocks

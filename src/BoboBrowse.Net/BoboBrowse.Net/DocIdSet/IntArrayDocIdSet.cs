@@ -23,23 +23,26 @@ namespace BoboBrowse.Net.DocIdSet
     using System;
     using Lucene.Net.Search;
 
+    /// <summary>
+    /// NOTE: This was Int32ArrayDocIdSet in bobo-browse
+    /// </summary>
     [Serializable]
-    public class IntArrayDocIdSet : DocSet
+    public class Int32ArrayDocIdSet : DocSet
     {
         // private static long serialVersionUID = 1L; // NOT USED
 
-        private IntArray m_array = null;
+        private Int32Array m_array = null;
 
         private int m_pos = -1;
 
-        public IntArrayDocIdSet(int length)
+        public Int32ArrayDocIdSet(int length)
         {
-            m_array = new IntArray(length);
+            m_array = new Int32Array(length);
         }
 
-        public IntArrayDocIdSet()
+        public Int32ArrayDocIdSet()
         {
-            m_array = new IntArray();
+            m_array = new Int32Array();
         }
 
         public override void AddDoc(int docid)
@@ -77,15 +80,18 @@ namespace BoboBrowse.Net.DocIdSet
             }
         }
 
-        public class IntArrayDocIdSetIterator : StatefulDSIterator
+        /// <summary>
+        /// NOTE: This was IntArrayDocIdSetIterator in bobo-browse
+        /// </summary>
+        public class Int32ArrayDocIdSetIterator : StatefulDSIterator
         {
             private Func<int> getPos;
-            private Func<IntArray> getArray;
+            private Func<Int32Array> getArray;
             private Func<int, int, int, int> binarySearchForNearest;
             private int lastReturn = -1;
             private int cursor = -1;
 
-            public IntArrayDocIdSetIterator(Func<int> getPos, Func<IntArray> getArray, Func<int, int, int, int> binarySearchForNearest)
+            public Int32ArrayDocIdSetIterator(Func<int> getPos, Func<Int32Array> getArray, Func<int, int, int, int> binarySearchForNearest)
             {
                 this.getPos = getPos;
                 this.getArray = getArray;
@@ -146,7 +152,7 @@ namespace BoboBrowse.Net.DocIdSet
 
         public override DocIdSetIterator GetIterator()
         {
-            return new IntArrayDocIdSetIterator(() => m_pos, () => m_array, (val, begin, end) => BinarySearchForNearest(val, begin, end));
+            return new Int32ArrayDocIdSetIterator(() => m_pos, () => m_array, (val, begin, end) => BinarySearchForNearest(val, begin, end));
         }
 
         public override int Count
@@ -156,7 +162,7 @@ namespace BoboBrowse.Net.DocIdSet
 
         public override int FindWithIndex(int target)
         {
-            IntArrayDocIdSetIterator dcit = new IntArrayDocIdSetIterator(() => m_pos, () => m_array, (val, begin, end) => BinarySearchForNearest(val, begin, end));
+            Int32ArrayDocIdSetIterator dcit = new Int32ArrayDocIdSetIterator(() => m_pos, () => m_array, (val, begin, end) => BinarySearchForNearest(val, begin, end));
             try
             {
                 int docid = dcit.Advance(target);

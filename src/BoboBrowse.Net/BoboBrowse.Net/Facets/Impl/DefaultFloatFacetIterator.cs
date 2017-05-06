@@ -26,16 +26,18 @@ namespace BoboBrowse.Net.Facets.Impl
 
     /// <summary>
     /// author "Xiaoyang Gu &lt;xgu@linkedin.com&gt;"
+    /// <para/>
+    /// NOTE: This was DefaultFloatFacetIterator in bobo-browse
     /// </summary>
-    public class DefaultFloatFacetIterator : FloatFacetIterator
+    public class DefaultSingleFacetIterator : SingleFacetIterator
     {
-        private readonly TermFloatList m_valList;
+        private readonly TermSingleList m_valList;
         private readonly BigSegmentedArray _count;
         private readonly int m_countlength;
         private readonly int m_countLengthMinusOne;
         private int m_index;
 
-        public DefaultFloatFacetIterator(TermFloatList valList, BigSegmentedArray countarray, int countlength, bool zeroBased)
+        public DefaultSingleFacetIterator(TermSingleList valList, BigSegmentedArray countarray, int countlength, bool zeroBased)
         {
             m_valList = valList;
             m_countlength = countlength;
@@ -44,14 +46,14 @@ namespace BoboBrowse.Net.Facets.Impl
             m_index = -1;
             if (!zeroBased)
                 m_index++;
-            m_facet = TermFloatList.VALUE_MISSING;
+            m_facet = TermSingleList.VALUE_MISSING;
             base.m_count = 0;
         }
 
         /// <summary>
         /// Added in .NET version as as an accessor to the _valList field.
         /// </summary>
-        public virtual TermFloatList ValList
+        public virtual TermSingleList ValList
         {
             get { return m_valList; }
         }
@@ -64,7 +66,7 @@ namespace BoboBrowse.Net.Facets.Impl
         {
             get
             {
-                if (m_facet == TermFloatList.VALUE_MISSING) return null;
+                if (m_facet == TermSingleList.VALUE_MISSING) return null;
                 return m_valList.Format(m_facet);
             }
         }
@@ -150,7 +152,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     return m_valList.Format(m_facet);
                 }
             }
-            m_facet = TermFloatList.VALUE_MISSING;
+            m_facet = TermSingleList.VALUE_MISSING;
             base.m_count = 0;
             return null;
         }
@@ -172,7 +174,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     return m_facet;
                 }
             }
-            m_facet = TermFloatList.VALUE_MISSING;
+            m_facet = TermSingleList.VALUE_MISSING;
             base.m_count = 0;
             return m_facet;
         }

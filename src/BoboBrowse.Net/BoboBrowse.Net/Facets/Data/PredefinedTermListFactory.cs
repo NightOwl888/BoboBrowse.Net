@@ -90,12 +90,12 @@ namespace BoboBrowse.Net.Facets.Data
         private readonly IFormatProvider m_formatProvider;
         protected IDictionary<Type, Type> m_supportedTypes = new Dictionary<Type, Type>()
         {
-            { typeof(int), typeof(TermIntList) },
-            { typeof(float), typeof(TermFloatList) },
+            { typeof(int), typeof(TermInt32List) },
+            { typeof(float), typeof(TermSingleList) },
             { typeof(char), typeof(TermCharList) },
             { typeof(double), typeof(TermDoubleList) },
-            { typeof(short), typeof(TermShortList) },
-            { typeof(long), typeof(TermLongList) },
+            { typeof(short), typeof(TermInt16List) },
+            { typeof(long), typeof(TermInt64List) },
             { typeof(DateTime), typeof(TermDateList) }
         };
 

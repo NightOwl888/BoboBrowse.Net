@@ -60,7 +60,7 @@ namespace BoboBrowse.Net.Facets.Attribute
 
         public override void CollectAll()
         {
-            m_count = BigIntArray.FromArray(base.m_dataCache.Freqs);
+            m_count = BigInt32Array.FromArray(base.m_dataCache.Freqs);
         }
 
         public override ICollection<BrowseFacet> GetFacets()

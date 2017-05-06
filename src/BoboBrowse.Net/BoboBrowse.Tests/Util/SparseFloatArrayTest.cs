@@ -58,7 +58,7 @@ namespace BoboBrowse.Net.Util
             Console.WriteLine("float array with " + count + " out of " + orig.Length 
                 + " non-zero values");
 
-            var sparse = new SparseFloatArray(orig);
+            var sparse = new SparseSingleArray(orig);
 
             for (int i = 0; i < orig.Length; i++)
             {

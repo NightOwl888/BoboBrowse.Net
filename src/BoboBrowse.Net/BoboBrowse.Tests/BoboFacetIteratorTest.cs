@@ -82,7 +82,7 @@ namespace BoboBrowse.Net
         [Test]
         public void TestTermIntListAddCorrectOrder()
         {
-            TermIntList tsl1 = new TermIntList("000");
+            TermInt32List tsl1 = new TermInt32List("000");
             tsl1.Add(null);
             tsl1.Add("0");
             try
@@ -107,7 +107,7 @@ namespace BoboBrowse.Net
             tsl1.Add("i");
             tsl1.Add("m");
             tsl1.Seal();
-            BigIntArray count = new BigIntArray(2);
+            BigInt32Array count = new BigInt32Array(2);
             count.Add(0, 1);
             count.Add(1, 2);
             DefaultFacetIterator itr1 = new DefaultFacetIterator(tsl1, count, 2, false);
@@ -115,7 +115,7 @@ namespace BoboBrowse.Net
             tsl2.Add("i");
             tsl2.Add("m");
             tsl2.Seal();
-            BigIntArray count2 = new BigIntArray(2);
+            BigInt32Array count2 = new BigInt32Array(2);
             count2.Add(0, 1);
             count2.Add(1, 5);
             DefaultFacetIterator itr2 = new DefaultFacetIterator(tsl2, count2, 2, true);
@@ -137,12 +137,12 @@ namespace BoboBrowse.Net
         public void TestDefaultIntFacetIterator()
         {
             string format = "00";
-            List<IntFacetIterator> list = new List<IntFacetIterator>();
+            List<Int32FacetIterator> list = new List<Int32FacetIterator>();
             for (int seg = 0; seg < 5; seg++)
             {
-                TermIntList tsl1 = new TermIntList(format);
+                TermInt32List tsl1 = new TermInt32List(format);
                 int limit = 25;
-                BigIntArray count = new BigIntArray(limit);
+                BigInt32Array count = new BigInt32Array(limit);
                 string[] terms = new string[limit];
                 for (int i = limit - 1; i >= 0; i--)
                 {
@@ -155,10 +155,10 @@ namespace BoboBrowse.Net
                     count.Add(i, i);
                 }
                 tsl1.Seal();
-                DefaultIntFacetIterator itr1 = new DefaultIntFacetIterator(tsl1, count, limit, true);
+                DefaultInt32FacetIterator itr1 = new DefaultInt32FacetIterator(tsl1, count, limit, true);
                 list.Add(itr1);
             }
-            CombinedIntFacetIterator ctr = new CombinedIntFacetIterator(list);
+            CombinedInt32FacetIterator ctr = new CombinedInt32FacetIterator(list);
             string result = "";
             while (ctr.HasNext())
             {

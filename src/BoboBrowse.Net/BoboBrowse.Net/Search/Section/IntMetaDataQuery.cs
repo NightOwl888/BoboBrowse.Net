@@ -25,7 +25,10 @@ namespace BoboBrowse.Net.Search.Section
     using Lucene.Net.Util;
     using System;
 
-    public class IntMetaDataQuery : MetaDataQuery
+    /// <summary>
+    /// NOTE: This was IntMetaDataQuery in bobo-browse
+    /// </summary>
+    public class Int32MetaDataQuery : MetaDataQuery
     { 
         private Validator m_validator;
 
@@ -81,7 +84,7 @@ namespace BoboBrowse.Net.Search.Section
         /// </summary>
         /// <param name="term"></param>
         /// <param name="validator"></param>
-        public IntMetaDataQuery(Term term, Validator validator)
+        public Int32MetaDataQuery(Term term, Validator validator)
             : base(term)
         {
             m_validator = validator;
@@ -104,21 +107,24 @@ namespace BoboBrowse.Net.Search.Section
 
         public override SectionSearchQueryPlan GetPlan(AtomicReader reader)
         {
-            return new IntMetaDataNodeNoCache(m_term, reader, m_validator);
+            return new Int32MetaDataNodeNoCache(m_term, reader, m_validator);
         }
 
         public override SectionSearchQueryPlan GetPlan(IMetaDataCache cache)
         {
-            return new IntMetaDataNode((IntMetaDataCache)cache, m_validator);
+            return new Int32MetaDataNode((Int32MetaDataCache)cache, m_validator);
         }
 
-        public class IntMetaDataNodeNoCache : AbstractTerminalNode
+        /// <summary>
+        /// NOTE: This was IntMetaDataNodeNoCache in bobo-browse
+        /// </summary>
+        public class Int32MetaDataNodeNoCache : AbstractTerminalNode
         {
             private readonly Validator m_validator;
             private byte[] m_data;
             private int m_dataLen;
 
-            public IntMetaDataNodeNoCache(Term term, AtomicReader reader, Validator validator)
+            public Int32MetaDataNodeNoCache(Term term, AtomicReader reader, Validator validator)
                 : base(term, reader)
             {
                 m_validator = validator;
@@ -167,15 +173,18 @@ namespace BoboBrowse.Net.Search.Section
             }
         }
 
-        public class IntMetaDataNode : SectionSearchQueryPlan
+        /// <summary>
+        /// NOTE: This was IntMetaDataNode in bobo-browse
+        /// </summary>
+        public class Int32MetaDataNode : SectionSearchQueryPlan
         {
-            private readonly IntMetaDataCache m_cache;
+            private readonly Int32MetaDataCache m_cache;
             private readonly Validator m_validator;
             private readonly int m_maxDoc;
 
             private int m_maxSec;
 
-            public IntMetaDataNode(IntMetaDataCache cache, Validator validator)
+            public Int32MetaDataNode(Int32MetaDataCache cache, Validator validator)
             {
                 m_cache = cache;
                 m_maxDoc = cache.MaxDoc;

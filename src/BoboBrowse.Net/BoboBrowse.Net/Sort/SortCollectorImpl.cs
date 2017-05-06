@@ -474,7 +474,7 @@ namespace BoboBrowse.Net.Sort
                         {
                             int rawGroupValueType = 0;  // 0: unknown, 1: normal, 2: long[]
 
-                            PrimitiveLongArrayWrapper primitiveLongArrayWrapperTmp = new PrimitiveLongArrayWrapper(null);
+                            PrimitiveInt64ArrayWrapper primitiveLongArrayWrapperTmp = new PrimitiveInt64ArrayWrapper(null);
 
                             object rawGroupValue = null;
 
@@ -527,7 +527,7 @@ namespace BoboBrowse.Net.Sort
                                         if (resList.Count >= m_count)
                                             break;
                                     }
-                                    groupSet.Add(new PrimitiveLongArrayWrapper(primitiveLongArrayWrapperTmp.Data));
+                                    groupSet.Add(new PrimitiveInt64ArrayWrapper(primitiveLongArrayWrapperTmp.Data));
                                 }
                             }
                         }

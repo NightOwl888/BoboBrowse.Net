@@ -115,23 +115,23 @@ namespace BoboBrowse.Net.Sort
             switch (type)
             {
                 case SortFieldType.INT32:
-                    return new DocComparerSource.IntDocComparerSource(fieldname);
+                    return new DocComparerSource.Int32DocComparerSource(fieldname);
 
                 case SortFieldType.SINGLE:
-                    return new DocComparerSource.FloatDocComparerSource(fieldname);
+                    return new DocComparerSource.SingleDocComparerSource(fieldname);
 
                 case SortFieldType.INT64:
-                    return new DocComparerSource.LongDocComparerSource(fieldname);
+                    return new DocComparerSource.Int64DocComparerSource(fieldname);
 
                 case SortFieldType.DOUBLE:
-                    return new DocComparerSource.LongDocComparerSource(fieldname);
+                    return new DocComparerSource.Int64DocComparerSource(fieldname);
 
 #pragma warning disable 612, 618
                 case SortFieldType.BYTE:
                     return new DocComparerSource.ByteDocComparerSource(fieldname);
 
                 case SortFieldType.INT16:
-                    return new DocComparerSource.ShortDocComparerSource(fieldname);
+                    return new DocComparerSource.Int16DocComparerSource(fieldname);
 #pragma warning restore 612, 618
 
                 case SortFieldType.STRING:

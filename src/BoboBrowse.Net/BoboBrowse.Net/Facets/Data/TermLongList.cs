@@ -24,7 +24,10 @@ namespace BoboBrowse.Net.Facets.Data
     using System;
     using System.Globalization;
 
-    public class TermLongList : TermNumberList<long>
+    /// <summary>
+    /// NOTE: This was TermLongList in bobo-browse
+    /// </summary>
+    public class TermInt64List : TermNumberList<long>
     {
         protected long[] m_elements;
         private bool m_withDummy = true;
@@ -61,23 +64,23 @@ namespace BoboBrowse.Net.Facets.Data
             }
         }
 
-        public TermLongList()
+        public TermInt64List()
             : base()
         { }
 
-        public TermLongList(string formatString)
+        public TermInt64List(string formatString)
             : base(formatString)
         { }
 
-        public TermLongList(string formatString, IFormatProvider formatProvider)
+        public TermInt64List(string formatString, IFormatProvider formatProvider)
             : base(formatString, formatProvider)
         { }
 
-        public TermLongList(int capacity, string formatString)
+        public TermInt64List(int capacity, string formatString)
             : base(capacity, formatString)
         { }
 
-        public TermLongList(int capacity, string formatString, IFormatProvider formatProvider)
+        public TermInt64List(int capacity, string formatString, IFormatProvider formatProvider)
             : base(capacity, formatString, formatProvider)
         { }
 

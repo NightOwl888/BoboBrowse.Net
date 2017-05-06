@@ -35,9 +35,9 @@ namespace BoboBrowse.Net.Facets.Impl
 	    private readonly int m_countlength;
         private readonly TermStringList m_predefinedRanges;
 	    private readonly GeoRange[] m_ranges;
-	    private readonly BigFloatArray m_xvals;
-	    private readonly BigFloatArray m_yvals;
-	    private readonly BigFloatArray m_zvals;
+	    private readonly BigSingleArray m_xvals;
+	    private readonly BigSingleArray m_yvals;
+	    private readonly BigSingleArray m_zvals;
         // variable to specify if the geo distance calculations are in miles. Default is miles
         private readonly bool m_miles;
 
@@ -100,7 +100,7 @@ namespace BoboBrowse.Net.Facets.Impl
             predefinedRanges.Sort();
             m_predefinedRanges.AddAll(predefinedRanges);
             m_countlength = predefinedRanges.Count;
-            m_count = new LazyBigIntArray(m_countlength);
+            m_count = new LazyBigInt32Array(m_countlength);
             m_ranges = new GeoRange[predefinedRanges.Count];
             int index = 0;
             foreach (string range in predefinedRanges)
@@ -178,7 +178,7 @@ namespace BoboBrowse.Net.Facets.Impl
             BigSegmentedArray dist = null;
             if (m_predefinedRanges != null)
             {
-                dist = new LazyBigIntArray(m_predefinedRanges.Count);
+                dist = new LazyBigInt32Array(m_predefinedRanges.Count);
                 int distIdx = 0;
                 for (int i = 0; i < m_count.Length; i++)
                 {

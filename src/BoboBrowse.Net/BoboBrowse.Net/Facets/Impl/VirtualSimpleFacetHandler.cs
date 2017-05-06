@@ -101,10 +101,10 @@ namespace BoboBrowse.Net.Facets.Impl
                     if (val is long[])
                     {
                         if (m_termListFactory == null)
-                            m_termListFactory = new TermFixedLengthLongArrayListFactory(
+                            m_termListFactory = new TermFixedLengthInt64ArrayListFactory(
                               ((long[])val).Length);
 
-                        dataMap = new TreeDictionary<object, List<int>>(new VirtualSimpleFacetHandlerLongArrayComparer());
+                        dataMap = new TreeDictionary<object, List<int>>(new VirtualSimpleFacetHandlerInt16ArrayComparer());
                     }
                     else if (val is IComparable)
                     {
@@ -134,7 +134,7 @@ namespace BoboBrowse.Net.Facets.Impl
             int maxDoc = reader.MaxDoc;
             int size = dataMap == null ? 1 : (dataMap.Count + 1);
 
-            BigSegmentedArray order = new BigIntArray(maxDoc);
+            BigSegmentedArray order = new BigInt32Array(maxDoc);
             ITermValueList list = m_termListFactory == null ?
               new TermStringList(size) :
               m_termListFactory.CreateTermList(size);
@@ -174,7 +174,10 @@ namespace BoboBrowse.Net.Facets.Impl
             return dataCache;
         }
 
-        private class VirtualSimpleFacetHandlerLongArrayComparer : IComparer<object>
+        /// <summary>
+        /// NOTE: This was VirtualSimpleFacetHandlerLongArrayComparator in bobo-browse
+        /// </summary>
+        private class VirtualSimpleFacetHandlerInt16ArrayComparer : IComparer<object>
         {
             public virtual int Compare(object big, object small)
             {

@@ -36,7 +36,7 @@ namespace BoboBrowse.Net.Facets.Range
     public class MultiRangeFacetHandler : RangeFacetHandler
     {
         private readonly Term m_sizePayloadTerm;
-        private int maxItems = BigNestedIntArray.MAX_ITEMS;
+        private int maxItems = BigNestedInt32Array.MAX_ITEMS;
 
         public MultiRangeFacetHandler(string name, string indexFieldName, Term sizePayloadTerm,
             TermListFactory termListFactory, IList<string> predefinedRanges)
@@ -98,16 +98,16 @@ namespace BoboBrowse.Net.Facets.Range
             public override IFacetCountCollector GetFacetCountCollector(BoboSegmentReader reader, int docBase)
             {
                 MultiValueFacetDataCache dataCache = m_parent.GetFacetData<MultiValueFacetDataCache>(reader);
-                BigNestedIntArray _nestedArray = dataCache.NestedArray;
+                BigNestedInt32Array _nestedArray = dataCache.NestedArray;
                 return new MultiRangeFacetCountCollector(m_parent.Name, dataCache, docBase, this.m_ospec, m_parent.m_predefinedRanges, _nestedArray);
             }
 
             public class MultiRangeFacetCountCollector : RangeFacetCountCollector
             {
-                private readonly BigNestedIntArray m_nestedArray;
+                private readonly BigNestedInt32Array m_nestedArray;
 
                 public MultiRangeFacetCountCollector(string name, MultiValueFacetDataCache dataCache, 
-                    int docBase, FacetSpec ospec, IList<string> predefinedRanges, BigNestedIntArray nestedArray)
+                    int docBase, FacetSpec ospec, IList<string> predefinedRanges, BigNestedInt32Array nestedArray)
                     : base(name, dataCache, docBase, ospec, predefinedRanges)
                 {
                     m_nestedArray = nestedArray;

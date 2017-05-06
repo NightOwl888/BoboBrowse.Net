@@ -36,16 +36,16 @@ namespace BoboBrowse.Net.Facets.Data
         //private static long serialVersionUID = 1L; // NOT USED
         private static readonly ILog logger = LogProvider.For<MultiValueFacetDataCache>();
 
-        protected readonly BigNestedIntArray m_nestedArray;
-        protected int m_maxItems = BigNestedIntArray.MAX_ITEMS;
+        protected readonly BigNestedInt32Array m_nestedArray;
+        protected int m_maxItems = BigNestedInt32Array.MAX_ITEMS;
         protected bool m_overflow = false;
 
         public MultiValueFacetDataCache()
         {
-            m_nestedArray = new BigNestedIntArray();
+            m_nestedArray = new BigNestedInt32Array();
         }
 
-        public BigNestedIntArray NestedArray
+        public BigNestedInt32Array NestedArray
         {
             get { return m_nestedArray; }
         }
@@ -54,7 +54,7 @@ namespace BoboBrowse.Net.Facets.Data
         {
             set
             {
-                m_maxItems = Math.Min(value, BigNestedIntArray.MAX_ITEMS);
+                m_maxItems = Math.Min(value, BigNestedInt32Array.MAX_ITEMS);
                 m_nestedArray.MaxItems = m_maxItems;
             }
         }
@@ -80,7 +80,7 @@ namespace BoboBrowse.Net.Facets.Data
         {
             string field = string.Intern(fieldName);
             int maxdoc = reader.MaxDoc;
-            BigNestedIntArray.BufferedLoader loader = GetBufferedLoader(maxdoc, workArea);
+            BigNestedInt32Array.BufferedLoader loader = GetBufferedLoader(maxdoc, workArea);
 
             ITermValueList list = (listFactory == null ? (ITermValueList)new TermStringList() : listFactory.CreateTermList());
             List<int> minIDList = new List<int>();
@@ -179,7 +179,7 @@ namespace BoboBrowse.Net.Facets.Data
         {
             string field = string.Intern(fieldName);
             int maxdoc = reader.MaxDoc;
-            BigNestedIntArray.Loader loader = new AllocOnlyLoader(m_maxItems, sizeTerm, reader);
+            BigNestedInt32Array.Loader loader = new AllocOnlyLoader(m_maxItems, sizeTerm, reader);
             int negativeValueCount = GetNegativeValueCount(reader, field);
             try
             {
@@ -278,18 +278,18 @@ namespace BoboBrowse.Net.Facets.Data
             }
         }
 
-        protected virtual BigNestedIntArray.BufferedLoader GetBufferedLoader(int maxdoc, BoboSegmentReader.WorkArea workArea)
+        protected virtual BigNestedInt32Array.BufferedLoader GetBufferedLoader(int maxdoc, BoboSegmentReader.WorkArea workArea)
         {
             if (workArea == null)
             {
-                return new BigNestedIntArray.BufferedLoader(maxdoc, m_maxItems, new BigIntBuffer());
+                return new BigNestedInt32Array.BufferedLoader(maxdoc, m_maxItems, new BigInt32Buffer());
             }
             else
             {
-                BigIntBuffer buffer = workArea.Get<BigIntBuffer>();
+                BigInt32Buffer buffer = workArea.Get<BigInt32Buffer>();
                 if (buffer == null)
                 {
-                    buffer = new BigIntBuffer();
+                    buffer = new BigInt32Buffer();
                     workArea.Put(buffer);
                 }
                 else
@@ -297,10 +297,10 @@ namespace BoboBrowse.Net.Facets.Data
                     buffer.Reset();
                 }
 
-                BigNestedIntArray.BufferedLoader loader = workArea.Get<BigNestedIntArray.BufferedLoader>();
+                BigNestedInt32Array.BufferedLoader loader = workArea.Get<BigNestedInt32Array.BufferedLoader>();
                 if (loader == null || loader.Capacity < maxdoc)
                 {
-                    loader = new BigNestedIntArray.BufferedLoader(maxdoc, m_maxItems, buffer);
+                    loader = new BigNestedInt32Array.BufferedLoader(maxdoc, m_maxItems, buffer);
                     workArea.Put(loader);
                 }
                 else
@@ -315,7 +315,7 @@ namespace BoboBrowse.Net.Facets.Data
         /// A loader that allocate data storage without loading data to BigNestedIntArray.
         /// Note that this loader supports only non-negative integer data.
         /// </summary>
-        public sealed class AllocOnlyLoader : BigNestedIntArray.Loader
+        public sealed class AllocOnlyLoader : BigNestedInt32Array.Loader
         {
             private readonly AtomicReader m_reader;
             private readonly Term m_sizeTerm;
@@ -323,7 +323,7 @@ namespace BoboBrowse.Net.Facets.Data
 
             public AllocOnlyLoader(int maxItems, Term sizeTerm, AtomicReader reader)
             {
-                m_maxItems = Math.Min(maxItems, BigNestedIntArray.MAX_ITEMS);
+                m_maxItems = Math.Min(maxItems, BigNestedInt32Array.MAX_ITEMS);
                 m_sizeTerm = sizeTerm;
                 m_reader = reader;
             }

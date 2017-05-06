@@ -64,14 +64,14 @@ namespace BoboBrowse.Net
             //Arrays.Fill(cache.Freqs, 1);
             cache.MaxIDs = new int[numVals];
             cache.MinIDs = new int[numVals];
-            cache.ValArray = new TermIntList(numVals, "0000000000");
+            cache.ValArray = new TermInt32List(numVals, "0000000000");
 
             for (int i = 0; i < numVals; ++i)
             {
                 cache.ValArray.Add((i + 1).ToString("0000000000"));
             }
             cache.ValArray.Seal();
-            cache.OrderArray = new BigIntArray(numDocsPerSeg);
+            cache.OrderArray = new BigInt32Array(numDocsPerSeg);
             return cache;
         }
 
@@ -86,12 +86,12 @@ namespace BoboBrowse.Net
 
         public class RunnerThread
         {
-            private readonly AtomicLong _timeCounter;
+            private readonly AtomicInt64 _timeCounter;
             private readonly int _numIters;
             private readonly FacetSpec _fspec;
             private readonly ICollection<IFacetAccessible> _list1;
 
-            public RunnerThread(AtomicLong timeCounter, int numIters, FacetSpec fspec, ICollection<IFacetAccessible> list1)
+            public RunnerThread(AtomicInt64 timeCounter, int numIters, FacetSpec fspec, ICollection<IFacetAccessible> list1)
             {
                 _timeCounter = timeCounter;
                 _numIters = numIters;
@@ -135,7 +135,7 @@ namespace BoboBrowse.Net
                 list1.Add(BuildSubAccessible(fname1, i, fspec));
             }
             
-            AtomicLong timeCounter = new AtomicLong();
+            AtomicInt64 timeCounter = new AtomicInt64();
             Thread[] threads = new Thread[nThreads];
             RunnerThread[] threadStates = new RunnerThread[nThreads];
             for (int i = 0; i < threads.Length; ++i)

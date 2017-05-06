@@ -31,18 +31,18 @@ namespace BoboBrowse.Net.Facets.Data
     {
         //private static long serialVersionUID = 1L; // NOT USED
 
-        protected readonly BigNestedIntArray m_weightArray;
+        protected readonly BigNestedInt32Array m_weightArray;
 
         public MultiValueWithWeightFacetDataCache()
         {
-            m_weightArray = new BigNestedIntArray();
+            m_weightArray = new BigNestedInt32Array();
         }
 
         /// <summary>
         /// Added in .NET version as an accessor to the _weightArray field.
         /// </summary>
         /// <returns></returns>
-        public virtual BigNestedIntArray WeightArray
+        public virtual BigNestedInt32Array WeightArray
         {
             get { return m_weightArray; }
         }
@@ -51,8 +51,8 @@ namespace BoboBrowse.Net.Facets.Data
         {
             string field = string.Intern(fieldName);
             int maxdoc = reader.MaxDoc;
-            BigNestedIntArray.BufferedLoader loader = GetBufferedLoader(maxdoc, workArea);
-            BigNestedIntArray.BufferedLoader weightLoader = GetBufferedLoader(maxdoc, null);
+            BigNestedInt32Array.BufferedLoader loader = GetBufferedLoader(maxdoc, workArea);
+            BigNestedInt32Array.BufferedLoader weightLoader = GetBufferedLoader(maxdoc, null);
 
             var list = (listFactory == null ? new TermStringList() : listFactory.CreateTermList());
             List<int> minIDList = new List<int>();

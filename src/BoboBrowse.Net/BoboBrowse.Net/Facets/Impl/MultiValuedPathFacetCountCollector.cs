@@ -25,7 +25,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
     public class MultiValuedPathFacetCountCollector : PathFacetCountCollector
     {
-        private readonly BigNestedIntArray m_array;
+        private readonly BigNestedInt32Array m_array;
 
         public MultiValuedPathFacetCountCollector(string name, string sep, BrowseSelection sel, 
             FacetSpec ospec, FacetDataCache dataCache)
@@ -41,7 +41,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
         public override sealed void CollectAll()
         {
-            m_count = BigIntArray.FromArray(m_dataCache.Freqs);
+            m_count = BigInt32Array.FromArray(m_dataCache.Freqs);
         }
     }
 }

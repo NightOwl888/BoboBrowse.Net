@@ -24,7 +24,10 @@ namespace BoboBrowse.Net.Util
     using Lucene.Net.Util;
     using System;
 
-    public class SparseFloatArray
+    /// <summary>
+    /// NOTE: This was SparseFloatArray in bobo-browse
+    /// </summary>
+    public class SparseSingleArray
     {
         protected float[] m_floats;
         protected OpenBitSet m_bits;
@@ -46,7 +49,7 @@ namespace BoboBrowse.Net.Util
         /// might save you a lot of memory.
         /// </summary>
         /// <param name="floats">The float array.</param>
-        public SparseFloatArray(float[] floats)
+        public SparseSingleArray(float[] floats)
         {
             m_capacity = floats.Length;
             Condense(floats);
@@ -60,7 +63,7 @@ namespace BoboBrowse.Net.Util
         /// <c>== 0f</c>.
         /// </summary>
         /// <param name="capacity">The capacity of the array.</param>
-        public SparseFloatArray(int capacity)
+        public SparseSingleArray(int capacity)
         {
             m_capacity = capacity;
             m_floats = null;

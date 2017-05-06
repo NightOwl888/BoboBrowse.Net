@@ -24,7 +24,10 @@ namespace BoboBrowse.Net.Facets.Data
     using System;
     using System.Globalization;
 
-    public class TermShortList : TermNumberList<short>
+    /// <summary>
+    /// NOTE: This was TermShortList in bobo-browse
+    /// </summary>
+    public class TermInt16List : TermNumberList<short>
     {
         private short[] m_elements;
         private bool m_withDummy = true;
@@ -61,23 +64,23 @@ namespace BoboBrowse.Net.Facets.Data
             }
         }
 
-        public TermShortList()
+        public TermInt16List()
             : base()
         { }
 
-        public TermShortList(string formatString)
+        public TermInt16List(string formatString)
             : base(formatString)
         { }
 
-        public TermShortList(string formatString, IFormatProvider formatProvider)
+        public TermInt16List(string formatString, IFormatProvider formatProvider)
             : base(formatString, formatProvider)
         { }
 
-        public TermShortList(int capacity, string formatString)
+        public TermInt16List(int capacity, string formatString)
             : base(capacity, formatString)
         { }
 
-        public TermShortList(int capacity, string formatString, IFormatProvider formatProvider)
+        public TermInt16List(int capacity, string formatString, IFormatProvider formatProvider)
             : base(capacity, formatString, formatProvider)
         { }
 

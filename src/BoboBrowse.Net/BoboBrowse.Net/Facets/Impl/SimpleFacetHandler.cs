@@ -320,7 +320,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override void CollectAll()
             {
-                m_count = BigIntArray.FromArray(m_dataCache.Freqs);
+                m_count = BigInt32Array.FromArray(m_dataCache.Freqs);
             }
         }
 
@@ -345,7 +345,7 @@ namespace BoboBrowse.Net.Facets.Impl
 
             public override sealed void CollectAll()
             {
-                m_count = BigIntArray.FromArray(m_dataCache.Freqs);
+                m_count = BigInt32Array.FromArray(m_dataCache.Freqs);
                 _totalGroups = -1;
             }
 

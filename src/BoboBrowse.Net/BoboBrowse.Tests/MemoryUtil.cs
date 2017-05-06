@@ -46,9 +46,9 @@ namespace BoboBrowse.Net
         private class RunnerThread
         {
             private readonly int[] array;
-            private readonly BigIntArray bigarray;
+            private readonly BigInt32Array bigarray;
 
-            public RunnerThread(int[] a, BigIntArray b)
+            public RunnerThread(int[] a, BigInt32Array b)
             {
                 array = a;
                 bigarray = b;
@@ -70,7 +70,7 @@ namespace BoboBrowse.Net
         static void Time1(int[][] array)
         {
             int iter = array.Length;
-            BigIntArray bigArray = new BigIntArray(max);
+            BigInt32Array bigArray = new BigInt32Array(max);
             Thread[] threads = new Thread[iter];
             RunnerThread[] threadStates = new RunnerThread[iter];
 

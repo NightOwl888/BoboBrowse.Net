@@ -28,7 +28,7 @@ namespace BoboBrowse.Net.Facets.Data
     /// <summary>
     /// Internal data are stored in a long[] with values generated from <see cref="M:DateTime.ToBinary"/>.
     /// </summary>
-    public class TermDateList : TermLongList
+    public class TermDateList : TermInt64List
     {
         public TermDateList()
             : base()

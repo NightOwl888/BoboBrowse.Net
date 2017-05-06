@@ -65,7 +65,7 @@ namespace BoboBrowse.Net.Query
                 {
                     FacetDataCache facetDataCache = (FacetDataCache)(boboReader.GetFacetData(m_timeFacetName));
                     BigSegmentedArray orderArray = facetDataCache.OrderArray;
-                    TermLongList termList = (TermLongList)facetDataCache.ValArray;
+                    TermInt64List termList = (TermInt64List)facetDataCache.ValArray;
                     Explanation finalExpl = new Explanation();
                     finalExpl.AddDetail(innerExplanation);
                     float rawScore = innerExplanation.Value;
@@ -102,7 +102,7 @@ namespace BoboBrowse.Net.Query
                 {
                     FacetDataCache facetDataCache = (FacetDataCache)(boboReader.GetFacetData(m_timeFacetName));
                     BigSegmentedArray orderArray = facetDataCache.OrderArray;
-                    TermLongList termList = (TermLongList)facetDataCache.ValArray;
+                    TermInt64List termList = (TermInt64List)facetDataCache.ValArray;
                     return new RecencyBoostScorer(this, innerScorer, orderArray, termList);
                 }
                 else
@@ -121,9 +121,9 @@ namespace BoboBrowse.Net.Query
             private readonly RecencyBoostScorerBuilder m_parent;
             private readonly Scorer m_innerScorer;
             private readonly BigSegmentedArray m_orderArray;
-            private readonly TermLongList m_termList;
+            private readonly TermInt64List m_termList;
 
-            public RecencyBoostScorer(RecencyBoostScorerBuilder parent, Scorer innerScorer, BigSegmentedArray orderArray, TermLongList termList)
+            public RecencyBoostScorer(RecencyBoostScorerBuilder parent, Scorer innerScorer, BigSegmentedArray orderArray, TermInt64List termList)
                 : base(innerScorer.Weight)
             {
                 m_parent = parent;

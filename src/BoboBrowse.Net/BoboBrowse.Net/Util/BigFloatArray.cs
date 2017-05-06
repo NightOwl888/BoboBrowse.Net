@@ -20,7 +20,10 @@
 // Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Util
 {
-    public class BigFloatArray
+    /// <summary>
+    /// NOTE: This was BigFloatArray in bobo-browse
+    /// </summary>
+    public class BigSingleArray
     {
         private float[][] m_array;
         private int m_numrows;
@@ -30,7 +33,7 @@ namespace BoboBrowse.Net.Util
         private const int SHIFT_SIZE = 10;
         private const int MASK = BLOCK_SIZE - 1;
 
-        public BigFloatArray(int size)
+        public BigSingleArray(int size)
         {
             m_numrows = size >> SHIFT_SIZE;
             m_array = new float[m_numrows + 1][];

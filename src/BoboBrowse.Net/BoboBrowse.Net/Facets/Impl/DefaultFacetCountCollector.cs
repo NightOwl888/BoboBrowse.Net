@@ -51,11 +51,11 @@ namespace BoboBrowse.Net.Facets.Impl
 
             if (m_dataCache.Freqs.Length <= 3096)
             {
-                m_count = new LazyBigIntArray(m_countlength);
+                m_count = new LazyBigInt32Array(m_countlength);
             }
             else
             {
-                m_count = new LazyBigIntArray(m_countlength);
+                m_count = new LazyBigInt32Array(m_countlength);
 
                 // NOTE: Removed memory manager implementation
                 //_count = intarraymgr.Get(_countlength);
@@ -190,7 +190,7 @@ namespace BoboBrowse.Net.Facets.Impl
                     IComparer<int> comparer = comparerFactory.NewComparer(new DefaultFacetCountCollectorFieldAccessor(valList), count);
                     facetColl = new LinkedList<BrowseFacet>();
                     int forbidden = -1;
-                    IntBoundedPriorityQueue pq = new IntBoundedPriorityQueue(comparer, max, forbidden);
+                    Int32BoundedPriorityQueue pq = new Int32BoundedPriorityQueue(comparer, max, forbidden);
 
                     for (int i = 1; i < countlength; ++i) // exclude zero
                     {
@@ -281,19 +281,19 @@ namespace BoboBrowse.Net.Facets.Impl
             }
             if (m_dataCache.ValArray.Type.Equals(typeof(int)))
             {
-                return new DefaultIntFacetIterator((TermIntList)m_dataCache.ValArray, m_count, m_countlength, false);
+                return new DefaultInt32FacetIterator((TermInt32List)m_dataCache.ValArray, m_count, m_countlength, false);
             }
             else if (m_dataCache.ValArray.Type.Equals(typeof(long)))
             {
-                return new DefaultLongFacetIterator((TermLongList)m_dataCache.ValArray, m_count, m_countlength, false);
+                return new DefaultInt64FacetIterator((TermInt64List)m_dataCache.ValArray, m_count, m_countlength, false);
             }
             else if (m_dataCache.ValArray.Type.Equals(typeof(short)))
             {
-                return new DefaultShortFacetIterator((TermShortList)m_dataCache.ValArray, m_count, m_countlength, false);
+                return new DefaultInt16FacetIterator((TermInt16List)m_dataCache.ValArray, m_count, m_countlength, false);
             }
             else if (m_dataCache.ValArray.Type.Equals(typeof(float)))
             {
-                return new DefaultFloatFacetIterator((TermFloatList)m_dataCache.ValArray, m_count, m_countlength, false);
+                return new DefaultSingleFacetIterator((TermSingleList)m_dataCache.ValArray, m_count, m_countlength, false);
             }
             else if (m_dataCache.ValArray.Type.Equals(typeof(double)))
             {

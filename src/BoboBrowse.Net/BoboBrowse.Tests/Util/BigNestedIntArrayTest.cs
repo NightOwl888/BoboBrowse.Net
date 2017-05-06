@@ -37,7 +37,7 @@ namespace BoboBrowse.Net.Util
         {
             int maxId = 3000;
             int[] count = new int[maxId];
-            var loader = new BigNestedIntArray.BufferedLoader(maxId);
+            var loader = new BigNestedInt32Array.BufferedLoader(maxId);
             for (int id = 0; id < maxId; id++)
             {
                 for (int val = 0; val < 2000; val += (id + 1))
@@ -45,7 +45,7 @@ namespace BoboBrowse.Net.Util
                     if (loader.Add(id, val)) count[id]++;
                 }
             }
-            var nestedArray = new BigNestedIntArray();
+            var nestedArray = new BigNestedInt32Array();
             nestedArray.Load(maxId, loader);
 
             int[] buf = new int[1024];
@@ -71,7 +71,7 @@ namespace BoboBrowse.Net.Util
         {
             int maxId = 100000;
             int[] count = new int[maxId];
-            var loader = new BigNestedIntArray.BufferedLoader(maxId);
+            var loader = new BigNestedInt32Array.BufferedLoader(maxId);
             for (int id = 0; id < maxId; id += ((id >> 2) + 1))
             {
                 for (int val = 0; val < 3000; val += (id + 1))
@@ -79,7 +79,7 @@ namespace BoboBrowse.Net.Util
                     if (loader.Add(id, val)) count[id]++;
                 }
             }
-            var nestedArray = new BigNestedIntArray();
+            var nestedArray = new BigNestedInt32Array();
             nestedArray.Load(maxId, loader);
 
             int[] buf = new int[1024];
@@ -107,9 +107,9 @@ namespace BoboBrowse.Net.Util
             int maxId = 5000;
             int[] maxNumItems = { 25, 50, 20, 100, 15, 500, 10, 1000, 5, 2000, 2 };
             int[,] count = new int[maxNumItems.Length, maxId];
-            var buffer = new BigIntBuffer();
-            var loader = new BigNestedIntArray.BufferedLoader(maxId, BigNestedIntArray.MAX_ITEMS, buffer);
-            var nestedArray = new BigNestedIntArray[maxNumItems.Length];
+            var buffer = new BigInt32Buffer();
+            var loader = new BigNestedInt32Array.BufferedLoader(maxId, BigNestedInt32Array.MAX_ITEMS, buffer);
+            var nestedArray = new BigNestedInt32Array[maxNumItems.Length];
 
             for (int i = 0; i < maxNumItems.Length; i++)
             {
@@ -121,10 +121,10 @@ namespace BoboBrowse.Net.Util
                         if(loader.Add(id, val)) count[i, id]++;
                     }
                 }
-                nestedArray[i] = new BigNestedIntArray();
+                nestedArray[i] = new BigNestedInt32Array();
                 nestedArray[i].Load(maxId, loader);
       
-                loader.Reset(maxId, BigNestedIntArray.MAX_ITEMS, buffer);
+                loader.Reset(maxId, BigNestedInt32Array.MAX_ITEMS, buffer);
             }
 
             for (int i = 0; i < maxNumItems.Length; i++)
@@ -153,14 +153,14 @@ namespace BoboBrowse.Net.Util
             int[] maxNumItems = { 1, 1, 2, 2, 3, 3, 3, 3, 1, 1 };
             int[] minNumItems = { 1, 1, 0, 1, 0, 0, 2, 3, 1, 0 };
             int[] count = new int[maxId];
-            BigIntBuffer buffer = new BigIntBuffer();
-            BigNestedIntArray.BufferedLoader loader = null;
-            BigNestedIntArray nestedArray = new BigNestedIntArray();
+            BigInt32Buffer buffer = new BigInt32Buffer();
+            BigNestedInt32Array.BufferedLoader loader = null;
+            BigNestedInt32Array nestedArray = new BigNestedInt32Array();
             Random rand = new Random();
 
             for (int i = 0; i < maxNumItems.Length; i++)
             {
-                loader = new BigNestedIntArray.BufferedLoader(maxId, BigNestedIntArray.MAX_ITEMS, buffer);
+                loader = new BigNestedInt32Array.BufferedLoader(maxId, BigNestedInt32Array.MAX_ITEMS, buffer);
                 for (int id = 0; id < maxId; id++)
                 {
                     count[id] = 0;
@@ -204,7 +204,7 @@ namespace BoboBrowse.Net.Util
             int[] maxNumItems = { 25, 50, 20, 100, 15, 500, 10, 1000, 5, 1024, 2 };
             int[,] count = new int[maxNumItems.Length, maxId];
             AllocOnlyTestLoader loader = new AllocOnlyTestLoader(maxId);
-            BigNestedIntArray[] nestedArray = new BigNestedIntArray[maxNumItems.Length];
+            BigNestedInt32Array[] nestedArray = new BigNestedInt32Array[maxNumItems.Length];
 
             for(int i = 0 ; i < maxNumItems.Length; i++)
             {
@@ -214,7 +214,7 @@ namespace BoboBrowse.Net.Util
                     loader.AddSize(id, cnt);
                     count[i, id] = cnt;
                 }
-                nestedArray[i] = new BigNestedIntArray();
+                nestedArray[i] = new BigNestedInt32Array();
                 nestedArray[i].Load(maxId, loader);
                 loader.Reset();
 
@@ -250,7 +250,7 @@ namespace BoboBrowse.Net.Util
         /// A loader that allocate data storage without loading data to BigNestedIntArray.
         /// Note that this loader supports only non-negative integer data.
         /// </summary>
-        public sealed class AllocOnlyTestLoader : BigNestedIntArray.Loader
+        public sealed class AllocOnlyTestLoader : BigNestedInt32Array.Loader
         {
             private readonly int[] _maxNumItems;
 
@@ -289,7 +289,7 @@ namespace BoboBrowse.Net.Util
             int[] maxNumItems = { 25, 50, 20, 100, 15, 500, 10, 1000, 5, 1024, 2 };
             int[,] count = new int[maxNumItems.Length, maxId];
             AllocOnlyTestLoader loader = new AllocOnlyTestLoader(maxId);
-            BigNestedIntArray[] nestedArray = new BigNestedIntArray[maxNumItems.Length];
+            BigNestedInt32Array[] nestedArray = new BigNestedInt32Array[maxNumItems.Length];
     
             for(int i = 0 ; i < maxNumItems.Length; i++)
             {
@@ -299,7 +299,7 @@ namespace BoboBrowse.Net.Util
                     loader.AddSize(id, cnt);
                     count[i, id] = cnt;
                 }
-                nestedArray[i] = new BigNestedIntArray();
+                nestedArray[i] = new BigNestedInt32Array();
                 nestedArray[i].MaxItems = maxNumItems[i];
                 nestedArray[i].Load(maxId, loader);
                 loader.Reset();
@@ -329,7 +329,7 @@ namespace BoboBrowse.Net.Util
             int numVals = 10;
             int[] count = new int[numVals];
 
-            var loader = new BigNestedIntArray.BufferedLoader(maxId);
+            var loader = new BigNestedInt32Array.BufferedLoader(maxId);
             for (int val = 0; val < numVals; val++)
             {
                 for (int i = 0; i < maxId - val; i++)
@@ -338,7 +338,7 @@ namespace BoboBrowse.Net.Util
                 }
             }
 
-            BigNestedIntArray nestedArray = new BigNestedIntArray();
+            BigNestedInt32Array nestedArray = new BigNestedInt32Array();
             nestedArray.Load(maxId, loader);
 
             OpenBitSet filter = new OpenBitSet(numVals);

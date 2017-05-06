@@ -28,7 +28,10 @@ namespace BoboBrowse.Net.Facets.Data
     using System.Linq;
     using System.Text;
 
-    public class TermFixedLengthLongArrayList : TermValueList<long[]>
+    /// <summary>
+    /// NOTE: This was TermFixedLengthLongArrayList in bobo-browse
+    /// </summary>
+    public class TermFixedLengthInt64ArrayList : TermValueList<long[]>
     {
         private List<long> m_innerList2 = new List<long>();
         protected long[] m_elements = null;
@@ -37,7 +40,7 @@ namespace BoboBrowse.Net.Facets.Data
         private long[] m_sanity;
         private bool m_withDummy = true;
 
-        public TermFixedLengthLongArrayList(int width)
+        public TermFixedLengthInt64ArrayList(int width)
             : base()
         {
             this.m_width = width;
@@ -45,7 +48,7 @@ namespace BoboBrowse.Net.Facets.Data
             m_sanity[width - 1] = -1;
         }
 
-        public TermFixedLengthLongArrayList(int width, int capacity)
+        public TermFixedLengthInt64ArrayList(int width, int capacity)
             : base(capacity * width)
         {
             this.m_width = width;
@@ -169,17 +172,17 @@ namespace BoboBrowse.Net.Facets.Data
 
         public override IEnumerator<string> GetEnumerator()
         {
-            return new TermListLengthLongArrayListEnumerator(m_innerList2, m_width, this.Format);
+            return new TermListLengthInt64ArrayListEnumerator(m_innerList2, m_width, this.Format);
         }
 
-        public class TermListLengthLongArrayListEnumerator : IEnumerator<string>
+        public class TermListLengthInt64ArrayListEnumerator : IEnumerator<string>
         {
             protected readonly IList<long> m_innerList2;
             protected readonly int m_width;
             protected readonly Func<object, string> m_format;
             protected int m_index = 0;
 
-            public TermListLengthLongArrayListEnumerator(IList<long> innerList2, int width, Func<object, string> format)
+            public TermListLengthInt64ArrayListEnumerator(IList<long> innerList2, int width, Func<object, string> format)
             {
                 m_innerList2 = innerList2;
                 m_width = width;

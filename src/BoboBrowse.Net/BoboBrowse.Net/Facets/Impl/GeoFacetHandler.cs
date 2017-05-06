@@ -91,9 +91,9 @@ namespace BoboBrowse.Net.Facets.Impl
         /// </summary>
         public class GeoFacetData
         {
-            private BigFloatArray m_xValArray;
-            private BigFloatArray m_yValArray;
-            private BigFloatArray m_zValArray;
+            private BigSingleArray m_xValArray;
+            private BigSingleArray m_yValArray;
+            private BigSingleArray m_zValArray;
 
             /// <summary>
             /// Initializes a new instance of <see cref="T:GeoFacetData"/>.
@@ -123,7 +123,7 @@ namespace BoboBrowse.Net.Facets.Impl
             /// docid (actually BigFloatArray is used instead of int to avoid requiring large 
             /// chunks of consecutive heap allocation)
             /// </param>
-            public GeoFacetData(BigFloatArray xvals, BigFloatArray yvals, BigFloatArray zvals)
+            public GeoFacetData(BigSingleArray xvals, BigSingleArray yvals, BigSingleArray zvals)
             {
                 m_xValArray = xvals;
                 m_yValArray = yvals;
@@ -135,9 +135,9 @@ namespace BoboBrowse.Net.Facets.Impl
             /// </summary>
             /// <param name="maxDoc"></param>
             /// <returns></returns>
-            public static BigFloatArray NewInstance(int maxDoc)
+            public static BigSingleArray NewInstance(int maxDoc)
             {
-                BigFloatArray array = new BigFloatArray(maxDoc);
+                BigSingleArray array = new BigSingleArray(maxDoc);
                 array.EnsureCapacity(maxDoc);
                 return array;
             }
@@ -145,7 +145,7 @@ namespace BoboBrowse.Net.Facets.Impl
             /// <summary>
             /// Gets or sets the _xValArray
             /// </summary>
-            public virtual BigFloatArray xValArray
+            public virtual BigSingleArray xValArray
             {
                 get { return m_xValArray; }
                 set { m_xValArray = value; }
@@ -154,7 +154,7 @@ namespace BoboBrowse.Net.Facets.Impl
             /// <summary>
             /// Gets or sets the _yValArray
             /// </summary>
-            public virtual BigFloatArray yValArray
+            public virtual BigSingleArray yValArray
             {
                 get { return m_yValArray; }
                 set { m_yValArray = value; }
@@ -163,7 +163,7 @@ namespace BoboBrowse.Net.Facets.Impl
             /// <summary>
             /// Gets or sets the _zValArray
             /// </summary>
-            public virtual BigFloatArray zValArray
+            public virtual BigSingleArray zValArray
             {
                 get { return m_zValArray; }
                 set { m_zValArray = value; }
@@ -178,9 +178,9 @@ namespace BoboBrowse.Net.Facets.Impl
 
                 int maxDoc = reader.MaxDoc;
 
-                BigFloatArray xVals = this.m_xValArray;
-                BigFloatArray yVals = this.m_yValArray;
-                BigFloatArray zVals = this.m_zValArray;
+                BigSingleArray xVals = this.m_xValArray;
+                BigSingleArray yVals = this.m_yValArray;
+                BigSingleArray zVals = this.m_zValArray;
 
                 if (xVals == null)
                     xVals = NewInstance(maxDoc);
@@ -276,9 +276,9 @@ namespace BoboBrowse.Net.Facets.Impl
         public override string[] GetFieldValues(BoboSegmentReader reader, int id)
         {
             GeoFacetData dataCache = GetFacetData<GeoFacetData>(reader);
-            BigFloatArray xvals = dataCache.xValArray;
-            BigFloatArray yvals = dataCache.yValArray;
-            BigFloatArray zvals = dataCache.zValArray;
+            BigSingleArray xvals = dataCache.xValArray;
+            BigSingleArray yvals = dataCache.yValArray;
+            BigSingleArray zvals = dataCache.zValArray;
 
             float xvalue = xvals.Get(id);
             float yvalue = yvals.Get(id);

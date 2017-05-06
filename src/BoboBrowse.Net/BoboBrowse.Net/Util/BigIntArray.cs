@@ -29,10 +29,13 @@ namespace BoboBrowse.Net.Util
     /// <summary> 
     /// This class is written for a special purpose. No check is done in insertion and getting a value
     /// for performance reasons. Be careful if you are going to use this class.
+    /// <para/>
     /// author femekci
+    /// <para/>
+    /// NOTE: This was BigIntArray in bobo-browse
     /// </summary>
     [Serializable]
-    public sealed class BigIntArray : BigSegmentedArray
+    public sealed class BigInt32Array : BigSegmentedArray
     {
         //private static long serialVersionUID = 1L; // NOT USED
 
@@ -43,7 +46,7 @@ namespace BoboBrowse.Net.Util
         private const int SHIFT_SIZE = 10;
         private const int MASK = BLOCK_SIZE - 1;
 
-        public BigIntArray(int size)
+        public BigInt32Array(int size)
             : base(size)
         {
             m_array = new int[m_numrows][];
@@ -145,7 +148,7 @@ namespace BoboBrowse.Net.Util
 
         public static BigSegmentedArray FromArray(int[] original)
         {
-            BigIntArray result = new BigIntArray(original.Length);
+            BigInt32Array result = new BigInt32Array(original.Length);
             int i = 0;
             foreach (int c in original)
             {

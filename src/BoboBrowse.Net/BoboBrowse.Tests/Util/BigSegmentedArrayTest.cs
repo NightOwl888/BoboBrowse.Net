@@ -33,10 +33,10 @@ namespace BoboBrowse.Net.Util
         [Test]
         public void TestEmptyArray()
         {
-            EmptyArrayTestHelper(new BigIntArray(0));
+            EmptyArrayTestHelper(new BigInt32Array(0));
             EmptyArrayTestHelper(new BigByteArray(0));
-            EmptyArrayTestHelper(new BigShortArray(0));
-            EmptyArrayTestHelper(new LazyBigIntArray(0));
+            EmptyArrayTestHelper(new BigInt16Array(0));
+            EmptyArrayTestHelper(new LazyBigInt32Array(0));
         }
 
         private static void EmptyArrayTestHelper(BigSegmentedArray array)
@@ -48,9 +48,9 @@ namespace BoboBrowse.Net.Util
         [Test]
         public void TestCountUp()
         {
-            CountUpTestHelper(new BigIntArray(short.MaxValue * 2));
-            CountUpTestHelper(new LazyBigIntArray(short.MaxValue * 2));
-            CountUpTestHelper(new BigShortArray(short.MaxValue * 2));
+            CountUpTestHelper(new BigInt32Array(short.MaxValue * 2));
+            CountUpTestHelper(new LazyBigInt32Array(short.MaxValue * 2));
+            CountUpTestHelper(new BigInt16Array(short.MaxValue * 2));
             CountUpTestHelper(new BigByteArray(short.MaxValue * 2));
         }
 
@@ -67,9 +67,9 @@ namespace BoboBrowse.Net.Util
         [Test]
         public void TestFindValues()
         {
-            FindValueHelper(new BigIntArray(short.MaxValue * 2));
-            FindValueHelper(new LazyBigIntArray(short.MaxValue * 2));
-            FindValueHelper(new BigShortArray(short.MaxValue * 2));
+            FindValueHelper(new BigInt32Array(short.MaxValue * 2));
+            FindValueHelper(new LazyBigInt32Array(short.MaxValue * 2));
+            FindValueHelper(new BigInt16Array(short.MaxValue * 2));
             FindValueHelper(new BigByteArray(short.MaxValue * 2));
         }
 
@@ -93,9 +93,9 @@ namespace BoboBrowse.Net.Util
         [Test]
         public void TestFindValueRange()
         {
-            FindValueRangeHelper(new BigIntArray(short.MaxValue * 2));
-            FindValueRangeHelper(new LazyBigIntArray(short.MaxValue * 2));
-            FindValueRangeHelper(new BigShortArray(short.MaxValue * 2));
+            FindValueRangeHelper(new BigInt32Array(short.MaxValue * 2));
+            FindValueRangeHelper(new LazyBigInt32Array(short.MaxValue * 2));
+            FindValueRangeHelper(new BigInt16Array(short.MaxValue * 2));
             FindValueRangeHelper(new BigByteArray(short.MaxValue * 2));
         }
 
@@ -120,9 +120,9 @@ namespace BoboBrowse.Net.Util
         [Test]
         public void TestFill()
         {
-            FillTestHelper(new BigIntArray(short.MaxValue << 1));
-            FillTestHelper(new LazyBigIntArray(short.MaxValue << 1));
-            FillTestHelper(new BigShortArray(short.MaxValue << 1));
+            FillTestHelper(new BigInt32Array(short.MaxValue << 1));
+            FillTestHelper(new LazyBigInt32Array(short.MaxValue << 1));
+            FillTestHelper(new BigInt16Array(short.MaxValue << 1));
             FillTestHelper(new BigByteArray(short.MaxValue << 1));
         }
 
