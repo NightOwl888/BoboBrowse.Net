@@ -62,7 +62,10 @@ namespace BoboBrowse.Net.Facets
             get { return m_stringMap.Keys; }
         }
 
-        public override ICollection<string> IntParamNames
+        /// <summary>
+        /// NOTE: This was GetIntParamNames() in bobo-browse
+        /// </summary>
+        public override ICollection<string> Int32ParamNames
         {
             get { return m_intMap.Keys; }
         }
@@ -72,7 +75,10 @@ namespace BoboBrowse.Net.Facets
             get { return m_byteMap.Keys; }
         }
 
-        public override ICollection<string> LongParamNames
+        /// <summary>
+        /// NOTE: This was GetLongParamNames() in bobo-browse
+        /// </summary>
+        public override ICollection<string> Int64ParamNames
         {
             get { return m_longMap.Keys; }
         }
@@ -104,24 +110,36 @@ namespace BoboBrowse.Net.Facets
             return m_byteMap.Get(name);
         }
 
-        public virtual DefaultFacetHandlerInitializerParam PutIntParam(string key, int[] value)
+        /// <summary>
+        /// NOTE: This was PutIntParam() in bobo-browse
+        /// </summary>
+        public virtual DefaultFacetHandlerInitializerParam PutInt32Param(string key, int[] value)
         {
             m_intMap.Put(key, value);
             return this;
         }
 
-        public override int[] GetIntParam(string name)
+        /// <summary>
+        /// NOTE: This was GetIntParam() in bobo-browse
+        /// </summary>
+        public override int[] GetInt32Param(string name)
         {
             return m_intMap.Get(name);
         }
 
-        public virtual DefaultFacetHandlerInitializerParam PutLongParam(string key, long[] value)
+        /// <summary>
+        /// NOTE: This was PutLongParam() in bobo-browse
+        /// </summary>
+        public virtual DefaultFacetHandlerInitializerParam PutInt64Param(string key, long[] value)
         {
             m_longMap.Put(key, value);
             return this;
         }
 
-        public override long[] GetLongParam(string name)
+        /// <summary>
+        /// NOTE: This was GetLongParam() in bobo-browse
+        /// </summary>
+        public override long[] GetInt64Param(string name)
         {
             return m_longMap.Get(name);
         }

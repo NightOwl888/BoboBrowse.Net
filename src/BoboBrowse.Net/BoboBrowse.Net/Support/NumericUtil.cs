@@ -45,7 +45,10 @@ namespace BoboBrowse.Net.Support
             return objType == typeof(decimal);
         }
 
-        public static bool IsPrefixCodedInt(string prefixCoded)
+        /// <summary>
+        /// NOTE: This was IsPrefixCodedInt() in Java
+        /// </summary>
+        public static bool IsPrefixCodedInt32(string prefixCoded)
         {
             try
             {
@@ -73,7 +76,10 @@ namespace BoboBrowse.Net.Support
             return true;
         }
 
-        public static bool IsPrefixCodedLong(string prefixCoded)
+        /// <summary>
+        /// NOTE: This was IsPrefixCodedLong() in Java
+        /// </summary>
+        public static bool IsPrefixCodedInt64(string prefixCoded)
         {
             try
             {
@@ -101,9 +107,12 @@ namespace BoboBrowse.Net.Support
             return true;
         }
 
-        public static bool IsPrefixCodedFloat(string prefixCoded)
+        /// <summary>
+        /// NOTE: This was IsPrefixCodedFloat() in Java
+        /// </summary>
+        public static bool IsPrefixCodedSingle(string prefixCoded)
         {
-            if (IsPrefixCodedInt(prefixCoded))
+            if (IsPrefixCodedInt32(prefixCoded))
             {
                 try
                 {
@@ -124,7 +133,7 @@ namespace BoboBrowse.Net.Support
 
         public static bool IsPrefixCodedDouble(string prefixCoded)
         {
-            if (IsPrefixCodedLong(prefixCoded))
+            if (IsPrefixCodedInt64(prefixCoded))
             {
                 try
                 {

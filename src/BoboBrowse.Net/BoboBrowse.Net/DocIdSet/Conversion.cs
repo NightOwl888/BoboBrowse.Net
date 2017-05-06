@@ -22,10 +22,13 @@ namespace BoboBrowse.Net.DocIdSet
 {
     public class Conversion
     {
-        public static int BYTES_PER_INT = 4;
-        public static int BYTES_PER_LONG = 8;
+        public static int BYTES_PER_INT32 = 4;
+        public static int BYTES_PER_INT64 = 8;
 
-        public static void IntToByteArray(int value, byte[] bytes, int offset)
+        /// <summary>
+        /// NOTE: This was IntToByteArray() in bobo-browse
+        /// </summary>
+        public static void Int32ToByteArray(int value, byte[] bytes, int offset)
         {
             uint uvalue = (uint)value;
             bytes[offset] = (byte)(int)(uvalue >> 24);
@@ -34,13 +37,19 @@ namespace BoboBrowse.Net.DocIdSet
             bytes[offset + 3] = (byte)value;
         }
 
-        public static int ByteArrayToInt(byte[] b, int offset)
+        /// <summary>
+        /// NOTE: This was ByteArrayToInt() in bobo-browse
+        /// </summary>
+        public static int ByteArrayToInt32(byte[] b, int offset)
         {
             return (b[offset] << 24) + ((b[offset + 1] & 0xFF) << 16) + ((b[offset + 2] & 0xFF) << 8)
                 + (b[offset + 3] & 0xFF);
         }
 
-        public static void LongToByteArray(long value, byte[] bytes, int offset)
+        /// <summary>
+        /// NOTE: This was LongToByteArray() in bobo-browse
+        /// </summary>
+        public static void Int64ToByteArray(long value, byte[] bytes, int offset)
         {
             ulong uvalue = (ulong)value;
             bytes[offset] = (byte)(long)(uvalue >> 56);
@@ -53,7 +62,10 @@ namespace BoboBrowse.Net.DocIdSet
             bytes[offset + 7] = (byte)value;
         }
 
-        public static long ByteArrayToLong(byte[] b, int offset)
+        /// <summary>
+        /// NOTE: This was ByteArrayToLong() in bobo-browse
+        /// </summary>
+        public static long ByteArrayToInt64(byte[] b, int offset)
         {
             return (b[offset] << 56) + ((b[offset + 1] & 0xFF) << 48) + ((b[offset + 2] & 0xFF) << 40)
                 + ((b[offset + 3] & 0xFF) << 32) + ((b[offset + 4] & 0xFF) << 24)

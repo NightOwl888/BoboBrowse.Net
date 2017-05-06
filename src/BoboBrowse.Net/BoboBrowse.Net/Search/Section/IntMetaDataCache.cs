@@ -127,10 +127,13 @@ namespace BoboBrowse.Net.Search.Section
                 m_curPage = CopyPage(new int[m_curPage.Length + Math.Max((m_curPage.Length - MAX_SLOTS), ilen)]);
             }
             m_curPage[m_curSlot] = (-m_curData);
-            m_curData = CopyByteToInt(data, 0, blen, m_curPage, m_curData);
+            m_curData = CopyByteToInt32(data, 0, blen, m_curPage, m_curData);
         }
 
-        private int CopyByteToInt(byte[] src, int off, int blen, int[] dst, int dstoff)
+        /// <summary>
+        /// NOTE: This was CopyByteToInt() in bobo-browse
+        /// </summary>
+        private int CopyByteToInt32(byte[] src, int off, int blen, int[] dst, int dstoff)
         {
             while (blen > 0)
             {

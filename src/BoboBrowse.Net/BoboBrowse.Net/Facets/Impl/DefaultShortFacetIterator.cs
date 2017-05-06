@@ -120,7 +120,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// see com.browseengine.bobo.api.ShortFacetIterator#nextShort()
         /// </summary>
         /// <returns></returns>
-        public override short NextShort()
+        public override short NextInt16()
         {
             if (m_index >= m_countLengthMinusOne)
                 throw new IndexOutOfRangeException("No more facets in this iteration");
@@ -167,7 +167,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// </summary>
         /// <param name="minHits"></param>
         /// <returns></returns>
-        public override short NextShort(int minHits)
+        public override short NextInt16(int minHits)
         {
             while (++m_index < m_countlength)
             {

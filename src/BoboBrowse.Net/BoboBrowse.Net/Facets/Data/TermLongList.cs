@@ -55,9 +55,9 @@ namespace BoboBrowse.Net.Facets.Data
                 }
                 catch (Exception ex)
                 {
-                    if (NumericUtil.IsPrefixCodedLong(s))
+                    if (NumericUtil.IsPrefixCodedInt64(s))
                     {
-                        throw new NotSupportedException("Lucene.Net index field must be a formatted string data type (typically padded with leading zeros). NumericField (LONG) is not supported.", ex);
+                        throw new NotSupportedException("Lucene.Net index field must be a formatted string data type (typically padded with leading zeros). NumericField (INT64) is not supported.", ex);
                     }
                     throw ex;
                 }

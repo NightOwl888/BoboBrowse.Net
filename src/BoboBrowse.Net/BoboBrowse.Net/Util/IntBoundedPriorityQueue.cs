@@ -63,7 +63,10 @@ namespace BoboBrowse.Net.Util
             return m_items[0];
         }
 
-        public int IntElement()
+        /// <summary>
+        /// NOTE: This was IntElement() in bobo-browse
+        /// </summary>
+        public int Int32Element()
         {
             if (m_size == 0)
                 throw new IndexOutOfRangeException("empty queue");

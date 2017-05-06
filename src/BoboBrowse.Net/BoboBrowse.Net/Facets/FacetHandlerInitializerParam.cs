@@ -40,7 +40,7 @@ namespace BoboBrowse.Net.Facets
                 return new string[0];
             }
 
-            public override int[] GetIntParam(string name)
+            public override int[] GetInt32Param(string name)
             {
                 return new int[0];
             }
@@ -50,7 +50,7 @@ namespace BoboBrowse.Net.Facets
                 return new bool[0];
             }
 
-            public override long[] GetLongParam(string name)
+            public override long[] GetInt64Param(string name)
             {
                 return new long[0];
             }
@@ -75,7 +75,7 @@ namespace BoboBrowse.Net.Facets
                 get { return new List<string>(); }
             }
 
-            public override ICollection<string> IntParamNames
+            public override ICollection<string> Int32ParamNames
             {
                 get { return new List<string>(); }
             }
@@ -85,7 +85,7 @@ namespace BoboBrowse.Net.Facets
                 get { return new List<string>(); }
             }
 
-            public override ICollection<string> LongParamNames
+            public override ICollection<string> Int64ParamNames
             {
                 get { return new List<string>(); }
             }
@@ -114,16 +114,16 @@ namespace BoboBrowse.Net.Facets
         }
 
         public abstract IEnumerable<string> GetStringParam(string name);
-        public abstract int[] GetIntParam(string name);
+        public abstract int[] GetInt32Param(string name);
         public abstract bool[] GetBooleanParam(string name);
-        public abstract long[] GetLongParam(string name);
+        public abstract long[] GetInt64Param(string name);
         public abstract byte[] GetByteArrayParam(string name);
         public abstract double[] GetDoubleParam(string name);
         public abstract ICollection<string> BooleanParamNames { get; }
         public abstract ICollection<string> StringParamNames { get; }
-        public abstract ICollection<string> IntParamNames { get; }
+        public abstract ICollection<string> Int32ParamNames { get; }
         public abstract ICollection<string> ByteArrayParamNames { get; }
-        public abstract ICollection<string> LongParamNames { get; }
+        public abstract ICollection<string> Int64ParamNames { get; }
         public abstract ICollection<string> DoubleParamNames { get; }
     }
 }

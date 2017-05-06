@@ -34,8 +34,16 @@ namespace BoboBrowse.Net
             get { return m_facet; }
         }
 
-        public abstract long NextLong();
-        public abstract long NextLong(int minHits);
+        /// <summary>
+        /// NOTE: This was NextLong() in bobo-browse
+        /// </summary>
+        public abstract long NextInt64();
+
+        /// <summary>
+        /// NOTE: This was NextLong() in bobo-browse
+        /// </summary>
+        public abstract long NextInt64(int minHits);
+
         public abstract string Format(long val);
     }
 }

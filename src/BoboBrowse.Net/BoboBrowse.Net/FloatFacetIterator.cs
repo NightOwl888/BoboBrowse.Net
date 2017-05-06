@@ -35,11 +35,15 @@ namespace BoboBrowse.Net
         }
 
         /// <summary>
-        /// NOTE: This was NextFloat() in 
+        /// NOTE: This was NextFloat() in bobo-browse
         /// </summary>
-        /// <returns></returns>
-        public abstract float NextFloat();
-        public abstract float NextFloat(int minHits);
+        public abstract float NextSingle();
+
+        /// <summary>
+        /// NOTE: This was NextFloat() in bobo-browse
+        /// </summary>
+        public abstract float NextSingle(int minHits);
+
         public abstract string Format(float val);
     }
 }

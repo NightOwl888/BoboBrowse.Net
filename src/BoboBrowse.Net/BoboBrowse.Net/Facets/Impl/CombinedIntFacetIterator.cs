@@ -74,7 +74,7 @@ namespace BoboBrowse.Net.Facets.Impl
             {
                 if (minHits > 0)
                     minHits = 1;
-                if ((m_curFacet = m_iterator.NextInt(minHits)) != TermInt32List.VALUE_MISSING)
+                if ((m_curFacet = m_iterator.NextInt32(minHits)) != TermInt32List.VALUE_MISSING)
                 {
                     m_curFacetCount = m_iterator.Count;
                     return true;
@@ -443,7 +443,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// see com.browseengine.bobo.api.IntFacetIterator#nextInt()
         /// </summary>
         /// <returns></returns>
-        public override int NextInt()
+        public override int NextInt32()
         {
             if (!HasNext())
                 throw new IndexOutOfRangeException("No more facets in this iteration");
@@ -471,7 +471,7 @@ namespace BoboBrowse.Net.Facets.Impl
         }
 
 
-        public override int NextInt(int minHits)
+        public override int NextInt32(int minHits)
         {
             int qsize = m_queue.Count;
             if (qsize == 0)

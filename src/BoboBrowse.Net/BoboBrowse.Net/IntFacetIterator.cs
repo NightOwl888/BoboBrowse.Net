@@ -34,8 +34,16 @@ namespace BoboBrowse.Net
             get { return m_facet; }
         }
 
-        public abstract int NextInt();
-        public abstract int NextInt(int minHits);
+        /// <summary>
+        /// NOTE: This was NextInt() in bobo-browse
+        /// </summary>
+        public abstract int NextInt32();
+
+        /// <summary>
+        /// NOTE: This was NextInt() in bobo-browse
+        /// </summary>
+        public abstract int NextInt32(int minHits);
+
         public abstract string Format(int val);
     }
 }

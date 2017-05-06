@@ -400,7 +400,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 return null;
             }
 
-            public override int NextInt()
+            public override int NextInt32()
             {
                 if (HasNext())
                 {
@@ -410,7 +410,7 @@ namespace BoboBrowse.Net.Facets.Impl
                 return TermInt32List.VALUE_MISSING;
             }
 
-            public override int NextInt(int minHits)
+            public override int NextInt32(int minHits)
             {
                 while (m_idx < m_maxMinusOne)
                 {

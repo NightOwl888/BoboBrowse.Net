@@ -120,7 +120,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// see com.browseengine.bobo.api.LongFacetIterator#nextLong()
         /// </summary>
         /// <returns></returns>
-        public override long NextLong()
+        public override long NextInt64()
         {
             if (m_index >= m_countLengthMinusOne)
                 throw new IndexOutOfRangeException("No more facets in this iteration");
@@ -167,7 +167,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// </summary>
         /// <param name="minHits"></param>
         /// <returns></returns>
-        public override long NextLong(int minHits)
+        public override long NextInt64(int minHits)
         {
             while (++m_index < m_countlength)
             {

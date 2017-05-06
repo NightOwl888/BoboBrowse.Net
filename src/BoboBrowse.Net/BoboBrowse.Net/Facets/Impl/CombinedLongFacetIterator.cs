@@ -74,7 +74,7 @@ namespace BoboBrowse.Net.Facets.Impl
             {
                 if (minHits > 0)
                     minHits = 1;
-                if ((m_curFacet = m_iterator.NextLong(minHits)) != TermInt64List.VALUE_MISSING)
+                if ((m_curFacet = m_iterator.NextInt64(minHits)) != TermInt64List.VALUE_MISSING)
                 {
                     m_curFacetCount = m_iterator.Count;
                     return true;
@@ -438,7 +438,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public override long NextLong()
+        public override long NextInt64()
         {
             if (!HasNext())
                 throw new IndexOutOfRangeException("No more facets in this iteration");
@@ -465,7 +465,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return TermInt64List.VALUE_MISSING;
         }
 
-        public override long NextLong(int minHits)
+        public override long NextInt64(int minHits)
         {
             int qsize = _queue.Count;
             if (qsize == 0)

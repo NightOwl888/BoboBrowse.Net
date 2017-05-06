@@ -55,9 +55,9 @@ namespace BoboBrowse.Net.Facets.Data
                 }
                 catch (Exception ex)
                 {
-                    if (NumericUtil.IsPrefixCodedFloat(s))
+                    if (NumericUtil.IsPrefixCodedSingle(s))
                     {
-                        throw new NotSupportedException("Lucene.Net index field must be a formatted string data type (typically padded with leading zeros). NumericField (FLOAT) is not supported.", ex);
+                        throw new NotSupportedException("Lucene.Net index field must be a formatted string data type (typically padded with leading zeros). NumericField (SINGLE) is not supported.", ex);
                     }
                     throw ex;
                 }

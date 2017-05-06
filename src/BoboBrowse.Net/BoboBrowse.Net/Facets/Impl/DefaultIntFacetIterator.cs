@@ -114,7 +114,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// see com.browseengine.bobo.api.IntFacetIterator#nextInt()
         /// </summary>
         /// <returns></returns>
-        public override int NextInt()
+        public override int NextInt32()
         {
             if (m_index >= m_countLengthMinusOne)
                 throw new IndexOutOfRangeException("No more facets in this iteration");
@@ -157,7 +157,7 @@ namespace BoboBrowse.Net.Facets.Impl
         /// </summary>
         /// <param name="minHits"></param>
         /// <returns></returns>
-        public override int NextInt(int minHits)
+        public override int NextInt32(int minHits)
         {
             while (++m_index < m_countlength)
             {

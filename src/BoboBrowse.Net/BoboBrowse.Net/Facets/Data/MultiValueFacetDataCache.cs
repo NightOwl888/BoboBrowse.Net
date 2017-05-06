@@ -341,13 +341,16 @@ namespace BoboBrowse.Net.Facets.Data
                     if (docPosEnum.Freq > 0)
                     {
                         docPosEnum.NextPosition();
-                        int len = BytesToInt(docPosEnum.GetPayload().Bytes);
+                        int len = BytesToInt32(docPosEnum.GetPayload().Bytes);
                         Allocate(docID, Math.Min(len, m_maxItems), true);
                     }
                 }
             }
 
-            private static int BytesToInt(byte[] bytes)
+            /// <summary>
+            /// NOTE: This was BytesToInt() in bobo-browse
+            /// </summary>
+            private static int BytesToInt32(byte[] bytes)
             {
                 return ((bytes[3] & 0xFF) << 24) | ((bytes[2] & 0xFF) << 16) | ((bytes[1] & 0xFF) << 8) | (bytes[0] & 0xFF);
             }

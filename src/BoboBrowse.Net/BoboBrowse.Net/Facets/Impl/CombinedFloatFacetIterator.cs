@@ -76,7 +76,7 @@ namespace BoboBrowse.Net.Facets.Impl
             {
                 if (minHits > 0)
                     minHits = 1;
-                if ((m_curFacet = m_iterator.NextFloat(minHits)) != TermSingleList.VALUE_MISSING)
+                if ((m_curFacet = m_iterator.NextSingle(minHits)) != TermSingleList.VALUE_MISSING)
                 {
                     m_curFacetCount = m_iterator.Count;
                     return true;
@@ -444,7 +444,7 @@ namespace BoboBrowse.Net.Facets.Impl
             }
         }
 
-        public override float NextFloat()
+        public override float NextSingle()
         {
             if (!HasNext())
                 throw new IndexOutOfRangeException("No more facets in this iteration");
@@ -471,7 +471,7 @@ namespace BoboBrowse.Net.Facets.Impl
             return TermSingleList.VALUE_MISSING;
         }
 
-        public override float NextFloat(int minHits)
+        public override float NextSingle(int minHits)
         {
             int qsize = m_queue.Count;
             if (qsize == 0)

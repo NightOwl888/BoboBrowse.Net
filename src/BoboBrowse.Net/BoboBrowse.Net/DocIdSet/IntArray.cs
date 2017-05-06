@@ -78,7 +78,10 @@ namespace BoboBrowse.Net.DocIdSet
             return new int[len];
         }
 
-        public static int GetSerialIntNum(Int32Array instance)
+        /// <summary>
+        /// NOTE: This was GetSerialIntNum() in bobo-browse
+        /// </summary>
+        public static int GetSerialInt32Num(Int32Array instance)
         {
             int num = 3 + instance.m_count; // _len, _count, _growth
             return num;
@@ -87,23 +90,23 @@ namespace BoboBrowse.Net.DocIdSet
         public static int ConvertToBytes(Int32Array instance, byte[] @out, int offset)
         {
             int numInt = 0;
-            Conversion.IntToByteArray(instance.Len, @out, offset);
-            offset += Conversion.BYTES_PER_INT;
+            Conversion.Int32ToByteArray(instance.Len, @out, offset);
+            offset += Conversion.BYTES_PER_INT32;
             numInt++;
 
-            Conversion.IntToByteArray(instance.m_count, @out, offset);
-            offset += Conversion.BYTES_PER_INT;
+            Conversion.Int32ToByteArray(instance.m_count, @out, offset);
+            offset += Conversion.BYTES_PER_INT32;
             numInt++;
 
-            Conversion.IntToByteArray(instance.Growth, @out, offset);
-            offset += Conversion.BYTES_PER_INT;
+            Conversion.Int32ToByteArray(instance.Growth, @out, offset);
+            offset += Conversion.BYTES_PER_INT32;
             numInt++;
 
             for (int i = 0; i < instance.m_count; i++)
             {
                 int data = instance.Get(i);
-                Conversion.IntToByteArray(data, @out, offset);
-                offset += Conversion.BYTES_PER_INT;
+                Conversion.Int32ToByteArray(data, @out, offset);
+                offset += Conversion.BYTES_PER_INT32;
             }
             numInt += instance.m_count;
             return numInt;
@@ -111,21 +114,21 @@ namespace BoboBrowse.Net.DocIdSet
 
         public static Int32Array NewInstanceFromBytes(byte[] inData, int offset)
         {
-            int len = Conversion.ByteArrayToInt(inData, offset);
-            offset += Conversion.BYTES_PER_INT;
+            int len = Conversion.ByteArrayToInt32(inData, offset);
+            offset += Conversion.BYTES_PER_INT32;
 
             Int32Array instance = new Int32Array(len);
 
-            int count = Conversion.ByteArrayToInt(inData, offset);
-            offset += Conversion.BYTES_PER_INT;
+            int count = Conversion.ByteArrayToInt32(inData, offset);
+            offset += Conversion.BYTES_PER_INT32;
 
-            int growth = Conversion.ByteArrayToInt(inData, offset);
-            offset += Conversion.BYTES_PER_INT;
+            int growth = Conversion.ByteArrayToInt32(inData, offset);
+            offset += Conversion.BYTES_PER_INT32;
 
             for (int i = 0; i < count; i++)
             {
-                int data = Conversion.ByteArrayToInt(inData, offset);
-                offset += Conversion.BYTES_PER_INT;
+                int data = Conversion.ByteArrayToInt32(inData, offset);
+                offset += Conversion.BYTES_PER_INT32;
                 instance.Add(data);
             }
 
