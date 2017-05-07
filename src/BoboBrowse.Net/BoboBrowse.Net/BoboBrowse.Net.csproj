@@ -244,7 +244,6 @@
     <Compile Include="Search\Section\UnaryNotNode.cs" />
     <Compile Include="Support\AtomicLong.cs" />
     <Compile Include="Support\DateTimeExtensions.cs" />
-    <Compile Include="Support\IIterator.cs" />
     <Compile Include="Support\ListExtensions.cs" />
     <Compile Include="Support\LibLog.cs" />
     <Compile Include="Support\MathUtil.cs" />
