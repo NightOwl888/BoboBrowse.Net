@@ -49,7 +49,7 @@ namespace BoboBrowse.Net.Facets.Impl
             /// Added in .NET version as an accessor to the _iterator field.
             /// </summary>
             /// <returns></returns>
-            public virtual Int32FacetIterator GetIterator() // TODO: Implement IEnumerable<T> ?
+            public virtual Int32FacetIterator GetIterator()
             {
                 return m_iterator;
             }

@@ -26,10 +26,10 @@ namespace BoboBrowse.Net
     /// Iterator to iterate over facets
     /// author nnarkhed
     /// </summary>
-    public abstract class FacetIterator //: IIterator<string> // TODO: Make this class generic ?
+    public abstract class FacetIterator //: IIterator<string>
     {
         protected int m_count;
-        protected string m_facet; // TODO: Make this generic if class is generic
+        protected string m_facet;
 
         public virtual int Count 
         { 

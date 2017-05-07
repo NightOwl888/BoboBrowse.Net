@@ -51,7 +51,7 @@ namespace BoboBrowse.Net.Facets.Impl
             /// Added in .NET version as an accessor to the _iterator field.
             /// </summary>
             /// <returns></returns>
-            public virtual SingleFacetIterator GetIterator() // TODO: Implement IEnumerable<T> ?
+            public virtual SingleFacetIterator GetIterator()
             {
                 return m_iterator;
             }

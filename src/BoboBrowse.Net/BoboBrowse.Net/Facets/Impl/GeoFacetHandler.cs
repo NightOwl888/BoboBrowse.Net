@@ -23,7 +23,6 @@ namespace BoboBrowse.Net.Facets.Impl
     using BoboBrowse.Net.Facets.Data;
     using BoboBrowse.Net.Facets.Filter;
     using BoboBrowse.Net.Sort;
-    using BoboBrowse.Net.Support;
     using BoboBrowse.Net.Util;
     using System;
     using System.Collections.Generic;
@@ -287,7 +286,7 @@ namespace BoboBrowse.Net.Facets.Impl
             float lon = GeoMatchUtil.GetMatchLonDegreesFromXYZCoords(xvalue, yvalue, zvalue);
 
             string[] fieldValues = new string[2];
-            fieldValues[0] = Convert.ToString(lat); // TODO: Culture
+            fieldValues[0] = Convert.ToString(lat);
             fieldValues[1] = Convert.ToString(lon);
             return fieldValues;
         }
