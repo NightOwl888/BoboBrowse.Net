@@ -20,11 +20,9 @@
 // Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Query.Scoring
 {
-    using BoboBrowse.Net.Support;
     using Lucene.Net.Search;
     using Lucene.Net.Support;
     using System.Collections.Generic;
-    using System.Linq;
 
     public abstract class BoboDocScorer
     {
@@ -43,28 +41,23 @@ namespace BoboBrowse.Net.Query.Scoring
 
         public static float[] BuildBoostList(IList<string> valArray, IDictionary<string, float> boostMap)
         {
-            var valArray2 = new List<string>(valArray.Count());
-            // NOTE: we must loop through the list in order to make it format
-            // the values so it can match the formatted values in the boostMap.
-            foreach (var item in valArray) // TODO: Try to remove O(n) operation
-            {
-                valArray2.Add(item);
-            }
-            float[] boostList = new float[valArray2.Count];
+            float[] boostList = new float[valArray.Count];
             Arrays.Fill(boostList, 1.0f);
             if (boostMap != null && boostMap.Count > 0)
             {
-                Dictionary<string, float>.Enumerator iter = new Dictionary<string, float>(boostMap).GetEnumerator();
-                while (iter.MoveNext())
+                using (var iter = boostMap.GetEnumerator())
                 {
-                    KeyValuePair<string, float> entry = iter.Current;
-                    int index = valArray2.IndexOf(entry.Key);
-                    if (index >= 0)
+                    while (iter.MoveNext())
                     {
-                        float fval = entry.Value;
-                        if (fval >= 0)
+                        KeyValuePair<string, float> entry = iter.Current;
+                        int index = valArray.IndexOf(entry.Key);
+                        if (index >= 0)
                         {
-                            boostList[index] = fval;
+                            float fval = entry.Value;
+                            if (fval >= 0)
+                            {
+                                boostList[index] = fval;
+                            }
                         }
                     }
                 }

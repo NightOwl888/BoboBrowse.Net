@@ -2598,7 +2598,7 @@ namespace BoboBrowse.Net
         [Test]
         public void TestFacetBoost()
         {
-            var boostMaps = new Dictionary<String, IDictionary<string, float>>();
+            var boostMaps = new Dictionary<string, IDictionary<string, float>>();
 
             var map = new Dictionary<string, float>();
             map.Put("red", 3.0f);
