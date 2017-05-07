@@ -20,7 +20,6 @@
 // Version compatibility level: 4.0.2
 namespace BoboBrowse.Net.Util
 {
-    //using C5;
     using System;
     using System.Collections;
     using System.Collections.Generic;
@@ -28,7 +27,7 @@ namespace BoboBrowse.Net.Util
     /// <summary>
     /// NOTE: This was IntBoundedPriorityQueue in bobo-browse
     /// </summary>
-    public class Int32BoundedPriorityQueue //: IntervalHeap<int>
+    public class Int32BoundedPriorityQueue : IEnumerable<int>
     {
         //private static long serialVersionUID = 1L; // NOT USED
         private readonly int m_capacity;
@@ -79,7 +78,13 @@ namespace BoboBrowse.Net.Util
         /// instance of some class that provides a guarantee).
         /// </summary>
         /// <returns></returns>
-        public Int32Iterator GetIterator() // TODO: Implement IEnumerable<T> and change this to GetEnumerator()
+        //public Int32Iterator GetIterator() // BoboBrowse.Net: using GetEnumerator() in .NET
+        public IEnumerator<int> GetEnumerator()
+        {
+            return new Int32Iterator(this);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return new Int32Iterator(this);
         }
