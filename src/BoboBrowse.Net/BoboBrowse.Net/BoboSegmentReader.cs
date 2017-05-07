@@ -52,7 +52,6 @@ namespace BoboBrowse.Net
         private readonly DisposableThreadLocal<IDictionary<string, object>> m_runtimeFacetDataMap = new RuntimeFacetDataMapWrapper();
         private readonly DisposableThreadLocal<IDictionary<string, IRuntimeFacetHandler>> m_runtimeFacetHandlerMap = new RuntimeFacetHandlerMapWrapper();
 
-        // TODO: Fix this IDisposableThreadLocal (it is a class, so should be named DisposableThreadLocal) and push to Lucene.Net
         private class RuntimeFacetDataMapWrapper : DisposableThreadLocal<IDictionary<string, object>>
         {
             protected override IDictionary<string, object> InitialValue()

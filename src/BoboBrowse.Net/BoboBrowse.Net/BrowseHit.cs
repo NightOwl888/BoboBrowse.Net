@@ -67,7 +67,6 @@ namespace BoboBrowse.Net
 
             public SerializableField(IIndexableField field)
             {
-                // TODO: Fix this property and push to Lucene.Net
                 m_name = field.Name;
                 if (field.GetNumericValue() != null)
                 {
@@ -79,7 +78,6 @@ namespace BoboBrowse.Net
                 }
                 else if (field.GetBinaryValue() != null)
                 {
-                    // TODO: Fix this property and push to Lucene.Net
                     m_fieldsData = field.GetBinaryValue().Bytes;
                 }
                 else
