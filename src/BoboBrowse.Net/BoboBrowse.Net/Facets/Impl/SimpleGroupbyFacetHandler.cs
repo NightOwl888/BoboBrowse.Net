@@ -536,14 +536,15 @@ namespace BoboBrowse.Net.Facets.Impl
                     return (m_index < (m_parent.m_countlength - 1));
                 }
 
-                /// <summary>
-                /// (non-Javadoc)
-                /// see java.util.Iterator#remove()
-                /// </summary>
-                public override void Remove()
-                {
-                    throw new NotSupportedException("remove() method not supported for Facet Iterators");
-                }
+                // BoboBrowse.Net: Not supported in .NET anyway
+                ///// <summary>
+                ///// (non-Javadoc)
+                ///// see java.util.Iterator#remove()
+                ///// </summary>
+                //public override void Remove()
+                //{
+                //    throw new NotSupportedException("remove() method not supported for Facet Iterators");
+                //}
 
                 /// <summary>
                 /// (non-Javadoc)

@@ -428,10 +428,11 @@ namespace BoboBrowse.Net.Facets.Impl
                 return (m_idx < m_maxMinusOne);
             }
 
-            public override void Remove()
-            {
-                throw new NotSupportedException();
-            }
+            // BoboBrowse.Net: Not supported in .NET anyway
+            //public override void Remove()
+            //{
+            //    throw new NotSupportedException();
+            //}
 
             public override string Format(int val)
             {

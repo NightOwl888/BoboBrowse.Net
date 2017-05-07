@@ -37,10 +37,11 @@ namespace BoboBrowse.Net.Facets.Attribute
             return iterator.MoveNext();
         }
 
-        public override void Remove()
-        {
-            throw new NotSupportedException();
-        }
+        // BoboBrowse.Net: Not supported in .NET anyway
+        //public override void Remove()
+        //{
+        //    throw new NotSupportedException();
+        //}
 
         public override string Next()
         {
