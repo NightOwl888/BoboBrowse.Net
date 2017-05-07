@@ -33,19 +33,19 @@ namespace BoboBrowse.Net.Support
         {
             // Arrange
             var orig = new Int32Array(7);
-            orig.Array = new int[] { 5, 4, 3, 2, 1, 1, 2 };
+            orig.m_array = new int[] { 5, 4, 3, 2, 1, 1, 2 };
             orig.m_count = 4;
-            orig.Growth = 6;
-            orig.Len = 7;
+            orig.m_growth = 6;
+            orig.m_len = 7;
 
             // Act
             var clone = (Int32Array)orig.Clone();
 
             // Assert
-            Assert.AreEqual(new int[] { 5, 4, 3, 2, 1, 1, 2 }, clone.Array);
+            Assert.AreEqual(new int[] { 5, 4, 3, 2, 1, 1, 2 }, clone.m_array);
             Assert.AreEqual(4, clone.m_count);
-            Assert.AreEqual(6, clone.Growth);
-            Assert.AreEqual(7, clone.Len);
+            Assert.AreEqual(6, clone.m_growth);
+            Assert.AreEqual(7, clone.m_len);
         }
 
         [Test]
