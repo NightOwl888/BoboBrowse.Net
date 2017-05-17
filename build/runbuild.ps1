@@ -78,7 +78,7 @@ task Init -depends InstallSDK -description "This tasks makes sure the build envi
 
 task Restore -description "This task runs NuGet package restore" {
 	Exec { 
-		&dotnet msbuild $solutionFile /t:Restore
+		&dotnet msbuild $solutionFile /t:Restore /p:Configuration=$configuration
 	}
 }
 
@@ -173,8 +173,12 @@ task Test -depends Pack -description "This tasks runs the tests" {
 		Write-Host "Running tests for framework: $framework" -ForegroundColor Green
 
 		foreach ($testProject in $testProjects) {
+			Exec { 
+				&dotnet msbuild $testProject /t:Restore /p:Configuration=$configuration /p:TargetFramework=$framework
+			}
+
 			$testName = $testProject.Directory.Name
-			$testExpression = "dotnet.exe test '$testProject' --configuration $configuration --framework $framework --no-build"
+			$testExpression = "dotnet.exe test '$testProject' --configuration $configuration --framework $framework"
 
 			#$testResultDirectory = "$test_results_directory\$framework\$testName"
 			#Ensure-Directory-Exists $testResultDirectory
