@@ -1,9 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <Import Project="..\PackageVersion.proj" />
+  
   <PropertyGroup>
     <TargetFrameworks>netstandard1.5;net451</TargetFrameworks>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.5' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
     <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.5' ">1.6.0</NetStandardImplicitPackageVersion>
+
+    <AssemblyVersion>4.0.0</AssemblyVersion>
+    <AssemblyTitle>BoboBrowse.Net</AssemblyTitle>
+    <Description>BoboBrowse.Net is a faceted search engine implemented on a top of Lucene.Net. Originally ported from the wonderful Java library developed by John Wang (http://javasoze.github.com/bobo/). While Lucene.Net is good with unstructured data, BoboBrowse.Net fills in the missing piece to handle semi-structured and structured data.</Description>
+    <Authors>NightOwl888</Authors>
+    <PackageLicenseUrl>https://github.com/NightOwl888/BoboBrowse.Net/blob/master/LICENSE.md</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/NightOwl888/BoboBrowse.Net</PackageProjectUrl>
+    <PackageIconUrl>https://github.com/NightOwl888/BoboBrowse.Net/blob/master/BoboBrowse.Net.png?raw=true</PackageIconUrl>
+    <Copyright>Copyright © BoboBrowse.Net 2011 - 2017</Copyright>
+    <PackageTags>faceted search engine lucene lucene.net nosql text information retrieval apache drill down checkbox navigation browse</PackageTags>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,4 +42,10 @@
     <DefineConstants>$(DefineConstants);FEATURE_SERIALIZABLE;FEATURE_STRING_INTERN</DefineConstants>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NetCoreApp1_0|Any CPU' " />
+
+  <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
+  </ItemGroup>
+  
 </Project>

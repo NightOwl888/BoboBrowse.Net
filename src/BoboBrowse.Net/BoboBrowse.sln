@@ -6,49 +6,40 @@ MinimumVisualStudioVersion = 15.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{74606D3E-1C8F-401F-95E1-F4F78C5CBD18}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\Build.bat = ..\..\Build.bat
+		CommonAssemblyInfo.cs = CommonAssemblyInfo.cs
+		PackageVersion.proj = PackageVersion.proj
 		..\..\build\psake.ps1 = ..\..\build\psake.ps1
 		..\..\build\psake.psm1 = ..\..\build\psake.psm1
 		..\..\build\runbuild.ps1 = ..\..\build\runbuild.ps1
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{DE47437D-6FE7-49BC-94F2-FA5E6B431711}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BoboBrowse.Net", "BoboBrowse.Net", "{12CE3745-8162-4885-B294-F9810B213C23}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\build\templates\BoboBrowse.Net\BoboBrowse.Net.nuspec = ..\..\build\templates\BoboBrowse.Net\BoboBrowse.Net.nuspec
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BoboBrowse.Net.Spring", "BoboBrowse.Net.Spring", "{40240A3C-18F1-4BD0-85EC-CDD00081155D}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\build\templates\BoboBrowse.Net.Spring\BoboBrowse.Net.Spring.nuspec = ..\..\build\templates\BoboBrowse.Net.Spring\BoboBrowse.Net.Spring.nuspec
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoboBrowse.Net", "BoboBrowse.Net\BoboBrowse.Net.csproj", "{12826ECA-2CB5-43B2-938D-86036DA56FBE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoboBrowse.Net.Spring", "BoboBrowse.Net.Spring\BoboBrowse.Net.Spring.csproj", "{099CA1FF-9C8D-44E1-940B-EF9C787C23F9}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{A5976E70-907D-44D8-8287-CA9BF00D30AC}"
-	ProjectSection(SolutionItems) = preProject
-		BoboBrowse.Net.Tests\BoboBrowse.Net.Tests.csproj = BoboBrowse.Net.Tests\BoboBrowse.Net.Tests.csproj
-		BoboBrowse.Net.Tests\BoboBrowse.Net.Tests.proj = BoboBrowse.Net.Tests\BoboBrowse.Net.Tests.proj
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoboBrowse.Net.Tests", "BoboBrowse.Net.Tests\BoboBrowse.Net.Tests.csproj", "{89527213-43EE-482E-8BEE-E3B4E5192E3F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug_NetCoreApp1_0|Any CPU = Debug_NetCoreApp1_0|Any CPU
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{12826ECA-2CB5-43B2-938D-86036DA56FBE}.Debug_NetCoreApp1_0|Any CPU.ActiveCfg = NetCoreApp1_0|Any CPU
+		{12826ECA-2CB5-43B2-938D-86036DA56FBE}.Debug_NetCoreApp1_0|Any CPU.Build.0 = NetCoreApp1_0|Any CPU
 		{12826ECA-2CB5-43B2-938D-86036DA56FBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{12826ECA-2CB5-43B2-938D-86036DA56FBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12826ECA-2CB5-43B2-938D-86036DA56FBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12826ECA-2CB5-43B2-938D-86036DA56FBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{099CA1FF-9C8D-44E1-940B-EF9C787C23F9}.Debug_NetCoreApp1_0|Any CPU.ActiveCfg = NetCoreApp1_0|Any CPU
+		{099CA1FF-9C8D-44E1-940B-EF9C787C23F9}.Debug_NetCoreApp1_0|Any CPU.Build.0 = NetCoreApp1_0|Any CPU
 		{099CA1FF-9C8D-44E1-940B-EF9C787C23F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{099CA1FF-9C8D-44E1-940B-EF9C787C23F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{099CA1FF-9C8D-44E1-940B-EF9C787C23F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{099CA1FF-9C8D-44E1-940B-EF9C787C23F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89527213-43EE-482E-8BEE-E3B4E5192E3F}.Debug_NetCoreApp1_0|Any CPU.ActiveCfg = Debug_NetCoreApp1_0|Any CPU
+		{89527213-43EE-482E-8BEE-E3B4E5192E3F}.Debug_NetCoreApp1_0|Any CPU.Build.0 = Debug_NetCoreApp1_0|Any CPU
 		{89527213-43EE-482E-8BEE-E3B4E5192E3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{89527213-43EE-482E-8BEE-E3B4E5192E3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{89527213-43EE-482E-8BEE-E3B4E5192E3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -56,10 +47,5 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{DE47437D-6FE7-49BC-94F2-FA5E6B431711} = {74606D3E-1C8F-401F-95E1-F4F78C5CBD18}
-		{12CE3745-8162-4885-B294-F9810B213C23} = {DE47437D-6FE7-49BC-94F2-FA5E6B431711}
-		{40240A3C-18F1-4BD0-85EC-CDD00081155D} = {DE47437D-6FE7-49BC-94F2-FA5E6B431711}
 	EndGlobalSection
 EndGlobal

@@ -9,10 +9,11 @@ GOTO endcommentblock
 :: Available Options:
 ::
 ::   -Version:<Version>
-::   -v:<Version> - Assembly version number. Default is 1.0.0.
+::   -v:<Version> - Assembly version number. If not supplied, the version will be the same 
+::					as PackageVersion (excluding any pre-release tag).
 ::
 ::   -PackageVersion:<PackageVersion>
-::   -pv:<PackageVersion> - Nuget package version. Default is version's value.
+::   -pv:<PackageVersion> - Nuget package version. Default is 1.0.0.
 ::
 ::   -Configuration:<Configuration>
 ::   -config:<Configuration> - MSBuild configuration for the build.
@@ -28,10 +29,13 @@ setlocal enabledelayedexpansion enableextensions
 
 REM Default values
 IF "%version%" == "" (
-	set version=1.0.0
+	REM If version is not supplied, our build script should parse it
+	REM from the %PackageVersion% variable. We determine this by checking
+	REM whether it is 0.0.0 (uninitialized).
+	set version=0.0.0
 )
 IF "%PackageVersion%" == "" (
-    set PackageVersion=%version%
+    set PackageVersion=1.0.0
 )
 set configuration=Release
 IF NOT "%config%" == "" (
@@ -74,4 +78,4 @@ FOR %%a IN (%*) DO (
 	)
 )
 
-powershell -Command "& { Import-Module .\build\psake.psm1; $psake.use_exit_on_error = $true; Invoke-psake .\build\runbuild.ps1 -framework 4.0x64 -properties @{\"version\"=\"%version%\";\"configuration\"=\"%configuration%"\";\"packageVersion\"=\"%PackageVersion%"\"} }"
+powershell -Command "& Import-Module .\build\psake.psm1; $psake.use_exit_on_error = $true; Invoke-psake .\build\runbuild.ps1 -properties @{version='%version%';configuration='%configuration%';packageVersion='%PackageVersion%'}"

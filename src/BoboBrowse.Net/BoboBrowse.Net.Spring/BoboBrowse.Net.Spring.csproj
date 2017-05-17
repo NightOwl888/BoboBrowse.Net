@@ -1,7 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <Import Project="..\PackageVersion.proj" />
+  
   <PropertyGroup>
     <TargetFramework>net451</TargetFramework>
+
+    <AssemblyVersion>4.0.0</AssemblyVersion>
+    <AssemblyTitle>BoboBrowse.Net.Spring</AssemblyTitle>
+    <Description>This is an add-on NuGet package for BoboBrowse.Net. It provides the ability to configure FacetHandlers using XML in each Lucene.Net index directory so the facet handlers don't need to be configured in code.</Description>
+    <Authors>NightOwl888</Authors>
+    <PackageLicenseUrl>https://github.com/NightOwl888/BoboBrowse.Net/blob/master/LICENSE.md</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/NightOwl888/BoboBrowse.Net</PackageProjectUrl>
+    <PackageIconUrl>https://github.com/NightOwl888/BoboBrowse.Net/blob/master/BoboBrowse.Net.png?raw=true</PackageIconUrl>
+    <Copyright>Copyright © BoboBrowse.Net 2011 - 2017</Copyright>
+    <PackageTags>faceted search engine lucene lucene.net nosql text information retrieval apache drill down checkbox navigation browse</PackageTags>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,4 +27,10 @@
     <ProjectReference Include="..\BoboBrowse.Net\BoboBrowse.Net.csproj" />
   </ItemGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NetCoreApp1_0|Any CPU' " />
+
+  <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
+  </ItemGroup>
+  
 </Project>
