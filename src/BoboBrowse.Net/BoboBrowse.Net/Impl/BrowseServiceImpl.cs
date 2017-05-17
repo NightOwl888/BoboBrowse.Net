@@ -25,6 +25,7 @@ namespace BoboBrowse.Net.Impl
     using BoboBrowse.Net.Support.Logging;
     using Lucene.Net.Index;
     using Lucene.Net.Store;
+    using System;
     using System.IO;
     using System.Runtime.CompilerServices;
     using Directory = Lucene.Net.Store.Directory;
@@ -94,10 +95,13 @@ namespace BoboBrowse.Net.Impl
             return reader;
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
         public virtual void Dispose()
         {
-            this.Dispose(true);
+            lock (this)
+            {
+                this.Dispose(true);
+                GC.SuppressFinalize(this);
+            }
         }
 
         protected virtual void Dispose(bool disposing)

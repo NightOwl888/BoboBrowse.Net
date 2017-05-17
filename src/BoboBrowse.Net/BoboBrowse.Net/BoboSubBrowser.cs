@@ -138,12 +138,12 @@ namespace BoboBrowse.Net
         /// Gets a set of facet names
         /// </summary>
         /// <returns>set of facet names</returns>
-        public virtual IEnumerable<string> FacetNames
+        public virtual ICollection<string> FacetNames
         {
             get
             {
                 var map = FacetHandlerMap;
-                return map.Keys.ToArray();
+                return new List<string>(map.Keys);
             }
         }
 

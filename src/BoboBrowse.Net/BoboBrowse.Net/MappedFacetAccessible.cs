@@ -27,7 +27,9 @@ namespace BoboBrowse.Net
     using System.Collections.Generic;
     using System.Linq;
 
+#if FEATURE_SERIALIZABLE
     [Serializable]
+#endif
     public class MappedFacetAccessible : IFacetAccessible
     {
         //private const long serialVersionUID = 1L;

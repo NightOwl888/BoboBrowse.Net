@@ -86,7 +86,7 @@ namespace BoboBrowse.Net
             }
         }
 
-        public static void Main(string[] args)
+        public static void Main2(string[] args)
         {
             int threadCount = 10;
             int numIter = 1000000;
@@ -102,7 +102,7 @@ namespace BoboBrowse.Net
         [Test]
         public void TestMemory()
         {
-            Main(new string[0]);
+            Main2(new string[0]);
         }
     }
 }

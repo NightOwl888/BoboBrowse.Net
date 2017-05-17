@@ -22,7 +22,7 @@ namespace BoboBrowse.Net.Support
     using BoboBrowse.Net.Facets.Filter;
     using Lucene.Net.Documents;
     using System;
-    
+
     /// <summary>
     /// Provides the means to customize the format of the range strings of a facet for display on the user interface.<br/>
     /// <br/>
@@ -47,7 +47,9 @@ namespace BoboBrowse.Net.Support
     /// using the original facet value string.
     /// </summary>
     /// <typeparam name="T">The underlying data type of the facet handler.</typeparam>
+#if FEATURE_SERIALIZABLE
     [Serializable]
+#endif
     public class RangeStringFormatter<T> : RangeStringFormatter
     {
         /// <summary>
@@ -136,7 +138,9 @@ namespace BoboBrowse.Net.Support
     /// Note that you still will need to track the values of the facets so selections by the user can be made 
     /// using the original facet value string.
     /// </summary>
+#if FEATURE_SERIALIZABLE
     [Serializable]
+#endif
     public class RangeStringFormatter
     {
         private readonly Type type;

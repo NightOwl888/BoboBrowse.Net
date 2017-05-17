@@ -34,7 +34,9 @@ namespace BoboBrowse.Net
     /// Browse Request. A set of BrowseSelections, a keyword text query, and a set of FacetSpecs.
     /// author jwang
     /// </summary>
+#if FEATURE_SERIALIZABLE
     [Serializable]
+#endif
     public class BrowseRequest
     {
         //private static long serialVersionUID = 3172092238778154933L; // NOT USED

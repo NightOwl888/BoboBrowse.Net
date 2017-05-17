@@ -30,7 +30,9 @@ namespace BoboBrowse.Net.Facets.Data
     using System.Collections.Generic;
     using System.Linq;
 
+#if FEATURE_SERIALIZABLE
     [Serializable]
+#endif
     public class FacetDataCache
     {
         //private readonly static long serialVersionUID = 1L; // NOT USED
@@ -147,7 +149,11 @@ namespace BoboBrowse.Net.Facets.Data
 
         public virtual void Load(string fieldName, AtomicReader reader, TermListFactory listFactory)
         {
+#if FEATURE_STRING_INTERN
             string field = string.Intern(fieldName);
+#else
+            string field = fieldName;
+#endif
             int maxDoc = reader.MaxDoc;
 
             int dictValueCount = GetDictValueCount(reader, fieldName);

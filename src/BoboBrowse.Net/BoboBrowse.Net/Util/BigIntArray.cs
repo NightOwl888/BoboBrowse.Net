@@ -34,7 +34,9 @@ namespace BoboBrowse.Net.Util
     /// <para/>
     /// NOTE: This was BigIntArray in bobo-browse
     /// </summary>
+#if FEATURE_SERIALIZABLE
     [Serializable]
+#endif
     public sealed class BigInt32Array : BigSegmentedArray
     {
         //private static long serialVersionUID = 1L; // NOT USED

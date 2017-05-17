@@ -25,8 +25,10 @@ namespace BoboBrowse.Net.DocIdSet
     using System.Runtime.CompilerServices;
     using System.Text;
 
+#if FEATURE_SERIALIZABLE
     [Serializable]
-    public abstract class PrimitiveArray<T> : ICloneable
+#endif
+    public abstract class PrimitiveArray<T> //: ICloneable
     {
         protected internal T[] m_array;
 
@@ -37,6 +39,8 @@ namespace BoboBrowse.Net.DocIdSet
         protected internal int m_len;
 
         private const int DEFAULT_SIZE = 1000;
+
+        private object syncLock = new object();
 
         protected abstract T[] BuildArray(int len);
 
@@ -63,29 +67,35 @@ namespace BoboBrowse.Net.DocIdSet
             m_growth = 10;
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
         protected internal virtual void Expand()
         {
-            Expand(m_len + 100);
+            lock (syncLock)
+            {
+                Expand(m_len + 100);
+            }
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
         protected internal virtual void Expand(int idx)
         {
-            if (idx <= m_len)
-                return;
-            int oldLen = m_len;
-            m_len = idx + m_growth;
-            T[] newArray = BuildArray(m_len);
-            System.Array.Copy((Array)this.m_array, 0, (Array)newArray, 0, oldLen);
-            m_growth += m_len;
-            m_array = newArray;
+            lock (syncLock)
+            {
+                if (idx <= m_len)
+                    return;
+                int oldLen = m_len;
+                m_len = idx + m_growth;
+                T[] newArray = BuildArray(m_len);
+                System.Array.Copy((Array)this.m_array, 0, (Array)newArray, 0, oldLen);
+                m_growth += m_len;
+                m_array = newArray;
+            }
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
         public virtual void EnsureCapacity(int idx)
         {
-            Expand(idx);
+            lock (syncLock)
+            {
+                Expand(idx);
+            }
         }
 
         public virtual int Count
@@ -94,37 +104,43 @@ namespace BoboBrowse.Net.DocIdSet
         }
 
         ///<summary>called to shrink the array size to the current # of elements to save memory.</summary>
-        [MethodImpl(MethodImplOptions.Synchronized)]
         public virtual void Seal()
         {
-            if (m_len > m_count)
+            lock (syncLock)
             {
-                T[] newArray = BuildArray(m_count);
-                System.Array.Copy((Array)this.m_array, 0, (Array)newArray, 0, m_count);
-                m_array = newArray;
-                m_len = m_count;
+                if (m_len > m_count)
+                {
+                    T[] newArray = BuildArray(m_count);
+                    System.Array.Copy((Array)this.m_array, 0, (Array)newArray, 0, m_count);
+                    m_array = newArray;
+                    m_len = m_count;
+                }
+                m_growth = 10;
             }
-            m_growth = 10;
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
         public virtual T[] ToArray(T[] array)
         {
-            System.Array.Copy(this.m_array, 0, array, 0, m_count);
-            return array;
+            lock (syncLock)
+            {
+                System.Array.Copy(this.m_array, 0, array, 0, m_count);
+                return array;
+            }
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
         public virtual object ToArray()
         {
-            var array = BuildArray(m_count);
-            System.Array.Copy(this.m_array, 0, array, 0, m_count);
-            return array;
+            lock (syncLock)
+            {
+                var array = BuildArray(m_count);
+                System.Array.Copy(this.m_array, 0, array, 0, m_count);
+                return array;
+            }
         }
 
         public virtual object Clone()
         {
-            return base.MemberwiseClone();
+            return MemberwiseClone();
         }
 
         public override string ToString()

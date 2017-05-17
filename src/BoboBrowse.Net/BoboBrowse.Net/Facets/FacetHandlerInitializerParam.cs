@@ -28,7 +28,9 @@ namespace BoboBrowse.Net.Facets
     /// 
     /// author xiaoyang
     /// </summary>
+#if FEATURE_SERIALIZABLE
     [Serializable]
+#endif
     public abstract class FacetHandlerInitializerParam
     {
         public static readonly FacetHandlerInitializerParam EMPTY_PARAM = new EmptyFacetHandlerInitializerParam();

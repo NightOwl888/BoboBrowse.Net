@@ -63,7 +63,9 @@ namespace BoboBrowse.Net.Facets
         TermCountSize TermCountSize { get; set; }
     }
 
+#if FEATURE_SERIALIZABLE
     [Serializable]
+#endif
     public class FacetDataNone
     {
         //private static long serialVersionUID = 1L; // NOT USED

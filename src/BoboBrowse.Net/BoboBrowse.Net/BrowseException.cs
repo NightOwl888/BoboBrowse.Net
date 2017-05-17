@@ -22,7 +22,9 @@ namespace BoboBrowse.Net
 {
     using System;
 
+#if FEATURE_SERIALIZABLE
     [Serializable]
+#endif
     public class BrowseException : Exception
     {
         //private static long serialVersionUID = 1L; // NOT USED

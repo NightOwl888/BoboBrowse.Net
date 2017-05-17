@@ -28,8 +28,10 @@ namespace BoboBrowse.Net
     /// <summary>
     /// Specifies how facets are to be returned for a browse, e.g. top 10 facets of car types ordered by count with a min count of 5.
     /// </summary>
+#if FEATURE_SERIALIZABLE
     [Serializable]
-    public class FacetSpec : ICloneable
+#endif
+    public class FacetSpec //: ICloneable
     {
         //private static long serialVersionUID = 1L; // NOT USED
 

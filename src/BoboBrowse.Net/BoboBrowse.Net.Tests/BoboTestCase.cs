@@ -45,7 +45,9 @@ namespace BoboBrowse.Net
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
+#if FEATURE_SERIALIZABLE
     using System.Runtime.Serialization.Formatters.Binary;
+#endif
     using System.Text;
 
     [TestFixture]
@@ -643,7 +645,8 @@ namespace BoboBrowse.Net
                 string choices = (choiceMap == null) ? "" : string.Join("\n", choiceMap.Select(kvp => string.Format("{0} = {1}", kvp.Key, string.Join(", ", kvp.Value.Select(x => x.ToString()).ToArray()))).ToArray());
 
                 StringBuilder buffer = new StringBuilder();
-                buffer.Append("Test: ").Append(new StackFrame(1).GetMethod().Name).Append("\n");
+                //buffer.Append("Test: ").Append(new StackFrame(1).GetMethod().Name).Append("\n");
+                buffer.Append("Test: ").Append(NUnit.Framework.TestContext.CurrentContext.Test.Name).Append("\n");
                 buffer.Append("Result check failed: \n");
                 buffer.Append("expected: \n");
                 buffer.Append(numHits).Append(" hits\n");
@@ -1717,6 +1720,7 @@ namespace BoboBrowse.Net
                 BrowseResult result = boboBrowser.Browse(br);
                 try
                 {
+#if FEATURE_SERIALIZABLE
                     BinaryFormatter formatter = new BinaryFormatter();
                     using (var stream = new MemoryStream())
                     {
@@ -1729,6 +1733,7 @@ namespace BoboBrowse.Net
                         // Deserialize from the stream
                         result = (BrowseResult)formatter.Deserialize(stream);
                     }
+#endif
 
                     DoTest(result, br, 7, null, new string[] { "5", "4", "6", "3", "2", "1", "7" });
                 }

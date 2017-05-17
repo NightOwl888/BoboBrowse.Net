@@ -1,10 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoboBrowse.Net", "BoboBrowse.Net\BoboBrowse.Net.csproj", "{8EEFF620-0996-4B6A-B23C-7D73BECCF73C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoboBrowse.Tests", "BoboBrowse.Tests\BoboBrowse.Tests.csproj", "{F016F5E0-E8C3-4ECE-B677-AAA8DDF9A1D8}"
-EndProject
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.7
+MinimumVisualStudioVersion = 15.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{74606D3E-1C8F-401F-95E1-F4F78C5CBD18}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\Build.bat = ..\..\Build.bat
@@ -25,7 +23,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BoboBrowse.Net.Spring", "Bo
 		..\..\build\templates\BoboBrowse.Net.Spring\BoboBrowse.Net.Spring.nuspec = ..\..\build\templates\BoboBrowse.Net.Spring\BoboBrowse.Net.Spring.nuspec
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoboBrowse.Net.Spring", "BoboBrowse.Net.Spring\BoboBrowse.Net.Spring.csproj", "{C152867D-CE16-4BC3-9AEC-A0C6A49DA621}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoboBrowse.Net", "BoboBrowse.Net\BoboBrowse.Net.csproj", "{12826ECA-2CB5-43B2-938D-86036DA56FBE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoboBrowse.Net.Spring", "BoboBrowse.Net.Spring\BoboBrowse.Net.Spring.csproj", "{099CA1FF-9C8D-44E1-940B-EF9C787C23F9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{A5976E70-907D-44D8-8287-CA9BF00D30AC}"
+	ProjectSection(SolutionItems) = preProject
+		BoboBrowse.Net.Tests\BoboBrowse.Net.Tests.csproj = BoboBrowse.Net.Tests\BoboBrowse.Net.Tests.csproj
+		BoboBrowse.Net.Tests\BoboBrowse.Net.Tests.proj = BoboBrowse.Net.Tests\BoboBrowse.Net.Tests.proj
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoboBrowse.Net.Tests", "BoboBrowse.Net.Tests\BoboBrowse.Net.Tests.csproj", "{89527213-43EE-482E-8BEE-E3B4E5192E3F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,18 +41,18 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{8EEFF620-0996-4B6A-B23C-7D73BECCF73C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8EEFF620-0996-4B6A-B23C-7D73BECCF73C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8EEFF620-0996-4B6A-B23C-7D73BECCF73C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8EEFF620-0996-4B6A-B23C-7D73BECCF73C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F016F5E0-E8C3-4ECE-B677-AAA8DDF9A1D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F016F5E0-E8C3-4ECE-B677-AAA8DDF9A1D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F016F5E0-E8C3-4ECE-B677-AAA8DDF9A1D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F016F5E0-E8C3-4ECE-B677-AAA8DDF9A1D8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C152867D-CE16-4BC3-9AEC-A0C6A49DA621}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C152867D-CE16-4BC3-9AEC-A0C6A49DA621}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C152867D-CE16-4BC3-9AEC-A0C6A49DA621}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C152867D-CE16-4BC3-9AEC-A0C6A49DA621}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12826ECA-2CB5-43B2-938D-86036DA56FBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12826ECA-2CB5-43B2-938D-86036DA56FBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12826ECA-2CB5-43B2-938D-86036DA56FBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12826ECA-2CB5-43B2-938D-86036DA56FBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{099CA1FF-9C8D-44E1-940B-EF9C787C23F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{099CA1FF-9C8D-44E1-940B-EF9C787C23F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{099CA1FF-9C8D-44E1-940B-EF9C787C23F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{099CA1FF-9C8D-44E1-940B-EF9C787C23F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89527213-43EE-482E-8BEE-E3B4E5192E3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89527213-43EE-482E-8BEE-E3B4E5192E3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89527213-43EE-482E-8BEE-E3B4E5192E3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89527213-43EE-482E-8BEE-E3B4E5192E3F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -60,7 +60,7 @@ namespace BoboBrowse.Net
         /// Gets a set of facet names.
         /// </summary>
         /// <returns>set of facet names</returns>
-        IEnumerable<string> FacetNames { get; }
+        ICollection<string> FacetNames { get; }
 
         /// <summary>
         /// Sets a facet handler for each sub-browser instance.

@@ -30,7 +30,9 @@ namespace BoboBrowse.Net
     /// <summary>
     /// A selection or filter to be applied, e.g. Color=Red.
     /// </summary>
+#if FEATURE_SERIALIZABLE
     [Serializable]
+#endif
     public class BrowseSelection
     {
         public enum ValueOperation

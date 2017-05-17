@@ -34,6 +34,8 @@ namespace BoboBrowse.Tests
     using NUnit.Framework;
     using System;
     using System.Collections.Generic;
+    using System.Reflection;
+    using log4net.Core;
 
     /// <summary>
     /// This class is to test the case when facetName is different from the underlying indexingFieldName for simpleFacetHandler
@@ -186,7 +188,12 @@ namespace BoboBrowse.Tests
         {
             // Set up a simple Log4Net configuration that logs in memory.
             var memAppend = new log4net.Appender.MemoryAppender();
+#if NETCOREAPP1_0
+            var repository = LogManager.GetRepository(Assembly.GetEntryAssembly());
+            BasicConfigurator.Configure(repository, memAppend);
+#else
             BasicConfigurator.Configure(memAppend);
+#endif
 
             BrowseRequest br = new BrowseRequest();
             br.Count = 20;

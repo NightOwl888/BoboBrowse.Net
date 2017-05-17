@@ -24,12 +24,16 @@ namespace BoboBrowse.Net.DocIdSet
     using System;
     using System.Collections.Generic;
 
+#if FEATURE_SERIALIZABLE
     [Serializable]
+#endif
     public class OrDocIdSet : ImmutableDocSet
     {
         private const int INVALID = -1;
 
+#if FEATURE_SERIALIZABLE
         [Serializable]
+#endif
         public class AescDocIdSetComparer : IComparer<DocIdSetIterator>
         {
             public virtual int Compare(DocIdSetIterator o1, DocIdSetIterator o2)

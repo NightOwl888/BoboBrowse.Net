@@ -25,13 +25,17 @@ namespace BoboBrowse.Net.DocIdSet
     using System;
     using System.Collections.Generic;
 
+#if FEATURE_SERIALIZABLE
     [Serializable]
+#endif
     public class AndDocIdSet : ImmutableDocSet
     {
         // private static long serialVersionUID = 1L; // NOT USED
         private readonly IList<int> m_interSectionResult = new List<int>();
 
+#if FEATURE_SERIALIZABLE
         [Serializable]
+#endif
         public class DescDocIdSetComparer : IComparer<StatefulDSIterator>
         {
             // private static long serialVersionUID = 1L; // NOT USED

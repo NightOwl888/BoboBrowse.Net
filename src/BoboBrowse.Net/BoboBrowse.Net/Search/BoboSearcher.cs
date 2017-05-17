@@ -326,9 +326,14 @@ namespace BoboBrowse.Net.Search
                     // which includes several major changes after the 4.0.2 release.
 
                     // atomicContext = AtomicReaderContextUtil.UpdateDocBase(atomicContext, docStart);
-                    BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
                     object[] args = new object[] { (CompositeReaderContext)null, atomicContext.AtomicReader, 0, 0, 0, docStart };
-                    atomicContext = (AtomicReaderContext)Activator.CreateInstance(typeof(AtomicReaderContext), flags, null, args, null);
+                    Type[] constructorSignature = { typeof(CompositeReaderContext), typeof(AtomicReader), typeof(int), typeof(int), typeof(int), typeof(int) };
+                    var constr = typeof(AtomicReaderContext).GetTypeInfo().DeclaredConstructors
+                        .Single(constructor =>
+                            constructor.GetParameters()
+                                       .Select(parameter => parameter.ParameterType)
+                                       .SequenceEqual(constructorSignature));
+                    atomicContext = (AtomicReaderContext)constr.Invoke(args);
 
                     if (reader is BoboMultiReader) 
                     {

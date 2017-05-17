@@ -34,7 +34,7 @@ namespace BoboBrowse.Net.Support
         [TestCase(typeof(BoboBrowse.Net.BoboBrowser))]
         public virtual void TestForPublicMembersContainingNonNetNumeric(Type typeFromTargetAssembly)
         {
-            var names = GetMembersContainingNonNetNumeric(typeFromTargetAssembly.Assembly);
+            var names = GetMembersContainingNonNetNumeric(typeFromTargetAssembly.GetTypeInfo().Assembly);
 
             //if (VERBOSE)
             //{
@@ -53,7 +53,7 @@ namespace BoboBrowse.Net.Support
         [TestCase(typeof(BoboBrowse.Net.BoboBrowser))]
         public virtual void TestForTypesContainingNonNetNumeric(Type typeFromTargetAssembly)
         {
-            var names = GetTypesContainingNonNetNumeric(typeFromTargetAssembly.Assembly);
+            var names = GetTypesContainingNonNetNumeric(typeFromTargetAssembly.GetTypeInfo().Assembly);
 
             //if (VERBOSE)
             //{
@@ -109,7 +109,7 @@ namespace BoboBrowse.Net.Support
                     //    continue;
                     //}
 
-                    if (ContainsNonNetNumeric.IsMatch(member.Name) && member.DeclaringType.Equals(t.UnderlyingSystemType))
+                    if (ContainsNonNetNumeric.IsMatch(member.Name) && member.DeclaringType.Equals(t.GetTypeInfo().UnderlyingSystemType))
                     {
                         if (member.MemberType == MemberTypes.Method && !(member.Name.StartsWith("get_", StringComparison.Ordinal) || member.Name.StartsWith("set_", StringComparison.Ordinal)))
                         {

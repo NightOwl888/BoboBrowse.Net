@@ -23,7 +23,9 @@ namespace BoboBrowse.Net.MapRed
     using System;
     using System.Collections;
 
+#if FEATURE_SERIALIZABLE
     [Serializable]
+#endif
     public class MapReduceResult
     {
         // private static long serialVersionUID = 1L; // NOT USED

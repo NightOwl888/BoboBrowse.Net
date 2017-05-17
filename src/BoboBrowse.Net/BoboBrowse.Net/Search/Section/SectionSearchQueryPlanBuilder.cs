@@ -29,7 +29,9 @@ namespace BoboBrowse.Net.Search.Section
 
     public class SectionSearchQueryPlanBuilder
     {
+#if FEATURE_SERIALIZABLE
         [Serializable]
+#endif
         public class TranslationException : RuntimeException
         {
             //private static long serialVersionUID = 1L; // NOT USED

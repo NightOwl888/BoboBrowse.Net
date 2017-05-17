@@ -26,7 +26,9 @@ namespace BoboBrowse.Net.DocIdSet
     /// <summary>
     /// NOTE: This was Int32ArrayDocIdSet in bobo-browse
     /// </summary>
+#if FEATURE_SERIALIZABLE
     [Serializable]
+#endif
     public class Int32ArrayDocIdSet : DocSet
     {
         // private static long serialVersionUID = 1L; // NOT USED

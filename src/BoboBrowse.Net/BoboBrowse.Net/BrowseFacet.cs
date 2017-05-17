@@ -26,7 +26,9 @@ namespace BoboBrowse.Net
     /// <summary>
     /// This class represents a facet
     /// </summary>
+#if FEATURE_SERIALIZABLE
     [Serializable]
+#endif
     public class BrowseFacet
     {
         //private static long serialVersionUID = 1L; // NOT USED

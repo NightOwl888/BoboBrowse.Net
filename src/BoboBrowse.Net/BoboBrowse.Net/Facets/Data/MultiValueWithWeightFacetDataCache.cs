@@ -49,7 +49,11 @@ namespace BoboBrowse.Net.Facets.Data
 
         public override void Load(string fieldName, AtomicReader reader, TermListFactory listFactory, BoboSegmentReader.WorkArea workArea)
         {
+#if FEATURE_STRING_INTERN
             string field = string.Intern(fieldName);
+#else
+            string field = fieldName;
+#endif
             int maxdoc = reader.MaxDoc;
             BigNestedInt32Array.BufferedLoader loader = GetBufferedLoader(maxdoc, workArea);
             BigNestedInt32Array.BufferedLoader weightLoader = GetBufferedLoader(maxdoc, null);

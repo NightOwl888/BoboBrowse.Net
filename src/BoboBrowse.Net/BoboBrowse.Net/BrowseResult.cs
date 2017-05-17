@@ -31,7 +31,9 @@ namespace BoboBrowse.Net
     /// <summary>
     /// Result of a browse operation.
     /// </summary>
+#if FEATURE_SERIALIZABLE
     [Serializable]
+#endif
     public class BrowseResult : IDisposable
     {
         //private static long serialVersionUID = -8620935391852879446L; // NOT USED
@@ -50,7 +52,9 @@ namespace BoboBrowse.Net
             set { m_tid = value; }
         }
 
+#if FEATURE_SERIALIZABLE
         [NonSerialized]
+#endif
         private SortCollector m_sortCollector;
         //private int totalGroups;
 	    private readonly IDictionary<string, IFacetAccessible> m_facetMap;

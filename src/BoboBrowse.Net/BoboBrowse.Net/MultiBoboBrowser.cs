@@ -301,16 +301,16 @@ namespace BoboBrowse.Net
             }
         }
 
-        public virtual IEnumerable<string> FacetNames
+        public virtual ICollection<string> FacetNames
         {
             get
             {
-                var names = new List<string>();
+                var names = new HashSet<string>();
                 foreach (IBrowsable subBrowser in m_subBrowsers)
                 {
-                    names.AddRange(subBrowser.FacetNames);
+                    names.UnionWith(subBrowser.FacetNames);
                 }
-                return names.Distinct();
+                return names;
             }
         }
 

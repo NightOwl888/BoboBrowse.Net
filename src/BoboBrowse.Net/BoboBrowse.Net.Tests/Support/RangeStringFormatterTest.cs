@@ -81,7 +81,12 @@ namespace BoboBrowse.Net.Support
             }
 
             {
-                Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+#if NETCOREAPP1_0
+                CultureInfo.CurrentCulture
+#else
+                Thread.CurrentThread.CurrentCulture
+#endif
+                     = new CultureInfo("en-US");
 
                 var formatter = new RangeStringFormatter<double>("{0:c} to {1:c}");
 
@@ -115,7 +120,12 @@ namespace BoboBrowse.Net.Support
             };
 
             {
-                Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+#if NETCOREAPP1_0
+                CultureInfo.CurrentCulture
+#else
+                Thread.CurrentThread.CurrentCulture
+#endif
+                     = new CultureInfo("en-US");
 
                 var formatter = new RangeStringFormatter<DateTime>("{0:d} - {1:d}", "Before {1:d}", "{0:d} And After");
 
@@ -137,7 +147,12 @@ namespace BoboBrowse.Net.Support
             }
 
             {
-                Thread.CurrentThread.CurrentCulture = new CultureInfo("pt-PT");
+#if NETCOREAPP1_0
+                CultureInfo.CurrentCulture
+#else
+                Thread.CurrentThread.CurrentCulture
+#endif
+                     = new CultureInfo("pt-PT");
 
                 var formatter = new RangeStringFormatter<DateTime>("{0:D} - {1:D}", "perante {1:D}", "{0:D} e depois");
 
@@ -159,7 +174,12 @@ namespace BoboBrowse.Net.Support
             }
 
             {
-                Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+#if NETCOREAPP1_0
+                CultureInfo.CurrentCulture
+#else
+                Thread.CurrentThread.CurrentCulture
+#endif
+                     = new CultureInfo("en-US");
 
                 var formatter = new RangeStringFormatter<DateTime>("{0:d} - {1:d}");
 
@@ -189,7 +209,12 @@ namespace BoboBrowse.Net.Support
             };
 
             {
-                Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+#if NETCOREAPP1_0
+                CultureInfo.CurrentCulture
+#else
+                Thread.CurrentThread.CurrentCulture
+#endif
+                     = new CultureInfo("en-US");
 
                 var formatter = new RangeStringFormatter<DateTime>("{0:d} - {1:d}");
 

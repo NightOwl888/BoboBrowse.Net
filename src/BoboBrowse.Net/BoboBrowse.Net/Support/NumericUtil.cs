@@ -21,6 +21,7 @@ namespace BoboBrowse.Net.Support
 {
     using Lucene.Net.Util;
     using System;
+    using System.Reflection;
 
     public class NumericUtil
     {
@@ -34,7 +35,7 @@ namespace BoboBrowse.Net.Support
             Type objType = value.GetType();
             objType = Nullable.GetUnderlyingType(objType) ?? objType;
 
-            if (objType.IsPrimitive)
+            if (objType.GetTypeInfo().IsPrimitive)
             {
                 return objType != typeof(bool) &&
                     objType != typeof(char) &&

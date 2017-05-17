@@ -25,7 +25,9 @@ namespace BoboBrowse.Net.DocIdSet
     /// <summary>
     /// NOTE: This was IntArray in bobo-browse
     /// </summary>
+#if FEATURE_SERIALIZABLE
     [Serializable]
+#endif
     public class Int32Array : PrimitiveArray<int>
     {
         public Int32Array(int len)

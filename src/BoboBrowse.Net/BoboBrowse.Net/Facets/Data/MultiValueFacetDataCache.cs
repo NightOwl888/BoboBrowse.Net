@@ -78,7 +78,11 @@ namespace BoboBrowse.Net.Facets.Data
         /// <param name="workArea"></param>
         public virtual void Load(string fieldName, AtomicReader reader, TermListFactory listFactory, BoboSegmentReader.WorkArea workArea)
         {
+#if FEATURE_STRING_INTERN
             string field = string.Intern(fieldName);
+#else
+            string field = fieldName;
+#endif
             int maxdoc = reader.MaxDoc;
             BigNestedInt32Array.BufferedLoader loader = GetBufferedLoader(maxdoc, workArea);
 
@@ -177,7 +181,11 @@ namespace BoboBrowse.Net.Facets.Data
         /// <param name="sizeTerm"></param>
         public virtual void Load(string fieldName, AtomicReader reader, TermListFactory listFactory, Term sizeTerm)
         {
+#if FEATURE_STRING_INTERN
             string field = string.Intern(fieldName);
+#else
+            string field = fieldName;
+#endif
             int maxdoc = reader.MaxDoc;
             BigNestedInt32Array.Loader loader = new AllocOnlyLoader(m_maxItems, sizeTerm, reader);
             int negativeValueCount = GetNegativeValueCount(reader, field);

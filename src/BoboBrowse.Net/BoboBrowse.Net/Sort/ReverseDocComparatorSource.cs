@@ -57,7 +57,9 @@ namespace BoboBrowse.Net.Sort
                 return new ReverseComparable(m_comparer.Value(doc));
             }
 
+#if FEATURE_SERIALIZABLE
             [Serializable]
+#endif
             public class ReverseComparable : IComparable
             {
                 //private static long serialVersionUID = 1L; // NOT USED

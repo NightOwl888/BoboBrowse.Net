@@ -31,12 +31,16 @@ namespace BoboBrowse.Net
     using System.Text;
 
     ///<summary>A hit from a browse.</summary>
+#if FEATURE_SERIALIZABLE
     [Serializable]
+#endif
     public class BrowseHit
     {
         //private static long serialVersionUID = 1L; // NOT USED
 
+#if FEATURE_SERIALIZABLE
         [Serializable]
+#endif
         public class BoboTerm
         {
             //private static long serialVersionUID = 1L; // NOT USED
@@ -55,7 +59,9 @@ namespace BoboBrowse.Net
             public IList<int> EndOffsets { get; set; }
         }
 
+#if FEATURE_SERIALIZABLE
         [Serializable]
+#endif
         public class SerializableField
         {
 
@@ -186,8 +192,9 @@ namespace BoboBrowse.Net
             }
         }
 
-
+#if FEATURE_SERIALIZABLE
         [Serializable]
+#endif
         public class SerializableExplanation
         {
             //private static const long serialVersionUID = 1L; // NOT USED
@@ -354,7 +361,9 @@ namespace BoboBrowse.Net
             TermVectorMap = new Dictionary<string, IList<BoboTerm>>();
         }
 
+#if FEATURE_SERIALIZABLE
         [NonSerialized]
+#endif
         private IComparable m_comparable;
 
         /// <summary>

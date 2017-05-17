@@ -117,7 +117,7 @@ namespace BoboBrowse.Net
             }
         }
 
-        public static void Main(string[] args)
+        public static void Main2(string[] args)
         {
             int nThreads = 2;
             int numIters = 200;
@@ -170,7 +170,7 @@ namespace BoboBrowse.Net
         [Category("LongRunning")]
         public void TestFacetMergePerf()
         {
-            Main(new string[0]);
+            Main2(new string[0]);
         }
     }
 }

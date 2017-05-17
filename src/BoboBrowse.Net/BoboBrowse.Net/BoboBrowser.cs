@@ -68,7 +68,7 @@ namespace BoboBrowse.Net
         /// Gets a set of facet names.
         /// </summary>
         /// <returns>Set of facet names.</returns>
-        public override IEnumerable<string> FacetNames
+        public override ICollection<string> FacetNames
         {
             get 
             {

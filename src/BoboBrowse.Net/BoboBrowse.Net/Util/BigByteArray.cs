@@ -26,7 +26,9 @@ namespace BoboBrowse.Net.Util
     using Lucene.Net.Util;
     using System;
 
+#if FEATURE_SERIALIZABLE
     [Serializable]
+#endif
     public class BigByteArray : BigSegmentedArray
     {
         //private static long serialVersionUID = 1L; // NOT USED
