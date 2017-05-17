@@ -7,6 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{74606D3E
 	ProjectSection(SolutionItems) = preProject
 		..\..\Build.bat = ..\..\Build.bat
 		CommonAssemblyInfo.cs = CommonAssemblyInfo.cs
+		..\..\build\dotnet-install.ps1 = ..\..\build\dotnet-install.ps1
 		PackageVersion.proj = PackageVersion.proj
 		..\..\build\psake.ps1 = ..\..\build\psake.ps1
 		..\..\build\psake.psm1 = ..\..\build\psake.psm1
