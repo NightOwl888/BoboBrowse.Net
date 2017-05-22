@@ -36,10 +36,6 @@
     <DefineConstants>$(DefineConstants);FEATURE_SERIALIZABLE;FEATURE_STRING_INTERN</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NetCoreApp1_0|Any CPU' " />
-
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Any CPU' " />
-
   <ItemGroup>
     <Compile Include="..\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
   </ItemGroup>

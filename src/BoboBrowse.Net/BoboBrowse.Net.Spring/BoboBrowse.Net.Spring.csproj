@@ -27,8 +27,6 @@
     <ProjectReference Include="..\BoboBrowse.Net\BoboBrowse.Net.csproj" />
   </ItemGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NetCoreApp1_0|Any CPU' " />
-
   <ItemGroup>
     <Compile Include="..\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
   </ItemGroup>
