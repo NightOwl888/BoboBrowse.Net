@@ -90,7 +90,7 @@ namespace BoboBrowse.Net.Facets.Data
             List<int> minIDList = new List<int>();
             List<int> maxIDList = new List<int>();
             List<int> freqList = new List<int>();
-            OpenBitSet bitset = new OpenBitSet();
+            OpenBitSet bitset = new OpenBitSet(maxdoc + 1);
             int negativeValueCount = GetNegativeValueCount(reader, field);
             int t = 1; // valid term id starts from 1
             list.Add(null);
