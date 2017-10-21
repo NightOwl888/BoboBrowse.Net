@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <!--<PropertyGroup>
+  <PropertyGroup>
     <TargetFrameworks>netcoreapp1.0;net451</TargetFrameworks>
-  </PropertyGroup>-->
+  </PropertyGroup>
   <!--<PropertyGroup>
     <TargetFramework>netcoreapp1.0</TargetFramework>
   </PropertyGroup>-->
