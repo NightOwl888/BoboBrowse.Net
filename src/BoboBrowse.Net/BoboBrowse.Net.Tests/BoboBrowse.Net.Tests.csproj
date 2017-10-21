@@ -3,9 +3,14 @@
   <!--<PropertyGroup>
     <TargetFrameworks>netcoreapp1.0;net451</TargetFrameworks>
   </PropertyGroup>-->
+  <!--<PropertyGroup>
+    <TargetFramework>netcoreapp1.0</TargetFramework>
+  </PropertyGroup>-->
+
+  <!--<Import Project="..\TestTargetFramework.proj" />-->
   
   <PropertyGroup>
-    <TargetFramework>net451</TargetFramework>
+    <TargetFramework>netcoreapp1.0</TargetFramework>
     <TargetFramework Condition=" '$(Configuration)' == 'Debug' ">net451</TargetFramework>
     <TargetFramework Condition=" '$(Configuration)' == 'Debug_NetCoreApp1_0' ">netcoreapp1.0</TargetFramework>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
@@ -19,9 +24,9 @@
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
     <PackageReference Include="NUnit" Version="3.6.1" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.8.0-alpha1" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.8.0" />
     <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
-    <PackageReference Include="System.Reflection" Version="4.1.0" />
+    <PackageReference Include="System.Reflection" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
