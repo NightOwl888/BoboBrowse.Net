@@ -1,7 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\PackageVersion.proj" />
-  
   <PropertyGroup>
     <TargetFramework>net451</TargetFramework>
 

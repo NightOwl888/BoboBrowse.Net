@@ -5,7 +5,6 @@ properties {
 	[string]$nuget_package_directory = "$release_directory\packagesource"
 	#[string]$test_results_directory = "$release_directory\testresults"
 	[string]$solutionFile = "$source_directory\BoboBrowse.sln"
-	[string]$versionFile = "$source_directory\PackageVersion.proj"
 
 	[string]$packageVersion   = "0.0.0"  
 	[string]$version          = "0.0.0"
@@ -139,22 +138,11 @@ task Pack -depends Compile -description "This tasks creates the NuGet packages" 
 	$packages = Get-ChildItem -Path "$source_directory\**\*.csproj" -Recurse | ? { !$_.Directory.Name.Contains(".Test") }
 	popd
 
-	try {
-		Backup-File $versionFile
-
-		Generate-Version-File `
-			-version $version `
-			-packageVersion $packageVersion `
-			-file $versionFile
-
-		foreach ($package in $packages) {
-			Write-Host "Creating NuGet package for $package..." -ForegroundColor Magenta
-			Exec {
-				&dotnet pack $package --output $nuget_package_directory --configuration $configuration --no-build --include-symbols /p:PackageVersion=$packageVersion
-			}
+	foreach ($package in $packages) {
+		Write-Host "Creating NuGet package for $package..." -ForegroundColor Magenta
+		Exec {
+			&dotnet pack $package --output $nuget_package_directory --configuration $configuration --no-build --include-symbols /p:PackageVersion=$packageVersion
 		}
-	} finally {
-		Restore-File $versionFile
 	}
 }
 
@@ -193,25 +181,6 @@ task Test -depends Pack -description "This tasks runs the tests" {
 			}
 		}
 	}
-}
-
-function Generate-Version-File {
-param(
-	[string]$packageVersion,
-	[string]$file = $(throw "file is a required parameter.")
-)
-
-  $versionFile = "<Project>
-	<PropertyGroup>
-		<PackageVersion>$packageVersion</PackageVersion>
-	</PropertyGroup>
-</Project>
-"
-	$dir = [System.IO.Path]::GetDirectoryName($file)
-	Ensure-Directory-Exists $dir
-
-	Write-Host "Generating version file: $file"
-	Out-File -filePath $file -encoding UTF8 -inputObject $versionFile
 }
 
 function Generate-Assembly-Info {
