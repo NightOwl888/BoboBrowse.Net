@@ -78,7 +78,7 @@ task Init -depends InstallSDK -description "This tasks makes sure the build envi
 
 task Restore -description "This task runs NuGet package restore" {
 	Exec { 
-		&dotnet msbuild $solutionFile /t:Restore /p:Configuration=$configuration
+		&dotnet restore $solutionFile --no-dependencies
 	}
 }
 
@@ -150,7 +150,7 @@ task Pack -depends Compile -description "This tasks creates the NuGet packages" 
 		foreach ($package in $packages) {
 			Write-Host "Creating NuGet package for $package..." -ForegroundColor Magenta
 			Exec {
-				&dotnet pack $package --output $nuget_package_directory --configuration $configuration --no-build --include-symbols
+				&dotnet pack $package --output $nuget_package_directory --configuration $configuration --no-build --include-symbols /p:PackageVersion=$packageVersion
 			}
 		}
 	} finally {
