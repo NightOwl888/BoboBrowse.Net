@@ -26,7 +26,6 @@
     <PackageReference Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00004" />
     <PackageReference Include="Lucene.Net.QueryParser" Version="4.8.0-beta00004" />
     <PackageReference Include="Microsoft.CSharp" Version="4.0.1" />
-    <PackageReference Include="System.Dynamic.Runtime" Version="4.0.11" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.5' ">
